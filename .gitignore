@@ -112,10 +112,15 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 *.egg-info/
+.eggs/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Rust
 target/
 **/*.rs.bk
+Cargo.lock
 
 # Service Worker / Serwist
 public/sw*
@@ -147,6 +152,14 @@ vertex-ai-key.json
 .mcp.json
 CLAUDE.local.md
 .serena/**
+.cursor/
+.aider*
+.codeium/
+.continue/
+.tabnine/
+.copilot/
+copilot-chat/
+.github/copilot/
 
 # Misc
 ./packages/lobe-ui
@@ -154,3 +167,46 @@ prd
 GEMINI.md
 e2e/reports
 .agent-prompts/
+
+# IDE workspace files
+*.code-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# OS generated files
+._*
+.Spotlight-V100
+.Trashes
+
+# Turbo
+.turbo/
+
+# Foundry/Forge
+cache/
+out/
+broadcast/
+
+# Test artifacts
+test-results/
+playwright-report/
+.playwright/
+
+# Storybook
+storybook-static/
+
+# TypeDoc
+typedoc-output/
+api-docs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Docker
+*.pid
+*.seed
+*.pid.lock

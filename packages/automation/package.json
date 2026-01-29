@@ -1,0 +1,31 @@
+{
+  "name": "@nirholas/crypto-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automation bots - social media, dust sweeping, volume boosting",
+  "workspaces": [
+    "social",
+    "sweep",
+    "volume"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/automation"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "crypto",
+    "automation",
+    "bots",
+    "twitter",
+    "social"
+  ]
+}

@@ -1,0 +1,2409 @@
+# Build with AI
+Source: https://docs.sim.dune.com/build-with-ai
+
+Build faster with Sim APIs using LLMs.
+
+We provide several resources to help you use LLMs and AI coding assistants to build much faster with Sim APIs.
+
+## AI Search
+
+First, **AI Search** is built directly into this documentation site.
+The search bar, powered by Mintlify, can understand natural language queries.
+Ask questions about endpoints, authentication, or specific data points, and it will answer you with the most relevant, accurate information.
+
+<Frame caption="Type ⌘K or click the search bar to access AI Search">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/mintlify-search.png" />
+</Frame>
+
+## Use with LLMs
+
+### Complete Documentation for LLMs
+
+For LLM applications such as custom agents, RAG systems, or any scenario requiring our complete documentation, we provide an optimized text file at [`https://docs.sim.dune.com/llms-full.txt`](https://docs.sim.dune.com/llms-full.txt).
+
+### Per-Page Access
+
+Each page on this documentation site offers several ways to access its content in LLM-friendly formats:
+
+* **Copy Page:** Copies the fully rendered content of the current page.
+* **View Markdown:** Provides a URL with the raw Markdown source. This is ideal for direct input into LLMs.
+* **Open with ChatGPT:** Instantly loads the page's content into a new session with ChatGPT. Ask questions, summarize, or generate code based on the page's content.
+
+<Frame caption="Copy the page, view raw markdown, or open with ChatGPT">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/mintlify-open-with-chatgpt.png" />
+</Frame>
+
+You can retrieve the Markdown version of any documentation page by appending `.md` to its URL. For example, `/evm/activity` becomes [`https://docs.sim.dune.com/evm/activity.md`](https://docs.sim.dune.com/evm/activity.md).
+
+You can also type `⌘C` or `Ctrl+C` to copy any page's Markdown content.
+Try it now.
+
+## Cursor Integration
+
+To integrate our documentation directly into Cursor:
+
+1. Go to Cursor Settings -> Features -> Docs -> Add new doc.
+2. Enter "docs.sim.dune.com" in the URL field.
+3. Provide a name (e.g., "@simdocs").
+4. Hit confirm. The documentation will sync automatically.
+5. Reference Sim APIs documentation by typing `@simdocs` (or your chosen name) in your Cursor chat window.
+
+<Frame caption="Add our docs to Cursor to use it in your chats">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/cursor-add-docs.png" />
+</Frame>
+
+## OpenAPI Specifications
+
+For a more compact format, we provide OpenAPI specifications for each of our endpoints. These files detail available parameters, request bodies, and response schemas. This format is particularly useful for LLMs and AI code generation tools to understand our API structure.
+
+You can find our OpenAPI specifications in the following directories:
+
+* EVM API specifications: [`/evm/openapi/`](https://github.com/duneanalytics/sim-docs/tree/main/evm/openapi)
+* SVM API specifications: [`/svm/openapi/`](https://github.com/duneanalytics/sim-docs/tree/main/svm/openapi)
+
+
+# Error Handling
+Source: https://docs.sim.dune.com/error-handling
+
+How to handle errors when using Sim APIs
+
+This guide explains how to handle errors when using Sim APIs, including common error codes, troubleshooting steps, and code examples for proper error handling.
+
+## Error Response Format
+
+When an error occurs, Sim APIs return a standard error response format:
+
+```json
+{
+  "error": {
+    "message": "Description of what went wrong",
+    "code": "ERROR_CODE"
+  }
+}
+```
+
+## Common Error Codes
+
+| HTTP Status | Error Code              | Description                | Troubleshooting                                                                              |
+| ----------- | ----------------------- | -------------------------- | -------------------------------------------------------------------------------------------- |
+| 401         | UNAUTHORIZED            | Invalid or missing API key | Check that you're including the correct API key in the `X-Sim-Api-Key` header                |
+| 400         | BAD\_REQUEST            | Malformed request          | Verify the address format and other parameters in your request                               |
+| 404         | NOT\_FOUND              | Resource not found         | Verify the endpoint URL and resource identifiers                                             |
+| 429         | RATE\_LIMIT\_EXCEEDED   | Too many requests          | Implement backoff strategies and consider upgrading your plan if you consistently hit limits |
+| 500         | INTERNAL\_SERVER\_ERROR | Server-side error          | Retry the request after a short delay; if persistent, contact support                        |
+
+## Handling Errors in Code
+
+Here are examples of how to properly handle errors in different programming languages:
+
+### JavaScript
+
+```javascript
+fetch('https://api.sim.dune.com/v1/evm/balances/0xd8da6bf26964af9d7eed9e03e53415d37aa96045', {
+  method: 'GET', 
+  headers: {'X-Sim-Api-Key': 'YOUR_API_KEY'}
+})
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => {
+        throw new Error(`API error: ${err.error?.message || response.statusText}`);
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Success:', data);
+    // Process your data here
+  })
+  .catch(err => {
+    console.error('Error fetching balances:', err);
+    // Handle error appropriately in your application
+    // e.g., show user-friendly message, retry, or fallback behavior
+  });
+```
+
+### Python
+
+```python
+import requests
+import time
+
+def get_balances(address, api_key, max_retries=3):
+    url = f"https://api.sim.dune.com/v1/evm/balances/{address}"
+    headers = {"X-Sim-Api-Key": api_key}
+    
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()  # Raises an exception for 4XX/5XX responses
+            return response.json()
+            
+        except requests.exceptions.HTTPError as err:
+            status_code = err.response.status_code
+            error_data = {}
+            
+            try:
+                error_data = err.response.json()
+            except:
+                pass
+                
+            error_message = error_data.get('error', {}).get('message', 'Unknown error')
+            
+            print(f"HTTP Error {status_code}: {error_message}")
+            
+            # Handle specific error codes
+            if status_code == 429:  # Rate limit exceeded
+                wait_time = min(2 ** attempt, 60)  # Exponential backoff
+                print(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
+                time.sleep(wait_time)
+                continue
+            elif status_code == 500:  # Server error
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    print(f"Server error. Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    continue
+            
+            # For other errors or if we've exhausted retries
+            return {"error": error_message, "status_code": status_code}
+            
+        except requests.exceptions.RequestException as err:
+            print(f"Request error: {err}")
+            return {"error": "Network or connection error", "details": str(err)}
+    
+    return {"error": "Max retries exceeded"}
+
+# Usage
+result = get_balances("0xd8da6bf26964af9d7eed9e03e53415d37aa96045", "YOUR_API_KEY")
+if "error" in result:
+    print(f"Failed to get balances: {result['error']}")
+else:
+    print(f"Found {len(result['balances'])} token balances")
+```
+
+## Best Practices for Error Handling
+
+1. **Always check for errors**: Don't assume API calls will succeed.
+
+2. **Implement retry logic with backoff**: For transient errors (like rate limits or server errors), implement exponential backoff:
+   ```javascript
+   async function fetchWithRetry(url, options, maxRetries = 3) {
+     let retries = 0;
+     while (retries < maxRetries) {
+       try {
+         const response = await fetch(url, options);
+         if (response.ok) return response.json();
+         
+         const error = await response.json();
+         
+         // Don't retry for client errors (except rate limiting)
+         if (response.status < 500 && response.status !== 429) {
+           throw new Error(error.error?.message || response.statusText);
+         }
+         
+         // For rate limiting or server errors, retry with backoff
+         retries++;
+         const delay = Math.min(1000 * 2 ** retries, 10000);
+         await new Promise(resolve => setTimeout(resolve, delay));
+       } catch (err) {
+         if (retries === maxRetries - 1) throw err;
+         retries++;
+       }
+     }
+   }
+   ```
+
+3. **Provide meaningful error messages**: Transform API error responses into user-friendly messages.
+
+4. **Log errors for debugging**: Maintain detailed logs of API errors for troubleshooting.
+
+5. **Implement fallbacks**: When possible, have fallback behavior when API calls fail.
+
+## Debugging Tips
+
+If you're experiencing persistent errors:
+
+1. **Verify your API key**: Ensure it's valid and has the necessary permissions.
+
+2. **Check request format**: Validate that your request parameters match the API specifications.
+
+3. **Inspect full error responses**: The error message often contains specific details about what went wrong.
+
+4. **Monitor your usage**: Check if you're approaching or exceeding rate limits.
+
+5. **Test with cURL**: Isolate issues by testing the API directly with cURL:
+   ```bash
+   curl -v -X GET "https://api.sim.dune.com/v1/evm/balances/0xd8da6bf26964af9d7eed9e03e53415d37aa96045" \
+        -H "X-Sim-Api-Key: YOUR_API_KEY"
+   ```
+
+## Need More Help?
+
+If you're still experiencing issues after following these guidelines, please reach out through our [support channels](/support).
+
+
+# Activity
+Source: https://docs.sim.dune.com/evm/activity
+
+evm/openapi/activity.json get /v1/evm/activity/{uri}
+View chronologically ordered transactions including native transfers, ERC20 movements, NFT transfers, and decoded contract interactions.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/evm/activity.svg" alt="Activity" title="Activity" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+The Activity API provides a realtime feed of onchain activity for any EVM address.
+The newest activity is returned first and includes:
+
+* Native token transfers
+* ERC20 token transfers with metadata (symbol, decimals)
+* ERC721 (NFT) transfers with token IDs
+* Contract interactions with decoded function calls
+
+<Accordion title="Supported Chains">
+  <SupportedChains endpoint="activity" />
+</Accordion>
+
+## Spam Tokens
+
+The Activity API supports filtering out activities related to spam tokens using the `?exclude_spam_tokens` parameter. When specified, this parameter will exclude transactions and transfers involving tokens that meet spam criteria, providing a cleaner activity feed.
+
+We include all the data needed for custom filtering in the responses, allowing you to implement your own filtering logic. For a detailed explanation of our spam filtering approach, see our [Spam Token Filtering](/spam-filtering) guide.
+
+
+# Add Account Activity
+Source: https://docs.sim.dune.com/evm/add-account-activity
+
+Expand your realtime crypto wallet by integrating a dynamic feed of onchain activity.
+
+<Frame caption="Show all onchain activity for a wallet address in the 'Activity' tab of our app.">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/Activity.webp" className="mx-auto" style={{ width:"100%" }} alt="" title="" />
+</Frame>
+
+Now that you have a wallet capable of showing realtime token balances and total portfolio value, let's enhance it by adding an *Activity* tab.
+
+A key feature for any wallet is the ability to view past transaction activity.
+This includes native currency transfers, ERC20 token movements, NFT transfers, and decoded interactions with smart contracts.
+The [Activity API](/evm/activity) provides a comprehensive, realtime feed of this onchain activity, letting you implement this functionality with a single API request across 60+ EVM chains.
+
+<Note>
+  This guide assumes you've completed the first guide, [Build a Realtime Wallet](/evm/build-a-realtime-wallet).
+  Your project should already be set up to fetch and display token balances.
+</Note>
+
+## Fetch Wallet Activity
+
+Let's start by adding a new `getWalletActivity` async function to our `server.js` file to fetch activity data from Sim APIs.
+
+```javascript server.js (getWalletActivity)
+async function getWalletActivity(walletAddress, limit = 25) { // Default to fetching 25 activities
+    if (!walletAddress) return [];
+
+    // The Activity API is currently in beta.
+    // We add a 'limit' query parameter to control how many activities are returned.
+    const url = `https://api.sim.dune.com/v1/evm/activity/${walletAddress}?limit=${limit}`;
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'X-Sim-Api-Key': SIM_API_KEY, // Your API key from .env
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`Activity API request failed with status ${response.status}: ${response.statusText}`, errorBody);
+            throw new Error(`Activity API request failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // The API returns activity items in the 'activity' key of the JSON response.
+        return data.activity || []; 
+    } catch (error) {
+        console.error("Error fetching wallet activity:", error.message);
+        return []; // Return empty array on error
+    }
+}
+```
+
+The function creates the request URL for the `/v1/evm/activity/{address}` endpoint, adding the `limit` as a query parameter.
+The [Activity API](/evm/activity) conveniently packages the transaction data within an `activity` array in the response.
+The array provides rich context for each event, such as `block_time`, `transaction_hash`, `from` and `to` addresses, `value`, `value_usd`, and more.
+
+<Note>
+  The [Activity API](/evm/activity) supports pagination via `offset` and `limit` query parameters. For a production wallet, you might implement infinite scrolling or "Load More" buttons to fetch subsequent pages of activity.
+</Note>
+
+## Add Activity into the Server Route
+
+Next, modify the `app.get('/')` route handler, add a call to `getWalletActivity`, and include its results in the data passed to `res.render`.
+
+```javascript server.js (app.get('/') updated for activity) {15, 17, 39}
+app.get('/', async (req, res) => {
+    const { 
+        walletAddress = '',
+        tab = 'tokens'
+    } = req.query;
+
+    let tokens = [];
+    let activities = []; // Initialize activities array
+    let totalWalletUSDValue = 0;
+    let errorMessage = null; // Renamed for clarity from Guide 1
+
+    if (walletAddress) {
+        try {
+            // Fetch balances and activities concurrently for better performance
+            [tokens, activities] = await Promise.all([
+                getWalletBalances(walletAddress),
+                getWalletActivity(walletAddress, 25) // Fetching 25 recent activities
+            ]);
+            
+            // Calculate total portfolio value from tokens (as in Guide 1)
+            if (tokens && tokens.length > 0) {
+                totalWalletUSDValue = tokens.reduce((sum, token) => {
+                    const value = parseFloat(token.value_usd);
+                    return sum + (isNaN(value) ? 0 : value);
+                }, 0);
+            }
+        } catch (error) {
+            console.error("Error in route handler fetching data:", error);
+            errorMessage = "Failed to fetch wallet data. Please try again.";
+            // tokens and activities will remain empty, totalWalletUSDValue will be 0
+        }
+    }
+    
+    res.render('wallet', {
+        walletAddress: walletAddress,
+        currentTab: tab,
+        totalWalletUSDValue: `$${totalWalletUSDValue.toFixed(2)}`,
+        tokens: tokens,
+        activities: activities, // Pass activities to the template
+        collectibles: [], // Placeholder for Guide 3
+        errorMessage: errorMessage
+    });
+});
+```
+
+Our updated `app.get('/')` route handler now handles fetching of both token balances and wallet activity.
+Both the `tokens` and the newly fetched `activities` arrays are then passed to the `res.render` method.
+This makes the complete dataset available to our `wallet.ejs` template, enabling it to populate both the "Tokens" and "Activity" tabs with relevant, realtime onchain information.
+
+## Show Activity in the Frontend
+
+The final step is to update our `views/wallet.ejs` template to render the fetched activity data within the "Activity" tab.
+
+CTRL+F for `id="activity"` and locate the section for the *Activity* tab.
+It currently contains a placeholder paragraph.
+Replace that entire `div` with the following EJS code:
+
+```ejs views/wallet.ejs (Activity tab content) [expandable]
+<!-- Activity Tab Pane -->
+<div id="activity" class="tab-pane <%= currentTab === 'activity' ? 'active' : '' %>">
+    <% if (activities && activities.length > 0) { %>
+        <% activities.forEach(activity => { %>
+            <div class="list-item">
+                <div class="item-icon-placeholder">
+                    <% if (activity.type === 'receive') { %>
+                        ↓
+                    <% } else if (activity.type === 'send') { %>
+                        ↑
+                    <% } else if (activity.type === 'call') { %>
+                        ⇆ <!-- Icon for contract call -->
+                    <% } else { %>
+                        ✓ <!-- Generic icon for other types -->
+                    <% } %>
+                </div>
+                <div class="item-info">
+                    <% 
+                        let activityTitle = activity.type.charAt(0).toUpperCase() + activity.type.slice(1);
+                        let activityColorClass = activity.type; // Used for potential CSS styling
+
+                        if (activity.type === 'call' && activity.function && activity.function.name) {
+                            activityTitle = `Call: ${activity.function.name}`;
+                            activityColorClass = 'call';
+                        } else if (activity.type === 'receive' || activity.type === 'send') {
+                            const tokenSymbol = activity.token_metadata?.symbol || 
+                                                (activity.asset_type === 'native' ? 
+                                                    (activity.chain_id === 1 || activity.chain_id === 8453 || activity.chain_id === 10 ? 'ETH' : 'Native') : 
+                                                    'Token');
+                            activityTitle = `${activity.type === 'receive' ? 'Received' : 'Sent'} ${tokenSymbol}`;
+                        }
+                    %>
+                    <p class="item-name activity-direction <%= activityColorClass %>"><%= activityTitle %></p>
+                    
+                    <p class="activity-address">
+                        <% let partyLabel = '', partyAddress = ''; %>
+                        <% if (activity.type === 'receive') { partyLabel = 'From'; partyAddress = activity.from; } %>
+                        <% else if (activity.type === 'send') { partyLabel = 'To'; partyAddress = activity.to; } %>
+                        <% else if (activity.type === 'call') { partyLabel = 'Contract'; partyAddress = activity.to; } %>
+                        <% else { partyLabel = 'With'; partyAddress = activity.to || activity.from || 'Unknown'; } %>
+                        
+                        <% if (partyAddress && partyAddress !== 'Unknown') { %>
+                            <%= partyLabel %>: 
+                            <span class="mono">
+                                <%= partyAddress.substring(0, 6) %>...<%= partyAddress.substring(partyAddress.length - 4) %>
+                            </span>
+                        <% } else { %>
+                            Interaction
+                        <% } %>
+                    </p>
+                    
+                    <p class="activity-timestamp">
+                        <span class="mono"><%= new Date(activity.block_time).toLocaleString() %></span>
+                         on <span class="mono"><%= activity.chain_id %></span> <!-- Consider mapping chain_id to name -->
+                    </p>
+                </div>
+                <div class="item-value-right">
+                    <% if (activity.type === 'call') { %>
+                        <p class="activity-amount-right <%= activityColorClass %>" style="font-family: var(--font-primary);">
+                           Interaction
+                        </p>
+                    <% } else if (activity.value) { %>
+                        <p class="activity-amount-right <%= activityColorClass %>">
+                            <% if (activity.type === 'receive') { %>+<% } else if (activity.type === 'send') { %>-<% } %>
+                            <% 
+                            let amountDisplay = '0';
+                            const decimals = activity.token_metadata?.decimals ?? (activity.asset_type === 'native' ? 18 : null);
+                            if (activity.value && decimals !== null) {
+                                const divisor = BigInt(10) ** BigInt(decimals);
+                                const rawAmount = BigInt(activity.value);
+                                // Basic formatting, for more complex needs, use a library
+                                amountDisplay = (Number(rawAmount) / Number(divisor)).toFixed(4); 
+                            } else if (activity.value) { // For assets without decimal info, show raw value or NFT ID
+                                amountDisplay = activity.id || activity.value; // E.g. token_id for ERC721/1155
+                            }
+                            %>
+                            <%= amountDisplay %> 
+                            <span class="mono"><%= activity.token_metadata?.symbol || (activity.asset_type === 'native' ? (activity.chain_id === 1 || activity.chain_id === 8453 || activity.chain_id === 10 ? 'ETH' : 'NTV') : (activity.id ? '' : 'Tokens')) %></span>
+                        </p>
+                    <% } %>
+                    <p class="item-sub-info">
+                        <span class="mono">
+                            <% if (typeof activity.value_usd !== 'undefined' && activity.value_usd !== null) { %>
+                                $<%= parseFloat(activity.value_usd).toFixed(2) %>
+                            <% } else { %>
+                                <!-- No USD value or N/A -->
+                            <% } %>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        <% }); %>
+    <% } else if (walletAddress) { %>
+        <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">No activity found for this wallet.</p>
+    <% } else { %>
+        <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">Enter a wallet address to see activity.</p>
+    <% } %>
+</div>
+```
+
+This EJS transforms the raw data from the Activity API into an intuitive and visual transaction history.
+Here's a breakdown of how it processes each activity item:
+
+* A **list entry** is generated for each transaction.
+* An **icon** visually indicates the transaction's nature: receive (↓), send (↑), or contract call (⇆).
+* A **descriptive title** is dynamically constructed using the `activity.type` (and `activity.function.name` for contract calls).
+* The transaction's **timestamp** (`block_time`) is converted to a readable local date/time string.
+* The **chain ID** (`chain_id`) is displayed, providing important multichain context.
+
+Beyond these descriptive elements, the template also focuses on presenting the value and financial aspects of each transaction:
+
+* The **transaction amount** (raw `value`) is converted into a user-friendly decimal format (e.g., "1.5 ETH"). This conversion utilizes the `decimals` property from `token_metadata`.
+* For **NFTs**, if a standard decimal value isn't applicable, the template displays the `token_id`.
+* The **USD value** (`value_usd`), if provided by the API, is formatted to two decimal places and shown, giving a sense of the transaction's monetary worth.
+
+***
+
+Restart your server by running `node server.js` and refresh the app in the browser.
+When you click on the *Activity* tab, you should now see a list of the latest transactions, similar to the screenshot at the beginning of this guide.
+
+## Conclusion
+
+You successfully added a realtime, fully functional activity feed to your multichain wallet with a single API request.
+In the next and final guide of this series, [Display NFTs & Collectibles](/evm/show-nfts-collectibles), we will complete the wallet by adding support for viewing NFT collections.
+
+
+# Balances
+Source: https://docs.sim.dune.com/evm/balances
+
+evm/openapi/balances.json get /v1/evm/balances/{uri}
+Access realtime token balances. Get comprehensive details about native and ERC20 tokens, including token metadata and USD valuations.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/evm/token-blance.svg" alt="Token Blance" title="Token Blance" style={{ width:"100%" }} className="mx-auto" />
+</Frame>
+
+The Token Balances API provides accurate and fast real time balances of the native and ERC20 tokens of accounts on supported EVM blockchains.
+
+<Note>
+  The Balances API only returns balances for certain low latency chains by default.
+  To fetch balances for *all* supported chains, use the `?chains_ids=all` query parameter.
+</Note>
+
+<Accordion title="Supported Chains">
+  <SupportedChains endpoint="balances" />
+</Accordion>
+
+## Token Prices
+
+Sim looks up prices onchain. We use the most liquid onchain pair to determine a USD price. We return the available liquidity in `pool_size` as part of the response, and show a warning `low_liquidity:	true` if this value is less than \$10k.
+
+## Spam Tokens
+
+The Balances API provides the `?exclude_spam_tokens` query parameter. You can use it filter out potential spam tokens based on various criteria, including a minimum liquidity threshold of \$100.
+
+We also include the `pool_size` field in all responses, allowing you to implement custom filtering logic based on your specific requirements. For a detailed explanation of our spam filtering approach, see our [Spam Token Filtering](/spam-filtering) guide.
+
+## Pagination
+
+This endpoint is using cursor based pagination. You can use the `limit` query parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is passed back by the initial response and can be used to fetch the next page of results, by passing it as the `offet` query parameter in the next request.
+
+<Warning>
+  You can only use the value from `next_offset` to set the `offset` query parameter of the next page of results.
+</Warning>
+
+
+# Build a Realtime Wallet
+Source: https://docs.sim.dune.com/evm/build-a-realtime-wallet
+
+Create a multichain wallet that displays realtime balances, transactions, and NFTs using Sim APIs and Express.js
+
+<Frame caption="The final UI we'll build together in this guide">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/Tokens.webp" className="mx-auto" style={{ width:"100%" }} alt="" title="" />
+</Frame>
+
+This is the first guide in our series on building a realtime, multichain wallet using Sim APIs.
+In this one, we will lay the foundation for our wallet.
+You will set up a Node project with Express.js, fetch and display token balances from 60+ EVM chains using the Balances API, and calculate the wallet's total portfolio value in USD.
+
+## Prerequisites
+
+Before we begin, make sure you have:
+
+* Node.js >= 18.0.0
+* A Sim API key
+
+<Card title="Get your API Key" icon="lock" horizontal href="/#authentication">
+  Learn how to obtain your API key to properly authenticate requests.
+</Card>
+
+## Features
+
+By the end of this series, our wallet will have four main features:
+
+1. **Token Balances**: Realtime balance tracking with USD values using the [Balances API](/evm/balances).
+2. **Total Portfolio Value**: Aggregated USD value across all chains.
+3. **Wallet Activity**: Comprehensive transaction history showing transfers and contract interactions using the [Activity API](/evm/activity)
+4. **NFTs**: A display of owned NFTs using the [Collectibles API](/evm/collectibles)
+
+<Note>
+  In this first guide, we will focus on implementing the first two: **Token Balances** and **Total Portfolio Value**.
+</Note>
+
+## Project Setup
+
+Let's start by scaffolding our project.
+This initial setup will provide a basic Express.js server and frontend templates, allowing us to focus on integrating Sim APIs.
+
+<Steps>
+  <Step title="Create Your Project Structure">
+    Open your terminal and create a new directory for the project:
+
+    ```bash
+    mkdir wallet-ui
+    cd wallet-ui
+    ```
+
+    Now you are in the `wallet-ui` directory.
+    Next, initialize a new Node.js project with npm:
+
+    ```bash
+    npm init -y
+    npm pkg set type="module"
+    ```
+
+    These commands create a `package.json` file with default values and configure it to use ES modules.
+    Afterward, install the required packages:
+
+    ```bash
+    npm install express ejs dotenv
+    ```
+
+    We are using three packages for our wallet:
+
+    * **Express.js**: A popular Node.js web framework for creating our server.
+    * **EJS**: A simple templating engine that lets us generate dynamic HTML.
+    * **dotenv**: A package to load environment variables from a `.env` file.
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Create a new `.env` file in your project root:
+
+    ```bash
+    touch .env
+    ```
+
+    Open the `.env` file in your code editor and add your Sim API key:
+
+    ```plaintext .env
+    # Your Sim API key (required)
+    SIM_API_KEY=your_api_key_here
+    ```
+
+    <Warning>
+      Never commit your `.env` file to version control. If you are using Git, add `.env` to your `.gitignore` file.
+    </Warning>
+  </Step>
+
+  <Step title="Add Starter Code">
+    Create the necessary directories for views and public assets:
+
+    ```bash
+    mkdir views
+    mkdir public
+    ```
+
+    `views` will hold our EJS templates, and `public` will serve static assets like CSS.
+    Now, create the core files:
+
+    ```bash
+    touch server.js
+    touch views/wallet.ejs
+    touch public/styles.css
+    ```
+
+    Populate `server.js` with this basic Express server code:
+
+    ```javascript server.js [expandable]
+    import express from 'express';
+    import dotenv from 'dotenv';
+    import path from 'path';
+    import { fileURLToPath } from 'url';
+
+    // Load environment variables
+    dotenv.config();
+    const SIM_API_KEY = process.env.SIM_API_KEY;
+
+    if (!SIM_API_KEY) {
+        console.error("FATAL ERROR: SIM_API_KEY is not set in your environment variables.");
+        process.exit(1);
+    }
+
+    // Set up __dirname for ES modules
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    // Initialize Express
+    const app = express();
+
+    // Configure Express settings
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    // Add our home route
+    app.get('/', async (req, res) => {
+        const { 
+            walletAddress = '',
+            tab = 'tokens' // Default to tokens tab
+        } = req.query;
+
+        let tokens = [];
+        let totalWalletUSDValue = 0;
+        let activities = []; // For Guide 2
+        let collectibles = []; // For Guide 3
+
+        // In later steps, these arrays will be populated with API data.
+        res.render('wallet', {
+            walletAddress: walletAddress,
+            currentTab: tab,
+            totalWalletUSDValue: '$0.00', // Will be calculated later in this guide.
+            tokens: tokens,
+            activities: activities,
+            collectibles: collectibles
+        });
+    });
+
+    // Start the server
+    app.listen(3001, () => {
+        console.log(`Server running at http://localhost:3001`);
+    });
+    ```
+
+    Add the initial frontend template to `views/wallet.ejs`:
+
+    ```ejs views/wallet.ejs [expandable]
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Sim APIs Wallet UI - A simple and elegant wallet interface for viewing crypto assets and transactions">
+        <meta name="theme-color" content="#0b0e1f">
+        <title>Sim APIs Wallet UI</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+    <div class="mobile-container">
+        <header class="app-header">
+            <div class="profile-pic-placeholder"></div>
+            <div class="header-title">Wallet</div>
+            <div class="settings-icon"></div>
+        </header>
+
+        <section class="total-balance-section">
+            <p class="total-balance-amount"><%= totalWalletUSDValue %></p>
+            <p class="total-balance-label js-wallet-address-display"><%= walletAddress || 'Enter wallet address...' %></p>
+        </section>
+
+        <nav class="tabs">
+            <button class="tab-button <%= currentTab === 'tokens' ? 'active' : '' %>" data-tab="tokens">Tokens</button>
+            <button class="tab-button <%= currentTab === 'activity' ? 'active' : '' %>" data-tab="activity">Activity</button>
+            <button class="tab-button <%= currentTab === 'collectibles' ? 'active' : '' %>" data-tab="collectibles">Collectibles</button>
+        </nav>
+
+        <main class="tab-content">
+            <!-- Tokens Tab Pane -->
+            <div id="tokens" class="tab-pane <%= currentTab === 'tokens' ? 'active' : '' %>">
+                <% if (tokens && tokens.length > 0) { %>
+                    <% tokens.forEach(token => { %>
+                        <div class="list-item">
+                            <% if (token.token_metadata && token.token_metadata.logo) { %>
+                                <img src="<%= token.token_metadata.logo %>" alt="<%= token.symbol || 'Token' %> Logo" class="item-icon-placeholder" style="object-fit: contain; padding: 6px;">
+                            <% } else { %>
+                                <div class="item-icon-placeholder"><%= token.symbol ? token.symbol.substring(0, 4) : '?' %></div>
+                            <% } %>
+                            <div class="item-info">
+                                <% if (token.token_metadata && token.token_metadata.url) { %>
+                                    <p class="item-name"><a href="<%= token.token_metadata.url %>" target="_blank" style="color: inherit; text-decoration: none;"><%= token.name || token.symbol %></a></p>
+                                <% } else { %>
+                                    <p class="item-name"><%= token.name || token.symbol %></p>
+                                <% } %>
+                                <p class="item-sub-info"><span class="mono"><%= token.balanceFormatted || token.amount %> <%= token.symbol %></span> on <%= token.chain %></p>
+                            </div>
+                            <div class="item-value-right">
+                                <p class="item-usd-value"><%= token.price_usd ? '$' + parseFloat(token.price_usd).toFixed(2) : 'N/A' %></p>
+                                <p class="item-sub-info">Value: <span class="mono"><%= token.value_usd ? '$' + parseFloat(token.value_usd).toFixed(2) : 'N/A' %></span></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else if (walletAddress) { %>
+                    <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">No tokens found for this wallet.</p>
+                <% } else { %>
+                    <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">Enter a wallet address above to see token balances.</p>
+                <% } %>
+            </div>
+
+           <!-- Activity Tab Pane (for Guide 2) -->
+            <div id="activity" class="tab-pane <%= currentTab === 'activity' ? 'active' : '' %>">
+                <p style="font-family: var(--font-primary); text-align: center; padding-top: 30px; color: var(--color-text-muted);">Activity feature will be added in the next guide.</p>
+            </div>
+
+            <!-- Collectibles Tab Pane (for Guide 3) -->
+            <div id="collectibles" class="tab-pane <%= currentTab === 'collectibles' ? 'active' : '' %>">
+                <p style="font-family: var(--font-primary); text-align: center; padding-top: 30px; color: var(--color-text-muted);">Collectibles feature will be added in a future guide.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        const walletAddressDisplay = document.querySelector(".js-wallet-address-display");
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                const currentWalletAddress = new URLSearchParams(window.location.search).get('walletAddress');
+                if (currentWalletAddress) {
+                    window.location.search = `?walletAddress=${currentWalletAddress}&tab=${tab}`;
+                } else {
+                    // If no wallet address, just switch tab visually without reload, or prompt
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    button.classList.add('active');
+                    document.getElementById(tab).classList.add('active');
+                }
+            });
+        });
+
+        walletAddressDisplay.addEventListener('click', () => {
+            let newWalletAddress = prompt("Enter wallet address:", new URLSearchParams(window.location.search).get('walletAddress') || '');
+            if (newWalletAddress !== null && newWalletAddress.trim() !== "") {
+                 const currentTab = new URLSearchParams(window.location.search).get('tab') || 'tokens';
+                 window.location.search = `?walletAddress=${newWalletAddress.trim()}&tab=${currentTab}`;
+            } else if (newWalletAddress !== null) { // Empty input, clear address
+                 const currentTab = new URLSearchParams(window.location.search).get('tab') || 'tokens';
+                 window.location.search = `?tab=${currentTab}`;
+            }
+        });
+
+        // Set active tab based on URL param on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab') || 'tokens';
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+
+            const activeButton = document.querySelector(`.tab-button[data-tab="${tab}"]`);
+            const activePane = document.getElementById(tab);
+
+            if (activeButton) activeButton.classList.add('active');
+            if (activePane) activePane.classList.add('active');
+        });
+    </script>
+    </body>
+    </html>
+    ```
+
+    Add basic styles to `public/styles.css`:
+
+    ```css public/styles.css [expandable]
+    :root {
+    --font-primary: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    --color-bg-deep: #0b0e1f;
+    --color-bg-container: #141829;
+    --color-border-primary: #2c3040;
+    --color-border-secondary: #222636;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #e0e0e0;
+    --color-text-muted: #a0a3b1;
+    --color-text-subtle: #808391;
+    --color-accent-green: #50e3c2;
+    --color-accent-purple: #7e87ef;
+    --color-accent-red: #ff7875;
+    --color-placeholder-bg: #3a3f58;
+    }
+
+    body {
+    font-family: var(--font-primary);
+    background-color: var(--color-bg-deep);
+    color: var(--color-text-secondary);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    }
+
+    .mobile-container {
+    width: 100%;
+    max-width: 420px;
+    min-height: 700px; /* Ensure a consistent height */
+    background-color: var(--color-bg-container);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    align-self: center;
+    }
+
+    /* Header Styles */
+    .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--color-border-primary);
+    flex-shrink: 0;
+    }
+
+    .profile-pic-placeholder {
+    width: 36px;
+    height: 36px;
+    background-color: var(--color-placeholder-bg);
+    border-radius: 50%;
+    }
+
+    .header-title {
+    font-family: var(--font-primary);
+    font-size: 1.4em;
+    font-weight: 600; /* IBM Plex Sans SemiBold */
+    color: var(--color-text-primary);
+    }
+
+    .settings-icon {
+    width: 22px;
+    height: 22px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e0e0e0'%3E%3Cpath d='M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12-.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    opacity: 0.8;
+    }
+
+    /* Total Balance Section */
+    .total-balance-section {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--color-border-primary);
+    flex-shrink: 0;
+    }
+
+    .total-balance-amount {
+    font-family: var(--font-mono); /* Mono for large number */
+    font-size: 2.3em;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-accent-green);
+    }
+    .total-balance-label {
+    font-family: var(--font-primary);
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    cursor: pointer; /* Make it look clickable */
+    }
+    .total-balance-label:hover {
+        color: var(--color-text-primary);
+    }
+
+    /* Tabs Section */
+    .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border-primary);
+    flex-shrink: 0;
+    }
+
+    .tab-button {
+    font-family: var(--font-primary);
+    flex-grow: 1;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.95em;
+    font-weight: 500; /* IBM Plex Sans Medium */
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+    }
+    .tab-button:hover {
+    color: var(--color-text-primary);
+    }
+    .tab-button.active {
+    color: var(--color-text-primary);
+    border-bottom: 3px solid var(--color-accent-purple);
+    }
+
+    .tab-content {
+    padding: 0px 20px 20px 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Tokens Tab & Activity Tab Styles */
+    .list-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-border-secondary);
+    }
+    .list-item:last-child { border-bottom: none; }
+
+    .item-icon-placeholder {
+    width: 38px;
+    height: 38px;
+    background-color: #2c3040; /* Using a specific color, not var for contrast */
+    border-radius: 50%;
+    margin-right: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-mono); /* Mono for symbols like ETH */
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #c0c3d1; /* Using specific color */
+    flex-shrink: 0;
+    overflow: hidden; /* Prevents text overflow if symbol is too long */
+    }
+
+    .item-info {
+    flex-grow: 1;
+    min-width: 0; /* Prevents text overflow issues in flex children */
+    }
+    .item-name { /* Token Name, Activity Type like "Received", "Sent" */
+    font-family: var(--font-primary);
+    font-size: 1.05em;
+    font-weight: 500; /* IBM Plex Sans Medium */
+    margin: 0 0 3px 0;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .item-sub-info { /* "1.2345 ETH on Ethereum", "Price: $800.00" */
+    font-family: var(--font-primary); /* Sans for descriptive part */
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .item-sub-info .mono { /* Span class for monospaced parts within sub-info */
+    font-family: var(--font-mono);
+    }
+
+    .item-value-right {
+    text-align: right;
+    flex-shrink: 0;
+    padding-left: 10px;
+    }
+    .item-usd-value { /* USD value of holding */
+    font-family: var(--font-mono); /* Mono for numerical USD value */
+    font-size: 1.05em;
+    font-weight: 500;
+    margin: 0 0 3px 0;
+    color: var(--color-text-primary);
+    }
+
+    /* Activity Tab Specifics */
+    .activity-direction { /* "Received ETH", "Sent USDC" */
+    font-family: var(--font-primary);
+    font-size: 1.05em;
+    font-weight: 500; /* IBM Plex Sans Medium */
+    margin: 0 0 3px 0;
+    }
+    .activity-direction.sent { color: var(--color-accent-red); }
+    .activity-direction.receive { color: var(--color-accent-green); } /* Ensure class name consistency with JS */
+
+
+    .activity-address, .activity-timestamp {
+    font-family: var(--font-primary); /* Sans for "From:", "To:" */
+    font-size: 0.8em;
+    color: var(--color-text-subtle);
+    margin: 0;
+    }
+    .activity-address .mono, .activity-timestamp .mono { /* For address itself and timestamp value */
+     font-family: var(--font-mono);
+    }
+    .activity-amount-right { /* "+0.5 ETH" */
+    font-family: var(--font-mono); /* Mono for amount + symbol */
+    font-size: 1.05em;
+    font-weight: 500;
+    }
+    .activity-amount-right.sent { color: var(--color-accent-red); }
+    .activity-amount-right.receive { color: var(--color-accent-green); }
+
+    /* NFT Grid Container */
+    .collectibles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        padding-top: 20px;
+        width: 100%;
+    }
+
+    /* NFT Item Container */
+    .collectible-item-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform 0.2s ease;
+    }
+
+    .collectible-item-link:hover {
+        transform: translateY(-5px);
+    }
+
+    .collectible-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgb(var(--gray-100));
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Image Container */
+    .collectible-image-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%; /* Creates a square aspect ratio */
+    }
+
+    .collectible-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Image Placeholder */
+    .collectible-image-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(var(--gray-200));
+        color: rgb(var(--gray-500));
+        font-size: 0.875rem;
+    }
+
+    /* NFT Info Container */
+    .collectible-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .collectible-item-link:hover .collectible-info {
+        opacity: 1;
+    }
+
+    /* NFT Text Styles */
+    .collectible-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .collectible-collection {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        opacity: 0.9;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .collectible-chain {
+        font-size: 0.75rem;
+        opacity: 0.8;
+    }
+    ```
+  </Step>
+
+  <Step title="Verify Project Structure">
+    Run `ls` in your terminal. Your project directory `wallet-ui/` should now contain:
+
+    ```bash
+    wallet-ui/
+    ├── server.js             # Main application file with Express server
+    ├── views/                # Directory for EJS templates
+    │   └── wallet.ejs        # Main wallet UI template
+    ├── public/               # Directory for static assets
+    │   └── styles.css        # CSS styling for the wallet UI
+    ├── package.json          # Project configuration
+    ├── package-lock.json     # Dependency lock file (if `npm install` was run)
+    ├── node_modules/         # Installed packages (if `npm install` was run)
+    └── .env                  # Your environment variables
+    ```
+  </Step>
+</Steps>
+
+Run `node server.js` in the terminal to start the server.
+Visit `http://localhost:3001` to see the blank wallet.
+
+<Frame caption="Our scaffolded wallet UI without any data.">
+  ![](https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/wallet-ui/wallet-balances-blank.png)
+</Frame>
+
+<Warning>
+  If you encounter errors, ensure your `.env` file contains the correct `SIM_API_KEY` and that it is loaded correctly.
+  Also, verify the `walletAddress` in the URL is a valid EVM wallet address.
+  Check your terminal for any error messages from `server.js`.
+</Warning>
+
+Now, let's integrate the Sim API to fetch real data.
+
+## Fetch and Show Token Balances
+
+We will use the [Balances API](/evm/balances) to get realtime token balances for a given wallet address.
+This endpoint provides comprehensive details about native and ERC20 tokens, including metadata and USD values across more than 60+ EVM chains.
+
+First, let's create an async function in `server.js` to fetch these balances. Add this function before your `app.get('/')` route handler:
+
+```javascript server.js (getWalletBalances) {7,9,14,28}
+async function getWalletBalances(walletAddress) {
+    if (!walletAddress) return []; // Return empty if no address
+
+    // Construct the query parameters
+    // metadata=url,logo fetches token URLs and logo images
+    // exclude_spam_tokens=true filters out known spam tokens
+    const queryParams = `metadata=url,logo&exclude_spam_tokens=true`;
+
+    const url = `https://api.sim.dune.com/v1/evm/balances/${walletAddress}?${queryParams}`;
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'X-Sim-Api-Key': SIM_API_KEY, // Your API key from .env
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`API request failed with status ${response.status}: ${response.statusText}`, errorBody);
+            throw new Error(`API request failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // The API returns JSON with a "balances" key. We return that directly.
+        return data.balances;
+
+    } catch (error) {
+        console.error("Error fetching wallet balances:", error.message);
+        return []; // Return empty array on error
+    }
+}
+```
+
+This function creates the API request using Node's `fetch`.
+It includes your `SIM_API_KEY` in the headers and sends a GET request to the `/v1/evm/balances/{address}` endpoint.
+
+The Balances API gives you access to various *URL query parameters* that you can include to modify the response.
+We have included `metadata=url,logo` to include a token's URL and logo.
+There's also `exclude_spam_tokens=true` to filter out common spam tokens.
+
+<Note>
+  You can find more details about available query parameters in the [Balances API documentation](/evm/balances).
+</Note>
+
+Next, modify your `app.get('/')` route handler in `server.js` to call `getWalletBalances` and pass the fetched tokens to your template:
+
+```javascript server.js
+app.get('/', async (req, res) => {
+    const { 
+        walletAddress = '',
+        tab = 'tokens'
+    } = req.query;
+
+    let tokens = [];
+    let totalWalletUSDValue = 0;
+    let errorMessage = null;
+
+    if (walletAddress) {
+        try {
+            tokens = await getWalletBalances(walletAddress);
+        } catch (error) {
+            console.error("Error in route handler:", error);
+            errorMessage = "Failed to fetch wallet data. Please try again.";
+            // tokens will remain empty, totalWalletUSDValue will be 0
+        }
+    }
+
+    res.render('wallet', {
+        walletAddress: walletAddress,
+        currentTab: tab,
+        totalWalletUSDValue: `$0.00`, // We'll calculate this in the next section
+        tokens: tokens,
+        activities: [], // Placeholder for Guide 2
+        collectibles: [], // Placeholder for Guide 3
+        errorMessage: errorMessage
+    });
+});
+```
+
+We've updated the route to:
+
+1. Call `getWalletBalances` if a `walletAddress` is provided.
+2. Pass the retrieved `balances` to the `wallet.ejs` template.
+
+The `views/wallet.ejs` file you created earlier is already set up to display these tokens.
+Restart your server with `node server.js` and refresh your browser, providing a `walletAddress` in the URL.
+For example: [`http://localhost:3001/?walletAddress=0xd8da6bf26964af9d7eed9e03e53415d37aa96045`](http://localhost:3001/?walletAddress=0xd8da6bf26964af9d7eed9e03e53415d37aa96045)
+
+You should now see the wallet populated with token balances, logos, prices for each token, and how much of that token the wallet holds.
+
+<Frame caption="Wallet displaying token balances (in wei) with logos and prices.">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/wallet-ui/wallet-balances-without-formatting.png" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+## Format Balances
+
+The Balances API returns token amounts in their smallest denomination. This will be in wei for ETH-like tokens.
+To display these amounts in a user-friendly way, like `1.23` ETH instead of `1230000000000000000` wei, we need to adjust the amount using the token's `decimals` property, which is also returned from the Balances API.
+We can add a new property, `balanceFormatted`, to each token object.
+
+Modify your `getWalletBalances` function in `server.js` as follows. The main change is mapping over `data.balances` to add the `balanceFormatted` property:
+
+```javascript server.js (getWalletBalances with formatting)
+async function getWalletBalances(walletAddress) {
+    if (!walletAddress) return []; 
+
+    const queryParams = `metadata=url,logo&exclude_spam_tokens=true`;
+    const url = `https://api.sim.dune.com/v1/evm/balances/${walletAddress}?${queryParams}`;
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'X-Sim-Api-Key': SIM_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`API request failed with status ${response.status}: ${response.statusText}`, errorBody);
+            throw new Error(`API request failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Process balances to add formatted amount
+        return (data.balances || []).map(token => {
+            let balanceFormatted = token.amount; // Default to raw amount
+            if (token.amount && typeof token.decimals !== 'undefined' && token.decimals !== null) {
+                const decimals = parseInt(token.decimals);
+                const divisor = Math.pow(10, decimals);
+                // Use parseFloat for calculations, then toFixed for display precision
+                balanceFormatted = (parseFloat(token.amount) / divisor).toFixed(2); // Adjust precision as needed
+            }
+            return {
+                ...token,
+                balanceFormatted: balanceFormatted
+            };
+        });
+
+    } catch (error) {
+        console.error("Error fetching wallet balances:", error.message);
+        return []; 
+    }
+}
+```
+
+Now, each token object returned by `getWalletBalances` will include a `balanceFormatted` string, which our EJS template (`views/wallet.ejs`) already uses: `<%= token.balanceFormatted || token.amount %>`.
+
+Restart the server and refresh the browser. You will now see formatted balances.
+
+<Frame caption="Wallet displaying properly formatted token balances with logos.">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/wallet-ui/wallet-balances-formatted.png" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+## Calculate Total Portfolio Value
+
+The wallet's total value at the top of the UI still says `$0.00`.
+Let's calculate the total USD value of the wallet and properly show it.
+
+The Balances API provides a `value_usd` field with each token.
+This field represents the total U.S. dollar value of the wallet's entire holding for that specific token.
+
+Let's modify the `app.get('/')` route handler to iterate through the fetched tokens and sum their individual `value_usd` to calculate the `totalWalletUSDValue`.
+
+```javascript server.js (app.get('/') with total value calculation) {16, 17, 18, 19, 20, 21, 33}
+app.get('/', async (req, res) => {
+    const { 
+        walletAddress = '',
+        tab = 'tokens'
+    } = req.query;
+
+    let tokens = [];
+    let totalWalletUSDValue = 0; // Will be updated
+    let errorMessage = null;
+
+    if (walletAddress) {
+        try {
+            tokens = await getWalletBalances(walletAddress); // This now returns formatted tokens
+
+            // Calculate total portfolio value
+            if (tokens && tokens.length > 0) {
+                totalWalletUSDValue = tokens.reduce((sum, token) => {
+                    // Ensure value_usd is a number before adding
+                    const value = parseFloat(token.value_usd);
+                    return sum + (isNaN(value) ? 0 : value);
+                }, 0);
+            }
+        } catch (error) {
+            console.error("Error in route handler:", error);
+            errorMessage = "Failed to fetch wallet data. Please try again.";
+            // tokens will remain empty, totalWalletUSDValue will be 0
+        }
+    }
+
+    res.render('wallet', {
+        walletAddress: walletAddress,
+        currentTab: tab,
+        totalWalletUSDValue: `$${totalWalletUSDValue.toFixed(2)}`, // Pass the calculated total
+        tokens: tokens,
+        activities: [], // Placeholder for Guide 2
+        collectibles: [], // Placeholder for Guide 3
+        errorMessage: errorMessage
+    });
+});
+```
+
+We use the `reduce` method to iterate over the `tokens` array.
+For each `token`, we access its `value_usd` property, parse it as a float, and add it to the running `sum`.
+The calculated `totalWalletUSDValue` is then formatted to two decimal places and passed to the template.
+
+The `views/wallet.ejs` template already has `<p class="total-balance-amount"><%= totalWalletUSDValue %></p>`, so it will display the calculated total correctly.
+
+Restart your server and refresh the browser page with a wallet address.
+You should now see the total wallet value at the top of the UI accurately reflecting the sum of all token balance USD values.
+
+<Frame caption="Wallet showing the correctly calculated total USD value.">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/wallet-ui/wallet-balances-total-wallet-value.png" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+## Conclusion
+
+You have successfully set up the basic structure of your multichain wallet and integrated Sim APIs `Balances API` endpoint to display realtime token balances and total portfolio value.
+In the next guide, [Add Account Activity](/evm/add-account-activity), we will enhance this wallet by adding a transaction history feature in the UI using the [Activity API](/evm/activity).
+
+
+# Collectibles
+Source: https://docs.sim.dune.com/evm/collectibles
+
+evm/openapi/collectibles.json get /v1/evm/collectibles/{uri}
+All NFT (ERC721 and ERC1155) balances, including IDs and metadata
+
+![Type=collectibles Web](https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/type=collectibles.webp)
+
+The Collectibles API provides information about NFTs (ERC721 and ERC1155 tokens) owned by a specific address on supported EVM blockchains.
+
+
+# EVM Overview
+Source: https://docs.sim.dune.com/evm/overview
+
+
+
+<CardGroup cols={3}>
+  <Card title="Balances" href="/evm/balances">
+    Access realtime token balances. Get comprehensive details about native and ERC20 tokens, including token metadata and USD valuations.
+  </Card>
+
+  <Card title="Activity" href="/evm/activity">
+    View chronologically ordered transactions including native transfers, ERC20 movements, NFT transfers, and decoded contract interactions.
+  </Card>
+
+  <Card title="Collectibles" href="/evm/collectibles">
+    All NFT (ERC721 and ERC1155) balances, including IDs and metadata
+  </Card>
+
+  <Card title="Transactions" href="/evm/transactions">
+    Retrieve granular transaction details including block information, gas data, transaction types, and raw transaction values.
+  </Card>
+
+  <Card title="Token Info" href="/evm/token-info">
+    Get detailed metadata and realtime price information for any native asset or ERC20 token including symbol, name, decimals, supply information, USD pricing, and logo URLs.
+  </Card>
+
+  <Card title="Token Holders" href="/evm/token-holders">
+    Discover token distribution across ERC20 or ERC721 holders, ranked by wallet value.
+  </Card>
+</CardGroup>
+
+
+# Show NFT Collectibles in Your Wallet
+Source: https://docs.sim.dune.com/evm/show-nfts-collectibles
+
+Complete your realtime crypto wallet by adding a visual display of a user's NFT collection.
+
+<Frame caption="The user's full NFT collection, with artwork and details, displayed in the 'Collectibles' tab.">
+  ![](https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/Collectibles.webp)
+</Frame>
+
+Your wallet now displays token balances, calculates total portfolio value, and tracks detailed account activity.
+To give users a holistic view of their onchain assets, the final piece is to **showcase their NFT collections**.
+In this third and final guide of our wallet series, we will focus on implementing the *Collectibles* tab.
+
+<Note>
+  This guide assumes you have completed the previous guides:
+
+  1. [Build a Realtime Wallet](/evm/build-a-realtime-wallet)
+  2. [Add Account Activity](/evm/add-account-activity)
+</Note>
+
+## Fetch NFT Collectibles
+
+Let's add a new asynchronous `getWalletCollectibles` function to `server.js` to fetch a user's NFT collection using the [Collectibles API](/evm/collectibles).
+
+```javascript server.js (getWalletCollectibles) {4}
+async function getWalletCollectibles(walletAddress, limit = 50) { // Default to fetching up to 50 collectibles
+    if (!walletAddress) return [];
+
+    const url = `https://api.sim.dune.com/v1/evm/collectibles/${walletAddress}?limit=${limit}`;
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'X-Sim-Api-Key': SIM_API_KEY, // Your API key from .env
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`Collectibles API request failed with status ${response.status}: ${response.statusText}`, errorBody);
+            throw new Error(`Collectibles API request failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.collectibles || []; 
+    } catch (error) {
+        console.error("Error fetching wallet collectibles:", error.message);
+        return []; // Return empty array on error
+    }
+}
+```
+
+The function sends an authorized GET request with your `SIM_API_KEY` and receives JSON response.
+The NFT data is extracted from the `collectibles` array within this response.
+
+<Note>
+  The [Collectibles API](/evm/collectibles) supports pagination using `limit` and `offset` query parameters.
+  For wallets with many NFTs, you can implement logic to fetch subsequent pages using the `next_offset` value returned by the API to provide a complete view of the user's collection.
+</Note>
+
+## Add Collectibles into the Server Route
+
+Next, we update our main `app.get('/')` route handler in `server.js` to call this new function:
+
+```javascript server.js (app.get('/') updated for collectibles) {16, 19, 41}
+app.get('/', async (req, res) => {
+    const { 
+        walletAddress = '',
+        tab = 'tokens'
+    } = req.query;
+
+    let tokens = [];
+    let activities = [];
+    let collectibles = []; // Initialize collectibles array
+    let totalWalletUSDValue = 0;
+    let errorMessage = null;
+
+    if (walletAddress) {
+        try {
+            // Fetch balances, activities, and collectibles concurrently for better performance
+            [tokens, activities, collectibles] = await Promise.all([
+                getWalletBalances(walletAddress),
+                getWalletActivity(walletAddress, 25), // Fetching 25 recent activities
+                getWalletCollectibles(walletAddress, 50) // Fetching up to 50 collectibles
+            ]);
+
+            // Calculate total portfolio value from token balances (Guide 1)
+            if (tokens && tokens.length > 0) {
+                totalWalletUSDValue = tokens.reduce((sum, token) => {
+                    const value = parseFloat(token.value_usd);
+                    return sum + (isNaN(value) ? 0 : value);
+                }, 0);
+            }
+        } catch (error) {
+            console.error("Error in route handler fetching all data:", error);
+            errorMessage = "Failed to fetch wallet data. Please try again.";
+        }
+    }
+    
+    res.render('wallet', {
+        walletAddress: walletAddress,
+        currentTab: tab,
+        totalWalletUSDValue: `$${totalWalletUSDValue.toFixed(2)}`,
+        tokens: tokens,
+        activities: activities,
+        collectibles: collectibles, // Pass collectibles to the template
+        errorMessage: errorMessage
+    });
+});
+```
+
+The route handler now fetches balances, then activities, and finally the NFT collectibles data.
+The `collectibles` array is then passed to the `wallet.ejs` template.
+
+## Display Collectibles in the Frontend
+
+The final step is to modify `views/wallet.ejs` to render the fetched collectibles within the "Collectibles" tab.
+We will use a 3-column grid layout to display NFT images and their names.
+
+In `views/wallet.ejs`, find the section for the "Collectibles" tab (you can search for `id="collectibles"`).
+It currently contains a placeholder paragraph.
+Replace that entire `div` with the following EJS:
+
+```ejs views/wallet.ejs (Collectibles tab content) [expandable]
+<!-- Collectibles Tab Pane -->
+<div id="collectibles" class="tab-pane <%= currentTab === 'collectibles' ? 'active' : '' %>">
+    <% if (collectibles && collectibles.length > 0) { %>
+        <div class="collectibles-grid">
+            <% collectibles.forEach(nft => { %>
+                <%# We assume an external_url might not always be present, so default to '#' or link to metadata_url %>
+                <a href="<%= nft.external_url || nft.metadata_url || '#' %>" target="_blank" rel="noopener noreferrer" class="collectible-item-link">
+                    <div class="collectible-item">
+                        <div class="collectible-image-container">
+                            <% if (nft.image_url) { %>
+                                <img src="<%= nft.image_url %>" alt="<%= nft.name || 'NFT Image' %>" class="collectible-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="collectible-image-placeholder" style="display: none;">Image Unavailable</div>
+                            <% } else { %>
+                                <div class="collectible-image-placeholder">No Image Provided</div>
+                            <% } %>
+                        </div>
+                        <div class="collectible-info">
+                            <p class="collectible-name" title="<%= nft.name || 'Unnamed NFT' %>"><%= nft.name || 'Unnamed NFT' %></p>
+                            <% if (nft.collection && nft.collection.name) { %>
+                                <p class="collectible-collection" title="<%= nft.collection.name %>"><%= nft.collection.name %></p>
+                            <% } else { %>
+                                <p class="collectible-collection">Unknown Collection</p>
+                            <% } %>
+                            <p class="collectible-chain mono">Chain: <%= nft.chain_id %> (<%= nft.chain || 'N/A' %>)</p>
+                        </div>
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+    <% } else if (walletAddress) { %>
+        <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">No collectibles found for this wallet.</p>
+    <% } else { %>
+        <p style="text-align: center; padding-top: 30px; color: var(--color-text-muted);">Enter a wallet address to see collectibles.</p>
+    <% } %>
+</div>
+```
+
+The EJS template iterates through the `collectibles` array.
+Each NFT is displayed with its `image_url` in an image tag.
+The display includes key metadata like `name`, `collection.name`, `chain_id`, and `chain` to provide complete context for each collectible.
+
+Restart your server using `node server.js` and navigate to your wallet app in the browser.
+When you click on the "Collectibles" tab, and if the wallet has NFTs, you should see the NFT collection displayed.
+
+## Conclusion
+
+That concludes this three-part series!
+With just three API requests - [Balances](/evm/balances), [Activity](/evm/activity), and [Collectibles](/evm/collectibles) - you've built a fully functional, multichain wallet that displays token balances, calculates portfolio value, tracks detailed transaction activity, and showcases NFT collections.
+
+**This project serves as a solid foundation for a wallet**.
+You can now expand upon it by exploring other Sim API features.
+Whether you want to add more sophisticated analytics, deeper NFT insights, or advanced transaction tracking, Sim APIs provides the blockchain data you need to build the next generation of onchain apps.
+
+
+# Supported Chains
+Source: https://docs.sim.dune.com/evm/supported-chains
+
+evm/openapi/supported-chains.json
+Explore chains supported by Sim's EVM API endpoints.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/evm/Chains.svg" alt="Chains" title="Chains" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+Chain support varies by API endpoint.
+Use the dropdown sections below to check which chains are available for each API:
+
+<AccordionGroup>
+  <Accordion title="Balances API">
+    <SupportedChains endpoint="balances" />
+  </Accordion>
+
+  <Accordion title="Activity API">
+    <SupportedChains endpoint="activity" />
+  </Accordion>
+
+  <Accordion title="Collectibles API">
+    <SupportedChains endpoint="collectibles" />
+  </Accordion>
+
+  <Accordion title="Transactions API">
+    <SupportedChains endpoint="transactions" />
+  </Accordion>
+
+  <Accordion title="Token Info API">
+    <SupportedChains endpoint="token_info" />
+  </Accordion>
+
+  <Accordion title="Token Holders API">
+    <SupportedChains endpoint="token_holders" />
+  </Accordion>
+</AccordionGroup>
+
+
+# Token Holders
+Source: https://docs.sim.dune.com/evm/token-holders
+
+evm/openapi/token-holders.json get /v1/evm/token-holders/{chain_id}/{token_address}
+Discover token distribution across ERC20 or ERC721 holders, ranked by wallet value.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+![Type=holders Sv](https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/type=holders.svg)
+
+The Token Holders API provides information about accounts holding a specific ERC20 or ERC721 token on supported EVM blockchains.
+
+<Accordion title="Supported Chains">
+  <SupportedChains endpoint="token_holders" />
+</Accordion>
+
+## Pagination
+
+This endpoint uses cursor-based pagination.
+You can use the `limit` query parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is included in the initial response and can be used to fetch the next page of results by passing it as the `offset` query parameter in the next request.
+
+<Warning>
+  You can only use the value from `next_offset` to set the `offset` query parameter of the next page of results.
+</Warning>
+
+
+# Token Info
+Source: https://docs.sim.dune.com/evm/token-info
+
+evm/openapi/token-info.json get /v1/evm/token-info/{uri}
+Get detailed metadata and realtime price information for any native asset or ERC20 token including symbol, name, decimals, supply information, USD pricing, and logo URLs.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/evm/token-meta.svg" alt="Token Meta Sv" title="Token Meta Sv" style={{ width:"100%" }} className="mx-auto" />
+</Frame>
+
+The Tokens API provides metadata and realtime pricing information for native and ERC20 tokens on supported EVM blockchains.
+The API returns:
+
+* Token metadata (symbol, name, decimals)
+* Current USD pricing information
+* Supply information
+* Logo URLs when available
+
+<Note>
+  The `?chain_ids` query parameter is mandatory.
+  To fetch tokens for *all* supported chains, pass the `?chain_ids=all` query parameter.
+  You can also specify specific chains with `?chain_ids=11,250,1`.
+</Note>
+
+<Accordion title="Supported Chains">
+  <SupportedChains endpoint="token_info" />
+</Accordion>
+
+## Token Prices
+
+Sim looks up prices onchain. We use the most liquid onchain pair to determine a usd price. We return the available liquidity in `pool_size` as part of the response.
+
+## Pagination
+
+This endpoint uses cursor-based pagination. You can use the `limit` parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is included in the initial response and can be utilized to fetch the next page of results by passing it as the `offset` query parameter in the next request.
+
+<Warning>
+  You can only use the value from `next_offset` to set the `offset` parameter of the next page of results. Using your own `offset` value will not have any effect.
+</Warning>
+
+
+# Transactions
+Source: https://docs.sim.dune.com/evm/transactions
+
+evm/openapi/transactions.json get /v1/evm/transactions/{uri}
+Retrieve granular transaction details including block information, gas data, transaction types, and raw transaction values.
+
+export const SupportedChains = ({endpoint}) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("https://api.sim.dune.com/v1/evm/supported-chains", {
+      method: "GET",
+      headers: {
+        "X-Sim-Api-Key": "sim_DEL8gWK09imHFMUkbrXCy4j9m6L3TsZL"
+      }
+    }).then(response => response.json()).then(setData);
+  }, []);
+  if (data === null) {
+    return null;
+  }
+  const chains = endpoint !== undefined ? data.chains.filter(chain => chain[endpoint]?.supported) : data.chains;
+  console.log("data", data);
+  return <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>chain_id</th>
+          <th>tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chains.map(chain => <tr key={chain.name}>
+            <td><code>{chain.name}</code></td>
+            <td><code>{chain.chain_id}</code></td>
+            <td><code>{chain.tags.join(", ")}</code></td>
+          </tr>)}
+      </tbody>
+    </table>;
+};
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/evm/transaction.svg" alt="Transaction Sv" title="Transaction Sv" style={{ width:"100%" }} className="mx-auto" />
+</Frame>
+
+The Transactions API allows for quick and accurate lookup of transactions associated with an address.
+Transactions are ordered by descending block time, so the most recent transactions appear first.
+
+<Accordion title="Supported Chains">
+  <SupportedChains endpoint="transactions" />
+</Accordion>
+
+## Pagination
+
+This endpoint is using cursor based pagination.
+You can use the `limit` parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is included in the initial response and can be utilized to fetch the next page of results by passing it as the `offset` query parameter in the next request.
+
+<Warning>
+  You can only use the value from `next_offset` to set the `offset` parameter of the next page of results. Using your own `offset` value will not have any effect.
+</Warning>
+
+
+# React Hooks
+Source: https://docs.sim.dune.com/hooks
+
+Integrate Sim APIs into your React app with official hooks for Balances and Transactions data.
+
+Streamline your React development with official Sim API Hooks.
+This library offers a `SimProvider` for straightforward API key management and custom React hooks.
+`useTokenBalances` and `useTransactions` can fetch and display onchain data like token balances and paginated transaction histories in your app.
+
+For comprehensive documentation, including installation, setup guides, and detailed examples for each hook, please refer to the official GitHub repository:
+
+<Card title="Sim API React Hooks on GitHub" icon="github" horizontal href="https://github.com/duneanalytics/hooks">
+  Access the repository for installation instructions, `SimProvider` setup, and hook usage examples.
+</Card>
+
+
+# Developer Quickstart
+Source: https://docs.sim.dune.com/index
+
+Take your first steps with the Sim APIs
+
+<Frame>
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/quickstart.webp" alt="Quickstart" title="Quickstart" className="mx-auto" style={{ width:"100%" }} />
+</Frame>
+
+Sim APIs power wallets and onchain apps with fast, reliable access to real-time blockchain activity and ownership data.
+Access data from 60+ chains with a single request.
+
+This guide will help you make your first API call to retrieve multichain token balances for an address.
+
+## Authentication
+
+Sim APIs use API keys to authenticate requests.
+You can create and manage your API keys in your [Sim Dashboard](https://sim.dune.com/).
+
+<Frame caption="To generate a new API key, visit the Keys page and click the New button.">
+  <img src="https://mintlify.s3.us-west-1.amazonaws.com/sim-dune/images/get-sim-api-key.png" />
+</Frame>
+
+To authenticate, include your API key in the `X-Sim-Api-Key` header for every request.
+
+```bash
+curl --request GET \
+  --header "X-Sim-Api-Key: YOUR_API_KEY"
+```
+
+All API requests must be made over HTTPS.
+Calls made over plain HTTP will fail.
+API requests without authentication will also fail.
+
+<Note>
+  Your API keys carry many privileges, so be sure to keep them secure.
+  Do not share your secret API keys in public places like GitHub, client-side code, and so on.
+</Note>
+
+## Your First Request
+
+Let's make your first request. We'll retrieve token balances for `0xd8da6bf26964af9d7eed9e03e53415d37aa96045` (Vitalik's wallet) across multiple EVM chains using the [Balances API](/evm/balances).
+
+Here's how to make the API call:
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.sim.dune.com/v1/evm/balances/0xd8da6bf26964af9d7eed9e03e53415d37aa96045" \
+       -H "X-Sim-Api-Key: YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const options = {method: 'GET', headers: {'X-Sim-Api-Key': 'YOUR_API_KEY'}};
+
+  fetch('https://api.sim.dune.com/v1/evm/balances/0xd8da6bf26964af9d7eed9e03e53415d37aa96045', options)
+    .then(response => response.json())
+    .then(response => console.log(response))
+    .catch(err => console.error(err));
+  ```
+
+  ```python Python
+  import requests
+
+  url = "https://api.sim.dune.com/v1/evm/balances/0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+
+  headers = {"X-Sim-Api-Key": "YOUR_API_KEY"}
+
+  response = requests.request("GET", url, headers=headers)
+
+  print(response.text)
+  ```
+</CodeGroup>
+
+<Note>
+  Replace `YOUR_API_KEY` with your actual API key from the Sim Dashboard.
+</Note>
+
+The API will return a JSON response containing an array of `balances`.
+Each object in the array represents a token balance for the specified address on one of the chains, including various details.
+
+```json Response (JSON) [expandable]
+{
+  "balances": [
+    {
+      "address": "native",
+      "amount": "605371497350928252303",
+      "chain": "ethereum",
+      "decimals": 18,
+      "price_usd": 3042.816964922323,
+      "symbol": "ETH",
+      "value_usd": 1842034.6622198338
+    }
+  ],
+  "next_offset": "dKMBWDLqM7vlyn5OMEXsLWp0nI4AAAABA5JLazNO7x4poVGqUwsgxgqvvIg",
+  "request_time": "2023-11-07T05:31:56Z",
+  "response_time": "2023-11-07T05:31:56Z",
+  "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+}
+```
+
+With a single API request you get normalized, realtime data with enriched metadata and pricing.
+
+## Next Steps
+
+After making your first API call to Sim APIs, you'll either see the JSON response shown above (success!) or you might encounter an error. If you received an error, check out our [Error Handling Guide](/error-handling) for troubleshooting tips and best practices.
+
+If your call was successful, you've seen how easily you can retrieve comprehensive, multichain data. But this is just the beginning of what's possible.
+
+Are you ready to learn more?
+Here are a few paths you can explore:
+
+<CardGroup cols={2}>
+  <Card icon="ethereum" title="Explore EVM Endpoints" href="/evm/overview">
+    See all available EVM API endpoints. Learn how to fetch transaction histories, token metadata, and more detailed onchain activity.
+  </Card>
+
+  <Card icon="books" title="Build Real App Features" href="/evm/build-a-realtime-wallet">
+    Follow our practical guides to build fully-functional features like token portfolio displays, real-time activity feeds, and more for your onchain apps.
+  </Card>
+
+  <Card icon="microchip-ai" title="Build with AI" href="/build-with-ai">
+    Speed up your development using Sim APIs with our LLM-friendly resources.
+  </Card>
+</CardGroup>
+
+
+# Cloudflare Proxy
+Source: https://docs.sim.dune.com/proxy
+
+Learn how to set up a Cloudflare Worker to securely proxy your Sim API requests, protecting your API key from client-side exposure.
+
+Protect your Sim API key when making requests from client-side apps by using a Cloudflare Worker as a proxy.
+This worker receives requests from you app, securely adds your `SIM_API_KEY` on the server, and then forwards the requests to the Sim API endpoints.
+
+We provide a one-click-deploy Cloudflare Worker to simplify this setup.
+Find detailed instructions in our GitHub repo:
+
+<Card title="Sim API Proxy on GitHub" icon="github" horizontal href="https://github.com/duneanalytics/sim-proxy">
+  One-click deployment and comprehensive setup instructions for the Cloudflare Worker proxy.
+</Card>
+
+
+# Spam Filtering
+Source: https://docs.sim.dune.com/spam-filtering
+
+Learn how Sim APIs filter out spam tokens and how to customize filtering for your specific needs.
+
+When working with blockchain data, you'll encounter numerous tokens with little to no value. These "spam tokens" can clutter your application's user interface and potentially mislead users. Sim APIs provide robust, real-time spam filtering capabilities to help you deliver a cleaner, more reliable experience.
+
+## How Sim's Spam Filtering Works
+
+Unlike many providers that rely on static lists or third-party data, Sim uses a dynamic, on-chain approach to identify spam tokens. This results in fewer false positives and negatives, giving you more accurate data.
+
+A token is considered legitimate (not spam) when it meets **all** of the following criteria:
+
+1. **Non-empty name**: The token must have a name property that isn't empty
+2. **Acceptable symbol**: The token must have a non-empty symbol that isn't excessively long
+3. **Non-zero decimals**: The token must have a decimals property greater than zero
+4. **Adequate liquidity** (when applicable): If the token has a liquidity pool, that pool must have more than \$100 in value
+
+Sim's approach to assessing liquidity is particularly sophisticated:
+
+* For each token, we dynamically track highest liquidity route to USDC
+* We calculate the USD value of the liquidity along that route for each token upon each query
+
+## Using Spam Filtering in API Calls
+
+Both the [Balances](/evm/balances) and [Activity](/evm/activity) APIs support the `?exclude_spam_tokens` parameter. When included in your API call, this parameter will filter out tokens that don't meet the criteria described above.
+
+## Customizing Spam Filtering
+
+While the `exclude_spam_tokens` parameter provides a good baseline, you may want to implement custom filtering logic for your specific use case. Sim makes this easy by including all the data used for spam filtering in every API response. Scenarios where you might want to do this include:
+
+1. **Different liquidity threshold**: If \$100 is too high or too low for your needs, you can filter based on the `pool_size` field using your own threshold
+2. **Allowlisting specific tokens**: You may want to include certain tokens regardless of their liquidity
+3. **Blocklisting specific tokens**: You may want to exclude certain tokens even if they meet all criteria
+4. **Custom criteria combinations**: You can create your own combination of the available fields to define what constitutes spam in your application
+
+## Applicable APIs
+
+Spam token filtering is currently available for:
+
+* [EVM Balances API](/evm/balances)
+* [EVM Activity API](/evm/activity)
+
+## Benefits of Sim's Approach
+
+* **Real-time assessment**: Liquidity is checked at query time, not based on outdated lists
+* **Fewer false positives**: Legitimate but lesser-known tokens aren't automatically excluded. New tokens are recognized as legitimate as soon as they're liquid.
+* **Fewer false negatives**: New spam tokens are identified immediately based on their characteristics
+* **Flexibility**: All filtering data is provided, allowing you to implement custom logic
+* **Simplicity**: The `exclude_spam_tokens` parameter provides an easy default option
+
+By leveraging Sim's spam filtering capabilities, you can provide your users with a cleaner, more focused view of blockchain data while maintaining the flexibility to customize the experience as needed.
+
+
+# Support
+Source: https://docs.sim.dune.com/support
+
+
+
+## Primary Support: Intercom
+
+Most of our support is provided through **Intercom**, directly accessible from the Sim [web portal](https://sim.dune.com/). Just look for the small chat icon in the bottom-right corner.
+
+Through Intercom, you can:
+
+* Chat with **Blocky**, our Sim AI support agent, powered by Dune
+* Get help from the **Dune support team**, either live via chat or asynchronously via email/ticket
+
+We want to help you successfully integrate and use Sim. This page outlines the support channels available to you.
+
+## Developer Community
+
+Join the official Sim [Telegram Group](https://t.me/+nvyoX5xyxNwyNjU0) to connect with other developers, ask questions, and get help from the community.
+
+<Card title="Telegram" icon="telegram" iconType="regular" horizontal href="https://t.me/+nvyoX5xyxNwyNjU0" />
+
+## API Status
+
+You can check the operational status of Sim APIs and view uptime history on our [status page](https://status.sim.dune.com/).
+
+## Rate Limits & Scaling
+
+Information about API rate limits for your current plan can be found under Billing at [sim.dune.com](https://sim.dune.com). Need higher throughput or interested in Enterprise plans with custom limits? Contact us through Intercom.
+
+## Other Questions
+
+If your question isn’t answered in the docs or you’re reporting a bug, please reach out via the Intercom button in the app.
+
+Alternatively, you can email [simsupport@dune.com](mailto:simsupport@dune.com) to contact our team.
+
+<Card title="Support Email" icon="envelope" horizontal href="mailto:simsupport@dune.com" />
+
+
+# Balances
+Source: https://docs.sim.dune.com/svm/balances
+
+svm/openapi/balances.json get /beta/svm/balances/{uri}
+Get token balances for a given SVM address
+
+The Token Balances API provides accurate and fast real time balances of the native, SPL and SPL-2022 tokens of accounts on supported SVM blockchains.
+We currently support Solana and Eclipse.
+
+<Note>
+  * These endpoints are authenticated with a normal Sim API key.
+  * Specify `?chains=all` to fetch balances for all supported chains.
+  * Specify `?chains=solana,eclipse` to fetch balances only for select chains.
+  * Token metadata includes symbols, decimals, and price information when available.
+</Note>
+
+# Response Structure
+
+The API returns a JSON object with the following top-level fields:
+
+| Field                | Description                                       | Type        |
+| -------------------- | ------------------------------------------------- | ----------- |
+| processing\_time\_ms | Time taken to process the request in milliseconds | number      |
+| wallet\_address      | The queried wallet address                        | string      |
+| next\_offset         | Pagination token for the next page of results     | string/null |
+| balances\_count      | Total number of balances returned                 | number      |
+| balances             | Array of token balance objects                    | array       |
+
+# Balance Object Fields
+
+Each item in the `balances` array contains the following fields:
+
+| Field           | Description                                                | Type        |
+| --------------- | ---------------------------------------------------------- | ----------- |
+| chain           | Name of blockchain of token                                | string      |
+| address         | Token contract address or blockchain name for native token | string      |
+| amount          | Amount of token owned in smallest unit                     | string      |
+| balance         | Formatted amount with decimals applied                     | string      |
+| value\_usd      | Current value of token owned, if available                 | number      |
+| program\_id     | Program ID of the token (for SPL tokens)                   | string      |
+| decimals        | Decimals of token                                          | number      |
+| total\_supply   | Total supply of the token                                  | string      |
+| name            | Name of token                                              | string      |
+| symbol          | Symbol of token                                            | string      |
+| uri             | URI to token metadata                                      | string      |
+| price\_usd      | Current price of token, if available                       | number      |
+| liquidity\_usd  | Liquidity in USD, if available                             | number/null |
+| pool\_type      | Type of liquidity pool, if available                       | string/null |
+| pool\_address   | Address of liquidity pool, if available                    | string/null |
+| mint\_authority | Mint authority address, if available                       | string/null |
+
+# Pagination
+
+This endpoint is using cursor based pagination. You can use the `limit` parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is passed back by the initial response and can be used to fetch the next page of results, by passing it as the `offset` query parameter in the next request.
+
+<Warning>You can only use the value from `next_offset` to set the `offset` parameter of the next page of results. Using your own `offset` value will not have any effect.</Warning>
+
+
+# SVM Overview
+Source: https://docs.sim.dune.com/svm/overview
+
+
+
+<CardGroup cols={2}>
+  <Card title="Balances" href="/svm/balances">
+    Get accurate and fast realtime balances of native, SPL and SPL-2022 tokens on Solana and Eclipse blockchains, with token metadata and USD valuations.
+  </Card>
+
+  <Card title="Transactions" href="/svm/transactions">
+    Quick and accurate lookup of transactions associated with a Solana address, ordered by descending block time, with complete raw transaction data.
+  </Card>
+</CardGroup>
+
+
+# Transactions
+Source: https://docs.sim.dune.com/svm/transactions
+
+svm/openapi/transactions.json get /beta/svm/transactions/{uri}
+Get transactions for a given SVM address
+
+The Transactions Endpoint allows for quick and accurate lookup of transactions associated with an address.
+We currently only support Solana.
+
+# Response Structure
+
+The API returns a JSON object with the following top-level fields:
+
+| Field        | Description                                   | Type        |
+| ------------ | --------------------------------------------- | ----------- |
+| next\_offset | Pagination token for the next page of results | string/null |
+| transactions | Array of transaction objects                  | array       |
+
+# Transaction Object Fields
+
+Each item in the `transactions` array contains the following fields:
+
+| Field            | Description                                                     | Type   |
+| ---------------- | --------------------------------------------------------------- | ------ |
+| address          | Wallet address                                                  | string |
+| block\_slot      | Block's sequential index                                        | number |
+| block\_time      | Timestamp of block creation (in microseconds)                   | number |
+| chain            | Name of the blockchain                                          | string |
+| raw\_transaction | Raw transaction data from the RPC node at the time of ingestion | object |
+
+<Note>
+  See [getTransaction RPC Method](https://solana.com/docs/rpc/http/gettransaction) for more details about `raw_transaction`.
+</Note>
+
+# Ordering
+
+The data is ordered by descending block time, so that new transactions will always be delivered first.
+
+# Pagination
+
+This endpoint is using cursor based pagination. You can use the `limit` parameter to define the maximum page size.
+Results might at times be less than the maximum page size.
+The `next_offset` value is included in the response and can be utilized to fetch the next page of results by passing it as the `offset` query parameter in the next request.
+
+<Warning>You can only use the value from `next_offset` to set the `offset` parameter of the next page of results. Using your own `offset` value will not have any effect.</Warning>
+
+

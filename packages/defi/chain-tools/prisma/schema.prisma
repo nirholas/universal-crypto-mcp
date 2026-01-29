@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  apiKeys       ApiKey[]
+  transactions  Transaction[]
+}
+
+model ApiKey {
+  id            String         @id @default(uuid())
+  name          String
+  key           String         @unique
+  userId        String
+  isActive      Boolean        @default(true)
+  lastUsedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+
+  @@index([userId])
+}
+
+model Chain {
+  id            String         @id
+  name          String
+  currency      String
+  rpcUrl        String
+  explorerUrl   String
+  isTestnet     Boolean        @default(false)
+  isActive      Boolean        @default(true)
+  transactions  Transaction[]
+
+  @@map("chains")
+}
+
+model Contract {
+  id            String         @id @default(uuid())
+  address       String
+  chainId       String
+  name          String?
+  abi           Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  @@unique([address, chainId])
+  @@index([chainId])
+  @@map("contracts")
+}
+
+model Transaction {
+  id            String         @id @default(uuid())
+  chainId       String
+  chain         Chain          @relation(fields: [chainId], references: [id])
+  from          String?
+  to            String
+  value         String         @default("0")
+  data          String?        @db.Text
+  gasLimit      String?
+  status        TransactionStatus @default(PENDING)
+  txHash        String?
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  apiKeyId      String?
+  apiKey        ApiKey?        @relation(fields: [apiKeyId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  @@index([chainId])
+  @@index([userId])
+  @@index([apiKeyId])
+  @@index([status])
+  @@map("transactions")
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUBMITTED
+  CONFIRMED
+  FAILED
+}

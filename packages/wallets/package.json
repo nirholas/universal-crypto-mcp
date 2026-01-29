@@ -1,0 +1,30 @@
+{
+  "name": "@nirholas/crypto-wallets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wallet management toolkits - EVM and Solana",
+  "workspaces": [
+    "evm",
+    "solana"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/wallets"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "crypto",
+    "wallet",
+    "evm",
+    "ethereum",
+    "solana"
+  ]
+}

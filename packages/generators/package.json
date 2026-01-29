@@ -1,0 +1,33 @@
+{
+  "name": "@nirholas/crypto-generators",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code generators - ABI to MCP, repo to MCP, doc extraction, tool registry",
+  "workspaces": [
+    "abi-to-mcp",
+    "repo-to-mcp",
+    "doc-extractor",
+    "registry",
+    "discovery"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/generators"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "crypto",
+    "generators",
+    "abi",
+    "code-generation",
+    "registry"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@nirholas/crypto-defi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DeFi protocols and on-chain tools - 60+ networks, DEX aggregation, lending, staking",
+  "workspaces": [
+    "protocols",
+    "chain-tools",
+    "agents"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "crypto",
+    "defi",
+    "evm",
+    "ethereum",
+    "bnb",
+    "polygon",
+    "arbitrum",
+    "optimism",
+    "base"
+  ]
+}

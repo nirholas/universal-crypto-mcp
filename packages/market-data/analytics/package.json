@@ -1,0 +1,54 @@
+{
+  "name": "mcp-web3-stats",
+  "version": "1.0.1",
+  "description": "MCP Server for Dune API to analyze blockchain data and wallet information",
+  "author": "Dennison Bertram <dennison@dennisonbertram.com>",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "blockchain",
+    "web3",
+    "dune",
+    "crypto",
+    "ethereum",
+    "solana"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crazyrabbitLTC/mcp-web3-stats"
+  },
+  "bugs": {
+    "url": "https://github.com/crazyrabbitLTC/mcp-web3-stats/issues"
+  },
+  "homepage": "https://github.com/crazyrabbitLTC/mcp-web3-stats#readme",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mcp-web3-stats": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "bun run index.ts",
+    "build": "bunx tsc",
+    "prepublishOnly": "bun run build",
+    "lint": "bunx tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.4",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/ethereum-wallet-toolkit",
+  "title": "Ethereum Wallet Toolkit MCP",
+  "description": "ETH wallet toolkit - keystore, signing, typed data, validation",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/ethereum-wallet-toolkit",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/ethereum-wallet-toolkit",
+    "bugs": "https://github.com/nirholas/ethereum-wallet-toolkit/issues",
+    "pypi": "https://pypi.org/project/ethereum-wallet-toolkit/"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "ethereum-wallet-toolkit",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RPC_URL",
+          "description": "Ethereum RPC endpoint URL",
+          "required": false,
+          "secret": false
+        },
+        {
+          "name": "PRIVATE_KEY",
+          "description": "Ethereum wallet private key",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["ethereum", "wallet", "keystore", "signing", "mcp", "eip-712"],
+      "category": "Blockchain"
+    }
+  }
+}

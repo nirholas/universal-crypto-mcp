@@ -1,8 +1,18 @@
 {
   "name": "@nirholas/universal-crypto-mcp",
-  "version": "0.1.0",
-  "description": "Universal MCP server for all EVM-compatible networks including BSC, opBNB, Arbitrum, Ethereum, Polygon, Base, Optimism and more.",
+  "version": "1.0.0",
+  "description": "The most extensive crypto MCP repository - 60+ networks, 100+ tools, DEX/CEX, DeFi, wallets, market data, automation, and x402 payments",
   "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/trading/*",
+    "packages/market-data/*",
+    "packages/defi/*",
+    "packages/wallets/*",
+    "packages/payments/*",
+    "packages/automation/*",
+    "packages/generators/*"
+  ],
   "main": "./dist/lib.js",
   "exports": {
     ".": {

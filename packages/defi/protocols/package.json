@@ -1,0 +1,75 @@
+{
+  "name": "@mcpdotdirect/evm-mcp-server",
+  "module": "src/index.ts",
+  "type": "module",
+  "version": "2.0.4",
+  "description": "MCP server for interacting with EVM-compatible blockchains - supports 22 tools and 10 prompts across 60+ networks",
+  "bin": {
+    "evm-mcp-server": "./bin/cli.js"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir build --target node",
+    "build:http": "bun build src/server/http-server.ts --outdir build --target node --outfile http-server.js",
+    "dev": "bun --watch src/index.ts",
+    "start:http": "bun run src/server/http-server.ts",
+    "dev:http": "bun --watch src/server/http-server.ts",
+    "prepublishOnly": "bun run build && bun run build:http",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "release": "npm publish",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "changelog:latest": "conventional-changelog -p angular -r 1 > RELEASE_NOTES.md",
+    "inspect": "npx @modelcontextprotocol/inspector node build/index.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "conventional-changelog-cli": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "express": "^4.21.2",
+    "viem": "^2.39.3",
+    "zod": "^3.24.3"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "evm",
+    "blockchain",
+    "ethereum",
+    "web3",
+    "smart-contracts",
+    "ai",
+    "agent"
+  ],
+  "author": "vcart <info@mcp.direct>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcpdotdirect/evm-mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/mcpdotdirect/evm-mcp-server/issues"
+  },
+  "homepage": "https://github.com/mcpdotdirect/evm-mcp-server#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
