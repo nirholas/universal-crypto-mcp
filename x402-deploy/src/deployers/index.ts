@@ -6,6 +6,7 @@ import { X402Config, DeployProvider } from "../types/config.js";
 import { RailwayDeployer, RailwayDeployResult, createRailwayDeployer } from "./railway.js";
 import { FlyDeployer, FlyDeployResult, createFlyDeployer } from "./fly.js";
 import { VercelDeployer, VercelDeployResult, createVercelDeployer } from "./vercel.js";
+import { DockerDeployer, DockerDeployResult, createDockerDeployer, deployWithDocker } from "./docker.js";
 
 /**
  * Generic deploy result
@@ -150,10 +151,44 @@ async function deploySelfHosted(
   projectDir: string,
   options: DeployOptions
 ): Promise<DeployResult> {
+  // Use Docker deployer for actual deployment
+  const deployer = createDockerDeployer({ verbose: options.verbose });
+  
+  // Check if Docker is available
+  const dockerAvailable = await deployer.checkDocker();
+  
+  if (dockerAvailable) {
+    // Actually deploy with Docker
+    const result = await deployer.deploy(config, projectDir, {
+      compose: true,
+      verbose: options.verbose,
+    });
+    
+    return {
+      url: result.url,
+      provider: "docker",
+      deploymentId: result.containerId || "local",
+      projectName: config.name,
+      status: result.status,
+      metadata: {
+        imageName: result.imageName,
+        containerId: result.containerId,
+        containerName: result.containerName,
+        ports: result.ports,
+      },
+    };
+  }
+  
+  // Fallback to instructions if Docker not available
   console.log(`
 ╔════════════════════════════════════════════════════════════════╗
 ║           Self-Hosted Deployment Instructions                  ║
 ╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  Docker is not installed or not running.                       ║
+║  Install from: https://www.docker.com/get-started              ║
+║                                                                ║
+║  Once installed, run:                                          ║
 ║                                                                ║
 ║  1. Build the Docker image:                                    ║
 ║     docker build -t ${config.name} .                           ║
@@ -281,3 +316,4 @@ export async function deleteDeployment(
 export { RailwayDeployer, RailwayDeployResult, createRailwayDeployer } from "./railway.js";
 export { FlyDeployer, FlyDeployResult, createFlyDeployer } from "./fly.js";
 export { VercelDeployer, VercelDeployResult, createVercelDeployer } from "./vercel.js";
+export { DockerDeployer, DockerDeployResult, createDockerDeployer, deployWithDocker } from "./docker.js";

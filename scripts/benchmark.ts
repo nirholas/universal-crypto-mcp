@@ -1,16 +1,18 @@
 #!/usr/bin/env tsx
-/// <reference types="node" />
 /**
  * Performance benchmark script for x402-deploy
  * Tests API throughput, latency, and cache performance
+ * 
+ * Run with: pnpm tsx scripts/benchmark.ts [url] [duration] [connections]
+ * Example: pnpm tsx scripts/benchmark.ts http://localhost:3402/api/status 10 100
  * 
  * @author nich
  * @github github.com/nirholas
  * @license Apache-2.0
  */
 
-import http from 'node:http';
-import { performance } from 'node:perf_hooks';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare const process: { argv: string[]; version: string; platform: string; arch: string };
 
 interface BenchmarkResult {
   name: string;
@@ -48,7 +50,7 @@ function percentile(sorted: number[], p: number): number {
 }
 
 /**
- * Run HTTP benchmark
+ * Run HTTP benchmark using fetch API
  */
 async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
   const {
@@ -57,8 +59,8 @@ async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
     headers = {},
     body,
     duration = 10,
-    connections = 100,
-    warmup = 10,
+    connections = 50,
+    warmup = 5,
   } = config;
 
   const parsedUrl = new URL(url);
@@ -68,44 +70,35 @@ async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
   let throughputBytes = 0;
   let running = true;
 
-  // Single request function
-  const makeRequest = (): Promise<{ latency: number; bytes: number; error: boolean }> => {
-    return new Promise((resolve) => {
-      const start = performance.now();
-      
-      const req = http.request(
-        {
-          hostname: parsedUrl.hostname,
-          port: parsedUrl.port || 80,
-          path: parsedUrl.pathname + parsedUrl.search,
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            ...headers,
-          },
+  // Single request function using fetch
+  const makeRequest = async (): Promise<{ latency: number; bytes: number; error: boolean }> => {
+    const start = Date.now();
+    
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
         },
-        (res: http.IncomingMessage) => {
-          let bytes = 0;
-          res.on('data', (chunk: Buffer) => {
-            bytes += chunk.length;
-          });
-          res.on('end', () => {
-            const latency = performance.now() - start;
-            resolve({ latency, bytes, error: res.statusCode! >= 400 });
-          });
-        }
-      );
-
-      req.on('error', () => {
-        const latency = performance.now() - start;
-        resolve({ latency, bytes: 0, error: true });
+        body: body || undefined,
       });
 
-      if (body) {
-        req.write(body);
-      }
-      req.end();
-    });
+      const text = await response.text();
+      const latency = Date.now() - start;
+      
+      return {
+        latency,
+        bytes: text.length,
+        error: response.status >= 400
+      };
+    } catch {
+      return {
+        latency: Date.now() - start,
+        bytes: 0,
+        error: true
+      };
+    }
   };
 
   // Warmup phase
@@ -217,27 +210,27 @@ async function benchmarkCache(): Promise<void> {
   
   // Test write performance
   console.log(`  Writing ${iterations.toLocaleString()} entries...`);
-  const writeStart = performance.now();
+  const writeStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     cache.set(`proof_${i}`, { valid: true, payer: `0x${i.toString(16).padStart(40, '0')}` });
   }
-  const writeTime = performance.now() - writeStart;
+  const writeTime = Date.now() - writeStart;
   
   // Test read performance (hits)
   console.log(`  Reading ${iterations.toLocaleString()} entries (cache hits)...`);
-  const readHitStart = performance.now();
+  const readHitStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     cache.get(`proof_${i}`);
   }
-  const readHitTime = performance.now() - readHitStart;
+  const readHitTime = Date.now() - readHitStart;
   
   // Test read performance (misses)
   console.log(`  Reading ${iterations.toLocaleString()} entries (cache misses)...`);
-  const readMissStart = performance.now();
+  const readMissStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     cache.get(`nonexistent_${i}`);
   }
-  const readMissTime = performance.now() - readMissStart;
+  const readMissTime = Date.now() - readMissStart;
   
   const stats = cache.getStats();
   

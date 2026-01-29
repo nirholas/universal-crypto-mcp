@@ -10,6 +10,12 @@ import { logsCommand } from "./commands/logs.js";
 import { testCommand } from "./commands/test.js";
 import { upgradeCommand } from "./commands/upgrade.js";
 import { withdrawCommand } from "./commands/withdraw.js";
+import { analyticsCommand } from "./commands/analytics.js";
+import { simulateCommand } from "./commands/simulate.js";
+import { doctorCommand } from "./commands/doctor.js";
+import { exportCommand } from "./commands/export.js";
+import { importCommand } from "./commands/import.js";
+import { compareCommand } from "./commands/compare.js";
 import {
   marketplaceListCommand,
   marketplaceViewCommand,
@@ -105,6 +111,53 @@ program
   .command("withdraw")
   .description("Withdraw earnings")
   .action(withdrawCommand);
+
+program
+  .command("analytics")
+  .description("Deep analytics and insights for your monetized API")
+  .option("-p, --period <period>", "Time period: day, week, month, all", "week")
+  .option("-r, --route <route>", "Filter by specific route")
+  .option("-e, --export <format>", "Export format: json, csv")
+  .option("-t, --top <count>", "Number of top routes to show", "10")
+  .action(analyticsCommand);
+
+program
+  .command("simulate")
+  .description("Simulate payment flows and test your pricing")
+  .option("-r, --route <route>", "Route to simulate")
+  .option("-c, --calls <calls>", "Number of calls to simulate")
+  .option("-p, --payers <payers>", "Number of unique payers")
+  .action(simulateCommand);
+
+program
+  .command("doctor")
+  .description("Diagnose and fix common issues")
+  .option("-f, --fix", "Automatically apply fixes")
+  .option("-v, --verbose", "Show detailed output")
+  .action(doctorCommand);
+
+program
+  .command("export")
+  .description("Export your x402 configuration")
+  .option("-f, --format <format>", "Format: json, yaml, env, docker")
+  .option("-o, --output <path>", "Output file path")
+  .option("-i, --include <items>", "Include analytics, logs")
+  .action(exportCommand);
+
+program
+  .command("import")
+  .description("Import x402 configuration")
+  .option("-s, --source <source>", "Source file or URL")
+  .option("--force", "Overwrite existing config")
+  .option("-m, --merge", "Merge with existing config")
+  .action(importCommand);
+
+program
+  .command("compare")
+  .description("Compare pricing and revenue across configurations")
+  .option("-c, --configs <configs...>", "Config files to compare")
+  .option("-o, --output <format>", "Output format: table, json, chart")
+  .action(compareCommand);
 
 // Quick aliases
 program

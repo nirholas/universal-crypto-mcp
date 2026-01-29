@@ -67,3 +67,6 @@ export { registerWithX402Scan } from "./discovery/register.js";
 
 // Dashboard exports
 export * from "./dashboard/index.js";
+
+// Monitoring exports
+export * from "./monitoring/index.js";

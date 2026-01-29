@@ -48,7 +48,7 @@ function createMockResponse(): Response & {
   return res as any;
 }
 
-// Test config
+// Test config - matches X402Config schema from types/config.ts
 const testConfig: X402Config = {
   name: "test-api",
   version: "1.0.0",
@@ -56,11 +56,12 @@ const testConfig: X402Config = {
   payment: {
     wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
     network: "eip155:8453",
-    facilitator: "https://x402.org/facilitator",
+    token: "USDC",
+    facilitator: "https://facilitator.x402.dev",
   },
   pricing: {
     model: "per-call",
-    default: { price: "$0.01", currency: "USD" },
+    default: "$0.01",
     routes: {
       "GET /api/free": "$0",
       "POST /api/expensive": "$1.00",

@@ -35,11 +35,14 @@ export async function withdrawCommand(): Promise<void> {
   try {
     const dashboardApi = new DashboardAPI();
     const summary = await dashboardApi.getEarnings(config.name, "all");
+    const escrowData = await dashboardApi.getPendingEarnings(config.name);
     
     earnings = {
       available: parseFloat(summary.totalRevenue),
-      pending: 0, // TODO: Get pending from escrow
-      total: parseFloat(summary.totalRevenue),
+      pending: escrowData.pending,
+      total: parseFloat(summary.totalRevenue) + escrowData.pending,
+      escrowBalance: escrowData.escrowBalance,
+      pendingWithdrawals: escrowData.pendingWithdrawals,
     };
     
     spinner.succeed("Earnings fetched");
@@ -50,6 +53,8 @@ export async function withdrawCommand(): Promise<void> {
       available: 0,
       pending: 0,
       total: 0,
+      escrowBalance: "0",
+      pendingWithdrawals: [],
     };
   }
   

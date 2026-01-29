@@ -8,3 +8,8 @@ export * from "./pricing-engine.js";
 export * from "./rate-limiter.js";
 export * from "./analytics.js";
 export * from "./types.js";
+
+// Advanced payment features
+export * from "./multi-chain.js";
+export * from "./subscriptions.js";
+export * from "./credits.js";

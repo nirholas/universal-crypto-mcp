@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * High-performance payment cache with LRU eviction
  * Reduces blockchain verification latency to <50ms for cached payments
@@ -7,6 +6,12 @@
  * @github github.com/nirholas
  * @license Apache-2.0
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare const globalThis: {
+  setInterval?: (fn: () => void, ms: number) => { unref?: () => void };
+  clearInterval?: (timer: unknown) => void;
+};
 
 interface CacheEntry<T> {
   value: T;

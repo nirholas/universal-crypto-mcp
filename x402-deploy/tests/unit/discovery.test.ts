@@ -8,7 +8,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { generateDiscoveryDocument, type DiscoveryDocument } from "../../src/discovery/document.js";
 import type { X402Config } from "../../src/types/config.js";
 
-// Test configurations
+// Test configurations - matches X402Config schema from types/config.ts
 const baseConfig: X402Config = {
   name: "test-api",
   version: "1.0.0",
@@ -16,11 +16,12 @@ const baseConfig: X402Config = {
   payment: {
     wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
     network: "eip155:8453",
+    token: "USDC",
     facilitator: "https://facilitator.x402.dev",
   },
   pricing: {
     model: "per-call",
-    default: { price: "$0.01", currency: "USD" },
+    default: "$0.01",
     routes: {
       "GET /api/data": "$0.001",
       "POST /api/submit": "$0.10",
@@ -34,8 +35,12 @@ const minimalConfig: X402Config = {
   version: "1.0.0",
   type: "mcp-server",
   payment: {
-    wallet: "0x123456789abcdef",
+    wallet: "0x1234567890abcdef1234567890abcdef12345678",
     network: "eip155:8453",
+    token: "USDC",
+  },
+  pricing: {
+    model: "per-call",
   },
 };
 

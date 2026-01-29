@@ -56,12 +56,60 @@ export function withX402<T>(
       return handler(args)
     }
 
-    // TODO: Implement actual x402 payment verification
-    // For now, this is a placeholder that shows the pricing
-    console.log(`[x402] Tool requires payment: ${config.price} ${config.token}`)
+    // Get payment proof from context (MCP meta or environment)
+    const paymentProof = process.env.X402_PAYMENT_PROOF || (args as any)?._x402PaymentProof
+    const facilitatorUrl = process.env.X402_FACILITATOR_URL || "https://facilitator.x402.dev"
     
-    // Execute the actual handler
-    return handler(args)
+    if (!paymentProof) {
+      throw new Error(
+        `Payment required: ${config.price} ${config.token}. ` +
+        `Use x402 protocol to make payment. Facilitator: ${facilitatorUrl}`
+      )
+    }
+
+    try {
+      // Verify payment with facilitator
+      const verifyResponse = await fetch(`${facilitatorUrl}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proof: paymentProof,
+          expectedPrice: config.price,
+          expectedToken: config.token,
+          toolId: config.toolId,
+        }),
+      })
+
+      if (!verifyResponse.ok) {
+        throw new Error(`Payment verification failed: ${verifyResponse.statusText}`)
+      }
+
+      const verification = await verifyResponse.json()
+      
+      if (!verification.valid) {
+        throw new Error(`Payment invalid: ${verification.error || "Unknown error"}`)
+      }
+
+      console.log(`[x402] Payment verified: ${verification.payer} paid ${verification.amount} ${config.token}`)
+      
+      // Execute the handler with payment info attached
+      const result = await handler(args)
+      
+      // Attach payment metadata to result if it's an object
+      if (typeof result === "object" && result !== null) {
+        (result as any)._x402Payment = {
+          payer: verification.payer,
+          amount: verification.amount,
+          txHash: verification.txHash,
+        }
+      }
+      
+      return result
+    } catch (error) {
+      throw new Error(
+        `x402 payment error: ${error instanceof Error ? error.message : String(error)}`
+      )
+    }
   }
 }
 
@@ -76,8 +124,56 @@ export function pricingInfo(config: X402PaymentConfig): string {
  * Check if user has active subscription
  */
 export async function hasActiveSubscription(address: string): Promise<boolean> {
-  // TODO: Implement subscription checking via x402
-  return false
+  const subscriptionContractAddress = process.env.X402_SUBSCRIPTION_CONTRACT
+  const rpcUrl = process.env.X402_RPC_URL || process.env.ETH_RPC_URL
+  
+  if (!subscriptionContractAddress || !rpcUrl) {
+    // If not configured, assume no subscription system
+    return false
+  }
+
+  try {
+    // Query subscription contract
+    const response = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_call",
+        params: [
+          {
+            to: subscriptionContractAddress,
+            data: 
+              "0x" + 
+              // getSubscription(address) selector
+              "a0f4c3c5" + 
+              // Pad address to 32 bytes
+              address.slice(2).padStart(64, "0"),
+          },
+          "latest",
+        ],
+      }),
+    })
+
+    const result = await response.json()
+    
+    if (!result.result || result.result === "0x") {
+      return false
+    }
+
+    // Parse result: (uint8 tier, uint256 expiresAt, uint256 usageCount)
+    const data = result.result.slice(2)
+    const tier = parseInt(data.slice(0, 64), 16)
+    const expiresAt = parseInt(data.slice(64, 128), 16)
+    
+    // Check if subscription is active (tier > 0 and not expired)
+    const now = Math.floor(Date.now() / 1000)
+    return tier > 0 && expiresAt > now
+  } catch (error) {
+    console.error("[x402] Subscription check error:", error)
+    return false
+  }
 }
 
 export default withX402

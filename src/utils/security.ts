@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * Security utilities and middleware for production deployments
  * Includes rate limiting, input validation, and security headers
@@ -8,22 +7,34 @@
  * @license Apache-2.0
  */
 
-// Express types - using inline definitions to avoid hard dependency
-interface Request {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare const globalThis: {
+  setInterval?: (fn: () => void, ms: number) => { unref?: () => void };
+  clearInterval?: (timer: unknown) => void;
+  URL: typeof URL;
+};
+
+/**
+ * Generic HTTP request interface (framework-agnostic)
+ */
+export interface HttpRequest {
   method: string;
   path: string;
   url: string;
   ip?: string;
   headers: Record<string, string | string[] | undefined>;
-  socket: { remoteAddress?: string };
-  on(event: string, callback: (data: Buffer) => void): void;
-  destroy(): void;
+  socket?: { remoteAddress?: string };
+  on?: (event: string, callback: (data: { length: number }) => void) => void;
+  destroy?: () => void;
 }
 
-interface Response {
-  status(code: number): Response;
-  json(body: unknown): Response;
-  end(): Response;
+/**
+ * Generic HTTP response interface (framework-agnostic)
+ */
+export interface HttpResponse {
+  status(code: number): HttpResponse;
+  json(body: unknown): HttpResponse;
+  end(): HttpResponse;
   setHeader(name: string, value: string): void;
   removeHeader(name: string): void;
 }

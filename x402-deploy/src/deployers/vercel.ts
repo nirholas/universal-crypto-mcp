@@ -395,19 +395,74 @@ export class VercelDeployer {
     const envVars = generateVercelEnvs(config);
     await this.setEnvVars(project.id, envVars);
 
-    // 3. Link to GitHub (this is typically done through Vercel UI)
-    // For now, return a placeholder
-    console.log(`[vercel] GitHub integration requires manual setup in Vercel dashboard`);
+    // 3. Link to GitHub repository
+    try {
+      // Parse repo format: owner/repo
+      const [owner, repoName] = repo.split("/");
+      if (!owner || !repoName) {
+        throw new Error("Invalid repo format. Expected 'owner/repo'");
+      }
 
-    return {
-      projectId: project.id,
-      projectName: project.name,
-      deploymentId: "",
-      url: "",
-      productionUrl: `https://${projectName}.vercel.app`,
-      status: "pending",
-      aliases: [],
-    };
+      // Connect Git repository to Vercel project
+      const gitResponse = await this.api<{ id: string }>(
+        "POST",
+        `/v9/projects/${project.id}/link`,
+        {
+          type: "github",
+          repo: repoName,
+          org: owner,
+          gitCredentialId: "", // Uses default credential
+          productionBranch: branch,
+        }
+      );
+      
+      console.log(`[vercel] Connected to GitHub: ${repo}`);
+
+      // Trigger a deployment from the branch
+      const deployResponse = await this.api<{
+        id: string;
+        url: string;
+        readyState: string;
+      }>(
+        "POST",
+        `/v13/deployments`,
+        {
+          name: projectName,
+          project: project.id,
+          target: "production",
+          gitSource: {
+            type: "github",
+            org: owner,
+            repo: repoName,
+            ref: branch,
+          },
+        }
+      );
+
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        deploymentId: deployResponse.id,
+        url: `https://${deployResponse.url}`,
+        productionUrl: `https://${projectName}.vercel.app`,
+        status: deployResponse.readyState as any,
+        aliases: [],
+      };
+    } catch (error: any) {
+      console.log(`[vercel] GitHub integration via API failed: ${error.message}`);
+      console.log(`[vercel] Please connect GitHub manually in the Vercel dashboard:`);
+      console.log(`[vercel]   https://vercel.com/${projectName}/settings/git`);
+
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        deploymentId: "",
+        url: "",
+        productionUrl: `https://${projectName}.vercel.app`,
+        status: "pending",
+        aliases: [],
+      };
+    }
   }
 
   /**
