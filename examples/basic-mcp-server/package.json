@@ -12,7 +12,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@universal-crypto-mcp/market-data-aggregator": "workspace:*",
-    "@universal-crypto-mcp/core": "workspace:*"
+    "@nirholas/crypto-mcp-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

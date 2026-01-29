@@ -18,7 +18,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@universal-crypto-mcp/core": "workspace:*",
+    "@nirholas/crypto-mcp-core": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.22.0",
     "viem": "^2.0.0",
     "zod": "^3.22.0"

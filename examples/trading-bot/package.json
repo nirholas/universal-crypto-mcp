@@ -12,7 +12,7 @@
   "dependencies": {
     "@universal-crypto-mcp/trading-binance": "workspace:*",
     "@universal-crypto-mcp/market-data-aggregator": "workspace:*",
-    "@universal-crypto-mcp/core": "workspace:*"
+    "@nirholas/crypto-mcp-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

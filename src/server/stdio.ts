@@ -14,7 +14,7 @@ import { startServer } from "./base"
 // Start the server
 export const startStdioServer = async () => {
   try {
-    const server = startServer()
+    const server = await startServer()
     const transport = new StdioServerTransport()
     // using error level to show the message for stdio mode
     Logger.error("SperaxOS Server running on stdio mode")

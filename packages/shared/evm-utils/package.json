@@ -18,7 +18,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@universal-crypto-mcp/core": "workspace:*",
+    "@nirholas/crypto-mcp-core": "workspace:*",
     "viem": "^2.0.0"
   },
   "devDependencies": {

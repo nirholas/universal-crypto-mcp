@@ -8,13 +8,14 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
 import { registerEVM } from "@/evm.js"
 import { registerX402 } from "@/x402/index.js"
+import { initializeX402 } from "@/x402/integration/index.js"
 import { registerToolMarketplace } from "@/modules/tool-marketplace/index.js"
 import { registerAIPredictions } from "@/modules/ai-predictions/index.js"
 import { registerUnlockTools } from "@/modules/token-unlocks/index.js"
 import Logger from "@/utils/logger.js"
 
 // Create and start the MCP server
-export const startServer = () => {
+export const startServer = async () => {
   try {
     // Create a new MCP server instance
     const server = new McpServer({
@@ -23,6 +24,11 @@ export const startServer = () => {
       description: "Universal MCP server for all EVM-compatible networks with x402 payment protocol"
     })
 
+    // Initialize x402 payment integration first
+    // This must happen before registering tools
+    Logger.info("Initializing x402 payment integration...")
+    await initializeX402()
+    
     // Register all resources, tools, and prompts
     registerEVM(server)
     
@@ -41,6 +47,8 @@ export const startServer = () => {
     // Register Token Unlock & Vesting Schedule Tracker
     // Track token unlocks, vesting schedules, and market impact analysis
     registerUnlockTools(server)
+    
+    Logger.info("✅ All modules initialized with x402 integration")
     
     return server
   } catch (error) {

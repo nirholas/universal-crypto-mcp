@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@universal-crypto-mcp/core": "workspace:*",
+    "@nirholas/crypto-mcp-core": "workspace:*",
     "@universal-crypto-mcp/trading-binance": "workspace:*",
     "@universal-crypto-mcp/market-data-aggregator": "workspace:*",
     "@universal-crypto-mcp/wallet-evm": "workspace:*",
