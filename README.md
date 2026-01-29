@@ -1,4 +1,4 @@
-# 🤖💰 Universal Crypto MCP 
+# 🤖💰 Universal Crypto MCP  
 
 <p align="center">
 <pre align="center">
