@@ -14,6 +14,9 @@ export const EXTERNAL_APIS = {
   COINCAP: 'https://api.coincap.io/v2',
   COINPAPRIKA: 'https://api.coinpaprika.com/v1',
   CRYPTOWATCH: 'https://api.cryptowat.ch',
+  CRYPTOCOMPARE: 'https://min-api.cryptocompare.com',
+  MESSARI: 'https://data.messari.io/api/v1',
+  GLASSNODE: 'https://api.glassnode.com/v1',
 
   // Exchange Public APIs
   BINANCE: 'https://api.binance.com/api/v3',
@@ -24,6 +27,12 @@ export const EXTERNAL_APIS = {
   BYBIT: 'https://api.bybit.com/v5',
   DYDX: 'https://api.dydx.exchange/v3',
   DERIBIT: 'https://www.deribit.com/api/v2/public',
+  GEMINI: 'https://api.gemini.com',
+  BITFINEX: 'https://api-pub.bitfinex.com/v2',
+  HTX: 'https://api.huobi.pro',
+  GATEIO: 'https://api.gateio.ws',
+  MEXC: 'https://api.mexc.com',
+  BITGET: 'https://api.bitget.com',
 
   // On-Chain Data
   MEMPOOL: 'https://mempool.space/api',

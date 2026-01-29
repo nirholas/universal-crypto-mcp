@@ -1,0 +1,17 @@
+{
+  "name": "@universal-crypto/reputation-graphs",
+  "version": "0.1.0",
+  "description": "Multi-dimensional on-chain reputation system with decay and context",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest"
+  },
+  "keywords": ["reputation", "graph", "sybil-resistance", "trust"],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.21.54"
+  }
+}

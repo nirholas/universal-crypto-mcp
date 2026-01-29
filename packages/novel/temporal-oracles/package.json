@@ -1,0 +1,18 @@
+{
+  "name": "@universal-crypto/temporal-oracles",
+  "version": "0.1.0",
+  "description": "Time-locked oracle system that reveals data at specific future blocks",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest"
+  },
+  "keywords": ["oracle", "time-lock", "temporal", "delayed-reveal"],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.21.54",
+    "timelock-encryption": "^1.0.0"
+  }
+}

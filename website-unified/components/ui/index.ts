@@ -1,5 +1,6 @@
-export { Button } from './button'
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card'
+export { Button, buttonVariants } from './button'
+export type { ButtonProps } from './button'
+export { Card, CardHeader, CardTitle, CardDescription, CardContent } from './card'
 export { Terminal } from './terminal'
 export { CodeBlock } from './code-block'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs'

@@ -1,0 +1,13 @@
+{
+  "name": "@nirholas/rugcheck-mcp",
+  "version": "1.0.0",
+  "description": "Rug pull detection and analysis MCP server",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/rugcheck-mcp"
+  },
+  "keywords": ["nirholas", "security", "rugcheck", "analysis", "mcp"]
+}

@@ -57,6 +57,8 @@
     "x402:testnet": "tsx src/x402/cli/index.ts testnet",
     "x402:mainnet": "tsx src/x402/cli/index.ts mainnet",
     "discover:mcp-servers": "tsx scripts/discover-mcp-servers.ts --report",
+    "integrate:mcp-servers": "tsx scripts/integrate-mcp-servers.ts",
+    "list:integrated-servers": "tsx scripts/list-integrated-servers.ts",
     "verify:license": "tsx scripts/verify-license.ts",
     "add:subtree": "bash scripts/add-subtree.sh",
     "update:attributions": "tsx scripts/update-attributions.ts",

@@ -1,0 +1,32 @@
+{
+  "name": "@universal-crypto-mcp/cryptocompare-api",
+  "version": "1.0.0",
+  "description": "CryptoCompare API integration for Universal Crypto MCP",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest"
+  },
+  "keywords": [
+    "cryptocompare",
+    "crypto",
+    "market-data",
+    "analytics",
+    "api"
+  ],
+  "author": "nirholas",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}

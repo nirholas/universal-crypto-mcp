@@ -4,6 +4,8 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { cn } from '@/lib/utils/cn'
+import { Navbar } from '@/components/navigation/navbar'
+import { Footer } from '@/components/navigation/footer'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -90,13 +92,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(
-        'min-h-screen bg-background font-sans antialiased',
+        'min-h-screen bg-white font-sans antialiased',
         inter.variable,
         jetbrainsMono.variable
       )}>
+        <Navbar />
         {children}
+        <Footer />
         <Analytics />
         <SpeedInsights />
       </body>

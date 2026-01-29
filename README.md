@@ -128,14 +128,22 @@ packages/
 ├── core/               # Shared types, utilities, configuration
 ├── trading/            # CEX exchange integrations
 │   ├── binance/        # Binance spot & futures
-│   └── binance-us/     # Binance US
-├── market-data/        # Prices, news, analytics
+│   ├── binance-us/     # Binance US
+│   └── bybit/          # Bybit exchange (ethancod1ng) ⭐ NEW
+├── market-data/        # Prices, news, analytics  
 │   ├── prices/         # CoinGecko, DexPaprika, CoinMarketCap
 │   ├── news/           # CryptoPanic, aggregated news
 │   ├── analytics/      # Whale tracking, Fear/Greed, Dune
-│   └── predictions/    # AI price predictions
+│   ├── predictions/    # AI price predictions
+│   ├── crypto-indicators/  # Technical analysis (Kukapay) ⭐ NEW
+│   ├── crypto-sentiment/   # Sentiment analysis (Kukapay) ⭐ NEW
+│   ├── crypto-feargreed/   # Fear & Greed Index (Kukapay) ⭐ NEW
+│   ├── cryptopanic/        # News aggregation (Kukapay)
+│   └── coinmarketcap/      # CMC API (Shinzo Labs) ⭐ NEW
 ├── defi/               # On-chain DeFi tools (60+ networks!)
 │   ├── protocols/      # EVM MCP Server (360⭐), Sperax, DEX
+│   │   ├── algorand/   # Algorand tools (GoPlausible) ⭐ NEW
+│   │   └── bsc-ops/    # BSC operations (TermiX) ⭐ NEW
 │   ├── chain-tools/    # BNB Chain, Onchain MCP
 │   └── agents/         # Autonomous DeFi agents
 ├── wallets/            # Wallet management
@@ -157,20 +165,29 @@ packages/
 
 📖 **[View Package Documentation →](docs/content/packages/)**
 
-### Integrated External Projects
+### Integrated Community MCP Servers
 
-This repo consolidates the best MIT-licensed crypto MCP projects:
+This repo consolidates the best MIT-licensed crypto MCP projects with proper attribution:
 
-| Project | Stars | Category | Description |
-|---------|-------|----------|-------------|
-| [evm-mcp-server](https://github.com/mcpdotdirect/evm-mcp-server) | 360⭐ | defi | 60+ networks, 22+ tools |
-| [cryptopanic-mcp-server](https://github.com/kukapay/cryptopanic-mcp-server) | 65⭐ | market-data | Crypto news aggregation |
-| [whale-tracker-mcp](https://github.com/kukapay/whale-tracker-mcp) | - | analytics | Large wallet tracking |
-| [crypto-feargreed-mcp](https://github.com/kukapay/crypto-feargreed-mcp) | - | analytics | Fear & Greed Index |
-| [mcp-web3-stats](https://github.com/crazyrabbitLTC/mcp-web3-stats) | - | analytics | Dune Analytics integration |
-| [dexpaprika-mcp](https://github.com/coinpaprika/dexpaprika-mcp) | - | prices | DEX price data |
-| [onchain-mcp](https://github.com/bankless/onchain-mcp) | - | defi | Bankless on-chain tools |
-| [mcp-free-usdc-transfer](https://github.com/magnetai/mcp-free-usdc-transfer) | - | payments | Free USDC transfers |
+| Project | Author | Category | Description |
+|---------|--------|----------|-------------|
+| [evm-mcp-server](https://github.com/mcpdotdirect/evm-mcp-server) | mcpdotdirect | defi | 60+ networks, 22+ tools |
+| [crypto-indicators-mcp](https://github.com/kukapay/crypto-indicators-mcp) ⭐ **NEW** | Kukapay | market-data | Technical indicators (RSI, MACD, Bollinger) |
+| [crypto-sentiment-mcp](https://github.com/kukapay/crypto-sentiment-mcp) ⭐ **NEW** | Kukapay | market-data | Multi-source sentiment analysis |
+| [crypto-feargreed-mcp](https://github.com/kukapay/crypto-feargreed-mcp) ⭐ **NEW** | Kukapay | market-data | Fear & Greed Index |
+| [cryptopanic-mcp-server](https://github.com/kukapay/cryptopanic-mcp-server) | Kukapay | market-data | Crypto news aggregation |
+| [coinmarketcap-mcp](https://github.com/shinzo-labs/coinmarketcap-mcp) ⭐ **NEW** | Shinzo Labs | market-data | Complete CMC API |
+| [whale-tracker-mcp](https://github.com/kukapay/whale-tracker-mcp) | Kukapay | analytics | Large wallet tracking |
+| [mcp-web3-stats](https://github.com/crazyrabbitLTC/mcp-web3-stats) | crazyrabbitLTC | analytics | Dune Analytics integration |
+| [dexpaprika-mcp](https://github.com/coinpaprika/dexpaprika-mcp) | CoinPaprika | prices | DEX price data |
+| [algorand-mcp](https://github.com/GoPlausible/algorand-mcp) ⭐ **NEW** | GoPlausible | blockchain | 40+ Algorand tools |
+| [bybit-mcp-server](https://github.com/ethancod1ng/bybit-mcp-server) ⭐ **NEW** | ethancod1ng | exchange | Bybit API integration |
+| [bsc-mcp](https://github.com/TermiX-official/bsc-mcp) ⭐ **NEW** | TermiX | defi | BSC operations & security |
+| [onchain-mcp](https://github.com/bankless/onchain-mcp) | Bankless | defi | On-chain tools |
+| [mcp-free-usdc-transfer](https://github.com/magnetai/mcp-free-usdc-transfer) | MagnetAI | payments | Free USDC transfers |
+
+**All integrated projects maintain their original MIT licenses with full attribution.**  
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for detailed attribution and our modifications.
 
 ---
 

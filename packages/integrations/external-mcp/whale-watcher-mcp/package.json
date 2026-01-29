@@ -1,0 +1,13 @@
+{
+  "name": "@nirholas/whale-watcher-mcp",
+  "version": "1.0.0",
+  "description": "Whale wallet movement tracking MCP server",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/whale-watcher-mcp"
+  },
+  "keywords": ["nirholas", "whales", "tracking", "alerts", "mcp"]
+}

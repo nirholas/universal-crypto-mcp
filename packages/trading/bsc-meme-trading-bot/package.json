@@ -1,0 +1,62 @@
+{
+  "name": "@nirholas/bsc-meme-trading-bot",
+  "version": "1.0.0",
+  "description": "Full-featured meme coin trading bot for Binance Smart Chain - Auto-trade on PancakeSwap with advanced strategies by nirholas",
+  "author": "nirholas (Nich) <https://x.com/nichxbt>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "bsc-meme-bot": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bsc",
+    "binance-smart-chain",
+    "meme-coin",
+    "trading-bot",
+    "pancakeswap",
+    "defi",
+    "crypto-trading",
+    "automated-trading",
+    "nirholas"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/trading/bsc-meme-trading-bot"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/trading/bsc-meme-trading-bot#readme",
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@pancakeswap/sdk": "^5.7.0",
+    "ethers": "^6.13.4",
+    "axios": "^1.7.9",
+    "ws": "^8.18.0",
+    "node-cache": "^5.1.2",
+    "bignumber.js": "^9.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

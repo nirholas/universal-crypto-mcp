@@ -1,0 +1,17 @@
+{
+  "name": "@universal-crypto/quantum-resistant",
+  "version": "0.1.0",
+  "description": "Post-quantum cryptographic primitives for blockchain",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest"
+  },
+  "keywords": ["quantum", "post-quantum", "lattice", "hash-based", "signatures"],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.21.54"
+  }
+}

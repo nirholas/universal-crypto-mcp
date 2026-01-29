@@ -8,6 +8,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+#### 🏪 AI Service Marketplace (Major Feature)
+- **Complete marketplace ecosystem** for AI service monetization and discovery
+- **Smart Contract** (`AIServiceMarketplace.sol`):
+  - On-chain service registry with metadata
+  - Payment escrow with automatic settlement
+  - Reputation system with weighted ratings
+  - Subscription management with auto-renewal
+  - Dispute resolution mechanism
+  - Earnings withdrawal for service owners
+- **TypeScript SDK** (`@nirholas/universal-crypto-mcp-marketplace`):
+  - `MarketplaceService` class for service management
+  - `SubscriptionManager` for on-chain subscriptions
+  - Service discovery with advanced filtering
+  - Rating and review submission
+  - Analytics and metrics tracking
+  - Dispute filing and resolution
+- **REST API Server**:
+  - Express.js-based marketplace API
+  - Service registration and discovery endpoints
+  - Subscription management endpoints
+  - Rating and analytics endpoints
+  - Webhook support for events
+- **Flexible Pricing Models**:
+  - Pay-per-use pricing
+  - Daily, weekly, monthly, annual subscriptions
+  - Free tier support
+  - Multi-token payment support (USDC, DAI, etc.)
+- **Documentation**:
+  - Complete API reference
+  - Step-by-step tutorial
+  - Production-ready example (Weather AI service)
+  - Use case guides
+  - Best practices and security guidelines
+- **Testing**:
+  - Comprehensive unit tests
+  - Service registration tests
+  - Discovery and filtering tests
+  - Rating system tests
+  - Subscription tests
+
+#### Other Additions
 - CI/CD pipeline with GitHub Actions
 - Comprehensive test suite with Vitest
 - Security scanning with CodeQL

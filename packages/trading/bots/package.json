@@ -1,0 +1,62 @@
+{
+  "name": "@universal-crypto-mcp/trading-bots",
+  "version": "1.0.0",
+  "description": "Unified interface for popular open-source crypto trading bots - Maintained by nirholas",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "setup:all": "node scripts/setup-all-bots.js"
+  },
+  "keywords": [
+    "crypto",
+    "trading",
+    "bot",
+    "bitcoin",
+    "ethereum",
+    "binance",
+    "arbitrage",
+    "algorithmic-trading",
+    "mcp",
+    "ai-agents"
+  ],
+  "author": {
+    "name": "Nicholas",
+    "github": "nirholas",
+    "twitter": "nichxbt",
+    "role": "Integration Maintainer"
+  },
+  "contributors": [
+    "CryptoSignal Team (Crypto-Signal)",
+    "fabston (TradingView-Webhook-Bot)",
+    "CyberPunkMetalHead (Binance-News-Sentiment-Bot)",
+    "asavinov (intelligent-trading-bot)",
+    "ivopetiz (algotrading)",
+    "Roibal (Cryptocurrency-Trading-Bots-Python)",
+    "kelvinau (crypto-arbitrage)",
+    "pirate (crypto-trader)",
+    "TheFourGreatErrors (alpha-rptr)"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/trading/bots",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "ccxt": "^4.2.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  }
+}

@@ -56,12 +56,4 @@ export function Terminal({ lines, className }: TerminalProps) {
     </div>
   )
 }
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 1, repeat: Infinity }}
-            className="inline-block w-2 h-4 bg-green-400 ml-1"
-          />
-        )}
-      </div>
-    </div>
-  )
-}
+

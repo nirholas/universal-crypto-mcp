@@ -1,0 +1,17 @@
+{
+  "name": "@universal-crypto/intent-solver",
+  "version": "0.1.0",
+  "description": "Intent-based transaction solver with constraint satisfaction",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest"
+  },
+  "keywords": ["intent", "solver", "constraints", "optimization", "mev"],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.21.54"
+  }
+}

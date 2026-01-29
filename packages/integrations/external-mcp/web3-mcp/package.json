@@ -1,0 +1,29 @@
+{
+  "name": "@nirholas/web3-mcp",
+  "version": "1.0.0",
+  "description": "Web3 utilities and blockchain interactions MCP server",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/web3-mcp"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp",
+  "keywords": ["nirholas", "universal-crypto-mcp", "web3", "ethereum", "mcp"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "web3": "^4.0.0",
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
