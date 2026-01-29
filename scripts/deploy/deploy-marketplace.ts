@@ -43,7 +43,8 @@ const CONFIG = {
   votingDuration: 7n * 24n * 60n * 60n,       // 7 days
   quorumVotes: parseUnits('100', 18),         // 100 USDs worth of votes
   
-  // Mock USDs for testnet (deploy our own)
+  // Note: On mainnet, use the official USDs token address
+  // On testnet, this flag determines if we deploy a test ERC20 token
   deployMockUsds: true,
 };
 
@@ -51,8 +52,7 @@ const CONFIG = {
 //  Contract Bytecode (would be compiled from Foundry/Hardhat)
 // ═══════════════════════════════════════════════════════════════
 
-// NOTE(nich): In production, these would be imported from compiled artifacts
-// For now, we'll use placeholder deployment logic
+// NOTE: In production, these would be imported from compiled artifacts
 
 interface DeploymentResult {
   toolRegistry: Address;
@@ -119,31 +119,28 @@ async function main() {
   };
 
   try {
-    // Step 1: Deploy Mock USDs (testnet only)
+    // Step 1: Deploy Test USDs Token (testnet only)
     if (CONFIG.deployMockUsds) {
-      console.log('1️⃣  Deploying Mock USDs Token...');
-      // In production: deploy actual mock ERC20
-      deployments.usdsToken = '0x0000000000000000000000000000000000000001' as Address; // Placeholder
-      console.log(`   ✅ Mock USDs: ${deployments.usdsToken}`);
+      console.log('1️⃣  Deploying Test USDs Token...');
+      // TODO: Implement actual ERC20 contract deployment
+      // This will be replaced with proper contract deployment once Foundry/Hardhat compilation is set up
+      throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
     }
 
-    // Step 2: Deploy ToolStaking (needed by Registry)
+    // Step 2: Deploy ToolStaking
     console.log('2️⃣  Deploying ToolStaking...');
-    // In production: deploy actual contract
-    deployments.toolStaking = '0x0000000000000000000000000000000000000002' as Address; // Placeholder
-    console.log(`   ✅ ToolStaking: ${deployments.toolStaking}`);
+    // TODO: Implement actual contract deployment
+    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
 
     // Step 3: Deploy ToolRegistry
     console.log('3️⃣  Deploying ToolRegistry...');
-    // In production: deploy with initialize()
-    deployments.toolRegistry = '0x0000000000000000000000000000000000000003' as Address; // Placeholder
-    console.log(`   ✅ ToolRegistry: ${deployments.toolRegistry}`);
+    // TODO: Implement with initialize()
+    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
 
     // Step 4: Deploy RevenueRouter
     console.log('4️⃣  Deploying RevenueRouter...');
-    // In production: deploy with initialize()
-    deployments.revenueRouter = '0x0000000000000000000000000000000000000004' as Address; // Placeholder
-    console.log(`   ✅ RevenueRouter: ${deployments.revenueRouter}`);
+    // TODO: Implement with initialize()
+    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
 
     // Step 5: Grant roles
     console.log('5️⃣  Configuring roles...');

@@ -49,8 +49,15 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
-    "test": "vitest",
-    "prepublishOnly": "npm run build"
+    "lint:fix": "eslint src/ --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --config vitest.config.ts tests/unit",
+    "test:integration": "vitest run --config vitest.config.ts tests/integration",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "keywords": [
     "x402",
@@ -69,6 +76,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
+    "boxen": "^7.0.0",
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
     "dotenv": "^16.4.0",
@@ -76,6 +84,8 @@
     "express": "^4.18.0",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.0",
+    "gradient-string": "^2.0.0",
+    "inquirer": "^9.0.0",
     "ora": "^8.0.0",
     "viem": "^2.0.0",
     "zod": "^3.22.0"
@@ -84,6 +94,8 @@
     "@types/express": "^4.17.21",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "execa": "^8.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"

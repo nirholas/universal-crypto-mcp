@@ -76,7 +76,7 @@ export class LyraDiscovery {
    * 
    * @example
    * ```typescript
-   * const result = await discovery.discover("https://api.example.com");
+   * const result = await discovery.discover("https://api.lyra.finance");
    * console.log(`Protocol: ${result.protocol}`);
    * console.log(`Found ${result.tools.length} tools`);
    * ```
@@ -152,7 +152,7 @@ export class LyraDiscovery {
    * 
    * @example
    * ```typescript
-   * const analysis = await discovery.analyzeCompatibility("https://api.example.com");
+   * const analysis = await discovery.analyzeCompatibility("https://api.lyra.finance");
    * console.log(`MCP Compatible: ${analysis.mcpCompatible}`);
    * console.log(`Score: ${analysis.compatibilityScore}/100`);
    * ```
@@ -206,7 +206,7 @@ export class LyraDiscovery {
    * 
    * @example
    * ```typescript
-   * const config = await discovery.generateMcpConfig("https://api.example.com");
+   * const config = await discovery.generateMcpConfig("https://api.lyra.finance");
    * console.log(JSON.stringify(config.config, null, 2));
    * ```
    */
@@ -270,7 +270,7 @@ export class LyraDiscovery {
    * 
    * @example
    * ```typescript
-   * const assistance = await discovery.getFullAssistance("https://api.example.com");
+   * const assistance = await discovery.getFullAssistance("https://api.lyra.finance");
    * 
    * // Use generated code snippets
    * assistance.codeSnippets.forEach(snippet => {

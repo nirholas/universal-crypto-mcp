@@ -185,7 +185,7 @@ const registry = createOnChainRegistry(421614, undefined, walletClient);
 // Register a tool
 const { hash, toolId } = await registry.registerTool({
   name: 'my-ai-tool',
-  endpoint: 'https://api.example.com/tool',
+  endpoint: 'https://api.universal-crypto-mcp.com/tool',
   metadataURI: 'ipfs://QmXxx...',
   pricePerCall: '0.01', // 0.01 USDs
   revenueSplits: [

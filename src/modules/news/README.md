@@ -496,7 +496,7 @@ if (!valid) {
 
 ```bash
 # Required for discovery document
-PREMIUM_NEWS_API_URL=https://your-api.example.com
+PREMIUM_NEWS_API_URL=https://api.universal-crypto-mcp.com/news
 X402_PAY_TO_ADDRESS=0x1234...your-address
 ```
 

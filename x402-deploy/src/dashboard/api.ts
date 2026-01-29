@@ -145,6 +145,48 @@ export class DashboardAPI {
     return response.json();
   }
 
+  /**
+   * Get pending earnings from escrow
+   */
+  async getPendingEarnings(
+    projectName: string
+  ): Promise<{
+    pending: number;
+    escrowBalance: string;
+    pendingWithdrawals: Array<{
+      amount: string;
+      timestamp: number;
+      status: "pending" | "processing" | "completed";
+    }>;
+  }> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/projects/${projectName}/escrow`,
+        {
+          headers: this.getHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        // Return default if endpoint doesn't exist yet
+        return {
+          pending: 0,
+          escrowBalance: "0",
+          pendingWithdrawals: [],
+        };
+      }
+
+      return response.json();
+    } catch (error) {
+      // Gracefully handle API errors
+      return {
+        pending: 0,
+        escrowBalance: "0",
+        pendingWithdrawals: [],
+      };
+    }
+  }
+
   private getHeaders(): HeadersInit {
     const headers: HeadersInit = {
       "Content-Type": "application/json",

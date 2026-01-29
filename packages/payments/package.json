@@ -4,7 +4,11 @@
   "private": true,
   "description": "Payment infrastructure - x402 protocol, USDC transfers, stablecoin tools",
   "workspaces": [
-    "x402"
+    "shared",
+    "x402",
+    "x402-protocol",
+    "x402-ecosystem",
+    "x402-stablecoin"
   ],
   "scripts": {
     "build": "pnpm -r build",

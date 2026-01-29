@@ -1,0 +1,5 @@
+{
+  "github.copilot.chat.runCommand.autoCloseTerminal": true,
+  "terminal.integrated.enablePersistentSessions": false,
+  "terminal.integrated.allowChords": false
+}

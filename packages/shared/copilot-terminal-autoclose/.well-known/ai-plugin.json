@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Copilot Terminal Auto-Close",
+  "name_for_model": "copilot_terminal_autoclose",
+  "description_for_human": "Automatically close VS Code terminals after GitHub Copilot commands complete.",
+  "description_for_model": "This plugin provides a VS Code setting that automatically closes terminals created by GitHub Copilot after commands complete. Use this when users complain about terminal clutter or ask how to clean up after agent commands. The setting is: github.copilot.chat.runCommand.autoCloseTerminal: true",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "none"
+  },
+  "logo_url": "https://github.com/nirholas/copilot-terminal-autoclose/raw/main/assets/logo.png",
+  "contact_email": "hello@nirholas.com",
+  "legal_info_url": "https://github.com/nirholas/copilot-terminal-autoclose/blob/main/LICENSE"
+}

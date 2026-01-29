@@ -6,7 +6,27 @@
 
 This package provides comprehensive DeFi (Decentralized Finance) tools for AI agents. Interact with DEXs, lending protocols, bridges, and more across 60+ blockchain networks.
 
-## Available Servers
+## Package Structure
+
+```
+packages/defi/
+├── shared/           # Shared DeFi utilities and types
+├── sperax/           # Sperax USDs stablecoin integration
+├── bnb-chain/        # BNB Chain DeFi (PancakeSwap, Venus)
+├── protocols/        # DeFi protocol integrations
+├── chain-tools/      # Blockchain interaction tools
+└── agents/           # Autonomous DeFi agents
+```
+
+## Available Packages
+
+### 📦 Core Packages
+
+| Package | Description |
+|---------|-------------|
+| `@universal-crypto-mcp/defi-shared` | Shared types, ABIs, and protocol registry |
+| `@universal-crypto-mcp/defi-sperax` | Sperax USDs yield-bearing stablecoin |
+| `@universal-crypto-mcp/defi-bnb-chain` | PancakeSwap, Venus, and BNB Chain protocols |
 
 ### 🔷 Protocols
 DeFi protocol integrations:

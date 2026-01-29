@@ -1,0 +1,138 @@
+# Universal Crypto MCP - Wallets
+
+Cross-chain wallet management for Universal Crypto MCP, supporting EVM chains (Ethereum, Polygon, Base, etc.) and Solana.
+
+## Packages
+
+| Package | Description |
+|---------|-------------|
+| [@universal-crypto-mcp/wallets-shared](./shared/) | Shared interfaces, types, and utilities |
+| [@universal-crypto-mcp/wallet-evm](./evm/) | EVM wallet tools (Ethereum, Polygon, Arbitrum, etc.) |
+| [@universal-crypto-mcp/wallet-solana](./solana/) | Solana wallet tools |
+
+## Installation
+
+```bash
+# Install all wallet packages
+pnpm add @universal-crypto-mcp/wallet-evm @universal-crypto-mcp/wallet-solana
+
+# Or install individually
+pnpm add @universal-crypto-mcp/wallet-evm
+pnpm add @universal-crypto-mcp/wallet-solana
+```
+
+## Quick Start
+
+### EVM Wallet
+
+```typescript
+import { EVMWallet, registerAllEVMTools } from "@universal-crypto-mcp/wallet-evm";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+// Create wallet
+const wallet = new EVMWallet({
+  privateKey: "0x...",
+  chainId: "eip155:1", // Ethereum mainnet
+});
+
+// Register MCP tools
+const server = new McpServer({ name: "my-server" });
+registerAllEVMTools(server, wallet);
+```
+
+### Solana Wallet
+
+```typescript
+import { SolanaWallet, registerAllSolanaTools } from "@universal-crypto-mcp/wallet-solana";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+// Create wallet
+const wallet = new SolanaWallet({
+  privateKey: "base58-private-key",
+  network: "mainnet",
+});
+
+// Register MCP tools
+const server = new McpServer({ name: "my-server" });
+registerAllSolanaTools(server, wallet);
+```
+
+## Shared Interface
+
+All wallets implement the `WalletProvider` interface from `@universal-crypto-mcp/wallets-shared`:
+
+```typescript
+interface WalletProvider {
+  readonly chain: string;
+  readonly address: string;
+  
+  // Balance
+  getBalance(): Promise<Balance>;
+  getTokenBalance(token: string): Promise<Balance>;
+  
+  // Transfers
+  transfer(to: string, amount: string): Promise<TransactionResult>;
+  transferToken(token: string, to: string, amount: string): Promise<TransactionResult>;
+  
+  // Signing
+  signMessage(message: string): Promise<string>;
+  signTypedData(data: TypedData): Promise<string>;
+  
+  // Transactions
+  sendTransaction(tx: TransactionRequest): Promise<TransactionResult>;
+}
+```
+
+## MCP Tools
+
+### EVM Tools
+
+| Tool | Description |
+|------|-------------|
+| `evm_get_balance` | Get native token balance |
+| `evm_get_token_balance` | Get ERC20 token balance |
+| `evm_get_token_info` | Get ERC20 token information |
+| `evm_transfer` | Transfer native tokens |
+| `evm_transfer_token` | Transfer ERC20 tokens |
+| `evm_sign_message` | Sign a message (EIP-191) |
+| `evm_sign_typed_data` | Sign typed data (EIP-712) |
+| `evm_approve_token` | Approve token spending |
+| `evm_token_allowance` | Check token allowance |
+| `evm_get_nft` | Get NFT information |
+| `evm_nft_balance` | Get NFT balance |
+| `evm_transfer_nft` | Transfer an NFT |
+
+### Solana Tools
+
+| Tool | Description |
+|------|-------------|
+| `solana_get_balance` | Get SOL balance |
+| `solana_get_token_balance` | Get SPL token balance |
+| `solana_get_token_info` | Get SPL token information |
+| `solana_transfer` | Transfer SOL |
+| `solana_transfer_token` | Transfer SPL tokens |
+| `solana_sign_message` | Sign a message |
+| `solana_get_address` | Get wallet address |
+| `solana_get_token_account` | Get associated token account |
+| `solana_create_token_account` | Create token account |
+| `solana_get_nft` | Get NFT information |
+| `solana_transfer_nft` | Transfer an NFT |
+| `solana_request_airdrop` | Request airdrop (devnet/testnet) |
+
+## Security
+
+⚠️ **IMPORTANT**: These tools handle private keys. Never expose private keys in logs, error messages, or client-side code.
+
+- Store private keys in environment variables
+- Use hardware wallets for production
+- Test on testnets before mainnet
+- Review all transactions before signing
+
+## License
+
+Apache-2.0
+
+## Author
+
+- [nich](https://github.com/nirholas)
+- [@nichxbt](https://x.com/nichxbt)

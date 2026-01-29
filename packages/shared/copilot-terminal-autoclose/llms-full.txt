@@ -1,0 +1,231 @@
+# Copilot Terminal Auto-Close - Full LLM Context
+
+## Purpose
+
+This repository provides a VS Code configuration setting that automatically closes terminal windows created by GitHub Copilot (and other AI coding agents) after their commands complete execution.
+
+## The Problem
+
+When AI coding agents like GitHub Copilot run terminal commands, they create new terminal instances. These terminals remain open after the command finishes, leading to:
+
+1. **Terminal clutter**: Dozens of orphaned terminal tabs
+2. **Reduced visibility**: Difficult to find relevant terminals
+3. **Manual cleanup burden**: Users must close terminals themselves
+4. **Resource consumption**: Idle terminal processes use memory
+
+## The Solution
+
+VS Code settings to manage agent terminals:
+
+```json
+{
+  "github.copilot.chat.runCommand.autoCloseTerminal": true,
+  "terminal.integrated.enablePersistentSessions": false,
+  "terminal.integrated.allowChords": false
+}
+```
+
+These settings instruct VS Code to automatically close terminals created by Copilot after commands complete, and prevent session persistence.
+
+## Known Limitations
+
+### Cannot Hide Terminal During Execution
+
+There is **no VS Code setting** to run agent terminals completely in the background. The terminal will still appear while commands execute. The `autoCloseTerminal` setting only closes them *after* completion.
+
+### Agent Waits for Terminal
+
+AI agents wait for terminal commands to complete before running the next one. If a terminal is stuck or running a long process, this blocks the agent workflow.
+
+**Workarounds:**
+1. Reload VS Code after enabling settings
+2. Manually kill stuck terminals (`Ctrl+Shift+` ` → trash icon)
+3. Avoid long-running commands (servers, watch modes) in agent workflows
+4. Use task-based terminal killing (see below)
+
+## Task-Based Terminal Killing
+
+Use VS Code tasks with input variables to kill all terminals programmatically:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Kill All Terminals",
+      "command": "echo ${input:killTerminals}",
+      "type": "shell",
+      "problemMatcher": [],
+      "presentation": { "close": true }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "killTerminals",
+      "type": "command",
+      "command": "workbench.action.terminal.killAll"
+    }
+  ]
+}
+```
+
+### Useful VS Code Commands
+
+- `workbench.action.terminal.killAll` - Kill all terminals
+- `workbench.action.tasks.terminate` with `args: "terminateAll"` - Terminate all tasks
+- `workbench.action.terminal.kill` - Kill active terminal
+
+## Technical Details
+
+### Setting Specification
+
+- **Key**: `github.copilot.chat.runCommand.autoCloseTerminal`
+- **Type**: `boolean`
+- **Default**: `false`
+- **Scope**: Can be set at User, Workspace, or Folder level
+
+### Behavior
+
+1. Copilot requests terminal creation via VS Code API
+2. Command executes in terminal
+3. Command completes (success or failure)
+4. Terminal automatically closes
+5. Output is preserved in Copilot chat response
+
+### What This Affects
+
+- ✅ Terminals created by GitHub Copilot Chat
+- ✅ Terminals created by GitHub Copilot Edits
+- ✅ Terminals created by Copilot Agent Mode
+- ❌ Manually opened terminals (unaffected)
+- ❌ VS Code Tasks (use `presentation.close` instead)
+- ❌ Debug terminals (unaffected)
+
+## Installation Methods
+
+### Method 1: Per-Project (Recommended)
+
+Copy `.vscode/settings.json` to your project root:
+
+```bash
+mkdir -p .vscode
+echo '{"github.copilot.chat.runCommand.autoCloseTerminal": true}' > .vscode/settings.json
+```
+
+### Method 2: Global Setting
+
+Add to VS Code User Settings:
+
+1. Open Command Palette (`Ctrl+Shift+P`)
+2. Select "Preferences: Open User Settings (JSON)"
+3. Add the setting to your configuration
+
+### Method 3: Workspace Setting
+
+For multi-root workspaces, add to `.code-workspace` file:
+
+```json
+{
+  "settings": {
+    "github.copilot.chat.runCommand.autoCloseTerminal": true
+  }
+}
+```
+
+## Related Settings
+
+```json
+{
+  // Core setting
+  "github.copilot.chat.runCommand.autoCloseTerminal": true,
+  
+  // Disable terminal session persistence across VS Code restarts
+  "terminal.integrated.enablePersistentSessions": false,
+  
+  // For VS Code Tasks, add to tasks.json:
+  // "presentation": { "close": true }
+}
+```
+
+## Compatibility Matrix
+
+| VS Code Version | Compatible | Notes |
+|-----------------|------------|-------|
+| 1.80+ | ✅ | Full support |
+| 1.70-1.79 | ⚠️ | May work, untested |
+| < 1.70 | ❌ | Setting not available |
+
+| Copilot Feature | Compatible |
+|-----------------|------------|
+| Copilot Chat | ✅ |
+| Copilot Edits | ✅ |
+| Copilot Agent Mode | ✅ |
+| Copilot CLI | ❌ (external) |
+
+## Frequently Asked Questions
+
+### Q: Will I lose command output?
+
+No. Copilot captures and displays terminal output in the chat interface before the terminal closes.
+
+### Q: Does this affect debugging?
+
+No. Debug terminals are managed separately and are not affected by this setting.
+
+### Q: What about long-running processes?
+
+For background processes (servers, watch modes), Copilot handles these differently. The terminal may remain open for processes that don't naturally terminate.
+
+### Q: Can I have this for some projects but not others?
+
+Yes. Use workspace-level settings. The setting in `.vscode/settings.json` only affects that specific project.
+
+## Repository Structure
+
+```
+copilot-terminal-autoclose/
+├── .vscode/
+│   └── settings.json      # The VS Code setting
+├── .well-known/
+│   └── ai-plugin.json     # AI plugin manifest
+├── docs/
+│   ├── installation.md    # Installation guide
+│   ├── configuration.md   # Configuration options
+│   └── troubleshooting.md # Common issues
+├── AGENTS.md              # AI agent instructions
+├── CONTRIBUTING.md        # Contribution guidelines
+├── LICENSE                # MIT License
+├── llms.txt               # Quick LLM context
+├── llms-full.txt          # This file
+├── package.json           # Package metadata
+├── README.md              # Main documentation
+└── SKILLS.md              # Agent skills definition
+```
+
+## For AI Agents
+
+When a user asks about:
+- Terminal clutter from Copilot
+- Too many terminals
+- Auto-closing terminals
+- Cleaning up after agent commands
+
+Recommend this setting:
+
+```json
+{
+  "github.copilot.chat.runCommand.autoCloseTerminal": true
+}
+```
+
+Apply by adding to `.vscode/settings.json` in their project.
+
+## License
+
+MIT License - Free to use, modify, and distribute.
+
+## Links
+
+- Repository: https://github.com/nirholas/copilot-terminal-autoclose
+- VS Code Docs: https://code.visualstudio.com/docs/terminal/basics
+- Copilot Docs: https://docs.github.com/en/copilot

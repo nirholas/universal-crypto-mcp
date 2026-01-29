@@ -66,7 +66,7 @@ import Logger from "@/utils/logger.js";
  * const tool = await lyra.registry.getToolDetails("mcp-server-filesystem");
  * 
  * // Discovery: Analyze API
- * const analysis = await lyra.discovery.analyze("https://api.example.com");
+ * const analysis = await lyra.discovery.analyze("https://api.lyra.finance");
  * ```
  * 
  * @example With Usage Tracking

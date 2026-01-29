@@ -1,14 +1,18 @@
 {
-  "name": "@nirholas/crypto-wallets",
+  "name": "@universal-crypto-mcp/wallets",
   "version": "1.0.0",
   "private": true,
-  "description": "Wallet management toolkits - EVM and Solana",
+  "description": "Wallet management toolkits - EVM and Solana for Universal Crypto MCP",
   "workspaces": [
+    "shared",
     "evm",
     "solana"
   ],
   "scripts": {
     "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @universal-crypto-mcp/wallets-shared build",
+    "build:evm": "pnpm --filter @universal-crypto-mcp/wallet-evm build",
+    "build:solana": "pnpm --filter @universal-crypto-mcp/wallet-solana build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint"

@@ -242,8 +242,54 @@ export function middleware(request: NextRequest) {
   
   // TODO: Verify payment with facilitator
   // For now, pass through with payment header
+  const facilitatorUrl = process.env.X402_FACILITATOR_URL || 'https://facilitator.x402.dev';
   
-  return NextResponse.next();
+  try {
+    const paymentData = JSON.parse(Buffer.from(paymentHeader, 'base64').toString());
+    
+    const verifyResponse = await fetch(\`\${facilitatorUrl}/verify\`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        payment: paymentData,
+        expectedPrice: price,
+        expectedPayTo: config.payment.wallet,
+        network: config.payment.network,
+      }),
+    });
+
+    if (!verifyResponse.ok) {
+      const error = await verifyResponse.json();
+      return new Response(
+        JSON.stringify({
+          error: 'payment_invalid',
+          message: error.message || 'Payment verification failed',
+        }),
+        { status: 402, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const verification = await verifyResponse.json();
+    if (!verification.valid) {
+      return new Response(
+        JSON.stringify({
+          error: 'payment_invalid',
+          message: verification.error || 'Payment invalid',
+        }),
+        { status: 402, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Payment verified - add payer info to headers and continue
+    const response = NextResponse.next();
+    response.headers.set('x-payment-verified', 'true');
+    response.headers.set('x-payer-address', verification.payer || '');
+    response.headers.set('x-payment-amount', verification.amount || '');
+    return response;
+  } catch (error) {
+    console.error('[x402] Payment verification error:', error);
+    return NextResponse.next();
+  }
 }
 
 export const config = {

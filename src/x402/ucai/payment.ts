@@ -394,16 +394,72 @@ export class UCAIPaymentService {
    * Refund a payment (in case of service failure)
    */
   async refundPayment(paymentId: string): Promise<boolean> {
-    // In a real implementation, this would interact with the payment channel
-    // to return funds for failed services
     Logger.info(`Refund requested for payment ${paymentId}`)
     
     if (paymentId.startsWith("sim_")) {
       return true // Simulated payments don't need refunds
     }
 
-    // TODO: Implement actual refund logic
-    return true
+    try {
+      const { walletClient, publicClient, account } = this.getClients()
+
+      if (!walletClient || !account) {
+        throw new Error("Wallet not configured for refunds")
+      }
+
+      // Parse payment ID to extract transaction hash and channel info
+      if (paymentId.startsWith("chan_") && this.channelId) {
+        // For channel payments, issue a refund through the channel contract
+        const refundTx = await walletClient.writeContract({
+          address: this.contracts.paymentChannel,
+          abi: [
+            {
+              name: "refund",
+              type: "function",
+              inputs: [
+                { name: "channelId", type: "bytes32" },
+                { name: "paymentIndex", type: "uint256" },
+              ],
+              outputs: [],
+              stateMutability: "nonpayable",
+            },
+          ] as const,
+          functionName: "refund",
+          args: [
+            this.channelId,
+            BigInt(paymentId.split("_")[2] || 0),
+          ],
+        })
+
+        await publicClient.waitForTransactionReceipt({ hash: refundTx })
+        Logger.info(`Channel refund successful: ${refundTx}`)
+        return true
+      } else if (paymentId.startsWith("pay_")) {
+        // For direct payments, transfer USDs back to the payer
+        const parts = paymentId.split("_")
+        const txHash = parts[1] as Hash
+        const amount = parts[2] ? BigInt(parts[2]) : 0n
+
+        if (amount > 0n) {
+          const refundTx = await walletClient.writeContract({
+            address: this.contracts.usds,
+            abi: ERC20_ABI,
+            functionName: "transfer",
+            args: [account.address, amount],
+          })
+
+          await publicClient.waitForTransactionReceipt({ hash: refundTx })
+          Logger.info(`Direct refund successful: ${refundTx}`)
+          return true
+        }
+      }
+
+      Logger.warn(`Unable to process refund for payment ${paymentId}`)
+      return false
+    } catch (error) {
+      Logger.error("Refund failed:", error)
+      return false
+    }
   }
 
   /**

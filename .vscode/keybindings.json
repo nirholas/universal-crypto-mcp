@@ -1,0 +1,11 @@
+[
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.terminal.killAll",
+    "when": "terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+alt+t",
+    "command": "workbench.action.tasks.terminate"
+  }
+]

@@ -177,7 +177,7 @@ Response:
 ```json
 {
   "id": "user-id",
-  "email": "user@example.com",
+  "email": "contact@universal-crypto-mcp.com",
   "name": "User Name"
 }
 ```

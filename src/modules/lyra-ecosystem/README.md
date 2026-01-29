@@ -134,7 +134,7 @@ console.log(`Tool ID: ${result.toolId}`);
 ```typescript
 // Free: Discover API
 const discovered = await lyra.discovery.discover(
-  "https://api.example.com"
+  "https://api.lyra.finance"
 );
 console.log(`Protocol: ${discovered.protocol}`);
 

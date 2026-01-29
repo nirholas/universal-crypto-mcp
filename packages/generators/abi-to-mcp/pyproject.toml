@@ -1,7 +1,7 @@
 [project]
-name = "abi-to-mcp"
-version = "0.1.0"
-description = "UCAI — The ABI-to-MCP Server Generator. Convert smart contract ABIs to AI-ready MCP servers."
+name = "universal-crypto-mcp-abi-to-mcp"
+version = "1.0.0"
+description = "ABI-to-MCP Server Generator - Convert smart contract ABIs to AI-ready MCP servers"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
@@ -9,8 +9,7 @@ authors = [
     { name = "nich", email = "nirholas@users.noreply.github.com" }
 ]
 keywords = [
-    "ucai",
-    "universal-contract-ai-interface",
+    "universal-crypto-mcp",
     "mcp",
     "model-context-protocol",
     "ethereum",
@@ -22,7 +21,6 @@ keywords = [
     "llm",
     "claude",
     "defi",
-    "solana",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": [],
+      "presentation": {
+        "close": true
+      }
+    },
+    {
+      "label": "Kill All Terminals",
+      "command": "echo ${input:killTerminals}",
+      "type": "shell", 
+      "problemMatcher": [],
+      "presentation": {
+        "close": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    },
+    {
+      "id": "killTerminals",
+      "type": "command",
+      "command": "workbench.action.terminal.killAll"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "close": true,
+    "reveal": "always",
+    "panel": "shared"
+  },
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "pnpm run build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": { "close": true }
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "pnpm run test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": { "close": true }
+    },
+    {
+      "label": "test:coverage",
+      "type": "shell",
+      "command": "pnpm run test:coverage",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "test:e2e",
+      "type": "shell",
+      "command": "pnpm run test:e2e",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "pnpm run lint",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "lint:fix",
+      "type": "shell",
+      "command": "pnpm run lint:fix",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "format",
+      "type": "shell",
+      "command": "pnpm run format",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "format:check",
+      "type": "shell",
+      "command": "pnpm run format:check",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "pnpm run clean",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "dev",
+      "type": "shell",
+      "command": "pnpm run dev",
+      "isBackground": true,
+      "presentation": { "close": false }
+    },
+    {
+      "label": "start",
+      "type": "shell",
+      "command": "pnpm run start",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "ci",
+      "type": "shell",
+      "command": "pnpm run ci",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "docs",
+      "type": "shell",
+      "command": "pnpm run docs",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "git:status",
+      "type": "shell",
+      "command": "git status",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "git:pull",
+      "type": "shell",
+      "command": "git pull",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "git:push",
+      "type": "shell",
+      "command": "git push",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "install",
+      "type": "shell",
+      "command": "pnpm install",
+      "presentation": { "close": true }
+    },
+    {
+      "label": "Kill All Terminals",
+      "command": "echo ${input:killTerminals}",
+      "type": "shell",
+      "problemMatcher": [],
+      "presentation": { "close": true }
+    },
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": [],
+      "presentation": { "close": true }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "killTerminals",
+      "type": "command",
+      "command": "workbench.action.terminal.killAll"
+    },
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    }
+  ]
+}

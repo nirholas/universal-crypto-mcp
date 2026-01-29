@@ -217,8 +217,8 @@ Claude: 🔍 Running security analysis...
 | **GitHub Repository** | github.com/nirholas/universal-crypto-mcp |
 | **npm Package** | npmjs.com/package/@nirholas/universal-crypto-mcp |
 | **x402 Documentation** | github.com/nirholas/universal-crypto-mcp/tree/main/x402 |
-| **Full Documentation** | (Coming Soon) |
-| **Demo Video** | (Coming Soon) |
+| **Full Documentation** | github.com/nirholas/universal-crypto-mcp/tree/main/docs |
+| **Demo Video** | github.com/nirholas/universal-crypto-mcp#demo |
 
 ---
 

@@ -6,15 +6,46 @@
 
 This package provides wallet management tools for AI agents across multiple blockchain ecosystems. Manage keys, sign transactions, check balances, and interact with on-chain assets.
 
-## Available Servers
+## Package Structure
+
+```
+packages/wallets/
+├── shared/           # Shared interfaces, types, and utilities
+│   ├── src/
+│   │   ├── interfaces.ts   # Common WalletProvider interface
+│   │   ├── types.ts        # Zod schemas for validation
+│   │   └── utils.ts        # Utility functions
+│   └── package.json
+├── evm/              # EVM wallet implementation
+│   ├── src/
+│   │   ├── wallet.ts       # EVMWallet class
+│   │   ├── types.ts        # EVM-specific types
+│   │   ├── tools/          # MCP tool registrations
+│   │   └── providers/      # Viem provider adapters
+│   └── package.json
+└── solana/           # Solana wallet implementation
+    ├── src/
+    │   ├── wallet.ts       # SolanaWallet class
+    │   ├── types.ts        # Solana-specific types
+    │   └── tools/          # MCP tool registrations
+    └── package.json
+```
+
+## Available Packages
+
+| Package | Description |
+|---------|-------------|
+| `@universal-crypto-mcp/wallets-shared` | Shared interfaces, types, and utilities |
+| `@universal-crypto-mcp/wallet-evm` | EVM wallet tools (Ethereum, Polygon, etc.) |
+| `@universal-crypto-mcp/wallet-solana` | Solana wallet tools |
 
 ### 🔷 EVM Wallet Toolkit
 Ethereum and EVM-compatible wallet tools:
 - HD wallet generation and management
 - Transaction signing and broadcasting
 - Token transfers (ETH, ERC-20, ERC-721, ERC-1155)
-- Message signing
-- Multi-chain support
+- Message signing (EIP-191, EIP-712)
+- Multi-chain support (Ethereum, Polygon, Arbitrum, Base, Optimism, BSC)
 
 ### 🟣 Solana Wallet Toolkit
 Solana ecosystem wallet tools:
@@ -22,7 +53,7 @@ Solana ecosystem wallet tools:
 - SOL and SPL token transfers
 - Transaction building and signing
 - Associated Token Accounts
-- Program interaction
+- NFT operations
 
 ## Installation
 
@@ -31,18 +62,18 @@ Solana ecosystem wallet tools:
 pnpm install
 
 # Build wallet packages
-pnpm --filter "@nirholas/crypto-wallets" build
+pnpm --filter "@universal-crypto-mcp/wallets" build
 ```
 
 ## Configuration
 
 ```bash
-# EVM
-PRIVATE_KEY=0x...  # Or mnemonic
-ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+# EVM - Use your actual private key (never commit to version control)
+EVM_PRIVATE_KEY=your_actual_private_key_here
+ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/your_alchemy_api_key
 
-# Solana
-SOLANA_PRIVATE_KEY=base58_encoded_key
+# Solana - Use your actual base58 encoded private key
+SOLANA_PRIVATE_KEY=your_actual_base58_private_key_here
 SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
 ```
 
@@ -57,15 +88,16 @@ SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
       "command": "node",
       "args": ["packages/wallets/evm/dist/index.js"],
       "env": {
-        "PRIVATE_KEY": "your_key",
-        "ETHEREUM_RPC_URL": "your_rpc"
+        "EVM_PRIVATE_KEY": "your_actual_evm_private_key_with_0x_prefix",
+        "ETHEREUM_RPC_URL": "https://eth-mainnet.g.alchemy.com/v2/your_api_key"
       }
     },
     "solana-wallet": {
       "command": "node",
       "args": ["packages/wallets/solana/dist/index.js"],
       "env": {
-        "SOLANA_PRIVATE_KEY": "your_key"
+        "SOLANA_PRIVATE_KEY": "your_actual_base58_solana_private_key",
+        "SOLANA_RPC_URL": "https://api.mainnet-beta.solana.com"
       }
     }
   }

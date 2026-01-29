@@ -4,6 +4,9 @@
   "private": true,
   "description": "DeFi protocols and on-chain tools - 60+ networks, DEX aggregation, lending, staking",
   "workspaces": [
+    "shared",
+    "sperax",
+    "bnb-chain",
     "protocols",
     "chain-tools",
     "agents"

@@ -20,7 +20,7 @@ const tool = await toolRegistry.registerTool({
   name: "weather-premium",
   displayName: "Premium Weather API",
   description: "Real-time weather with 1-hour forecasts",
-  endpoint: "https://weather.example.com/api",
+  endpoint: "https://api.universal-crypto-mcp.com/tools/weather",
   category: "data",
   pricing: {
     model: "per-call",
@@ -244,7 +244,7 @@ await toolRegistry.registerTool({
   name: "mcp-notify-premium",
   displayName: "Premium Notifications",
   description: "Real-time alerts for crypto events",
-  endpoint: "https://notify.example.com/api",
+  endpoint: "https://api.universal-crypto-mcp.com/tools/notify",
   category: "notifications",
   pricing: {
     model: "subscription",

@@ -1,0 +1,46 @@
+{
+  "name": "@universal-crypto-mcp/x402-ecosystem",
+  "version": "1.0.0",
+  "description": "x402 ecosystem utilities for AI agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./agent": "./dist/agent.js",
+    "./marketplace": "./dist/marketplace.js",
+    "./premium": "./dist/premium.js",
+    "./yield": "./dist/yield.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@universal-crypto-mcp/payments-shared": "workspace:*",
+    "@universal-crypto-mcp/defi-sperax": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "viem": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/payments/x402-ecosystem"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "x402",
+    "payments",
+    "ai-agents",
+    "usdc"
+  ]
+}

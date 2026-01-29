@@ -71,9 +71,9 @@
     "directory": "packages/defi/protocols"
   },
   "bugs": {
-    "url": "https://github.com/mcpdotdirect/evm-mcp-server/issues"
+    "url": "https://github.com/nirholas/evm-mcp-server/issues"
   },
-  "homepage": "https://github.com/mcpdotdirect/evm-mcp-server#readme",
+  "homepage": "https://github.com/nirholas/evm-mcp-server#readme",
   "publishConfig": {
     "access": "public"
   },

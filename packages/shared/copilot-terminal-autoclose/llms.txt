@@ -1,0 +1,33 @@
+# Copilot Terminal Auto-Close
+
+> VS Code setting to auto-close terminals after GitHub Copilot commands complete.
+
+## Quick Setup
+
+Add to `.vscode/settings.json`:
+
+```json
+{
+  "github.copilot.chat.runCommand.autoCloseTerminal": true,
+  "terminal.integrated.enablePersistentSessions": false,
+  "terminal.integrated.allowChords": false
+}
+```
+
+## What It Does
+
+- Automatically closes terminals created by Copilot after commands finish
+- Prevents terminal clutter from agent operations
+- Does NOT affect manual terminals
+
+## Limitations
+
+- Terminal still opens during execution (no way to hide it)
+- Agent waits for terminal completion before next command
+- Reload VS Code after enabling for settings to take effect
+
+## Files
+
+- `.vscode/settings.json` - The settings
+- `README.md` - Full documentation
+- `AGENTS.md` - Agent instructions

@@ -4,7 +4,7 @@
 
 <!-- Maintained by nicholas | ID: 14.9.3.8 -->
 
-Complete reference for all SperaxOS MCP tools.
+Complete reference for all Universal Crypto MCP tools.
 
 ---
 

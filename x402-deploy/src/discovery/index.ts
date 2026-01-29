@@ -101,3 +101,38 @@ export {
   honoDiscoveryMiddleware,
   type DiscoveryMiddlewareOptions,
 } from "./middleware.js";
+
+// x402scan integration
+export {
+  X402ScanClient,
+  createRegistrationFromConfig,
+  type X402ScanRegistration,
+  type X402ScanSearchResult,
+  type X402ScanVerifyResult,
+} from "./x402scan.js";
+
+// AI Instructions
+export {
+  generateAIInstructions,
+  generateEndpointDocs,
+  generateLlmsTxt,
+  generateRobotsTxt,
+  publishToMCPRegistry,
+  generateMCPManifest,
+  type AIInstructions,
+  type EndpointDoc,
+  type ParameterDoc,
+  type X402APIConfig,
+} from "./ai-instructions.js";
+
+// OpenAPI Spec Generator
+export {
+  generateOpenAPISpec,
+  generateOpenAPIYaml,
+  validateOpenAPISpec,
+  mergeOpenAPISpecs,
+  type OpenAPIConfig,
+  type OpenAPISpec,
+  type PathOperation,
+  type RoutePrice,
+} from "./openapi.js";

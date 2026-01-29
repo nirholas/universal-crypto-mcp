@@ -1,0 +1,38 @@
+{
+  "name": "@universal-crypto-mcp/payments-shared",
+  "version": "1.0.0",
+  "description": "Shared payment utilities and types for MCP",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/payments/shared"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "payments",
+    "usdc",
+    "stablecoin"
+  ]
+}

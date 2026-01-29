@@ -6,6 +6,25 @@
 
 This package provides payment infrastructure for AI agents using the x402 payment protocol. Enable pay-per-call APIs, micro-payments, and stablecoin transfers.
 
+## Package Structure
+
+```
+packages/payments/
+├── shared/           # Shared payment types and utilities
+├── x402/             # Full x402 reference implementation
+├── x402-protocol/    # Reference to official Coinbase x402
+├── x402-ecosystem/   # Ecosystem utilities (PayableAgent, marketplace)
+└── x402-stablecoin/  # Stablecoin utilities (USDC, USDs, bridging)
+```
+
+## Available Packages
+
+| Package | Description |
+|---------|-------------|
+| `@universal-crypto-mcp/payments-shared` | Shared payment types and utilities |
+| `@universal-crypto-mcp/x402-ecosystem` | PayableAgent, marketplace, premium tiers |
+| `@universal-crypto-mcp/x402-stablecoin` | USDC, USDs, cross-chain bridging |
+
 ## What is x402?
 
 x402 is an HTTP-native payment protocol that uses the `402 Payment Required` status code. It enables:

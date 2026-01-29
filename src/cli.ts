@@ -57,8 +57,9 @@ const BANNER_COMPACT = `
 // Loading spinner frames
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
-// Mock data for CLI demo (in production, these would call actual APIs)
-const mockPrices: Record<string, { price: number; change24h: number }> = {
+// Demo data for CLI (replace with actual API calls for production use)
+// These prices are illustrative - integrate with market data APIs for live prices
+const demoPrices: Record<string, { price: number; change24h: number }> = {
   BTC: { price: 95000, change24h: 2.5 },
   ETH: { price: 3500, change24h: 1.8 },
   SOL: { price: 180, change24h: 4.2 },
@@ -72,7 +73,7 @@ const mockPrices: Record<string, { price: number; change24h: number }> = {
 }
 
 async function getPrice(symbol: string): Promise<string> {
-  const data = mockPrices[symbol.toUpperCase()]
+  const data = demoPrices[symbol.toUpperCase()]
   if (!data) {
     return `${c("red", "✗")} Unknown symbol: ${symbol}`
   }
@@ -92,7 +93,7 @@ async function getMarketOverview(): Promise<string> {
     c("bold", "Top Coins:"),
   ]
 
-  for (const [symbol, data] of Object.entries(mockPrices).slice(0, 5)) {
+  for (const [symbol, data] of Object.entries(demoPrices).slice(0, 5)) {
     const changeColor = data.change24h >= 0 ? "green" : "red"
     const changeSign = data.change24h >= 0 ? "+" : ""
     lines.push(
@@ -124,7 +125,7 @@ ${c("bold", "⛽ Gas Prices")} (${chain})
 }
 
 async function getBalance(address: string, chain: string): Promise<string> {
-  // Mock balance
+  // Demo balance for CLI (integrate with actual RPC calls for production)
   const balance = (Math.random() * 10).toFixed(4)
   const symbol = chain === "ethereum" ? "ETH" : chain === "bsc" ? "BNB" : "MATIC"
   return `

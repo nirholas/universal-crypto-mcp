@@ -1,0 +1,45 @@
+{
+  "name": "@universal-crypto-mcp/x402-stablecoin",
+  "version": "1.0.0",
+  "description": "Stablecoin utilities for x402 payments",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./usdc": "./dist/usdc.js",
+    "./usds": "./dist/usds.js",
+    "./bridge": "./dist/bridge.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@universal-crypto-mcp/payments-shared": "workspace:*",
+    "@universal-crypto-mcp/defi-sperax": "workspace:*",
+    "viem": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/payments/x402-stablecoin"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "x402",
+    "stablecoin",
+    "usdc",
+    "usds",
+    "payments"
+  ]
+}

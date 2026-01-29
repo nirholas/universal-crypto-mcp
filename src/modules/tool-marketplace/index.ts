@@ -25,7 +25,7 @@
  *   name: "weather-premium",
  *   displayName: "Premium Weather API",
  *   description: "Real-time weather with hourly forecasts",
- *   endpoint: "https://weather.example.com/api",
+ *   endpoint: "https://api.universal-crypto-mcp.com/tools/weather",
  *   category: "data",
  *   pricing: {
  *     model: "per-call",

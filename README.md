@@ -140,6 +140,8 @@ packages/
     └── discovery/      # Tool discovery & search
 ```
 
+📖 **[View Package Documentation →](docs/content/packages/)**
+
 ### Integrated External Projects
 
 This repo consolidates the best MIT-licensed crypto MCP projects:
@@ -828,7 +830,56 @@ https://mcp.giving
 
 ---
 
-## 🗺️ Roadmap
+## � Documentation & Examples
+
+### 📖 Documentation
+
+Comprehensive guides and API references:
+
+- **[Getting Started](docs/content/getting-started/)**
+  - [Installation Guide](docs/content/getting-started/installation.md)
+  - [Configuration](docs/content/getting-started/configuration.md)
+  - [Your First MCP Tool](docs/content/getting-started/first-tool.md)
+  - [Deployment Guide](docs/content/getting-started/deployment.md)
+
+- **[Package Documentation](docs/content/packages/)**
+  - [Core Package](docs/content/packages/core.md)
+  - [Trading](docs/content/packages/trading.md)
+  - [Market Data](docs/content/packages/market-data.md)
+  - [Wallets](docs/content/packages/wallets.md)
+  - [DeFi](docs/content/packages/defi.md)
+  - [Payments (x402)](docs/content/packages/payments.md)
+
+- **[x402 Deploy Documentation](docs/content/x402-deploy/)**
+  - [Overview](docs/content/x402-deploy/overview.md)
+  - [Quick Start](docs/content/x402-deploy/quick-start.md)
+  - [Configuration](docs/content/x402-deploy/configuration.md)
+  - [Providers](docs/content/x402-deploy/providers.md)
+  - [Discovery](docs/content/x402-deploy/discovery.md)
+
+- **[Contributing](docs/content/contributing/)**
+  - [Development Guide](docs/content/contributing/development.md)
+  - [Testing](docs/content/contributing/testing.md)
+  - [Releases](docs/content/contributing/releases.md)
+
+### 💻 Examples
+
+Working code examples you can run and modify:
+
+- **[Basic MCP Server](examples/basic-mcp-server/)** - Minimal MCP server with market data tools
+- **[Paid API Example](examples/paid-api/)** - Add x402 payments to Express API
+- **[Trading Bot](examples/trading-bot/)** - Automated trading bot with RSI + MA strategy
+- **[Full Deployment](examples/full-deployment/)** - Production-ready server with all features
+
+Each example includes:
+- Complete source code
+- README with setup instructions
+- Package configuration
+- Environment setup guide
+
+---
+
+## �🗺️ Roadmap
 
 A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implemented.
 

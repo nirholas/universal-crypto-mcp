@@ -148,7 +148,7 @@ export const PREMIUM_NEWS_RESOURCES: X402Response[] = [
           output: {
             subscriptionId: "sub_abc123",
             status: "active",
-            websocketUrl: "wss://news.example.com/firehose/sub_abc123",
+            websocketUrl: "wss://stream.universal-crypto-mcp.com/news/firehose",
             expiresAt: "2026-01-28T00:00:00Z",
           },
         },
@@ -494,7 +494,7 @@ export const PREMIUM_NEWS_RESOURCES: X402Response[] = [
             maxRecords: 5000,
           },
           output: {
-            downloadUrl: "https://storage.example.com/exports/export_abc123.csv",
+            downloadUrl: "https://storage.universal-crypto-mcp.com/exports/news-data.csv",
             recordCount: 4832,
             expiresAt: "2026-01-28T00:00:00Z",
           },
@@ -553,9 +553,9 @@ export const PREMIUM_NEWS_RESOURCES: X402Response[] = [
           },
           output: {
             feedId: "feed_abc123",
-            jsonUrl: "https://api.example.com/feeds/feed_abc123.json",
-            rssUrl: "https://api.example.com/feeds/feed_abc123.rss",
-            atomUrl: "https://api.example.com/feeds/feed_abc123.atom",
+            jsonUrl: "https://api.universal-crypto-mcp.com/feeds/news.json",
+            rssUrl: "https://api.universal-crypto-mcp.com/feeds/news.rss",
+            atomUrl: "https://api.universal-crypto-mcp.com/feeds/news.atom",
             expiresAt: "2026-02-27T00:00:00Z",
           },
         },

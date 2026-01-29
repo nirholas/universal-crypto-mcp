@@ -29,6 +29,53 @@ const DEFAULT_PRICE = "${config.pricing.default || "$0.001"}";
 // Facilitator URL
 const FACILITATOR_URL = process.env.X402_FACILITATOR_URL || "${config.payment.facilitator || "https://facilitator.x402.org"}";
 
+// Metrics tracking
+const metrics = {
+  requests: 0,
+  payments: 0,
+  revenue: 0,
+  startedAt: Date.now(),
+  payerAddresses: new Set(),
+  routeStats: new Map(),
+};
+
+/**
+ * Track a request
+ */
+function trackRequest(route, payer, amount) {
+  metrics.requests++;
+  if (payer && amount) {
+    metrics.payments++;
+    const cents = parsePriceToCents(amount);
+    metrics.revenue += cents;
+    metrics.payerAddresses.add(payer);
+    
+    const routeStat = metrics.routeStats.get(route) || { requests: 0, revenue: 0 };
+    routeStat.requests++;
+    routeStat.revenue += cents;
+    metrics.routeStats.set(route, routeStat);
+  }
+}
+
+/**
+ * Get formatted metrics
+ */
+function getMetrics() {
+  return {
+    requests: metrics.requests,
+    payments: metrics.payments,
+    revenue: '$' + (metrics.revenue / 100).toFixed(2),
+    uniquePayers: metrics.payerAddresses.size,
+    uptime: Math.floor((Date.now() - metrics.startedAt) / 1000),
+    routeStats: Object.fromEntries(
+      Array.from(metrics.routeStats.entries()).map(([route, stats]) => [
+        route,
+        { requests: stats.requests, revenue: '$' + (stats.revenue / 100).toFixed(2) }
+      ])
+    ),
+  };
+}
+
 /**
  * Parse price string to cents
  */
@@ -133,6 +180,9 @@ function x402Middleware(req, res, next) {
         });
       }
       
+      // Track the successful payment
+      trackRequest(req.path, result.payer, result.amount || price);
+      
       // Payment verified, add info to request
       req.x402 = {
         verified: true,
@@ -186,12 +236,7 @@ function setupDiscoveryEndpoints(app) {
   // Metrics endpoint (if enabled)
   if (config.analytics?.enabled !== false) {
     app.get('/.well-known/x402/metrics', (req, res) => {
-      res.json({
-        requests: 0, // TODO: Implement request tracking
-        payments: 0,
-        revenue: '$0.00',
-        uptime: process.uptime(),
-      });
+      res.json(getMetrics());
     });
   }
 }
@@ -306,6 +351,54 @@ FACILITATOR_URL = os.environ.get(
     "${config.payment.facilitator || "https://facilitator.x402.org"}"
 )
 
+# Metrics tracking
+class Metrics:
+    def __init__(self):
+        self.requests = 0
+        self.payments = 0
+        self.revenue_cents = 0
+        self.started_at = datetime.utcnow()
+        self.payer_addresses: set = set()
+        self.route_stats: Dict[str, Dict[str, int]] = {}
+    
+    def track_request(self, route: str, payer: Optional[str] = None, amount: Optional[str] = None):
+        self.requests += 1
+        if payer and amount:
+            self.payments += 1
+            cents = self._parse_price(amount)
+            self.revenue_cents += cents
+            self.payer_addresses.add(payer)
+            
+            if route not in self.route_stats:
+                self.route_stats[route] = {"requests": 0, "revenue": 0}
+            self.route_stats[route]["requests"] += 1
+            self.route_stats[route]["revenue"] += cents
+    
+    def _parse_price(self, price_str: str) -> int:
+        if not price_str:
+            return 0
+        import re
+        match = re.match(r"\\$?([\\d.]+)", price_str)
+        if not match:
+            return 0
+        return int(float(match.group(1)) * 100)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        uptime = (datetime.utcnow() - self.started_at).total_seconds()
+        return {
+            "requests": self.requests,
+            "payments": self.payments,
+            "revenue": f"${self.revenue_cents / 100:.2f}",
+            "uniquePayers": len(self.payer_addresses),
+            "uptime": int(uptime),
+            "routeStats": {
+                route: {"requests": stats["requests"], "revenue": f"${stats['revenue'] / 100:.2f}"}
+                for route, stats in self.route_stats.items()
+            },
+        }
+
+metrics = Metrics()
+
 
 def get_route_price(path: str) -> Optional[str]:
     """Get price for a route."""
@@ -395,6 +488,9 @@ class X402Middleware(BaseHTTPMiddleware):
                 },
             )
         
+        # Track the successful payment
+        metrics.track_request(path, result.get("payer"), result.get("amount") or price)
+        
         # Payment verified, add info to request state
         request.state.x402 = {
             "verified": True,
@@ -450,11 +546,7 @@ async def health():
 @app.get("/.well-known/x402/metrics")
 async def x402_metrics():
     """x402 metrics endpoint."""
-    return {
-        "requests": 0,  # TODO: Implement request tracking
-        "payments": 0,
-        "revenue": "$0.00",
-    }
+    return metrics.to_dict()
 
 
 # Import and mount user's FastAPI app

@@ -1,0 +1,25 @@
+{
+  "name": "full-crypto-mcp",
+  "version": "1.0.0",
+  "description": "Complete crypto MCP server with x402 payments",
+  
+  "payment": {
+    "wallet": "${X402_WALLET}",
+    "network": "eip155:42161"
+  },
+  
+  "pricing": {
+    "default": "free",
+    "currency": "USD",
+    "routes": {
+      "GET /api/premium/*": "$0.001",
+      "POST /api/premium/*": "$0.01"
+    }
+  },
+  
+  "discovery": {
+    "enabled": true,
+    "categories": ["crypto", "trading", "defi", "analytics"],
+    "instructions": "Full-featured crypto MCP server with trading, DeFi, and payment capabilities"
+  }
+}

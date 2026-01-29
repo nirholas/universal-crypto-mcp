@@ -1,0 +1,38 @@
+{
+  "name": "copilot-terminal-autoclose",
+  "version": "1.0.0",
+  "description": "VS Code setting to automatically close terminals after GitHub Copilot commands complete",
+  "keywords": [
+    "vscode",
+    "github-copilot",
+    "terminal",
+    "auto-close",
+    "developer-experience",
+    "ai-coding",
+    "copilot",
+    "automation"
+  ],
+  "author": "nirholas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/copilot-terminal-autoclose.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/copilot-terminal-autoclose/issues"
+  },
+  "homepage": "https://github.com/nirholas/copilot-terminal-autoclose#readme",
+  "files": [
+    ".vscode",
+    "README.md",
+    "LICENSE",
+    "AGENTS.md",
+    "SKILLS.md",
+    "llms.txt",
+    "llms-full.txt"
+  ],
+  "scripts": {
+    "install-setting": "mkdir -p .vscode && cp node_modules/copilot-terminal-autoclose/.vscode/settings.json .vscode/",
+    "postinstall": "echo 'To apply the setting, run: npm run install-setting'"
+  }
+}

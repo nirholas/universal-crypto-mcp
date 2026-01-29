@@ -46,9 +46,14 @@ export const RoutePricingSchema = z.union([
   z.string(), // Simple price like "$0.01"
   z.object({
     price: z.string(),
+    currency: z.string().optional(),
     description: z.string().optional(),
-    rateLimit: z.number().optional(),
+    rateLimit: z.object({
+      requests: z.number(),
+      window: z.string(),
+    }).optional(),
     premium: z.boolean().optional(),
+    route: z.string().optional(),
   }),
 ]);
 export type RoutePricing = z.infer<typeof RoutePricingSchema>;
@@ -102,6 +107,26 @@ export const DeployConfigSchema = z.object({
 export type DeployConfig = z.infer<typeof DeployConfigSchema>;
 
 /**
+ * Webhook configuration
+ */
+export const WebhookConfigSchema = z.object({
+  url: z.string().url(),
+  secret: z.string().optional(),
+  events: z.array(z.string()).optional(),
+});
+export type WebhookConfig = z.infer<typeof WebhookConfigSchema>;
+
+/**
+ * Dashboard configuration
+ */
+export const DashboardConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  port: z.number().optional(),
+  webhooks: z.array(WebhookConfigSchema).optional(),
+});
+export type DashboardConfig = z.infer<typeof DashboardConfigSchema>;
+
+/**
  * Analytics configuration
  */
 export const AnalyticsConfigSchema = z.object({
@@ -151,6 +176,9 @@ export const X402ConfigSchema = z.object({
   
   // Analytics settings
   analytics: AnalyticsConfigSchema.optional(),
+  
+  // Dashboard settings
+  dashboard: DashboardConfigSchema.optional(),
 });
 export type X402Config = z.infer<typeof X402ConfigSchema>;
 

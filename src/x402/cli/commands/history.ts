@@ -159,28 +159,90 @@ async function getPaymentHistory(
   address: string,
   options: { limit: number; direction: 'sent' | 'received' | 'all' }
 ): Promise<PaymentRecord[]> {
-  // In a production implementation, this would:
-  // 1. Query Transfer events from the USDs contract
-  // 2. Filter by the user's address
-  // 3. Paginate results
+  // Query Transfer events from the token contract
+  const records: PaymentRecord[] = [];
   
-  // For demo purposes, return empty array
-  // Real implementation would use viem to query events:
-  /*
-  const logs = await client.publicClient.getLogs({
-    address: USDS_ADDRESS,
-    event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)'),
-    args: options.direction === 'sent' 
-      ? { from: address }
-      : options.direction === 'received'
-      ? { to: address }
-      : undefined,
-    fromBlock: 'earliest',
-    toBlock: 'latest',
-  });
-  */
+  try {
+    const publicClient = client.getPublicClient();
+    const tokenAddress = client.getTokenAddress();
+    
+    if (!publicClient || !tokenAddress) {
+      return records;
+    }
+
+    // ERC20 Transfer event signature
+    const transferEventSig = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+    
+    // Get recent block range (last ~10000 blocks)
+    const latestBlock = await publicClient.getBlockNumber();
+    const fromBlock = latestBlock > 10000n ? latestBlock - 10000n : 0n;
+
+    // Query logs
+    const logs = await publicClient.getLogs({
+      address: tokenAddress,
+      event: {
+        type: 'event',
+        name: 'Transfer',
+        inputs: [
+          { type: 'address', name: 'from', indexed: true },
+          { type: 'address', name: 'to', indexed: true },
+          { type: 'uint256', name: 'value', indexed: false },
+        ],
+      },
+      fromBlock,
+      toBlock: 'latest',
+    });
+
+    // Filter and process logs
+    const addressLower = address.toLowerCase();
+    
+    for (const log of logs) {
+      const from = log.args.from as string;
+      const to = log.args.to as string;
+      const value = log.args.value as bigint;
+      
+      const fromLower = from.toLowerCase();
+      const toLower = to.toLowerCase();
+      
+      // Check if this transaction involves our address
+      const isSent = fromLower === addressLower;
+      const isReceived = toLower === addressLower;
+      
+      if (!isSent && !isReceived) continue;
+      
+      // Apply direction filter
+      if (options.direction === 'sent' && !isSent) continue;
+      if (options.direction === 'received' && !isReceived) continue;
+
+      // Get block for timestamp
+      const block = await publicClient.getBlock({ blockNumber: log.blockNumber });
+      
+      // Format amount (assuming 6 decimals for USDC/USDS)
+      const amount = (Number(value) / 1e6).toFixed(2);
+
+      records.push({
+        hash: log.transactionHash,
+        timestamp: new Date(Number(block.timestamp) * 1000),
+        direction: isSent ? 'sent' : 'received',
+        amount,
+        token: 'USDC',
+        from,
+        to,
+        status: 'confirmed',
+      });
+
+      // Respect limit
+      if (records.length >= options.limit) break;
+    }
+  } catch (error) {
+    // Log error but return empty array rather than failing
+    console.error('Error fetching history:', error);
+  }
   
-  return [];
+  // Sort by timestamp descending (newest first)
+  records.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  
+  return records.slice(0, options.limit);
 }
 
 

@@ -639,7 +639,7 @@ export class SchemaValidator {
         }
         if (schema.format === "date-time") return new Date().toISOString()
         if (schema.format === "date") return new Date().toISOString().split("T")[0]
-        if (schema.format === "email") return "user@example.com"
+        if (schema.format === "email") return "contact@universal-crypto-mcp.com"
         if (schema.format === "uri") return "https://example.com"
         return "string"
 
