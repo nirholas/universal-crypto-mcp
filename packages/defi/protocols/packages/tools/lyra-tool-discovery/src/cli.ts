@@ -9,7 +9,7 @@ const program = new Command();
 
 program
   .name('lyra-discover')
-  .description('Discover MCP tools and APIs, generate SperaxOS plugin configs')
+  .description('Discover MCP tools and APIs, generate Universal Crypto MCP plugin configs')
   .version('0.1.0');
 
 program

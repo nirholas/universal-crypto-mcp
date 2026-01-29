@@ -1,7 +1,7 @@
 {
-  "name": "@github-to-mcp/mcp-server",
+  "name": "@nirholas/crypto-defi-protocols-packages-generators-github-to-mcp-packages-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server exposing github-to-mcp functionality for AI assistants",
+  "description": "Universal Crypto MCP - MCP server exposing github-to-mcp functionality for AI assistants",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

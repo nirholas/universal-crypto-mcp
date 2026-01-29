@@ -487,7 +487,7 @@ With a project structure like:
 ```plaintext
 my-plugin/
 ├── node_modules/
-│   └── @sperax/plugin-sdk/
+│   └── @nirholas/plugin-sdk/
 │       └── schema.json
 ├── public/
 │   ├── manifest.json
@@ -500,7 +500,7 @@ Configure `manifest.json` with a relative path:
 
 ```json
 {
-  "$schema": "../node_modules/@sperax/plugin-sdk/schema.json",
+  "$schema": "../node_modules/@nirholas/plugin-sdk/schema.json",
   "identifier": "my-plugin",
   "api": [
     {
@@ -528,7 +528,7 @@ Configure `manifest.json` with a relative path:
 
 ```json
 {
-  "$schema": "https://unpkg.com/@sperax/plugin-sdk/schema.json",
+  "$schema": "https://unpkg.com/@nirholas/plugin-sdk/schema.json",
   "identifier": "my-plugin",
   ...
 }
@@ -553,7 +553,7 @@ For enhanced JSON editing in VS Code, add to your `.vscode/settings.json`:
   "json.schemas": [
     {
       "fileMatch": ["**/manifest.json", "**/manifest-*.json"],
-      "url": "./node_modules/@sperax/plugin-sdk/schema.json"
+      "url": "./node_modules/@nirholas/plugin-sdk/schema.json"
     }
   ]
 }
@@ -566,7 +566,7 @@ For enhanced JSON editing in VS Code, add to your `.vscode/settings.json`:
 Validate manifests programmatically:
 
 ```typescript
-import { pluginManifestSchema } from '@sperax/plugin-sdk';
+import { pluginManifestSchema } from '@nirholas/plugin-sdk';
 
 const manifest = require('./manifest.json');
 

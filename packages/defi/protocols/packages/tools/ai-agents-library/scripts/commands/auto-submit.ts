@@ -144,7 +144,7 @@ class AutoSubmit {
     Logger.file('create', filePath);
 
     // 代码格式化
-    execSync(`echo "module.exports = require('@speraxos/lint').prettier;" >> .prettierrc.cjs`);
+    execSync(`echo "module.exports = require('@nirholasos/lint').prettier;" >> .prettierrc.cjs`);
     execSync('bun run prettier');
     Logger.info('代码格式化完成');
 

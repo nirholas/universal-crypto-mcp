@@ -182,7 +182,7 @@ All services are exposed through a consistent interface of MCP tools, resources,
 
 ```bash
 # Clone the repository
-git clone https://github.com/mcpdotdirect/mcp-evm-server.git
+git clone https://github.com/nirholas/mcp-evm-server.git
 cd mcp-evm-server
 
 # Install dependencies with Bun
@@ -276,10 +276,10 @@ You can run the MCP EVM Server directly without installation using npx:
 
 ```bash
 # Run the server in stdio mode (for CLI tools)
-npx @mcpdotdirect/evm-mcp-server
+npx @nirholas/evm-mcp-server
 
 # Run the server in HTTP mode (for web applications)
-npx @mcpdotdirect/evm-mcp-server --http
+npx @nirholas/evm-mcp-server --http
 ```
 
 ### Running the Server Locally
@@ -320,7 +320,7 @@ To connect to the MCP server from Cursor:
 
    - Server name: `evm-mcp-server`
    - Type: `command`
-   - Command: `npx @mcpdotdirect/evm-mcp-server`
+   - Command: `npx @nirholas/evm-mcp-server`
 
 6. Click "Save"
 
@@ -335,11 +335,11 @@ For a more portable configuration that you can share with your team or use acros
   "mcpServers": {
     "evm-mcp-server": {
       "command": "npx",
-      "args": ["-y", "@mcpdotdirect/evm-mcp-server"]
+      "args": ["-y", "@nirholas/evm-mcp-server"]
     },
     "evm-mcp-http": {
       "command": "npx",
-      "args": ["-y", "@mcpdotdirect/evm-mcp-server", "--http"]
+      "args": ["-y", "@nirholas/evm-mcp-server", "--http"]
     }
   }
 }
@@ -425,7 +425,7 @@ If you're using Claude CLI, you can connect to the MCP server with just two comm
 
 ```bash
 # Add the MCP server
-claude mcp add evm-mcp-server npx @mcpdotdirect/evm-mcp-server
+claude mcp add evm-mcp-server npx @nirholas/evm-mcp-server
 
 # Start Claude with the MCP server enabled
 claude

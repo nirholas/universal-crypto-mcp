@@ -1,6 +1,6 @@
 'use client';
 
-import { speraxOS, useOnStandalonePluginInit, usePluginState } from '@sperax/plugin-sdk/client';
+import { speraxOS, useOnStandalonePluginInit, usePluginState } from '@nirholas/plugin-sdk/client';
 import { Button, Card, InputNumber, Space, Typography } from 'antd';
 import { useCallback, useState } from 'react';
 

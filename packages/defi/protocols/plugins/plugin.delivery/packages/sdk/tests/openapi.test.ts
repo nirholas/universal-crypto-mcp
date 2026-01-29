@@ -1,4 +1,4 @@
-import { OpenAPIConvertor } from '@sperax/chat-plugin-sdk/openapi';
+import { OpenAPIConvertor } from '@nirholas/chat-plugin-sdk/openapi';
 import { describe, expect, it } from 'vitest';
 
 import ChatWithPDF from './fixtures/ChatWithPDF.json';

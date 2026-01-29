@@ -1,5 +1,5 @@
 {
-  "name": "fetch-client-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-e2e-legacy-clients-fetch",
   "private": true,
   "type": "module",
   "scripts": {

@@ -3,7 +3,7 @@ import {
   PluginRequestPayload,
   getPluginErrorStatus,
   getPluginSettingsFromHeaders,
-} from '@sperax/plugin-sdk';
+} from '@nirholas/plugin-sdk';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import Ajv from 'ajv';
 

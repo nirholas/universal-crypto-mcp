@@ -1,5 +1,5 @@
 {
-  "name": "standalone-plugin-template",
+  "name": "@nirholas/crypto-defi-protocols-plugins-plugin.delivery-templates-standalone",
   "version": "1.0.0",
   "private": true,
   "scripts": {

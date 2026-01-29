@@ -1,5 +1,5 @@
 {
-  "name": "@x402/<framework>-e2e",
+  "name": "@nirholas/x402-<framework>-e2e",
   "private": true,
   "type": "module",
   "scripts": {

@@ -75,7 +75,7 @@ async function fetchNews(endpoint: string): Promise<NewsResponse> {
   const response = await fetch(`${NEWS_API_BASE}${endpoint}`, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
   });
 
@@ -346,7 +346,7 @@ export const newsTools = [
         const response = await fetch(`${NEWS_API_BASE}/api/sources`, {
           headers: {
             'Accept': 'application/json',
-            'User-Agent': 'SperaxOS-MCP/1.0',
+            'User-Agent': 'Universal Crypto MCP-MCP/1.0',
           },
         });
 

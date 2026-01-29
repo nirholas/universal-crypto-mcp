@@ -84,7 +84,7 @@ Available Plugin Templates for plugin.delivery:
 6. Otherwise → use basic
 `;
 
-const ANALYSIS_PROMPT = `You are analyzing a discovered tool to determine the best SperaxOS plugin template.
+const ANALYSIS_PROMPT = `You are analyzing a discovered tool to determine the best Universal Crypto MCP plugin template.
 
 ${TEMPLATE_DESCRIPTIONS}
 
@@ -304,7 +304,7 @@ export class AIAnalyzer {
   }
   
   /**
-   * Generate MCP Quick Import JSON for easy pasting into SperaxOS
+   * Generate MCP Quick Import JSON for easy pasting into Universal Crypto MCP
    */
   generateQuickImport(decision: TemplateDecision): string | null {
     const config = decision.config as CustomPlugin;

@@ -33,7 +33,7 @@ The server provides the following MCP tools and resources based on the Dune API:
 
 ```bash
 # Clone the repository
-git clone https://github.com/crazyrabbitLTC/mcp-web3-stats.git
+git clone https://github.com/nirholas/mcp-web3-stats.git
 cd mcp-web3-stats
 
 # Install dependencies

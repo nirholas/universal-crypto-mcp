@@ -2,9 +2,9 @@
 import { Schema } from '@cfworker/json-schema';
 import {
   IPluginErrorType,
-  SperaxOSPluginApi,
-  SperaxOSPluginManifest,
-  SperaxOSPluginsMarketIndex,
+  Universal Crypto MCPPluginApi,
+  Universal Crypto MCPPluginManifest,
+  Universal Crypto MCPPluginsMarketIndex,
   PluginErrorType,
   PluginRequestPayload,
   createHeadersWithPluginSettings,
@@ -12,8 +12,8 @@ import {
   pluginManifestSchema,
   pluginMetaSchema,
   pluginRequestPayloadSchema,
-} from '@sperax/plugin-sdk';
-import { OPENAPI_REQUEST_BODY_KEY } from '@sperax/plugin-sdk/openapi';
+} from '@nirholas/plugin-sdk';
+import { OPENAPI_REQUEST_BODY_KEY } from '@nirholas/plugin-sdk/openapi';
 // @ts-ignore
 import SwaggerClient from 'swagger-client';
 
@@ -90,7 +90,7 @@ export class Gateway {
 
     const { identifier, arguments: args, indexUrl, apiName } = payload;
 
-    let manifest = payload.manifest as SperaxOSPluginManifest | undefined;
+    let manifest = payload.manifest as Universal Crypto MCPPluginManifest | undefined;
     console.info(`[${identifier}] - ${apiName} `);
 
     // 入参中如果没有 manifest，则从插件市场索引中获取
@@ -98,7 +98,7 @@ export class Gateway {
       const marketIndexUrl = indexUrl ?? this.pluginIndexUrl;
       // ==========  3. 获取插件市场索引 ========== //
 
-      let marketIndex: SperaxOSPluginsMarketIndex | undefined;
+      let marketIndex: Universal Crypto MCPPluginsMarketIndex | undefined;
       try {
         const indexRes = await fetch(marketIndexUrl);
         marketIndex = await indexRes.json();
@@ -137,7 +137,7 @@ export class Gateway {
       // const pluginMeta = {
       //   createAt: '2023-08-12',
       //   homepage: 'https://github.com/nirholas/plugin.delivery-real-time-weather',
-      //   manifest: 'https://registry.npmmirror.com/@sperax/sperax-plugins/latest/files',
+      //   manifest: 'https://registry.npmmirror.com/@nirholas/sperax-plugins/latest/files',
       //   meta: {
       //     avatar: '☂️',
       //     tags: ['weather', 'realtime'],
@@ -166,7 +166,7 @@ export class Gateway {
       // 获取插件的 manifest
       try {
         const pluginRes = await fetch(pluginMeta.manifest);
-        manifest = (await pluginRes.json()) as SperaxOSPluginManifest;
+        manifest = (await pluginRes.json()) as Universal Crypto MCPPluginManifest;
       } catch (error) {
         console.error(error);
         manifest = undefined;
@@ -240,7 +240,7 @@ export class Gateway {
   };
 
   private async callApi(
-    api: SperaxOSPluginApi,
+    api: Universal Crypto MCPPluginApi,
     args: string | undefined,
     settings: any,
   ): Promise<GatewaySuccessResponse> {
@@ -272,7 +272,7 @@ export class Gateway {
   private async callOpenAPI(
     payload: PluginRequestPayload,
     settings: any = {},
-    manifest: SperaxOSPluginManifest,
+    manifest: Universal Crypto MCPPluginManifest,
   ): Promise<GatewaySuccessResponse> {
     const { arguments: args, apiName } = payload;
 
@@ -342,7 +342,7 @@ export class Gateway {
           authorizations,
           error: (error as Error).message,
           message:
-            '[plugin] there are problem with sending openapi request, please contact with Sperax Team',
+            '[plugin] there are problem with sending openapi request, please contact with nich',
           openapi: manifest.openapi,
           parameters,
           requestBody,

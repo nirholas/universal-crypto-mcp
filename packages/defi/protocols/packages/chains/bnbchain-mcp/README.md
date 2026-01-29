@@ -1609,7 +1609,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🙏 Credits
 
-Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github.com/nirholas)) **[and the Sperax Team](https://x.com/SperaxUSD)** ([github.com/speraxos](https://github.com/speraxos)) ([github.com/sperax](https://github.com/sperax))
+Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github.com/nirholas)) **[and the nich](https://x.com/SperaxUSD)** ([github.com/speraxos](https://github.com/speraxos)) ([github.com/sperax](https://github.com/sperax))
 
 ### Special Thanks
 

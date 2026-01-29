@@ -9,7 +9,7 @@ import {
   generateAgentGuide,
   generateAllDocuments,
   Document,
-} from '@llm-energy/core'
+} from '@nirholas/core'
 
 describe('generateFullDocument', () => {
   const mockDocuments: Document[] = [

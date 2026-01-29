@@ -1,7 +1,7 @@
 {
-  "name": "lyra-intel-vscode",
+  "name": "@nirholas/crypto-lyra-vscode",
   "displayName": "Lyra Intel",
-  "description": "AI-powered code analysis and intelligence for VS Code",
+  "description": "Universal Crypto MCP - AI-powered code analysis and intelligence for VS Code",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.85.0"

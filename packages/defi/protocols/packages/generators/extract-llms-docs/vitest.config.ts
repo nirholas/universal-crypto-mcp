@@ -20,7 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@llm-energy/core': path.resolve(__dirname, './packages/core/src'),
+      '@nirholas/core': path.resolve(__dirname, './packages/core/src'),
     },
   },
 })

@@ -1,5 +1,5 @@
 {
-  "name": "agent-client-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-agent",
   "version": "0.1.0",
   "scripts": {
     "dev": "tsx index.ts",
@@ -22,7 +22,7 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/x402/examples/typescript/legacy/agent"
   },
-  "description": "x402 Payment Protocol",
+  "description": "Universal Crypto MCP - x402 Payment Protocol",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@types/node": "^22.13.4",

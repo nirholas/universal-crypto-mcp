@@ -1,7 +1,7 @@
 {
-  "name": "@x402/yield-tracker",
+  "name": "@nirholas/x402-yield-tracker",
   "version": "1.0.0",
-  "description": "USDs Yield Tracking Service for x402 payments - tracks auto-yield earnings from Sperax USDs",
+  "description": "Universal Crypto MCP - USDs Yield Tracking Service for x402 payments - tracks auto-yield earnings from Sperax USDs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

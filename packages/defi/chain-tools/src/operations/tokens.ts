@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import axios from 'axios';
-import { BanklessAuthenticationError, BanklessRateLimitError, BanklessResourceNotFoundError, BanklessValidationError } from '../common/banklessErrors.js';
+import { BanklessAuthenticationError, BanklessRateLimitError, BanklessResourceNotFoundError, BanklessValidationError } from '../common/nirholasErrors.js';
 
-const BASE_URL = 'https://api.bankless.com/mcp';
+const BASE_URL = 'https://api.nirholas.com/mcp';
 
 // Schema for token balances on network request
 export const TokenBalancesOnNetworkSchema = z.object({

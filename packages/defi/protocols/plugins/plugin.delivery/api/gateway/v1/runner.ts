@@ -1,3 +1,3 @@
-import { createGatewayOnNodeRuntime } from '@sperax/chat-plugins-gateway';
+import { createGatewayOnNodeRuntime } from '@nirholas/chat-plugins-gateway';
 
 export default createGatewayOnNodeRuntime();

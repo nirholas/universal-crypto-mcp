@@ -1,5 +1,5 @@
 {
-  "name": "lyra-tool-discovery-docs",
+  "name": "@nirholas/crypto-generators-discovery-docs",
   "version": "1.0.0",
   "private": true,
   "scripts": {

@@ -2,11 +2,11 @@
 
 # 🔌 Plugin Delivery
 
-**AI Function Call Plugins & Tools for SperaxOS**
+**AI Function Call Plugins & Tools for Universal Crypto MCP**
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/nirholas/plugin.delivery)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm](https://img.shields.io/npm/v/@sperax/plugin-sdk)](https://www.npmjs.com/package/@sperax/plugin-sdk)
+[![npm](https://img.shields.io/npm/v/@nirholas/plugin-sdk)](https://www.npmjs.com/package/@nirholas/plugin-sdk)
 
 **Live:** [`plugin.delivery`](https://plugin.delivery)
 
@@ -18,7 +18,7 @@
 
 ## What Is Plugin Delivery?
 
-The **official plugin marketplace and SDK** for SperaxOS — a crypto/DeFi-focused AI assistant platform.
+The **official plugin marketplace and SDK** for Universal Crypto MCP — a crypto/DeFi-focused AI assistant platform.
 
 | Feature | Description |
 |---------|-------------|
@@ -35,7 +35,7 @@ User: "What's the price of ETH?"
          │
          ▼
 ┌─────────────────────────────────────────────────────────┐
-│  SperaxOS discovers plugin from plugin.delivery index   │
+│  Universal Crypto MCP discovers plugin from plugin.delivery index   │
 │  AI generates function call: getPrice(coin: "ethereum") │
 │  Gateway routes request to CoinGecko API                │
 │  Response rendered in chat (JSON, Markdown, or UI)      │
@@ -49,7 +49,7 @@ AI: "ETH is currently trading at $3,450..."
 
 ## Plugin Types
 
-SperaxOS supports **4 distinct plugin types**, each optimized for different use cases:
+Universal Crypto MCP supports **4 distinct plugin types**, each optimized for different use cases:
 
 | Type | Rendering | Best For | Complexity |
 |------|-----------|----------|------------|
@@ -102,7 +102,7 @@ Embeds a full React/HTML application in an iframe within the chat.
 
 **Use when:** You need rich interactivity — charts, forms, dashboards, embedded apps.
 
-> 💡 **Standalone plugins are SperaxOS's superpower** — they enable experiences beyond what ChatGPT plugins can do.
+> 💡 **Standalone plugins are Universal Crypto MCP's superpower** — they enable experiences beyond what ChatGPT plugins can do.
 
 ### OpenAPI Plugins
 
@@ -182,7 +182,7 @@ Embed external content:
 Standalone plugins can trigger additional function calls:
 
 ```typescript
-import { speraxOS } from '@sperax/plugin-sdk/client';
+import { speraxOS } from '@nirholas/plugin-sdk/client';
 
 // Trigger a new function call from your UI
 speraxOS.triggerFunctionCall({
@@ -242,9 +242,9 @@ templates/standalone/
 ### 1. Install the SDK
 
 ```bash
-bun add @sperax/plugin-sdk
+bun add @nirholas/plugin-sdk
 # or
-npm install @sperax/plugin-sdk
+npm install @nirholas/plugin-sdk
 ```
 
 ### 2. Create manifest.json
@@ -380,8 +380,8 @@ bun dev
 ```
 plugins/
 ├── packages/
-│   ├── sdk/              # @sperax/plugin-sdk
-│   └── gateway/          # @sperax/chat-plugins-gateway
+│   ├── sdk/              # @nirholas/plugin-sdk
+│   └── gateway/          # @nirholas/chat-plugins-gateway
 ├── templates/            # Starter templates
 │   ├── basic/
 │   ├── default/
@@ -404,8 +404,8 @@ plugins/
 
 | Package | Description | npm |
 |---------|-------------|-----|
-| `@sperax/plugin-sdk` | Plugin SDK for building SperaxOS plugins | [![npm](https://img.shields.io/npm/v/@sperax/plugin-sdk)](https://www.npmjs.com/package/@sperax/plugin-sdk) |
-| `@sperax/chat-plugins-gateway` | Gateway service for routing plugin calls | [![npm](https://img.shields.io/npm/v/@sperax/chat-plugins-gateway)](https://www.npmjs.com/package/@sperax/chat-plugins-gateway) |
+| `@nirholas/plugin-sdk` | Plugin SDK for building Universal Crypto MCP plugins | [![npm](https://img.shields.io/npm/v/@nirholas/plugin-sdk)](https://www.npmjs.com/package/@nirholas/plugin-sdk) |
+| `@nirholas/chat-plugins-gateway` | Gateway service for routing plugin calls | [![npm](https://img.shields.io/npm/v/@nirholas/chat-plugins-gateway)](https://www.npmjs.com/package/@nirholas/chat-plugins-gateway) |
 
 ### SDK Usage
 
@@ -414,20 +414,20 @@ import {
   pluginManifestSchema,
   createPluginResponse,
   PluginError 
-} from '@sperax/plugin-sdk';
+} from '@nirholas/plugin-sdk';
 
 // Client-side (in standalone UI)
-import { speraxOS } from '@sperax/plugin-sdk/client';
+import { speraxOS } from '@nirholas/plugin-sdk/client';
 ```
 
 ---
 
 ## Gateway
 
-The Plugin Gateway securely routes function calls from SperaxOS to plugin APIs:
+The Plugin Gateway securely routes function calls from Universal Crypto MCP to plugin APIs:
 
 ```
-SperaxOS → Gateway → Plugin API
+Universal Crypto MCP → Gateway → Plugin API
               │
               ├── Auth injection
               ├── Rate limiting
@@ -444,7 +444,7 @@ cd packages/gateway
 # Deploy
 vercel --prod
 
-# Set in SperaxOS
+# Set in Universal Crypto MCP
 PLUGINS_GATEWAY_URL=https://your-gateway.vercel.app
 ```
 
@@ -462,7 +462,7 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 ### Requirements
 
 - ✅ Valid manifest with working endpoints
-- ✅ Tested in SperaxOS
+- ✅ Tested in Universal Crypto MCP
 - ✅ No API key required (or documented)
 - ✅ en-US locale at minimum
 
@@ -473,7 +473,7 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 | Resource | URL |
 |----------|-----|
 | 🌐 **Plugin Index** | [plugin.delivery](https://plugin.delivery) |
-| 📦 **SDK on npm** | [@sperax/plugin-sdk](https://www.npmjs.com/package/@sperax/plugin-sdk) |
+| 📦 **SDK on npm** | [@nirholas/plugin-sdk](https://www.npmjs.com/package/@nirholas/plugin-sdk) |
 | 🐙 **GitHub** | [github.com/nirholas/plugins](https://github.com/nirholas/plugin.delivery) |
 | 🐦 **Twitter/X** | [@nichxbt](https://x.com/nichxbt) |
 

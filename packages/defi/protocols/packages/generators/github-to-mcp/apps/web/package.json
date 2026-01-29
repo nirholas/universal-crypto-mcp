@@ -1,8 +1,8 @@
 {
-  "name": "@github-to-mcp/web",
+  "name": "@nirholas/crypto-defi-protocols-packages-generators-github-to-mcp-apps-web",
   "version": "1.0.0",
   "private": true,
-  "description": "Enterprise-grade web UI for GitHub to MCP conversion",
+  "description": "Universal Crypto MCP - Enterprise-grade web UI for GitHub to MCP conversion",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -3,9 +3,9 @@
 <div align="center">
 
 
-<h1>SperaxOS 插件网关</h1>
+<h1>Universal Crypto MCP 插件网关</h1>
 
-SperaxOS Plugin Delivery 是一个为 SperaxOS 和 Sperax 提供 Chat 插件网关的后端服务。
+Universal Crypto MCP Plugin Delivery 是一个为 Universal Crypto MCP 和 Sperax 提供 Chat 插件网关的后端服务。
 
 
 [English](./README.md) · **简体中文** ·
@@ -33,9 +33,9 @@ SperaxOS Plugin Delivery 是一个为 SperaxOS 和 Sperax 提供 Chat 插件网�
 
 ## 👋 简介
 
-SperaxOS 插件网关是一个后端服务，为 SperaxOS 插件提供网关。我们使用 [vercel](https://vercel.com/) 来部署此服务。主要 API `POST /api/v1/runner` 部署为[Edge Function](https://vercel.com/docs/functions/edge-functions)。
+Universal Crypto MCP 插件网关是一个后端服务，为 Universal Crypto MCP 插件提供网关。我们使用 [vercel](https://vercel.com/) 来部署此服务。主要 API `POST /api/v1/runner` 部署为[Edge Function](https://vercel.com/docs/functions/edge-functions)。
 
-网关服务从 [SperaxOS 插件](https://github.com/nirholas/plugin.delivery) 获取 Sperax 插件索引，如果您想将您的插件添加到索引中，请在 SperaxOS 插件仓库中[提交 PR](https://github.com/nirholas/plugin.delivery/pulls)。
+网关服务从 [Universal Crypto MCP 插件](https://github.com/nirholas/plugin.delivery) 获取 Sperax 插件索引，如果您想将您的插件添加到索引中，请在 Universal Crypto MCP 插件仓库中[提交 PR](https://github.com/nirholas/plugin.delivery/pulls)。
 
 <div align="right">
 
@@ -55,7 +55,7 @@ SperaxOS 插件网关是一个后端服务，为 SperaxOS 插件提供网关。�
 
 > **Note**\
 > **POST** `/api/v1/runner`\
-> 与 SperaxOS 插件进行通信的接口。此接口描述了如何使用 SperaxOS 插件网关 API 发送请求和获取响应。
+> 与 Universal Crypto MCP 插件进行通信的接口。此接口描述了如何使用 Universal Crypto MCP 插件网关 API 发送请求和获取响应。
 
 #### Body Request Parameters 请求体参数
 
@@ -167,12 +167,12 @@ SperaxOS 插件网关是一个后端服务，为 SperaxOS 插件提供网关。�
 
 ## 📦 插件生态
 
-插件提供了扩展 SperaxOS Function Calling 能力的方法。可以用于引入新的 Function Calling，甚至是新的消息结果渲染方式。如果你对插件开发感兴趣，请在 Wiki 中查阅我们的 [📘 插件开发指引](https://github.com/nirholas/SperaxOS/wiki/Plugin-Development.zh-CN) 。
+插件提供了扩展 Universal Crypto MCP Function Calling 能力的方法。可以用于引入新的 Function Calling，甚至是新的消息结果渲染方式。如果你对插件开发感兴趣，请在 Wiki 中查阅我们的 [📘 插件开发指引](https://github.com/nirholas/Universal Crypto MCP/wiki/Plugin-Development.zh-CN) 。
 
-- [sperax-plugins][sperax-plugins]：这是 SperaxOS 的插件索引。它从该仓库的 index.json 中获取插件列表并显示给用户。
+- [sperax-plugins][sperax-plugins]：这是 Universal Crypto MCP 的插件索引。它从该仓库的 index.json 中获取插件列表并显示给用户。
 - [chat-plugin-template][chat-plugin-template]: Chat Plugin 插件开发模版，你可以通过项目模版快速新建插件项目。
-- [@sperax/plugin-sdk][chat-plugin-sdk]：SperaxOS 插件 SDK 可帮助您创建出色的 SperaxOS 插件。
-- [@sperax/chat-plugins-gateway][chat-plugins-gateway]：SperaxOS 插件网关是一个后端服务，作为 SperaxOS 插件的网关。我们使用 Vercel 部署此服务。主要的 API POST /api/v1/runner 被部署为 Edge Function。
+- [@nirholas/plugin-sdk][chat-plugin-sdk]：Universal Crypto MCP 插件 SDK 可帮助您创建出色的 Universal Crypto MCP 插件。
+- [@nirholas/chat-plugins-gateway][chat-plugins-gateway]：Universal Crypto MCP 插件网关是一个后端服务，作为 Universal Crypto MCP 插件的网关。我们使用 Vercel 部署此服务。主要的 API POST /api/v1/runner 被部署为 Edge Function。
 
 <div align="right">
 
@@ -211,8 +211,8 @@ $ bun dev
 
 ## 🔗 Links
 
-- **[🤖 SperaxOS](https://github.com/nirholas/SperaxOS)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
-- **[Plugin Delivery](https://github.com/nirholas/plugin.delivery)** - This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
+- **[🤖 Universal Crypto MCP](https://github.com/nirholas/Universal Crypto MCP)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
+- **[Plugin Delivery](https://github.com/nirholas/plugin.delivery)** - This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
 
 <div align="right">
 

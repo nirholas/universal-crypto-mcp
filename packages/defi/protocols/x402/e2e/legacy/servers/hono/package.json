@@ -1,5 +1,5 @@
 {
-  "name": "hono-server-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-e2e-legacy-servers-hono",
   "private": true,
   "type": "module",
   "scripts": {

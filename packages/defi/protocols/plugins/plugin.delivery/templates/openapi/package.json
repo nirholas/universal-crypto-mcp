@@ -1,5 +1,5 @@
 {
-  "name": "openapi-plugin-template",
+  "name": "@nirholas/crypto-defi-protocols-plugins-plugin.delivery-templates-openapi",
   "version": "1.0.0",
   "private": true,
   "scripts": {

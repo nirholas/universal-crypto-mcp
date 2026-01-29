@@ -1,7 +1,7 @@
 {
-  "name": "@x402/sdk",
+  "name": "@nirholas/x402-sdk",
   "version": "1.0.0",
-  "description": "X402 Payment Protocol SDK for Sperax USDs - Gasless payments, yield tracking, and HTTP 402 handling",
+  "description": "Universal Crypto MCP - X402 Payment Protocol SDK for Sperax USDs - Gasless payments, yield tracking, and HTTP 402 handling",
   "author": {
     "name": "nich",
     "url": "https://github.com/nirholas",

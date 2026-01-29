@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-shared",
+  "name": "@nirholas/crypto-automation-volume-packages-shared",
   "version": "0.1.0",
-  "description": "Shared utilities for Boosty MCP servers",
+  "description": "Universal Crypto MCP - Shared utilities for Boosty MCP servers",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

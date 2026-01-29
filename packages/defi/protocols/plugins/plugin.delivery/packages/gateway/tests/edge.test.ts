@@ -1,11 +1,11 @@
 import {
-  SperaxOSPluginManifest,
+  Universal Crypto MCPPluginManifest,
   PluginErrorType,
   PluginRequestPayload,
   createHeadersWithPluginSettings,
-} from '@sperax/chat-plugin-sdk';
-import { SPERAXOS_PLUGIN_SETTINGS } from '@sperax/chat-plugin-sdk/lib/request';
-import { createGatewayOnEdgeRuntime } from '@sperax/chat-plugins-gateway';
+} from '@nirholas/chat-plugin-sdk';
+import { SPERAXOS_PLUGIN_SETTINGS } from '@nirholas/chat-plugin-sdk/lib/request';
+import { createGatewayOnEdgeRuntime } from '@nirholas/chat-plugins-gateway';
 // @ts-ignore
 import SwaggerClient from 'swagger-client';
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -38,7 +38,7 @@ const mockManifest = {
   ],
   identifier: 'abc',
   meta: {},
-} as SperaxOSPluginManifest;
+} as Universal Crypto MCPPluginManifest;
 
 const mockManifestWithOpenAPI = {
   ...mockManifest,
@@ -329,7 +329,7 @@ describe('createGatewayOnEdgeRuntime', () => {
         manifest: {
           ...mockManifest,
           settings: { properties: { abc: { type: 'string' } }, required: ['abc'], type: 'object' },
-        } as SperaxOSPluginManifest,
+        } as Universal Crypto MCPPluginManifest,
       };
       const mockRequest: Request = new Request('https://test-url.com', {
         body: JSON.stringify(payload),
@@ -348,7 +348,7 @@ describe('createGatewayOnEdgeRuntime', () => {
         manifest: {
           ...mockManifest,
           settings: { properties: { abc: { type: 'string' } }, required: ['abc'], type: 'object' },
-        } as SperaxOSPluginManifest,
+        } as Universal Crypto MCPPluginManifest,
       };
 
       const mockRequest: Request = new Request('https://test-url.com', {
@@ -390,7 +390,7 @@ describe('createGatewayOnEdgeRuntime', () => {
               url: 'https://test-api-url.com',
             },
           ],
-        } as SperaxOSPluginManifest,
+        } as Universal Crypto MCPPluginManifest,
       };
       const mockRequest: Request = new Request('https://test-url.com', {
         body: JSON.stringify(payload),

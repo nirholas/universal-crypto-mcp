@@ -2,7 +2,7 @@ import {
   PluginErrorType,
   createErrorResponse,
   getPluginErrorStatus,
-} from '@sperax/chat-plugin-sdk';
+} from '@nirholas/chat-plugin-sdk';
 import { describe, expect, it } from 'vitest';
 
 describe('getPluginErrorStatus', () => {

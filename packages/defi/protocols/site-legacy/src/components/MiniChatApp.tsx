@@ -42,7 +42,7 @@ const SUGGESTED_PROMPTS = [
 
 export default function MiniChatApp() {
   const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: 'assistant', content: "Hi! I'm Agenti, powered by SperaxOS. Ask me anything about crypto - I fetch live prices!" }
+    { id: 0, role: 'assistant', content: "Hi! I'm Agenti, powered by Universal Crypto MCP. Ask me anything about crypto - I fetch live prices!" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -140,7 +140,7 @@ export default function MiniChatApp() {
       <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10">
         <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
         <span className="text-xs font-medium text-white/80">Agenti MCP</span>
-        <span className="text-[10px] text-white/40 ml-auto">SperaxOS</span>
+        <span className="text-[10px] text-white/40 ml-auto">Universal Crypto MCP</span>
       </div>
 
       {/* Messages */}

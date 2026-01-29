@@ -11,7 +11,7 @@ export const startStdioServer = async () => {
     const server = startServer()
     const transport = new StdioServerTransport()
     // using error level to show the message for stdio mode
-    Logger.error("SperaxOS Server running on stdio mode")
+    Logger.error("Universal Crypto MCP Server running on stdio mode")
 
     transport.onmessage = (message) => {
       Logger.error("Received message:", message)
@@ -26,6 +26,6 @@ export const startStdioServer = async () => {
     await server.connect(transport)
     return server
   } catch (error) {
-    Logger.error("Error starting SperaxOS Stdio server:", error)
+    Logger.error("Error starting Universal Crypto MCP Stdio server:", error)
   }
 }

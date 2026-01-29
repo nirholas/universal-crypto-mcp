@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-server",
+  "name": "@nirholas/crypto-automation-volume-packages-mcp-server",
   "version": "1.0.0",
-  "description": "Production DeFi operations MCP server for Solana with wallet management, trading, and volume campaigns",
+  "description": "Universal Crypto MCP - Production DeFi operations MCP server for Solana with wallet management, trading, and volume campaigns",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

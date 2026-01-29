@@ -400,7 +400,7 @@ enum SwapErrorCode {
   "@raydium-io/raydium-sdk-v2": "^0.1.0",
   "jito-ts": "^4.0.0",
   "@boosty/wallet-manager": "workspace:*",
-  "@sperax/mcp-shared": "workspace:*"
+  "@nirholas/mcp-shared": "workspace:*"
 }
 ```
 

@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-wallets",
+  "name": "@nirholas/crypto-automation-volume-packages-wallets",
   "version": "0.1.0",
-  "description": "Wallet analytics MCP server",
+  "description": "Universal Crypto MCP - Wallet analytics MCP server",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {

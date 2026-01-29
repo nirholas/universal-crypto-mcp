@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Download generated file
 
 #### Developer Experience
-- **Shared Core Package**: `@llm-energy/core` 
+- **Shared Core Package**: `@nirholas/core` 
   - Deduplicated parser code between web app and MCP server
   - Shared types for consistency
   - Reusable generator functions

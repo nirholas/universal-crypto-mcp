@@ -1,7 +1,7 @@
 {
-  "name": "github-to-mcp",
+  "name": "@nirholas/crypto-github-to-mcp",
   "displayName": "GitHub to MCP",
-  "description": "Convert GitHub repositories to MCP servers for use with Claude Desktop and other AI assistants",
+  "description": "Universal Crypto MCP - Convert GitHub repositories to MCP servers for use with Claude Desktop and other AI assistants",
   "version": "1.0.0",
   "publisher": "nirholas",
   "engines": {

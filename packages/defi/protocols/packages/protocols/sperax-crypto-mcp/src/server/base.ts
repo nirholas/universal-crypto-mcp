@@ -9,7 +9,7 @@ export const startServer = () => {
   try {
     // Create a new MCP server instance
     const server = new McpServer({
-      name: "SperaxOS",
+      name: "Universal Crypto MCP",
       version: "1.0.0",
       description: "Smart Agent Infrastructure for Decentralized Finance - USDs, SPA, Demeter on Arbitrum"
     })

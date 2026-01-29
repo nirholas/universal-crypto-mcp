@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-core-blockchain",
+  "name": "@nirholas/crypto-automation-volume-packages-core-blockchain",
   "version": "1.0.0",
-  "description": "Core blockchain interaction layer for Solana and EVM chains",
+  "description": "Universal Crypto MCP - Core blockchain interaction layer for Solana and EVM chains",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

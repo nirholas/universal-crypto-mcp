@@ -1,11 +1,14 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "crypto-news",
+  "name": "@nirholas/crypto-news",
   "title": "Free Crypto News",
-  "description": "Get real-time crypto news from 7 trusted sources",
+  "description": "Universal Crypto MCP - Get real-time crypto news from 7 trusted sources",
   "icon": "extension-icon.png",
   "author": "free-crypto-news",
-  "categories": ["News", "Finance"],
+  "categories": [
+    "News",
+    "Finance"
+  ],
   "license": "MIT",
   "commands": [
     {

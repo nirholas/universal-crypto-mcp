@@ -1,5 +1,5 @@
 /**
- * @llm-energy/core - Parser utilities
+ * @nirholas/core - Parser utilities
  * 
  * Functions for parsing llms.txt content into structured documents
  */

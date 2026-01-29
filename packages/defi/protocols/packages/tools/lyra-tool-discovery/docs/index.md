@@ -76,11 +76,11 @@ graph LR
   
   <a href="https://plugin.delivery" class="ecosystem-card">
     <h3>📦 plugin.delivery</h3>
-    <p>Plugin registry and delivery platform for SperaxOS</p>
+    <p>Plugin registry and delivery platform for Universal Crypto MCP</p>
   </a>
   
-  <a href="https://github.com/nirholas/SperaxOS" class="ecosystem-card">
-    <h3>🖥️ SperaxOS</h3>
+  <a href="https://github.com/nirholas/Universal Crypto MCP" class="ecosystem-card">
+    <h3>🖥️ Universal Crypto MCP</h3>
     <p>The AI-powered operating system that consumes these plugins</p>
   </a>
 </div>

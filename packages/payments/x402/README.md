@@ -45,7 +45,7 @@ An MCP server implementation enabling free USDC transfers on **[Base](https://ba
       "command": "npx",
       "args": [
         "-y",
-        "@magnetai/free-usdc-transfer"
+        "@nirholas/free-usdc-transfer"
       ],
       "env": {
         "COINBASE_CDP_API_KEY_NAME": "YOUR_COINBASE_CDP_API_KEY_NAME",
@@ -56,7 +56,7 @@ An MCP server implementation enabling free USDC transfers on **[Base](https://ba
 }
 ```
 
-2. Or install the server with **[magnet-desktop](https://github.com/magnetai/magnet-desktop)**
+2. Or install the server with **[magnet-desktop](https://github.com/nirholas/magnet-desktop)**
 
 ## License
 

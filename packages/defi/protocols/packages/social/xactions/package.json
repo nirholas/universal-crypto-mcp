@@ -1,7 +1,7 @@
 {
-  "name": "xactions",
+  "name": "@nirholas/crypto-defi-protocols-packages-social-xactions",
   "version": "3.0.42",
-  "description": "XActions - The Complete X/Twitter Automation Toolkit. Scrapers, MCP server for AI agents, CLI, and browser scripts. No API required. Open source by @nichxbt. Don't Panic.",
+  "description": "Universal Crypto MCP - XActions - The Complete X/Twitter Automation Toolkit. Scrapers, MCP server for AI agents, CLI, and browser scripts. No API required. Open source by @nichxbt. Don't Panic.",
   "homepage": "https://xactions.app",
   "repository": {
     "type": "git",

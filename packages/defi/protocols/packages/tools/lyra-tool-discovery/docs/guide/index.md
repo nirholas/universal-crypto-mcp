@@ -1,6 +1,6 @@
 # What is Lyra Tool Discovery?
 
-Lyra Tool Discovery is an AI-powered tool that automatically discovers MCP (Model Context Protocol) servers and tools from GitHub and npm, analyzes them using OpenAI or Anthropic, and determines the best plugin template for integration with SperaxOS.
+Lyra Tool Discovery is an AI-powered tool that automatically discovers MCP (Model Context Protocol) servers and tools from GitHub and npm, analyzes them using OpenAI or Anthropic, and determines the best plugin template for integration with Universal Crypto MCP.
 
 ## The Problem It Solves
 

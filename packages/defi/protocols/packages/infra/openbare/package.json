@@ -1,7 +1,7 @@
 {
-  "name": "openbare",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-openbare",
   "version": "1.0.0",
-  "description": "A decentralized, censorship-resistant web proxy network",
+  "description": "Universal Crypto MCP - A decentralized, censorship-resistant web proxy network",
   "private": true,
   "workspaces": [
     "server",

@@ -1,4 +1,4 @@
-import { createSperaxPluginGateway } from '@sperax/chat-plugins-gateway';
+import { createSperaxPluginGateway } from '@nirholas/chat-plugins-gateway';
 
 export const config = {
   runtime: 'edge',

@@ -1,8 +1,8 @@
 {
-  "name": "@x402/monorepo",
+  "name": "@nirholas/x402-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "X402 Payment Protocol with Sperax USDs - Yield-bearing AI agent payments on Arbitrum",
+  "description": "Universal Crypto MCP - X402 Payment Protocol with Sperax USDs - Yield-bearing AI agent payments on Arbitrum",
   "author": {
     "name": "nich",
     "url": "https://github.com/nirholas",

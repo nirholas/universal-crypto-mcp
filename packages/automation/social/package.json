@@ -1,7 +1,7 @@
 {
-  "name": "@nirholas/xactions-premium",
+  "name": "@universal-crypto-mcp/automation-social",
   "version": "1.0.0",
-  "description": "x402 paid premium features for XActions - Twitter automation with micropayments",
+  "description": "Social automation and Twitter/X integration with micropayments (merged xactions)",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

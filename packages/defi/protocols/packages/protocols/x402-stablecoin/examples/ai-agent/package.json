@@ -1,8 +1,8 @@
 {
-  "name": "@x402/ai-agent-example",
+  "name": "@nirholas/x402-ai-agent-example",
   "version": "1.0.0",
   "private": true,
-  "description": "Example of an AI agent making X402 payments",
+  "description": "Universal Crypto MCP - Example of an AI agent making X402 payments",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts"

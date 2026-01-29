@@ -1,7 +1,7 @@
 {
-  "name": "@openbare/client",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-openbare-client",
   "version": "1.0.0",
-  "description": "Multi-server proxy client with automatic failover for OpenBare",
+  "description": "Universal Crypto MCP - Multi-server proxy client with automatic failover for OpenBare",
   "type": "module",
   "main": "src/index.js",
   "module": "src/index.js",

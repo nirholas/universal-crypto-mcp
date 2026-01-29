@@ -84,7 +84,7 @@ default/
 Create a new file in `api/`:
 
 ```typescript
-import { PluginErrorType, createErrorResponse } from '@sperax/plugin-sdk';
+import { PluginErrorType, createErrorResponse } from '@nirholas/plugin-sdk';
 
 export const config = { runtime: 'edge' };
 
@@ -124,7 +124,7 @@ Add your API to `public/manifest-dev.json`:
 Edit `src/pages/index.tsx` to create a custom display:
 
 ```tsx
-import { fetchPluginMessage } from '@sperax/plugin-sdk';
+import { fetchPluginMessage } from '@nirholas/plugin-sdk';
 
 export default function Render() {
   const [data, setData] = useState();

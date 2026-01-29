@@ -1,8 +1,8 @@
 {
-  "name": "x402_examples",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript",
   "private": "true",
   "version": "0.0.2",
-  "description": "x402 Payment Protocol Monorepo",
+  "description": "Universal Crypto MCP - x402 Payment Protocol Monorepo",
   "main": "index.js",
   "scripts": {
     "build": "turbo run build",

@@ -1,5 +1,5 @@
 {
-  "name": "@x402/mcp-client-example",
+  "name": "@nirholas/x402-mcp-client-example",
   "private": true,
   "type": "module",
   "scripts": {

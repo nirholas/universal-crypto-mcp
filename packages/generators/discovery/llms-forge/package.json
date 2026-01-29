@@ -1,7 +1,7 @@
 {
-  "name": "llms-forge",
+  "name": "@nirholas/crypto-generators-discovery-llms-forge",
   "version": "1.0.0",
-  "description": "llm.energy - Extract documentation for AI agents from any site with llms.txt support",
+  "description": "Universal Crypto MCP - llm.energy - Extract documentation for AI agents from any site with llms.txt support",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",

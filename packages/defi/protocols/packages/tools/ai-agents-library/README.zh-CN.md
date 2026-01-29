@@ -307,7 +307,7 @@ defi_agents = [a for a in agents if 'defi' in a['meta']['tags']]
 
 ## 🔗 相关项目
 
-- **SperaxOS** - [应用分支](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
+- **Universal Crypto MCP** - [应用分支](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
 
 ---
 

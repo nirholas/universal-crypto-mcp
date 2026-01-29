@@ -1,7 +1,7 @@
 {
-  "name": "solana-vanity-ts",
+  "name": "@nirholas/crypto-wallets-solana-typescript",
   "version": "0.1.0",
-  "description": "TypeScript Solana vanity address generator - Educational implementation using @solana/web3.js",
+  "description": "Universal Crypto MCP - TypeScript Solana vanity address generator - Educational implementation using @solana/web3.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

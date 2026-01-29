@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-defi",
+  "name": "@nirholas/crypto-automation-volume-packages-combined",
   "version": "0.1.0",
-  "description": "All-in-one DeFi MCP server combining prices, wallets, and yields",
+  "description": "Universal Crypto MCP - All-in-one DeFi MCP server combining prices, wallets, and yields",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

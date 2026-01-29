@@ -214,7 +214,7 @@ packages/token-launcher/
   "@metaplex-foundation/mpl-token-metadata": "^3.0.0",
   "@raydium-io/raydium-sdk-v2": "^0.1.0",
   "jito-ts": "^4.0.0",
-  "@sperax/mcp-shared": "workspace:*",
+  "@nirholas/mcp-shared": "workspace:*",
   "@boosty/wallet-manager": "workspace:*"
 }
 ```

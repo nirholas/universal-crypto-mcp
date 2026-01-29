@@ -2,7 +2,7 @@ import {
   PluginErrorType,
   createErrorResponse,
   getPluginSettingsFromRequest,
-} from '@sperax/plugin-sdk';
+} from '@nirholas/plugin-sdk';
 
 export const config = {
   runtime: 'edge',

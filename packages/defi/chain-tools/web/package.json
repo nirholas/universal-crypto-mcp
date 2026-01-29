@@ -1,5 +1,5 @@
 {
-  "name": "mcp-blockchain-web",
+  "name": "@nirholas/crypto-defi-chain-tools-web",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

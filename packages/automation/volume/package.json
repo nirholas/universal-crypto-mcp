@@ -1,8 +1,8 @@
 {
-  "name": "boosty-mcp",
+  "name": "@universal-crypto-mcp/automation-volume",
   "version": "1.0.0",
   "private": true,
-  "description": "Boosty MCP servers for DeFi - Volume generation, trading, and wallet management",
+  "description": "Volume generation, trading automation, and wallet management",
   "workspaces": [
     "packages/*"
   ],

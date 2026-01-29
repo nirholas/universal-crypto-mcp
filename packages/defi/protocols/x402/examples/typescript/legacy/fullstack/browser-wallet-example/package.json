@@ -1,7 +1,7 @@
 {
-  "name": "browser-wallet-x402-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-fullstack-browser-wallet-example",
   "version": "1.0.0",
-  "description": "Example of x402 payments with browser wallet integration",
+  "description": "Universal Crypto MCP - Example of x402 payments with browser wallet integration",
   "private": true,
   "scripts": {
     "dev": "concurrently \"pnpm dev:server\" \"pnpm dev:client\"",

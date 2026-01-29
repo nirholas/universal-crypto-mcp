@@ -1,7 +1,7 @@
 {
-  "name": "lyra-intel-dashboard",
+  "name": "@nirholas/crypto-lyra-dashboard",
   "version": "1.0.0",
-  "description": "Modern React dashboard for Lyra Intel",
+  "description": "Universal Crypto MCP - Modern React dashboard for Lyra Intel",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

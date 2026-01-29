@@ -101,7 +101,7 @@ The `onchain-mcp` submodule implements a Model Context Protocol (MCP) server for
 ## API Integration
 
 - **API Authentication**: Requires a Bankless API token stored in the `BANKLESS_API_TOKEN` environment variable
-- **Base URL**: https://api.bankless.com/
+- **Base URL**: https://api.nirholas.com/
 - **Error Handling**: Comprehensive error handling with specific error classes:
     - `BanklessError`: Base error class
     - `BanklessValidationError`: For input validation errors

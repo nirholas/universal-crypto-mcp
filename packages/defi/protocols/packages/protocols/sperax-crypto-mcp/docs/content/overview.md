@@ -74,7 +74,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "sperax": {
       "command": "npx",
-      "args": ["-y", "@sperax/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }
@@ -89,7 +89,7 @@ Add to MCP settings:
   "mcp.servers": {
     "sperax": {
       "command": "npx",
-      "args": ["-y", "@sperax/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }

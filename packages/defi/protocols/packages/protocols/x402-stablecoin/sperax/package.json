@@ -1,7 +1,7 @@
 {
-  "name": "@x402/sperax-mcp",
+  "name": "@nirholas/x402-sperax-mcp",
   "version": "1.0.0",
-  "description": "MCP tools for X402 payments with Sperax USDs on Arbitrum",
+  "description": "Universal Crypto MCP - MCP tools for X402 payments with Sperax USDs on Arbitrum",
   "main": "dist/index.js",
   "bin": {
     "sperax-x402-mcp": "dist/tools/mcp-server.js"

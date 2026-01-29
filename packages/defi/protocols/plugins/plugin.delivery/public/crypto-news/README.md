@@ -163,7 +163,7 @@ All endpoints return articles in this format:
 
 ## Integration
 
-### In SperaxOS
+### In Universal Crypto MCP
 
 The plugin is automatically available via Sperax Intelligence. Just ask:
 

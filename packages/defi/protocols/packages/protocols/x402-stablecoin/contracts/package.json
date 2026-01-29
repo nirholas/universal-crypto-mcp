@@ -1,8 +1,8 @@
 {
-  "name": "@x402/contracts",
+  "name": "@nirholas/x402-contracts",
   "version": "1.0.0",
   "private": true,
-  "description": "X402 Protocol Smart Contracts",
+  "description": "Universal Crypto MCP - X402 Protocol Smart Contracts",
   "scripts": {
     "build": "forge build",
     "compile": "forge build",

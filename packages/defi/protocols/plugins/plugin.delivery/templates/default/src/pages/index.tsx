@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchPluginMessage } from '@sperax/plugin-sdk';
+import { fetchPluginMessage } from '@nirholas/plugin-sdk';
 import { Card, List, Tag, Typography } from 'antd';
 import { memo, useEffect, useState } from 'react';
 
@@ -42,7 +42,7 @@ const Render = memo(() => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch the plugin message data from SperaxOS
+    // Fetch the plugin message data from Universal Crypto MCP
     fetchPluginMessage<ResponseData>()
       .then((response) => {
         setData(response);

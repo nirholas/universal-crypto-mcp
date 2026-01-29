@@ -69,7 +69,7 @@ settings/
 ### 2. Retrieve Settings on Server
 
 ```typescript
-import { getPluginSettingsFromRequest, createErrorResponse, PluginErrorType } from '@sperax/plugin-sdk';
+import { getPluginSettingsFromRequest, createErrorResponse, PluginErrorType } from '@nirholas/plugin-sdk';
 
 export default async (req: Request) => {
   const settings = getPluginSettingsFromRequest<Settings>(req);
@@ -87,7 +87,7 @@ export default async (req: Request) => {
 
 ### 3. User Configures Settings
 
-When the user installs the plugin, SperaxOS shows a settings form based on your schema.
+When the user installs the plugin, Universal Crypto MCP shows a settings form based on your schema.
 
 ## Settings Schema Properties
 

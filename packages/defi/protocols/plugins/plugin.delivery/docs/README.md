@@ -1,8 +1,8 @@
-# SperaxOS Plugin Documentation
+# Universal Crypto MCP Plugin Documentation
 
-> **Live:** [plugin.delivery](https://plugin.delivery) • **SDK:** `@sperax/plugin-sdk`
+> **Live:** [plugin.delivery](https://plugin.delivery) • **SDK:** `@nirholas/plugin-sdk`
 
-Build AI-powered plugins for SperaxOS. Extend chat capabilities with custom APIs, OpenAPI integrations, and interactive UIs.
+Build AI-powered plugins for Universal Crypto MCP. Extend chat capabilities with custom APIs, OpenAPI integrations, and interactive UIs.
 
 ---
 
@@ -64,7 +64,7 @@ User: "What's the price of ETH?"
            │
            ▼
     ┌──────────────┐
-    │   SperaxOS   │ ←── Discovers plugin from index
+    │   Universal Crypto MCP   │ ←── Discovers plugin from index
     │   AI Model   │
     └──────┬───────┘
            │
@@ -107,7 +107,7 @@ cd my-plugin
 bun install
 bun dev
 
-# 3. Test in SperaxOS
+# 3. Test in Universal Crypto MCP
 # Add custom plugin: http://localhost:3400/manifest.json
 ```
 
@@ -134,8 +134,8 @@ bun dev
 
 | Package | npm |
 |---------|-----|
-| `@sperax/plugin-sdk` | [![npm](https://img.shields.io/npm/v/@sperax/plugin-sdk)](https://www.npmjs.com/package/@sperax/plugin-sdk) |
-| `@sperax/chat-plugins-gateway` | [![npm](https://img.shields.io/npm/v/@sperax/chat-plugins-gateway)](https://www.npmjs.com/package/@sperax/chat-plugins-gateway) |
+| `@nirholas/plugin-sdk` | [![npm](https://img.shields.io/npm/v/@nirholas/plugin-sdk)](https://www.npmjs.com/package/@nirholas/plugin-sdk) |
+| `@nirholas/chat-plugins-gateway` | [![npm](https://img.shields.io/npm/v/@nirholas/chat-plugins-gateway)](https://www.npmjs.com/package/@nirholas/chat-plugins-gateway) |
 
 ### Links
 

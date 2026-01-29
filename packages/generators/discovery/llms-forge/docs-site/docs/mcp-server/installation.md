@@ -21,7 +21,7 @@ The [Model Context Protocol](https://modelcontextprotocol.io) (MCP) allows AI as
       "mcpServers": {
         "llm-energy": {
           "command": "npx",
-          "args": ["-y", "@llm-energy/mcp-server"]
+          "args": ["-y", "@nirholas/mcp-server"]
         }
       }
     }
@@ -30,7 +30,7 @@ The [Model Context Protocol](https://modelcontextprotocol.io) (MCP) allows AI as
 === "Global Install"
 
     ```bash
-    npm install -g @llm-energy/mcp-server
+    npm install -g @nirholas/mcp-server
     ```
 
     ```json
@@ -64,7 +64,7 @@ The [Model Context Protocol](https://modelcontextprotocol.io) (MCP) allows AI as
     {
       "llm-energy": {
         "command": "npx",
-        "args": ["-y", "@llm-energy/mcp-server"]
+        "args": ["-y", "@nirholas/mcp-server"]
       }
     }
     ```

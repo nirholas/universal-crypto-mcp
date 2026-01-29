@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-trading-engine",
+  "name": "@nirholas/crypto-automation-volume-packages-trading-engine",
   "version": "1.0.0",
-  "description": "Solana DEX integration and trading engine for DeFi MCP server",
+  "description": "Universal Crypto MCP - Solana DEX integration and trading engine for DeFi MCP server",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

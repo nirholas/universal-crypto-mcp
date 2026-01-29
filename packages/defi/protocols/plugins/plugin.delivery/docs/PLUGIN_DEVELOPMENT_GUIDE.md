@@ -1,11 +1,11 @@
-# SperaxOS Plugin Development Guide
+# Universal Crypto MCP Plugin Development Guide
 
 > **Version:** 2.0.0  
 > **Last Updated:** December 27, 2025  
 > **Domain:** `plugin.delivery`  
 > **Repository:** `nirholas/plugins`
 
-This comprehensive guide covers everything you need to know about developing, deploying, and maintaining plugins for SperaxOS.
+This comprehensive guide covers everything you need to know about developing, deploying, and maintaining plugins for Universal Crypto MCP.
 
 ---
 
@@ -63,7 +63,7 @@ Initialize your project:
 ```bash
 mkdir my-plugin && cd my-plugin
 pnpm init
-pnpm add @sperax/plugin-sdk @sperax/chat-plugins-gateway
+pnpm add @nirholas/plugin-sdk @nirholas/chat-plugins-gateway
 pnpm add -D typescript @types/node
 ```
 
@@ -71,7 +71,7 @@ Create `public/manifest.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/@sperax/plugin-sdk/schema.json",
+  "$schema": "https://unpkg.com/@nirholas/plugin-sdk/schema.json",
   "identifier": "my-plugin",
   "api": [
     {
@@ -102,7 +102,7 @@ Create `public/manifest.json`:
 Create `api/hello.ts`:
 
 ```typescript
-import { PluginErrorType, createErrorResponse } from '@sperax/plugin-sdk';
+import { PluginErrorType, createErrorResponse } from '@nirholas/plugin-sdk';
 
 export const config = { runtime: 'edge' };
 
@@ -133,7 +133,7 @@ export default async (req: Request) => {
 Create `api/gateway.ts`:
 
 ```typescript
-import { createSperaxChatPluginGateway } from '@sperax/chat-plugins-gateway';
+import { createSperaxChatPluginGateway } from '@nirholas/chat-plugins-gateway';
 
 export const config = { runtime: 'edge' };
 
@@ -156,7 +156,7 @@ curl -X POST http://localhost:3400/api/hello \
   -d '{"name": "Test"}'
 ```
 
-Add to SperaxOS:
+Add to Universal Crypto MCP:
 1. Go to Settings → Plugins
 2. Click "Add Custom Plugin"
 3. Enter: `http://localhost:3400/manifest.json`
@@ -213,8 +213,8 @@ Continue reading for detailed documentation on [Architecture Overview](#2-archit
 | Component | Repository | Purpose |
 |-----------|------------|---------|
 | **Plugin Index** | `nirholas/plugins` | Plugin marketplace registry |
-| **Plugin SDK** | `@sperax/plugin-sdk` | Development toolkit |
-| **Plugin Gateway** | `@sperax/chat-plugins-gateway` | Request proxy service |
+| **Plugin SDK** | `@nirholas/plugin-sdk` | Development toolkit |
+| **Plugin Gateway** | `@nirholas/chat-plugins-gateway` | Request proxy service |
 | **Plugin Templates** | `templates/` | Starter project templates |
 
 ### Data Flow: Function Call Mechanism
@@ -251,7 +251,7 @@ User: "Bitcoin is currently $96,500 USD, up 2.3% in the last 24h"
 
 ## 2. Plugin Types
 
-SperaxOS supports three distinct plugin types, each suited for different use cases:
+Universal Crypto MCP supports three distinct plugin types, each suited for different use cases:
 
 ### 2.1 Default Plugin
 
@@ -444,15 +444,15 @@ For plugins using OpenAPI specification:
 
 ## 4. Plugin Index
 
-The plugin index (`public/index.json`) is the registry that SperaxOS uses to discover and display plugins.
+The plugin index (`public/index.json`) is the registry that Universal Crypto MCP uses to discover and display plugins.
 
 ### Index Structure
 
 ```json
 {
   "schemaVersion": 1,
-  "name": "SperaxOS Plugins",
-  "description": "The official plugin marketplace for SperaxOS",
+  "name": "Universal Crypto MCP Plugins",
+  "description": "The official plugin marketplace for Universal Crypto MCP",
   "author": "Sperax",
   "homepage": "https://sperax.io",
   "repository": "https://github.com/nirholas/plugin.delivery",
@@ -674,7 +674,7 @@ For local development, use a manifest with the gateway field:
 ### Local Testing Steps
 
 1. Start your plugin: `npm run dev`
-2. Open SperaxOS → Agent Settings → Plugins
+2. Open Universal Crypto MCP → Agent Settings → Plugins
 3. Click "Add Custom Plugin"
 4. Enter: `http://localhost:3400/manifest-dev.json`
 5. Save and test in chat
@@ -687,7 +687,7 @@ For local development, use a manifest with the gateway field:
 
 ```typescript
 // src/pages/api/your-endpoint.ts
-import { PluginErrorType, createErrorResponse } from '@sperax/plugin-sdk';
+import { PluginErrorType, createErrorResponse } from '@nirholas/plugin-sdk';
 
 export const config = {
   runtime: 'edge',
@@ -734,7 +734,7 @@ async function fetchExternalData(query: string) {
 
 ```typescript
 // src/pages/api/gateway.ts
-import { createSperaxChatPluginGateway } from '@sperax/chat-plugins-gateway';
+import { createSperaxChatPluginGateway } from '@nirholas/chat-plugins-gateway';
 
 export const config = {
   runtime: 'edge',
@@ -746,7 +746,7 @@ export default createSperaxChatPluginGateway();
 ### Accessing Plugin Settings
 
 ```typescript
-import { getPluginSettingsFromRequest } from '@sperax/plugin-sdk';
+import { getPluginSettingsFromRequest } from '@nirholas/plugin-sdk';
 
 export default async (req: Request) => {
   // Get user-configured settings
@@ -782,7 +782,7 @@ export default async (req: Request) => {
 
 ```tsx
 // src/pages/index.tsx
-import { fetchPluginMessage } from '@sperax/plugin-sdk';
+import { fetchPluginMessage } from '@nirholas/plugin-sdk';
 import { memo, useEffect, useState } from 'react';
 
 interface PluginData {
@@ -820,7 +820,7 @@ export default PluginUI;
 ### SDK Communication Methods
 
 ```typescript
-import { speraxChat } from '@sperax/plugin-sdk';
+import { speraxChat } from '@nirholas/plugin-sdk';
 
 // Get plugin payload (initialization data)
 const payload = await speraxChat.getPluginPayload();
@@ -850,7 +850,7 @@ speraxChat.createAssistantMessage('Response content');
 
 ## 8. OpenAPI Integration
 
-SperaxOS fully supports the OpenAPI specification, allowing you to convert existing APIs into plugins.
+Universal Crypto MCP fully supports the OpenAPI specification, allowing you to convert existing APIs into plugins.
 
 ### OpenAPI Plugin Structure
 
@@ -991,7 +991,7 @@ See `public/openai/coingecko/` for a complete working example:
 ### Server Communication Flow
 
 ```
-SperaxOS Core
+Universal Crypto MCP Core
      │
      │ HTTP POST with PluginRequestPayload
      ▼
@@ -1011,7 +1011,7 @@ Plugin Gateway
      │
      │ Formats response
      ▼
-SperaxOS Core
+Universal Crypto MCP Core
      │
      │ Passes to LLM for processing
      ▼
@@ -1023,14 +1023,14 @@ User sees formatted response
 Plugins use `window.postMessage` for secure cross-origin communication:
 
 ```typescript
-// Plugin → SperaxOS
+// Plugin → Universal Crypto MCP
 window.parent.postMessage({
   type: 'plugin-action',
   action: 'setMessage',
   data: { content: 'Updated content' }
 }, '*');
 
-// SperaxOS → Plugin
+// Universal Crypto MCP → Plugin
 window.addEventListener('message', (event) => {
   if (event.data.type === 'plugin-init') {
     const { payload, settings, state } = event.data;
@@ -1042,7 +1042,7 @@ window.addEventListener('message', (event) => {
 The SDK abstracts this complexity:
 
 ```typescript
-import { speraxChat } from '@sperax/plugin-sdk';
+import { speraxChat } from '@nirholas/plugin-sdk';
 
 // Simplified API
 const payload = await speraxChat.getPluginPayload();
@@ -1214,7 +1214,7 @@ console.log('[Plugin] Response:', result);
 - **Documentation:** This guide
 - **SDK Docs:** https://plugin.delivery/docs
 - **GitHub Issues:** https://github.com/nirholas/plugin.delivery/issues
-- **Discord:** [SperaxOS Discord Server]
+- **Discord:** [Universal Crypto MCP Discord Server]
 
 ---
 
@@ -1301,11 +1301,11 @@ Translations generated for: `en-US`, `zh-CN`, `zh-TW`, `ja-JP`, `ko-KR`, `de-DE`
 
 | Resource | URL |
 |----------|-----|
-| Plugin SDK | `@sperax/plugin-sdk` |
-| Plugin Gateway | `@sperax/chat-plugins-gateway` |
+| Plugin SDK | `@nirholas/plugin-sdk` |
+| Plugin Gateway | `@nirholas/chat-plugins-gateway` |
 | Plugin Templates | `./templates/` (included in this repo) |
 | OpenAPI Spec | https://swagger.io/specification/ |
-| SperaxOS Docs | https://sperax.io/docs |
+| Universal Crypto MCP Docs | https://sperax.io/docs |
 | Plugin Delivery | https://plugin.delivery |
 
 ### Cheat Sheet
@@ -1315,10 +1315,10 @@ Translations generated for: `en-US`, `zh-CN`, `zh-TW`, `ja-JP`, `ko-KR`, `de-DE`
 cp -r templates/openapi my-plugin
 
 # Install SDK
-npm install @sperax/plugin-sdk
+npm install @nirholas/plugin-sdk
 
 # Install Gateway (for local dev)
-npm install @sperax/chat-plugins-gateway
+npm install @nirholas/chat-plugins-gateway
 
 # Run locally
 npm run dev
@@ -1332,4 +1332,4 @@ vercel --prod
 
 ---
 
-*For MCP (Model Context Protocol) plugins, see the [MCP vs Plugins Guide](../SperaxOS/docs/MCP_VS_PLUGINS.md).*
+*For MCP (Model Context Protocol) plugins, see the [MCP vs Plugins Guide](../Universal Crypto MCP/docs/MCP_VS_PLUGINS.md).*

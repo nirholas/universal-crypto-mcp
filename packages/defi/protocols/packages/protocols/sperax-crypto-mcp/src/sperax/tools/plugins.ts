@@ -1,7 +1,7 @@
 /**
  * Sperax MCP Server - Plugin Delivery Tools
  *
- * Integration with SperaxOS Plugin Marketplace
+ * Integration with Universal Crypto MCP Plugin Marketplace
  * Provides access to AI function call plugins for crypto/DeFi operations.
  *
  * API: https://plugin.delivery
@@ -91,7 +91,7 @@ async function fetchPluginIndex(): Promise<PluginIndex> {
   const response = await fetch(`${PLUGIN_API_BASE}/index.json`, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
   });
 
@@ -106,7 +106,7 @@ async function fetchPluginManifest(manifestUrl: string): Promise<PluginManifest>
   const response = await fetch(manifestUrl, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
   });
 
@@ -126,7 +126,7 @@ async function executePluginFunction(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
     body: JSON.stringify({
       plugin: pluginId,
@@ -211,7 +211,7 @@ export const pluginsTools = [
   {
     name: 'plugins_list',
     description:
-      'List available SperaxOS plugins from plugin.delivery marketplace. Returns plugins with their capabilities, categories, and metadata.',
+      'List available Universal Crypto MCP plugins from plugin.delivery marketplace. Returns plugins with their capabilities, categories, and metadata.',
     inputSchema: ListPluginsInput,
     handler: async (params: z.infer<typeof ListPluginsInput>) => {
       try {
@@ -304,7 +304,7 @@ export const pluginsTools = [
   {
     name: 'plugins_execute',
     description:
-      'Execute a plugin function through the SperaxOS gateway. Routes the request to the appropriate plugin API and returns the result.',
+      'Execute a plugin function through the Universal Crypto MCP gateway. Routes the request to the appropriate plugin API and returns the result.',
     inputSchema: ExecuteFunctionInput,
     handler: async (params: z.infer<typeof ExecuteFunctionInput>) => {
       try {
@@ -343,7 +343,7 @@ export const pluginsTools = [
           {
             headers: {
               'Accept': 'application/json',
-              'User-Agent': 'SperaxOS-MCP/1.0',
+              'User-Agent': 'Universal Crypto MCP-MCP/1.0',
             },
           }
         );
@@ -394,7 +394,7 @@ export const pluginsTools = [
             {
               headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'SperaxOS-MCP/1.0',
+                'User-Agent': 'Universal Crypto MCP-MCP/1.0',
               },
             }
           );
@@ -426,7 +426,7 @@ export const pluginsTools = [
             {
               headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'SperaxOS-MCP/1.0',
+                'User-Agent': 'Universal Crypto MCP-MCP/1.0',
               },
             }
           );
@@ -463,7 +463,7 @@ export const pluginsTools = [
   {
     name: 'plugins_search',
     description:
-      'Search for plugins by keyword in the SperaxOS plugin marketplace. Finds plugins matching the search query in name, description, or tags.',
+      'Search for plugins by keyword in the Universal Crypto MCP plugin marketplace. Finds plugins matching the search query in name, description, or tags.',
     inputSchema: z.object({
       query: z
         .string()

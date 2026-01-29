@@ -164,7 +164,7 @@ MCP plugins expose three types of capabilities:
 
 ✅ **Local Execution** - Run tools directly on desktop without network latency  
 ✅ **Rich Capabilities** - Tools, Resources, and Prompts in one protocol  
-✅ **Standard Protocol** - Interoperable across Claude, SperaxOS, and other AI chat clients  
+✅ **Standard Protocol** - Interoperable across Claude, Universal Crypto MCP, and other AI chat clients  
 ✅ **System Integration** - Access file system, databases, local services  
 ✅ **Dependency Checking** - Automatically verifies Node.js, Python, etc.  
 ✅ **Active Ecosystem** - Growing library of official MCP servers
@@ -568,8 +568,8 @@ await server.connect(transport);
 - **Servers**: [github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
 
 ### Traditional Plugin Resources
-- **SDK**: [@sperax/plugin-sdk](https://www.npmjs.com/package/@sperax/plugin-sdk)
-- **Gateway**: [@sperax/chat-plugins-gateway](https://www.npmjs.com/package/@sperax/chat-plugins-gateway)
+- **SDK**: [@nirholas/plugin-sdk](https://www.npmjs.com/package/@nirholas/plugin-sdk)
+- **Gateway**: [@nirholas/chat-plugins-gateway](https://www.npmjs.com/package/@nirholas/chat-plugins-gateway)
 - **Templates**: [plugin.delivery/templates](https://plugin.delivery)
 
 ### Community

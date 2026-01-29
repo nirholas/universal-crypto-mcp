@@ -1,5 +1,5 @@
 {
-  "name": "@x402/svm",
+  "name": "@nirholas/x402-svm",
   "version": "2.2.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -35,7 +35,7 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/x402/typescript/packages/mechanisms/svm"
   },
-  "description": "x402 Payment Protocol SVM Implementation",
+  "description": "Universal Crypto MCP - x402 Payment Protocol SVM Implementation",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@scure/base": "^1.2.6",

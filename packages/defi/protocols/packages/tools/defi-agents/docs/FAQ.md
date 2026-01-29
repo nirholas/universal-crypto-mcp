@@ -103,7 +103,7 @@ The **Sperax Portfolio** (🎯) is an all-in-one master agent that consolidates 
 **Current Status:**
 
 - ✅ Read-only portfolio tracking and analytics available now
-- 🚧 Automated trading, bots, and DeFi interactions coming soon (in SperaxOS roadmap)
+- 🚧 Automated trading, bots, and DeFi interactions coming soon (in Universal Crypto MCP roadmap)
 
 ### What domain do the Sperax portfolio agents use?
 
@@ -111,10 +111,10 @@ Currently, the Sperax portfolio agents (Dashboard, Trading Assistant, DCA Bot, e
 
 ### Will the domain change in the future?
 
-Yes, likely. Once **SperaxOS** is officially live in production, the domain may change to something like:
+Yes, likely. Once **Universal Crypto MCP** is officially live in production, the domain may change to something like:
 
 - **sperax.io** for the main platform
-- **sperax.io/chat** for the SperaxOS chat interface
+- **sperax.io/chat** for the Universal Crypto MCP chat interface
 - Different subdomains for specific portfolio features
 
 However, **everything is still in flux** and subject to change as the platform evolves.
@@ -125,7 +125,7 @@ If you're building integrations or creating custom agents, be aware that:
 
 - Current URL: `https://sperax.fun/artifacts/portfolio/embed/*`
 - Future URL (tentative): `https://sperax.io/*` or similar
-- Timeline: TBD based on SperaxOS production launch
+- Timeline: TBD based on Universal Crypto MCP production launch
 
 Monitor the repository for updates when the domain migration occurs.
 

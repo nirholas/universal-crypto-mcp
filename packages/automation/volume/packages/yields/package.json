@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-yields",
+  "name": "@nirholas/crypto-automation-volume-packages-yields",
   "version": "0.1.0",
-  "description": "MCP server for DeFi yield discovery and comparison",
+  "description": "Universal Crypto MCP - MCP server for DeFi yield discovery and comparison",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {

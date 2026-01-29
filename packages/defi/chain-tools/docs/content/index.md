@@ -1,4 +1,4 @@
-# SperaxOS MCP Server
+# Universal Crypto MCP MCP Server
 
 A **Model Context Protocol** server that supports Arbitrum, BSC, opBNB, and other popular EVM-compatible networks.
 
@@ -6,7 +6,7 @@ A **Model Context Protocol** server that supports Arbitrum, BSC, opBNB, and othe
 
 ## � Start Here
 
-!!! tip "New to SperaxOS MCP?"
+!!! tip "New to Universal Crypto MCP MCP?"
     1. **[Installation](#installation)** - Set up in Claude Desktop, Cursor, or VS Code
     2. **[Tools Reference](mcp-server/tools.md)** - See all available MCP tools  
     3. **[Protocol Overview](overview.md)** - Understand USDs, SPA, and the Sperax ecosystem
@@ -88,7 +88,7 @@ Use the **sidebar navigation** or the cards below to explore all documentation p
 
 ## Overview
 
-SperaxOS MCP enables AI agents to interact with:
+Universal Crypto MCP MCP enables AI agents to interact with:
 
 - **USDs** - Auto-yield stablecoin
 - **SPA/veSPA** - Governance and staking
@@ -108,7 +108,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "speraxos": {
       "command": "npx",
-      "args": ["-y", "@sperax/os"]
+      "args": ["-y", "@nirholas/os"]
     }
   }
 }
@@ -121,7 +121,7 @@ Add to `claude_desktop_config.json`:
   "mcp.servers": {
     "speraxos": {
       "command": "npx",
-      "args": ["-y", "@sperax/os"]
+      "args": ["-y", "@nirholas/os"]
     }
   }
 }
@@ -134,7 +134,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "speraxos": {
       "command": "npx",
-      "args": ["-y", "@sperax/os"],
+      "args": ["-y", "@nirholas/os"],
       "env": {
         "ARBITRUM_RPC_URL": "https://your-rpc.com"
       }

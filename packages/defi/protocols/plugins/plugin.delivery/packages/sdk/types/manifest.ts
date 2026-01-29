@@ -2,7 +2,7 @@ import { JSONSchema7 } from 'json-schema';
 
 import { Meta } from './market';
 
-export type SperaxOSPluginType = 'default' | 'standalone' | 'markdown';
+export type Universal Crypto MCPPluginType = 'default' | 'standalone' | 'markdown';
 
 /**
  * Plugin Schema
@@ -18,7 +18,7 @@ export interface PluginSchema extends Omit<JSONSchema7, 'type'> {
   type: 'object';
 }
 
-export interface SperaxOSPluginApi {
+export interface Universal Crypto MCPPluginApi {
   description: string;
   name: string;
   parameters: PluginSchema;
@@ -37,9 +37,9 @@ export interface SperaxOSPluginApi {
  * @nameCN 插件清单
  * @descCN 描述一个插件的构成要素
  */
-export interface SperaxOSPluginManifest {
+export interface Universal Crypto MCPPluginManifest {
   $schema?: string;
-  api: SperaxOSPluginApi[];
+  api: Universal Crypto MCPPluginApi[];
   author?: string;
   /**
    * createAt
@@ -60,7 +60,7 @@ export interface SperaxOSPluginManifest {
    * Plugin name
    * @desc The name of the plugin
    * @nameCN 插件名称
-   * @descCN 插件的名称，需要和提交到 SperaxOS Plugins 仓库的插件名称一致
+   * @descCN 插件的名称，需要和提交到 Universal Crypto MCP Plugins 仓库的插件名称一致
    */
   identifier: string;
   /**
@@ -83,7 +83,7 @@ export interface SperaxOSPluginManifest {
    * plugin runtime type
    * @default default
    */
-  type?: SperaxOSPluginType;
+  type?: Universal Crypto MCPPluginType;
   /**
    * plugin ui on user side
    * @desc The type of rendering for the plugin

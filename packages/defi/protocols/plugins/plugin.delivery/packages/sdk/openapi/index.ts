@@ -3,7 +3,7 @@ import { convertParametersToJSONSchema } from 'openapi-jsonschema-parameters';
 import { OpenAPI, OpenAPIV3_1 } from 'openapi-types';
 
 import { pluginApiSchema } from '../schema/manifest';
-import { SperaxOSPluginApi, PluginSchema } from '../types';
+import { Universal Crypto MCPPluginApi, PluginSchema } from '../types';
 
 export const OPENAPI_REQUEST_BODY_KEY = '_requestBody';
 
@@ -19,7 +19,7 @@ export class OpenAPIConvertor {
     const paths = api.paths!;
     const methods = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
 
-    const plugins: SperaxOSPluginApi[] = [];
+    const plugins: Universal Crypto MCPPluginApi[] = [];
 
     for (const [path, operations] of Object.entries(paths)) {
       for (const method of methods) {
@@ -40,7 +40,7 @@ export class OpenAPIConvertor {
 
           const description = operation.summary || operation.description || name;
 
-          const plugin = { description, name, parameters } as SperaxOSPluginApi;
+          const plugin = { description, name, parameters } as Universal Crypto MCPPluginApi;
 
           const res = pluginApiSchema.safeParse(plugin);
           if (res.success) plugins.push(plugin);

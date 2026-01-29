@@ -1,8 +1,8 @@
 {
-  "name": "default-plugin-template",
+  "name": "@nirholas/crypto-defi-protocols-plugins-plugin.delivery-templates-default",
   "version": "1.0.0",
   "private": true,
-  "description": "Default type plugin template with API and optional UI",
+  "description": "Universal Crypto MCP - Default type plugin template with API and optional UI",
   "scripts": {
     "dev": "next dev -p 3400",
     "build": "next build",

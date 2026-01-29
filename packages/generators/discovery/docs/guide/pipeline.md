@@ -31,7 +31,7 @@ flowchart TB
         I --> K
         J --> K
         K --> L[plugin.delivery]
-        L --> M[SperaxOS Registry]
+        L --> M[Universal Crypto MCP Registry]
     end
 ```
 
@@ -61,7 +61,7 @@ lyra-discover discover --sources github --limit 5 | github-to-mcp transform
 Registry and delivery platform for plugins.
 
 **Input:** Plugin manifests and configurations
-**Output:** Published plugins accessible to SperaxOS
+**Output:** Published plugins accessible to Universal Crypto MCP
 
 ## Integration Patterns
 

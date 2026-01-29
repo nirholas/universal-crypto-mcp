@@ -1,4 +1,4 @@
-import { speraxOS, usePluginSettings } from '@sperax/chat-plugin-sdk/client';
+import { speraxOS, usePluginSettings } from '@nirholas/chat-plugin-sdk/client';
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

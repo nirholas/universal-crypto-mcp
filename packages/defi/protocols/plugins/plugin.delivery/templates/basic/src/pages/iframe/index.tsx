@@ -1,4 +1,4 @@
-import { speraxOS } from '@sperax/plugin-sdk/client';
+import { speraxOS } from '@nirholas/plugin-sdk/client';
 import { Button } from 'antd';
 import { memo, useEffect, useState } from 'react';
 import { Center } from 'react-layout-kit';

@@ -1,5 +1,5 @@
 {
-  "name": "hono-server-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-servers-hono",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,7 +1,7 @@
 {
-  "name": "@sperax/plugin-sdk",
+  "name": "@nirholas/crypto-plugin-sdk",
   "version": "1.0.0",
-  "description": "SperaxOS Plugin SDK - Build plugins for SperaxOS",
+  "description": "Universal Crypto MCP - SperaxOS Plugin SDK - Build plugins for SperaxOS",
   "keywords": [
     "sperax",
     "speraxos",

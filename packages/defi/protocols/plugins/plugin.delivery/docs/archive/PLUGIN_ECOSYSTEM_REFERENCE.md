@@ -1,10 +1,10 @@
-# SperaxOS Plugin Ecosystem Reference
+# Universal Crypto MCP Plugin Ecosystem Reference
 
 > **Version:** 2.0.0  
 > **Last Updated:** December 27, 2025  
 > **Domain:** `plugin.delivery`
 
-This document provides a comprehensive reference for the SperaxOS plugin ecosystem, covering architecture, protocols, model compatibility, and operational details.
+This document provides a comprehensive reference for the Universal Crypto MCP plugin ecosystem, covering architecture, protocols, model compatibility, and operational details.
 
 ---
 
@@ -23,9 +23,9 @@ This document provides a comprehensive reference for the SperaxOS plugin ecosyst
 
 ## 1. Ecosystem Overview
 
-### What is the SperaxOS Plugin System?
+### What is the Universal Crypto MCP Plugin System?
 
-The SperaxOS plugin system extends AI assistant capabilities through external tools and services. It enables:
+The Universal Crypto MCP plugin system extends AI assistant capabilities through external tools and services. It enables:
 
 - **Real-time data access** - Live prices, weather, search results
 - **External API integration** - CoinGecko, DeFi protocols, databases
@@ -77,8 +77,8 @@ The SperaxOS plugin system extends AI assistant capabilities through external to
 | **Plugin Index** | Registry of available plugins | `plugin.delivery/index.json` |
 | **Plugin Manifests** | Individual plugin configurations | `plugin.delivery/openai/{id}/manifest.json` |
 | **Plugin Gateway** | Proxy for plugin requests | `plugin.delivery/api/gateway` |
-| **Plugin SDK** | Development toolkit | `@sperax/plugin-sdk` |
-| **SperaxOS Client** | Consumer of plugins | SperaxOS web/desktop app |
+| **Plugin SDK** | Development toolkit | `@nirholas/plugin-sdk` |
+| **Universal Crypto MCP Client** | Consumer of plugins | Universal Crypto MCP web/desktop app |
 
 ---
 
@@ -86,7 +86,7 @@ The SperaxOS plugin system extends AI assistant capabilities through external to
 
 ### Domain Structure
 
-The `plugin.delivery` domain hosts all SperaxOS plugin assets:
+The `plugin.delivery` domain hosts all Universal Crypto MCP plugin assets:
 
 ```
 plugin.delivery/
@@ -146,7 +146,7 @@ git push origin main
 
 ## 3. Plugin vs MCP Comparison
 
-SperaxOS supports two plugin systems. Here's a detailed comparison:
+Universal Crypto MCP supports two plugin systems. Here's a detailed comparison:
 
 ### Quick Comparison
 
@@ -205,7 +205,7 @@ speraxos://plugin/install?type=mcp&id=brave-search&schema=<base64>
 
 ### Overview of Plugin Triggering
 
-The SperaxOS plugin system triggers plugins through the Function Call mechanism, enabling chatbots to interact with external APIs to enhance user experience. This section details how plugins are invoked during conversations.
+The Universal Crypto MCP plugin system triggers plugins through the Function Call mechanism, enabling chatbots to interact with external APIs to enhance user experience. This section details how plugins are invoked during conversations.
 
 ### Basic Principles of Function Call
 
@@ -213,12 +213,12 @@ Function Call is a feature that allows developers to describe functions within L
 
 ### Plugin Trigger Steps
 
-1. **User Input**: The user makes a request to SperaxOS, such as querying cryptocurrency prices or adding data
+1. **User Input**: The user makes a request to Universal Crypto MCP, such as querying cryptocurrency prices or adding data
 2. **Intent Recognition**: The model analyzes the user's input to determine if a plugin needs to be invoked
 3. **Generate Function Call**: If plugin intervention is required, the model generates a Function Call request containing necessary parameters
-4. **Send Request**: SperaxOS sends the Function Call as an API request to the designated plugin server via the gateway
+4. **Send Request**: Universal Crypto MCP sends the Function Call as an API request to the designated plugin server via the gateway
 5. **Process Request**: The plugin server receives the Function Call request, processes it, and prepares response data
-6. **Return Response**: The plugin server returns the processed data to SperaxOS in JSON format
+6. **Return Response**: The plugin server returns the processed data to Universal Crypto MCP in JSON format
 7. **Model Processes Plugin Response**: The model receives the plugin's response data and continues interacting with the user based on this data
 
 ### Example Process: Cryptocurrency Price Plugin
@@ -250,9 +250,9 @@ The model recognizes that the user wants cryptocurrency data and generates a Fun
 }
 ```
 
-**3. SperaxOS Sends API Request**
+**3. Universal Crypto MCP Sends API Request**
 
-SperaxOS converts the Function Call into an API request to the cryptocurrency price plugin:
+Universal Crypto MCP converts the Function Call into an API request to the cryptocurrency price plugin:
 
 ```http
 POST /crypto-price HTTP/1.1
@@ -308,8 +308,8 @@ After receiving the plugin's response, the model interacts with the user:
 ### Function Call Considerations
 
 - **Design Accuracy**: Function Call definitions must accurately reflect user intent and required parameters
-- **Security**: Plugins must securely and efficiently handle requests from SperaxOS
-- **Tool Calls Update**: In the latest OpenAI implementation, Function Call has been updated to `tool_calls`. SperaxOS has completed compatibility adaptation
+- **Security**: Plugins must securely and efficiently handle requests from Universal Crypto MCP
+- **Tool Calls Update**: In the latest OpenAI implementation, Function Call has been updated to `tool_calls`. Universal Crypto MCP has completed compatibility adaptation
 - **Error Handling**: Plugins should return appropriate error types (see Plugin Error Types) for proper user feedback
 
 ---
@@ -402,7 +402,7 @@ Not all LLM models handle tool/function calling equally. This section documents 
 ### What is the Plugin Gateway?
 
 The gateway is a proxy service that:
-1. Routes plugin requests from SperaxOS
+1. Routes plugin requests from Universal Crypto MCP
 2. Handles CORS and authentication
 3. Validates plugin manifests and parameters
 4. Forwards requests to plugin servers
@@ -411,7 +411,7 @@ The gateway is a proxy service that:
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  SperaxOS   │────▶│   Gateway   │────▶│   Plugin    │
+│  Universal Crypto MCP   │────▶│   Gateway   │────▶│   Plugin    │
 │   Client    │     │  (Proxy)    │     │   Server    │
 └─────────────┘     └─────────────┘     └─────────────┘
        │                   │                   │
@@ -453,7 +453,7 @@ interface PluginRequestPayload {
 
 ```typescript
 // Using the official gateway package
-import { createSperaxChatPluginGateway } from '@sperax/chat-plugins-gateway';
+import { createSperaxChatPluginGateway } from '@nirholas/chat-plugins-gateway';
 
 export const config = {
   runtime: 'edge',
@@ -538,7 +538,7 @@ User settings (like API keys) are:
 
 ```typescript
 // Accessing settings in plugin
-import { getPluginSettingsFromRequest } from '@sperax/plugin-sdk';
+import { getPluginSettingsFromRequest } from '@nirholas/plugin-sdk';
 
 const settings = getPluginSettingsFromRequest<{
   apiKey: string;
@@ -733,4 +733,4 @@ plugins/
 ---
 
 *For development guide, see [PLUGIN_DEVELOPMENT_GUIDE.md](./PLUGIN_DEVELOPMENT_GUIDE.md)*
-*For MCP plugins, see [MCP_VS_PLUGINS.md](../SperaxOS/docs/MCP_VS_PLUGINS.md)*
+*For MCP plugins, see [MCP_VS_PLUGINS.md](../Universal Crypto MCP/docs/MCP_VS_PLUGINS.md)*

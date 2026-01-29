@@ -1,7 +1,7 @@
 {
-  "name": "@llm-energy/core",
+  "name": "@nirholas/crypto-core",
   "version": "1.0.0",
-  "description": "Core utilities for llm.energy - shared parser, types, and generators",
+  "description": "Universal Crypto MCP - Core utilities for llm.energy - shared parser, types, and generators",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

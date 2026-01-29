@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-solana-core",
+  "name": "@nirholas/crypto-automation-volume-packages-solana-core",
   "version": "1.0.0",
-  "description": "Production Solana core infrastructure for DeFi MCP server",
+  "description": "Universal Crypto MCP - Production Solana core infrastructure for DeFi MCP server",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

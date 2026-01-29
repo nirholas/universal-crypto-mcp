@@ -89,7 +89,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "sperax": {
       "command": "npx",
-      "args": ["-y", "@sperax/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }
@@ -109,7 +109,7 @@ Add to your MCP settings:
   "mcp.servers": {
     "sperax": {
       "command": "npx",
-      "args": ["-y", "@sperax/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }
@@ -124,7 +124,7 @@ For better performance and reliability, use your own Arbitrum RPC:
   "mcpServers": {
     "sperax": {
       "command": "npx",
-      "args": ["-y", "@sperax/mcp-server"],
+      "args": ["-y", "@nirholas/mcp-server"],
       "env": {
         "ARBITRUM_RPC_URL": "https://your-rpc-endpoint.com"
       }
@@ -147,8 +147,8 @@ PORT=8080 pnpm start:http
 <details>
   <summary>  Sperax MCP Server Repository </summary>
   
-For best compatability, use within SperaxOS. The servers provided in this repo largely are based upon the already built and tested products on [app.sperax.io](https://app.sperax.io). The Sperax Crypto and Defi MCP Server project is an additional product of Sperax and SperaxOS, created for the open source community. For the millions of developers that may not have had the tools available to use cryptocurrency, blockchain, defi, and web3 tools within their usual workspace, we are thrilled to be laying the groundworks for the use of blockchain and cryptocurrency use paired with the Model Context Protocol. 
-Sperax is building an autonomous financial infrastructure, centered around its auto-yield stablecoin USDs and its utility/governance token SPA, using AI-driven agents to automate yield generation and financial management across blockchains like Arbitrum and BNB Chain. It combines collateralized stability with algorithmic mechanisms, aiming to offer passive income for users through its integrated system, which includes the SperaxOS AI infrastructure. SperaxOS is the world's first AI-native operating system for decentralized finance, transforming how enterprises, developers, and DeFi protocols manage on-chain capital. SperaxOS replaces manual DeFi workflows with autonomous, intelligent automation. While traditional AI agents generate content or answer questions, SperaxOS agents execute capital, automatically optimizing yields, rebalancing portfolios, defending against risks, and managing treasury operations 24/7 with zero human intervention. This repo will initially focus on Sperax ecosystem products such as USDs and SPA. For organizational purposes, SperaxOS documents and tools are seperated in their respective repositories.
+For best compatability, use within Universal Crypto MCP. The servers provided in this repo largely are based upon the already built and tested products on [app.sperax.io](https://app.sperax.io). The Sperax Crypto and Defi MCP Server project is an additional product of Sperax and Universal Crypto MCP, created for the open source community. For the millions of developers that may not have had the tools available to use cryptocurrency, blockchain, defi, and web3 tools within their usual workspace, we are thrilled to be laying the groundworks for the use of blockchain and cryptocurrency use paired with the Model Context Protocol. 
+Sperax is building an autonomous financial infrastructure, centered around its auto-yield stablecoin USDs and its utility/governance token SPA, using AI-driven agents to automate yield generation and financial management across blockchains like Arbitrum and BNB Chain. It combines collateralized stability with algorithmic mechanisms, aiming to offer passive income for users through its integrated system, which includes the Universal Crypto MCP AI infrastructure. Universal Crypto MCP is the world's first AI-native operating system for decentralized finance, transforming how enterprises, developers, and DeFi protocols manage on-chain capital. Universal Crypto MCP replaces manual DeFi workflows with autonomous, intelligent automation. While traditional AI agents generate content or answer questions, Universal Crypto MCP agents execute capital, automatically optimizing yields, rebalancing portfolios, defending against risks, and managing treasury operations 24/7 with zero human intervention. This repo will initially focus on Sperax ecosystem products such as USDs and SPA. For organizational purposes, Universal Crypto MCP documents and tools are seperated in their respective repositories.
 </details>
 
 ## 🛠️ Available Tools
@@ -598,7 +598,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by the Sperax Team</strong>
+  <strong>Built with ❤️ by the nich</strong>
 </p>
 
 <p align="center">

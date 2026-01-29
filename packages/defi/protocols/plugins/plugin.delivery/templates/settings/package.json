@@ -1,8 +1,8 @@
 {
-  "name": "settings-plugin-template",
+  "name": "@nirholas/crypto-defi-protocols-plugins-plugin.delivery-templates-settings",
   "version": "1.0.0",
   "private": true,
-  "description": "Plugin template demonstrating settings configuration",
+  "description": "Universal Crypto MCP - Plugin template demonstrating settings configuration",
   "scripts": {
     "dev": "vercel dev --listen 3400",
     "build": "vercel build",

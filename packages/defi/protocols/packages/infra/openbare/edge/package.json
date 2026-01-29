@@ -1,7 +1,7 @@
 {
-  "name": "openbare-edge",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-openbare-edge",
   "version": "1.0.0",
-  "description": "OpenBare Cloudflare Workers Edge Server - TompHTTP Bare Server Protocol v3",
+  "description": "Universal Crypto MCP - OpenBare Cloudflare Workers Edge Server - TompHTTP Bare Server Protocol v3",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

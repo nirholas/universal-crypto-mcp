@@ -1025,7 +1025,7 @@ Yield strategies could be exploited.
 ## Bug Bounty
 
 Report vulnerabilities responsibly:
-- Email: security@sperax.io
+- Email: security@nirholas.io
 - Immunefi: https://immunefi.com/bounty/sperax
 
 Rewards up to $100,000 for critical bugs.
@@ -1202,14 +1202,14 @@ export const CONTRACT_ADDRESSES = {
 // Ecosystem Integration Documentation
 // ============================================================================
 
-export const AGENTS_DOCUMENTATION = `# SperaxOS DeFi Agents
+export const AGENTS_DOCUMENTATION = `# Universal Crypto MCP DeFi Agents
 
 ## Overview
 
 The DeFi Agents API provides access to 58+ production-ready AI agent definitions for DeFi, portfolio management, trading, and Web3 workflows.
 
 **API Base URL:** \`https://sperax.click\`
-**Repository:** https://github.com/speraxos/SperaxOS-Defi-Agents
+**Repository:** https://github.com/speraxos/Universal Crypto MCP-Defi-Agents
 
 ## Features
 
@@ -1253,11 +1253,11 @@ Use agents_get with identifier "usds-stablecoin-expert" to get full prompt
 | \`/{identifier}.json\` | Single agent details |
 `;
 
-export const PLUGINS_DOCUMENTATION = `# SperaxOS Plugin Marketplace
+export const PLUGINS_DOCUMENTATION = `# Universal Crypto MCP Plugin Marketplace
 
 ## Overview
 
-Plugin Delivery is the official plugin marketplace for SperaxOS, providing AI function call plugins for crypto and DeFi operations.
+Plugin Delivery is the official plugin marketplace for Universal Crypto MCP, providing AI function call plugins for crypto and DeFi operations.
 
 **Plugin Index:** \`https://plugin.delivery\`
 **Repository:** https://github.com/nirholas/plugin.delivery
@@ -1266,7 +1266,7 @@ Plugin Delivery is the official plugin marketplace for SperaxOS, providing AI fu
 
 - ✅ **AI Function Calls** - LLM-compatible plugin system
 - ✅ **Gateway Service** - Secure request routing
-- ✅ **TypeScript SDK** - \`@sperax/plugin-sdk\`
+- ✅ **TypeScript SDK** - \`@nirholas/plugin-sdk\`
 - ✅ **Multiple Plugin Types** - Default, Markdown, Standalone
 
 ## Available Tools
@@ -1493,7 +1493,7 @@ export const resources = [
   {
     uri: 'sperax://ecosystem/plugins',
     name: 'Plugin Marketplace',
-    description: 'Documentation for the SperaxOS Plugin Marketplace',
+    description: 'Documentation for the Universal Crypto MCP Plugin Marketplace',
     mimeType: 'text/markdown',
     content: PLUGINS_DOCUMENTATION,
   },

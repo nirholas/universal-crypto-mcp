@@ -1,7 +1,7 @@
 {
-  "name": "auth-based-pricing",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-fullstack-auth_based_pricing",
   "version": "1.0.0",
-  "description": "Demo of Sign-In with Ethereum (SIWE), JWT authentication, and conditional x402 payments.",
+  "description": "Universal Crypto MCP - Demo of Sign-In with Ethereum (SIWE), JWT authentication, and conditional x402 payments.",
   "main": "dist/backend.js",
   "type": "module",
   "scripts": {

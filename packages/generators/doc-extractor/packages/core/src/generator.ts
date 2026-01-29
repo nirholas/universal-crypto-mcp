@@ -1,5 +1,5 @@
 /**
- * @llm-energy/core - Document generators
+ * @nirholas/core - Document generators
  * 
  * Functions for generating full documentation and agent guides
  */

@@ -1,5 +1,5 @@
 {
-  "name": "lyra-dashboard",
+  "name": "@nirholas/crypto-generators-discovery-dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -651,8 +651,8 @@ llms-forge/
       src/parser.ts
       src/types.ts
       package.json
-  src/ (imports from @llm-energy/core)
-  mcp-server/ (imports from @llm-energy/core)
+  src/ (imports from @nirholas/core)
+  mcp-server/ (imports from @nirholas/core)
 ```
 
 #### 2. Add Unit Tests

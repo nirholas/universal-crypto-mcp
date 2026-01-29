@@ -297,9 +297,9 @@ const RSS_SOURCES = {
     url: 'https://defipulse.com/blog/feed/',
     category: 'defi',
   },
-  bankless: {
+  nirholas: {
     name: 'Bankless',
-    url: 'https://newsletter.banklesshq.com/feed',
+    url: 'https://newsletter.nirholashq.com/feed',
     category: 'defi',
   },
   defillama_news: {

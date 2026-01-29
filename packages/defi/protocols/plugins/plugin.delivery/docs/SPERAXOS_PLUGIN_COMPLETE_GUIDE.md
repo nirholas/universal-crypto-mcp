@@ -1,16 +1,16 @@
-# SperaxOS Plugin & Portfolio Integration Complete Guide
+# Universal Crypto MCP Plugin & Portfolio Integration Complete Guide
 
 > **Version:** 1.0.0  
 > **Last Updated:** December 27, 2025  
-> **Author:** SperaxOS Development Team
+> **Author:** Universal Crypto MCP Development Team
 
-This guide covers the complete setup, development, and deployment of the SperaxOS plugin ecosystem, with a focus on portfolio integration in chat.
+This guide covers the complete setup, development, and deployment of the Universal Crypto MCP plugin ecosystem, with a focus on portfolio integration in chat.
 
 ---
 
 ## Related Documentation
 
-For developing **external plugins** deployed to the SperaxOS Plugin Marketplace (`plugin.delivery`), see the comprehensive guides in the plugins repository:
+For developing **external plugins** deployed to the Universal Crypto MCP Plugin Marketplace (`plugin.delivery`), see the comprehensive guides in the plugins repository:
 
 | Document | Description |
 |----------|-------------|
@@ -22,7 +22,7 @@ For developing **external plugins** deployed to the SperaxOS Plugin Marketplace 
 ## Table of Contents
 
 1. [Architecture Overview](#1-architecture-overview)
-2. [SperaxOS Plugin Ecosystem](#2-nirholas-plugin-ecosystem)
+2. [Universal Crypto MCP Plugin Ecosystem](#2-nirholas-plugin-ecosystem)
 3. [Portfolio Integration Methods](#3-portfolio-integration-methods)
 4. [Environment Setup](#4-environment-setup)
 5. [Database Configuration](#5-database-configuration)
@@ -98,14 +98,14 @@ User Message: "Show my portfolio"
 
 ---
 
-## 2. SperaxOS Plugin Ecosystem
+## 2. Universal Crypto MCP Plugin Ecosystem
 
 ### Core Repositories
 
 | Repository | Purpose | NPM Package | Importance |
 |------------|---------|-------------|------------|
 | **[plugin-sdk](https://github.com/nirholas/plugin-sdk)** | SDK for building plugins | `@nirholas/plugin-sdk` | 🔴 Critical |
-| **[chat-plugins-gateway](https://github.com/nirholas/chat-plugins-gateway)** | Proxy between SperaxOS and plugins | `@nirholas/chat-plugins-gateway` | 🔴 Critical |
+| **[chat-plugins-gateway](https://github.com/nirholas/chat-plugins-gateway)** | Proxy between Universal Crypto MCP and plugins | `@nirholas/chat-plugins-gateway` | 🔴 Critical |
 | **[speraxos-plugins](https://github.com/nirholas/speraxos-plugins)** | Plugin marketplace index | - | 🟡 Medium |
 | **[openai-plugins](https://github.com/nirholas/openai-plugins)** | ChatGPT plugin compatibility | - | 🟢 Low |
 
@@ -373,7 +373,7 @@ psql $DATABASE_URL -c "\dt"
 5. **Verify Integration:**
    ```typescript
    // Auth is automatically detected
-   import { getUserAuth } from '@sperax/utils/server';
+   import { getUserAuth } from '@nirholas/utils/server';
    
    const { userId } = await getUserAuth();
    // Returns Clerk user ID when enabled
@@ -411,7 +411,7 @@ psql $DATABASE_URL -c "\dt"
 
 ```typescript
 // API Route (Backend)
-import { getUserAuth } from '@sperax/utils/server';
+import { getUserAuth } from '@nirholas/utils/server';
 
 export async function GET(request: Request) {
   const { userId } = await getUserAuth();
@@ -489,7 +489,7 @@ const CACHE_TTL = {
 
 ## 8. Builtin Plugin Development
 
-Builtin plugins are part of SperaxOS and don't need external deployment.
+Builtin plugins are part of Universal Crypto MCP and don't need external deployment.
 
 ### File Structure
 
@@ -513,7 +513,7 @@ src/tools/
 ```typescript
 // src/tools/my-plugin/manifest.ts
 
-import { BuiltinToolManifest } from '@sperax/types';
+import { BuiltinToolManifest } from '@nirholas/types';
 
 export const myPluginManifest: BuiltinToolManifest = {
   identifier: 'my-plugin',
@@ -570,7 +570,7 @@ export { myPluginManifest as default } from './manifest';
 
 import { myPluginManifest } from './my-plugin';
 
-export const builtinTools: SperaxOSBuiltinTool[] = [
+export const builtinTools: Universal Crypto MCPBuiltinTool[] = [
   // ... existing tools
   {
     identifier: myPluginManifest.identifier,
@@ -586,7 +586,7 @@ export const builtinTools: SperaxOSBuiltinTool[] = [
 // src/features/Portal/MyPlugin/index.tsx
 
 import { memo, Suspense } from 'react';
-import type { BuiltinPortalProps } from '@sperax/types';
+import type { BuiltinPortalProps } from '@nirholas/types';
 
 const MyPluginBody = memo<{ payload?: Record<string, any> }>(({ payload }) => {
   const { param1, param2 } = payload || {};
@@ -691,9 +691,9 @@ export default async function handler(req, res) {
 ```typescript
 // pages/api/gateway.ts
 
-import { createSperaxOSPluginGateway } from '@nirholas/chat-plugins-gateway';
+import { createUniversal Crypto MCPPluginGateway } from '@nirholas/chat-plugins-gateway';
 
-export default createSperaxOSPluginGateway();
+export default createUniversal Crypto MCPPluginGateway();
 ```
 
 ### Plugin Settings
@@ -742,7 +742,7 @@ Portals render plugin output directly in the chat UI.
 import { memo, Suspense, lazy } from 'react';
 import { createStyles } from 'antd-style';
 import { Spin } from 'antd';
-import type { BuiltinPortalProps } from '@sperax/types';
+import type { BuiltinPortalProps } from '@nirholas/types';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -962,7 +962,7 @@ export default function App() {
 ### Local Development
 
 ```bash
-# Start SperaxOS dev server
+# Start Universal Crypto MCP dev server
 bun run dev
 
 # For external plugins, start plugin server
@@ -979,7 +979,7 @@ cd my-plugin && pnpm dev
 ### Testing External Plugins
 
 1. Start plugin server locally
-2. In SperaxOS → Settings → Plugins → Custom Plugins
+2. In Universal Crypto MCP → Settings → Plugins → Custom Plugins
 3. Add manifest URL: `http://localhost:3400/manifest.json`
 4. Enable and test
 
@@ -1004,7 +1004,7 @@ bunx vitest run --silent='passed-only' 'src/tools'
 
 ## 14. Deployment
 
-### SperaxOS (Main App)
+### Universal Crypto MCP (Main App)
 
 **Platform:** Vercel
 

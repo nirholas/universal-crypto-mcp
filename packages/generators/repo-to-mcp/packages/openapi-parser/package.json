@@ -1,7 +1,7 @@
 {
-  "name": "@github-to-mcp/openapi-parser",
+  "name": "@nirholas/crypto-generators-repo-to-mcp-packages-openapi-parser",
   "version": "1.0.0",
-  "description": "Multi-format API specification to MCP tools converter",
+  "description": "Universal Crypto MCP - Multi-format API specification to MCP tools converter",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

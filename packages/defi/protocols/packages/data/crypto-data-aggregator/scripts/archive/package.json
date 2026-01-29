@@ -1,7 +1,7 @@
 {
-  "name": "free-crypto-news-archive",
+  "name": "@nirholas/crypto-defi-protocols-packages-data-crypto-data-aggregator-scripts-archive",
   "version": "2.0.0",
-  "description": "Archive collection and enrichment scripts for Free Crypto News",
+  "description": "Universal Crypto MCP - Archive collection and enrichment scripts for Free Crypto News",
   "private": true,
   "scripts": {
     "collect": "node collect.js",

@@ -1,7 +1,7 @@
 {
-  "name": "mcp-blockchain-server",
+  "name": "@nirholas/crypto-blockchain",
   "version": "0.1.0",
-  "description": "MCP Server for blockchain interactions with Web DApp for secure transaction signing",
+  "description": "Universal Crypto MCP - MCP Server for blockchain interactions with Web DApp for secure transaction signing",
   "main": "build/src/index.js",
   "type": "module",
   "scripts": {

@@ -31,7 +31,7 @@ export const tools = pgTable(
     inputSchema: jsonb('input_schema').notNull().$type<Record<string, unknown>>(),
     outputSchema: jsonb('output_schema').$type<Record<string, unknown>>(),
 
-    // Scoring (using SperaxOS algorithm)
+    // Scoring (using Universal Crypto MCP algorithm)
     scoreData: jsonb('score_data').$type<ScoreData>(),
     totalScore: integer('total_score').notNull().default(0),
     maxScore: integer('max_score').notNull().default(100),

@@ -1,4 +1,4 @@
-# SperaxOS Plugin System
+# Universal Crypto MCP Plugin System
 
 > A comprehensive plugin ecosystem enabling AI agents to interact with external services through a unified gateway architecture
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-SperaxOS Plugin System is a modular architecture that extends AI agent capabilities through standardized plugin interfaces. It provides authentication management, function calling integration, and a gateway API for routing plugin requests. Built on Next.js with TypeScript, it supports both standalone plugins and integrated marketplace deployments.
+Universal Crypto MCP Plugin System is a modular architecture that extends AI agent capabilities through standardized plugin interfaces. It provides authentication management, function calling integration, and a gateway API for routing plugin requests. Built on Next.js with TypeScript, it supports both standalone plugins and integrated marketplace deployments.
 
 ## Quick Start
 
@@ -20,8 +20,8 @@ SperaxOS Plugin System is a modular architecture that extends AI agent capabilit
 
 ```bash
 # Clone the repository
-git clone https://github.com/nirholas/SperaxOS.git
-cd SperaxOS
+git clone https://github.com/nirholas/Universal Crypto MCP.git
+cd Universal Crypto MCP
 
 # Install dependencies
 pnpm install
@@ -56,7 +56,7 @@ Expected output: The AI agent will automatically detect relevant tools and call 
 **Frontend:**
 - Next.js 15 (App Router with Route Groups)
 - React 19, TypeScript
-- Ant Design, @sperax/ui, antd-style
+- Ant Design, @nirholas/ui, antd-style
 - Zustand (state management), SWR (data fetching)
 
 **Backend:**
@@ -514,7 +514,7 @@ console.log('Resolved filename:', fileName);
 - [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT_GUIDE.md)
 - [Testing Guide](testing-guide/testing-guide.mdc)
 - [Contributing Guide](CONTRIBUTING.md)
-- [SperaxOS GitHub](https://github.com/nirholas/SperaxOS)
+- [Universal Crypto MCP GitHub](https://github.com/nirholas/Universal Crypto MCP)
 
 ## License
 

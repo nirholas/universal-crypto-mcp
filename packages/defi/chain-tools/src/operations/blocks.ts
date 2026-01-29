@@ -5,9 +5,9 @@ import {
     BanklessRateLimitError,
     BanklessResourceNotFoundError,
     BanklessValidationError
-} from '../common/banklessErrors.js';
+} from '../common/nirholasErrors.js';
 
-const BASE_URL = 'https://api.bankless.com/mcp';
+const BASE_URL = 'https://api.nirholas.com/mcp';
 
 // Schema for block info request
 export const BlockInfoSchema = z.object({

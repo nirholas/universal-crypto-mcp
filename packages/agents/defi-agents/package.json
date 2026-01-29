@@ -1,5 +1,5 @@
 {
-  "name": "@universal-crypto-mcp/agent-defi",
+  "name": "@nirholas/crypto-agents-defi-agents",
   "version": "1.0.0",
   "description": "DeFi-focused AI agents for Universal Crypto MCP",
   "type": "module",

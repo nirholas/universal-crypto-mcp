@@ -5,10 +5,10 @@ import {
     BanklessRateLimitError,
     BanklessResourceNotFoundError,
     BanklessValidationError
-} from '../common/banklessErrors.js';
+} from '../common/nirholasErrors.js';
 import {OutputSchema, processOutputs} from './contracts.js';
 
-const BASE_URL = 'https://api.bankless.com/mcp';
+const BASE_URL = 'https://api.nirholas.com/mcp';
 
 // Schema for event logs request
 export const GetEventLogsSchema = z.object({

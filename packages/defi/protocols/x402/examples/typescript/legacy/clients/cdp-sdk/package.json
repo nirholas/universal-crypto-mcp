@@ -1,5 +1,5 @@
 {
-  "name": "cdp-axios-client-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-clients-cdp-sdk",
   "private": true,
   "type": "module",
   "scripts": {

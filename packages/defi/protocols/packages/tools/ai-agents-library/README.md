@@ -299,7 +299,7 @@ defi_agents = [a for a in agents if 'defi' in a['meta']['tags']]
 
 ## 🔗 Projects Building with AI Agents Library 🤍
 
-- **SperaxOS** - [Application Branch](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
+- **Universal Crypto MCP** - [Application Branch](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
 
 ---
 

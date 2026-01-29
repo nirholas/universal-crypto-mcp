@@ -1,5 +1,5 @@
 {
-  "name": "mcp-client-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-mcp",
   "private": true,
   "type": "module",
   "scripts": {

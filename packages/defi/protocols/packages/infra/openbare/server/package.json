@@ -1,7 +1,7 @@
 {
-  "name": "@openbare/server",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-openbare-server",
   "version": "1.0.0",
-  "description": "OpenBare - A decentralized, censorship-resistant web proxy server",
+  "description": "Universal Crypto MCP - OpenBare - A decentralized, censorship-resistant web proxy server",
   "main": "index.js",
   "type": "module",
   "scripts": {

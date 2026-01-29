@@ -1,5 +1,5 @@
 {
-  "name": "facilitator-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-facilitator",
   "private": true,
   "type": "module",
   "scripts": {

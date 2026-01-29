@@ -1,7 +1,7 @@
 {
-  "name": "mcp-web3-stats",
+  "name": "@nirholas/crypto-web3-stats",
   "version": "1.0.1",
-  "description": "MCP Server for Dune API to analyze blockchain data and wallet information",
+  "description": "Universal Crypto MCP - MCP Server for Dune API to analyze blockchain data and wallet information",
   "author": {
     "name": "nich",
     "url": "https://github.com/nirholas",

@@ -1,4 +1,4 @@
-# SperaxOS
+# Universal Crypto MCP
 
 Smart Agent Infrastructure for Decentralized Finance.
 
@@ -10,7 +10,7 @@ Where your finances run on logic, not paperwork.
 
 Where you are in full control.
 
-**SperaxOS** is that world.
+**Universal Crypto MCP** is that world.
 
 It’s not just another crypto app. It’s an AI-powered financial operating system that replaces middlemen with autonomous agents. Built on smart contracts and real-time logic, it empowers users to earn, invest, and manage capital without intermediaries.
 
@@ -24,9 +24,9 @@ Just smart contracts working for you—24/7.
 
 ***
 
-### **Why SperaxOS?**
+### **Why Universal Crypto MCP?**
 
-**SperaxOS** empowers you to:
+**Universal Crypto MCP** empowers you to:
 
 * **Earn passive income** with yield-bearing stablecoins
 * **Send money globally** in seconds
@@ -7768,9 +7768,9 @@ Sperax Treasury offers rewards for discoveries that can prevent the loss of asse
 
 The Team evaluates all submissions on a case-by-case basis. Rewards are allocated based on the severity of the issue, and other variables, including, but not limited to a) the quality of the issue description, b) the instructions for reproducibility, and c) the quality of the fix (if included). A detailed report of a vulnerability increases the likelihood of a reward and may increase the reward amount. Therefore, please provide as much information about the vulnerability as possible.
 
-The Program intends to follow a similar approach as the Ethereum Bug Bounty, where the severity of the issues will be based according to the OWASP risk rating model based on “Impact” and “Likelihood”. The evaluation of scoring is however at the sole discretion of the Sperax Team.
+The Program intends to follow a similar approach as the Ethereum Bug Bounty, where the severity of the issues will be based according to the OWASP risk rating model based on “Impact” and “Likelihood”. The evaluation of scoring is however at the sole discretion of the nich.
 
-All rewards are paid in SPA and xSPA tokens with a 50-50 split (15-day TWAP) via a transfer to the wallet address provided by the participant to the Team. As a condition of participating in this Program, the participants give the Sperax Team permission to share their wallet addresses and other information provided by them to third parties to administer this Program and comply with applicable laws, regulations, and rules.
+All rewards are paid in SPA and xSPA tokens with a 50-50 split (15-day TWAP) via a transfer to the wallet address provided by the participant to the Team. As a condition of participating in this Program, the participants give the nich permission to share their wallet addresses and other information provided by them to third parties to administer this Program and comply with applicable laws, regulations, and rules.
 
 The reward will be received in SPA token based on the following severity scheme:
 

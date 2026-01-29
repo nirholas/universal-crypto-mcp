@@ -1,7 +1,7 @@
 {
-  "name": "lyra-registry",
+  "name": "@universal-crypto-mcp/generators-registry",
   "version": "1.0.0",
-  "description": "Central registry hub for Lyra ecosystem tools, agents, and plugins - the NPM for Crypto AI Tools",
+  "description": "Central registry hub for MCP tools, agents, and plugins",
   "private": false,
   "scripts": {
     "dev": "next dev",

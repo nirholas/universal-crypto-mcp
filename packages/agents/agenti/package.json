@@ -1,7 +1,7 @@
 {
-  "name": "@universal-crypto-mcp/agent-agenti",
+  "name": "@nirholas/crypto-agents-agenti",
   "version": "1.0.0",
-  "description": "Agenti MCP Server - AI agent framework",
+  "description": "Universal Crypto MCP - Agenti MCP Server - AI agent framework",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

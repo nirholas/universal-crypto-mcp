@@ -8,7 +8,7 @@ Between builds I am working on cleaning up the main Lyra repo with over 800+ blo
 
 ## ✨ Features
 
-- **📊 Trust Scoring** - Every tool is scored using the SperaxOS algorithm
+- **📊 Trust Scoring** - Every tool is scored using the Universal Crypto MCP algorithm
 - **🔍 Search & Filter** - Full-text search with category, chain, and protocol filters
 - **📈 Trending** - Track tool popularity and usage
 - **🔌 MCP Integration** - Auto-seed from running Lyra MCP servers
@@ -150,7 +150,7 @@ curl -X POST "http://localhost:3000/api/tools" \
 
 ## ⭐ Trust Score Algorithm
 
-Every tool is scored using the SperaxOS trust algorithm. The score determines the tool's grade:
+Every tool is scored using the Universal Crypto MCP trust algorithm. The score determines the tool's grade:
 
 | Criteria | Weight | Required |
 |----------|--------|----------|
@@ -201,7 +201,7 @@ lyra-registry/
 │   │   ├── schema.ts               # Drizzle schema
 │   │   └── seed.ts                 # Seed script
 │   ├── lib/
-│   │   ├── calculateScore.ts       # Trust score algorithm (from SperaxOS)
+│   │   ├── calculateScore.ts       # Trust score algorithm (from Universal Crypto MCP)
 │   │   └── validation.ts           # Zod schemas
 │   └── types/
 │       └── index.ts                # TypeScript types
@@ -265,5 +265,5 @@ MIT
 
 - [Lyra MCP Server](https://github.com/nirholas/Lyra) - The main MCP server with 280+ tools
 - [Lyra Intel](https://github.com/nirholas/lyra-intel) - Auto-discovery and security scanning
-- [SperaxOS](https://github.com/nirholas/SperaxOS) - The scoring algorithm source
+- [Universal Crypto MCP](https://github.com/nirholas/Universal Crypto MCP) - The scoring algorithm source
 - [Sperax](https://sperax.io) - Sperax ecosystem

@@ -430,7 +430,7 @@ const FEES = {
   "@solana/web3.js": "^1.87.0",
   "@boosty/wallet-manager": "workspace:*",
   "@boosty/trading-engine": "workspace:*",
-  "@sperax/mcp-shared": "workspace:*",
+  "@nirholas/mcp-shared": "workspace:*",
   "bullmq": "^5.0.0",
   "ioredis": "^5.3.0"
 }

@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-wallet-manager",
+  "name": "@nirholas/crypto-automation-volume-packages-wallet-manager",
   "version": "0.1.0",
-  "description": "HD wallet management, secure key storage, and fund distribution for Solana",
+  "description": "Universal Crypto MCP - HD wallet management, secure key storage, and fund distribution for Solana",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

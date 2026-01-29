@@ -1,9 +1,9 @@
 {
-  "name": "mcp-notify-dashboard",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-mcp-notify-web-dashboard",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Web dashboard for MCP Notify",
+  "description": "Universal Crypto MCP - Web dashboard for MCP Notify",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

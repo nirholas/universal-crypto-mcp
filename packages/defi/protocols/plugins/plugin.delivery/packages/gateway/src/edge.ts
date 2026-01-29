@@ -3,7 +3,7 @@ import {
   PluginRequestPayload,
   createErrorResponse,
   getPluginSettingsFromRequest,
-} from '@sperax/plugin-sdk';
+} from '@nirholas/plugin-sdk';
 
 import cors, { CorsOptions } from './cors';
 import { Gateway, GatewayErrorResponse, GatewayOptions } from './gateway';

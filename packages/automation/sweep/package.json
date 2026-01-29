@@ -1,7 +1,7 @@
 {
-  "name": "sweep",
+  "name": "@nirholas/crypto-automation-sweep",
   "version": "0.1.0",
-  "description": "Multi-chain dust sweeper with DeFi routing",
+  "description": "Universal Crypto MCP - Multi-chain dust sweeper with DeFi routing",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

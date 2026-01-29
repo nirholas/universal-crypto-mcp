@@ -2,13 +2,13 @@
 
 <div align="center">
 
-<img height="120" src="https://registry.npmmirror.com/@sperax/assets-emoji/1.3.0/files/assets/puzzle-piece.webp">
+<img height="120" src="https://registry.npmmirror.com/@nirholas/assets-emoji/1.3.0/files/assets/puzzle-piece.webp">
 <img height="120" src="https://gw.alipayobjects.com/zos/kitchen/qJ3l3EPsdW/split.svg">
-<img height="120" src="https://registry.npmmirror.com/@sperax/assets-emoji-anim/1.0.0/files/assets/rocket.webp">
+<img height="120" src="https://registry.npmmirror.com/@nirholas/assets-emoji-anim/1.0.0/files/assets/rocket.webp">
 
-<h1>Plugin Template<br/><sup>SperaxOS Plugin</sup></h1>
+<h1>Plugin Template<br/><sup>Universal Crypto MCP Plugin</sup></h1>
 
-This is the plugin template for SperaxOS plugin development
+This is the plugin template for Universal Crypto MCP plugin development
 
 [![][🤯-🧩-sperax-shield]][🤯-🧩-sperax-link]
 [![][github-release-shield]][github-release-link]
@@ -61,11 +61,11 @@ This is the plugin template for SperaxOS plugin development
 > See detail on [📘 Template usage](https://chat-plugin-sdk.sperax.com/guides/template)
 
 > [!Note]\
-> Plugins provide a means to extend the [Function Calling][fc-link] capabilities of SperaxOS. They can be used to introduce new function calls, and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide](https://github.com/nirholas/plugin.delivery/wiki/Plugin-Development) in the Wiki.
+> Plugins provide a means to extend the [Function Calling][fc-link] capabilities of Universal Crypto MCP. They can be used to introduce new function calls, and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide](https://github.com/nirholas/plugin.delivery/wiki/Plugin-Development) in the Wiki.
 >
-> - [@sperax/speraxos-plugins][speraxos-plugins]: This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for SperaxOS to the user.
-> - [@sperax/plugin-sdk][chat-plugin-sdk]: The SperaxOS Plugin SDK assists you in creating exceptional chat plugins for SperaxOS.
-> - [@sperax/chat-plugins-gateway][chat-plugins-gateway]: The SperaxOS Plugins Gateway is a backend service that serves as a gateway for SperaxOS plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
+> - [@nirholas/speraxos-plugins][speraxos-plugins]: This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Universal Crypto MCP to the user.
+> - [@nirholas/plugin-sdk][chat-plugin-sdk]: The Universal Crypto MCP Plugin SDK assists you in creating exceptional chat plugins for Universal Crypto MCP.
+> - [@nirholas/chat-plugins-gateway][chat-plugins-gateway]: The Universal Crypto MCP Plugins Gateway is a backend service that serves as a gateway for Universal Crypto MCP plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
 
 | Official Plugin                                 | Description                                                                                                                                       |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -118,8 +118,8 @@ Contributions of all types are more than welcome, if you are interested in contr
 
 ## 🔗 Links
 
-- **[🤖 SperaxOS](https://github.com/nirholas/plugin.delivery)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
-- **[🧩 / 🏪 Plugin Index](https://github.com/nirholas/plugin.delivery-plugins)** - This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
+- **[🤖 Universal Crypto MCP](https://github.com/nirholas/plugin.delivery)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
+- **[🧩 / 🏪 Plugin Index](https://github.com/nirholas/plugin.delivery-plugins)** - This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
 
 <div align="right">
 

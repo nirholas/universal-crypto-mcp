@@ -509,7 +509,7 @@ This enables plugins to create rich, interactive displays in the chat interface.
 
 ## Resources
 
-- **Plugin SDK**: [@sperax/plugin-sdk](https://www.npmjs.com/package/@sperax/plugin-sdk)
+- **Plugin SDK**: [@nirholas/plugin-sdk](https://www.npmjs.com/package/@nirholas/plugin-sdk)
 - **Plugin Marketplace**: [plugin.delivery](https://plugin.delivery)
 - **Mermaid Docs**: [mermaid.js.org](https://mermaid.js.org)
 - **Tailwind CSS**: [tailwindcss.com](https://tailwindcss.com)

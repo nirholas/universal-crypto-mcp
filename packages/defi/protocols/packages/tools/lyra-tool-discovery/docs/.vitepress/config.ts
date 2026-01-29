@@ -26,7 +26,7 @@ export default defineConfig({
         items: [
           { text: 'github-to-mcp', link: 'https://github.com/nirholas/github-to-mcp' },
           { text: 'plugin.delivery', link: 'https://plugin.delivery' },
-          { text: 'SperaxOS', link: 'https://github.com/nirholas/SperaxOS' },
+          { text: 'Universal Crypto MCP', link: 'https://github.com/nirholas/Universal Crypto MCP' },
         ]
       }
     ],

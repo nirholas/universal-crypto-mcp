@@ -1,6 +1,6 @@
 # Submitting Your Plugin to the Marketplace
 
-This guide explains how to list your plugin in the SperaxOS Plugin Marketplace so it can be discovered and used by the community.
+This guide explains how to list your plugin in the Universal Crypto MCP Plugin Marketplace so it can be discovered and used by the community.
 
 ---
 
@@ -31,7 +31,7 @@ This guide explains how to list your plugin in the SperaxOS Plugin Marketplace s
 
 ## Overview
 
-The SperaxOS Plugin Marketplace is a curated registry of plugins available to all SperaxOS users. Submitting your plugin makes it discoverable in the plugin store and allows users to install it with one click.
+The Universal Crypto MCP Plugin Marketplace is a curated registry of plugins available to all Universal Crypto MCP users. Submitting your plugin makes it discoverable in the plugin store and allows users to install it with one click.
 
 **Repository:** [github.com/nirholas/plugin.delivery](https://github.com/nirholas/plugin.delivery)
 
@@ -45,7 +45,7 @@ Before submitting, ensure:
 2. ✅ Your plugin server is **deployed and accessible** (e.g., on Vercel)
 3. ✅ Your `manifest.json` is **publicly accessible** via HTTPS
 4. ✅ Your plugin has a **unique identifier** (not already in use)
-5. ✅ You have **tested with SperaxOS** by adding as a custom plugin
+5. ✅ You have **tested with Universal Crypto MCP** by adding as a custom plugin
 
 ---
 
@@ -310,7 +310,7 @@ Once your plugin is merged:
 
 1. **Build runs automatically** - The CI/CD pipeline builds the index
 2. **Plugin appears in store** - Usually within minutes of deployment
-3. **Users can install** - Via the SperaxOS Plugin Store
+3. **Users can install** - Via the Universal Crypto MCP Plugin Store
 4. **Analytics** - Track usage through your own analytics (if implemented)
 
 ### Updating Your Plugin

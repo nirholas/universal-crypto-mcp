@@ -1,5 +1,5 @@
 {
-  "name": "@x402/axios",
+  "name": "@nirholas/x402-axios",
   "version": "2.2.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -29,7 +29,7 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/x402/typescript/packages/http/axios"
   },
-  "description": "x402 Payment Protocol",
+  "description": "Universal Crypto MCP - x402 Payment Protocol",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@types/node": "^22.13.4",

@@ -5,7 +5,7 @@
 
 <h1>Sperax Plugins Gateway - Plugin Delivery</h1>
 
-Plugin Gateway Service for SperaxOS
+Plugin Gateway Service for Universal Crypto MCP
 
 
 **English** · [简体中文](./README.zh-CN.md) ·
@@ -35,9 +35,9 @@ Plugin Gateway Service for SperaxOS
 
 ## 👋 Intro
 
-Sperax Plugins Gateway is a backend service that provides a gateway for SperaxOS plugins. We use [vercel](https://vercel.com/) to deploy this service. The main API `POST /api/v1/runner` is deployed as an [Edge Function](https://vercel.com/docs/functions/edge-functions).
+Sperax Plugins Gateway is a backend service that provides a gateway for Universal Crypto MCP plugins. We use [vercel](https://vercel.com/) to deploy this service. The main API `POST /api/v1/runner` is deployed as an [Edge Function](https://vercel.com/docs/functions/edge-functions).
 
-The gateway service fetches Plugin Delivery index from the [SperaxOS Plugins](https://github.com/nirholas/plugin.delivery), if you want to add your plugin to the index, please [submit a PR](https://github.com/nirholas/plugin.delivery/pulls) to the SperaxOS Plugins repository.
+The gateway service fetches Plugin Delivery index from the [Universal Crypto MCP Plugins](https://github.com/nirholas/plugin.delivery), if you want to add your plugin to the index, please [submit a PR](https://github.com/nirholas/plugin.delivery/pulls) to the Universal Crypto MCP Plugins repository.
 
 <div align="right">
 
@@ -58,7 +58,7 @@ The gateway service fetches Plugin Delivery index from the [SperaxOS Plugins](ht
 
 > **Note**\
 > **POST** `/api/v1/runner`\
-> Interface to communicate with the SperaxOS plugin. This interface describes how to use the SperaxOS plugin gateway API to send requests and get responses
+> Interface to communicate with the Universal Crypto MCP plugin. This interface describes how to use the Universal Crypto MCP plugin gateway API to send requests and get responses
 
 #### Body Request Parameters
 
@@ -170,12 +170,12 @@ If you want to make some customization, you can add environment variable:
 
 ## 📦 Plugin Ecosystem
 
-Plugins provide a means to extend the Function Calling capabilities of SperaxOS. They can be used to introduce new function calls and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide](https://github.com/nirholas/SperaxOS/wiki/Plugin-Development) in the Wiki.
+Plugins provide a means to extend the Function Calling capabilities of Universal Crypto MCP. They can be used to introduce new function calls and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide](https://github.com/nirholas/Universal Crypto MCP/wiki/Plugin-Development) in the Wiki.
 
-- [sperax-plugins][sperax-plugins]: This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for SperaxOS to the user.
-- [chat-plugin-template][chat-plugin-template]: This is the plugin template for SperaxOS plugin development.
-- [@sperax/plugin-sdk][chat-plugin-sdk]: The Sperax Plugin SDK assists you in creating exceptional chat plugins for SperaxOS.
-- [@sperax/chat-plugins-gateway][chat-plugins-gateway]: The Sperax Plugins Gateway is a backend service that provides a gateway for SperaxOS plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
+- [sperax-plugins][sperax-plugins]: This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Universal Crypto MCP to the user.
+- [chat-plugin-template][chat-plugin-template]: This is the plugin template for Universal Crypto MCP plugin development.
+- [@nirholas/plugin-sdk][chat-plugin-sdk]: The Sperax Plugin SDK assists you in creating exceptional chat plugins for Universal Crypto MCP.
+- [@nirholas/chat-plugins-gateway][chat-plugins-gateway]: The Sperax Plugins Gateway is a backend service that provides a gateway for Universal Crypto MCP plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
 
 <div align="right">
 
@@ -215,7 +215,7 @@ $ bun dev
 
 ## 🔗 Links
 
-- **[🤖 SperaxOS](https://github.com/nirholas/SperaxOS)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
+- **[🤖 Universal Crypto MCP](https://github.com/nirholas/Universal Crypto MCP)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
 - **[Plugin Delivery](https://github.com/nirholas/plugin.delivery)** - This is the plugin index. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
 
 <div align="right">

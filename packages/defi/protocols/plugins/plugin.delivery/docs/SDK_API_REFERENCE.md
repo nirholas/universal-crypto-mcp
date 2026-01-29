@@ -1,6 +1,6 @@
 # Plugin SDK Documentation
 
-Complete API reference for the Plugin SDK (`@sperax/plugin-sdk`) from **nirholas/plugin.delivery**.
+Complete API reference for the Plugin SDK (`@nirholas/plugin-sdk`) from **nirholas/plugin.delivery**.
 
 ## Table of Contents
 
@@ -18,12 +18,12 @@ Complete API reference for the Plugin SDK (`@sperax/plugin-sdk`) from **nirholas
 
 ```bash
 # Install the SDK from nirholas/plugin.delivery
-pnpm add @sperax/plugin-sdk
+pnpm add @nirholas/plugin-sdk
 
 # Or with npm/yarn/bun
-npm install @sperax/plugin-sdk
-yarn add @sperax/plugin-sdk
-bun add @sperax/plugin-sdk
+npm install @nirholas/plugin-sdk
+yarn add @nirholas/plugin-sdk
+bun add @nirholas/plugin-sdk
 ```
 
 ---
@@ -33,7 +33,7 @@ bun add @sperax/plugin-sdk
 The `speraxOS` object provides methods for plugin-to-host communication from the **nirholas/plugin.delivery** SDK. Import from the client subpath:
 
 ```typescript
-import { speraxOS } from '@sperax/plugin-sdk/client';
+import { speraxOS } from '@nirholas/plugin-sdk/client';
 ```
 
 ### getPluginPayload
@@ -120,7 +120,7 @@ await speraxOS.createAssistantMessage('Here is the analysis...');
 
 ### useWatchPluginMessage
 
-This is a React Hook encapsulating the Chat Plugin SDK, used to listen for plugin messages sent from SperaxOS.
+This is a React Hook encapsulating the Chat Plugin SDK, used to listen for plugin messages sent from Universal Crypto MCP.
 
 **Syntax:**
 
@@ -138,7 +138,7 @@ const { data, loading } = useWatchPluginMessage<T>();
 **Example:**
 
 ```tsx
-import { useWatchPluginMessage } from '@sperax/plugin-sdk/client';
+import { useWatchPluginMessage } from '@nirholas/plugin-sdk/client';
 
 const MyPlugin = () => {
   const { data, loading } = useWatchPluginMessage<MyDataType>();
@@ -196,7 +196,7 @@ interface PluginPayload<T = any> {
 **Example:**
 
 ```tsx
-import { useOnStandalonePluginInit } from '@sperax/plugin-sdk/client';
+import { useOnStandalonePluginInit } from '@nirholas/plugin-sdk/client';
 
 const StandalonePlugin = () => {
   useOnStandalonePluginInit((payload) => {
@@ -247,7 +247,7 @@ const [value, updateValue] = usePluginState<T>(key: string, initialValue: T);
 **Example:**
 
 ```tsx
-import { usePluginState } from '@sperax/plugin-sdk/client';
+import { usePluginState } from '@nirholas/plugin-sdk/client';
 
 const Counter = () => {
   const [count, setCount] = usePluginState('count', 0);
@@ -272,7 +272,7 @@ export default Counter;
 - Ensure usage within a React function component.
 - The `key` parameter must be a string used to uniquely identify the plugin state.
 - The `initialValue` parameter is the initial value of the state.
-- State is automatically synchronized with SperaxOS.
+- State is automatically synchronized with Universal Crypto MCP.
 
 ---
 
@@ -299,7 +299,7 @@ Returns an array containing two elements: the current plugin settings value and 
 **Example:**
 
 ```tsx
-import { usePluginSettings } from '@sperax/plugin-sdk/client';
+import { usePluginSettings } from '@nirholas/plugin-sdk/client';
 
 const SettingsPanel = () => {
   const [settings, updateSettings] = usePluginSettings({ 
@@ -329,7 +329,7 @@ export default SettingsPanel;
 
 - Please ensure to use `usePluginSettings` inside a React function component.
 - Initial value `initialValue` can be of any type.
-- When updating plugin settings, the SDK automatically sends update messages to SperaxOS via `postMessage`.
+- When updating plugin settings, the SDK automatically sends update messages to Universal Crypto MCP via `postMessage`.
 
 ---
 
@@ -346,7 +346,7 @@ const data = await fetchPluginMessage<T>();
 **Example:**
 
 ```tsx
-import { fetchPluginMessage } from '@sperax/plugin-sdk/client';
+import { fetchPluginMessage } from '@nirholas/plugin-sdk/client';
 import { memo, useEffect, useState } from 'react';
 
 interface ResponseData {
@@ -358,7 +358,7 @@ const PluginDisplay = memo(() => {
   const [data, setData] = useState<ResponseData>();
 
   useEffect(() => {
-    // Get the current message of the plugin from SperaxOS
+    // Get the current message of the plugin from Universal Crypto MCP
     fetchPluginMessage<ResponseData>().then((response) => {
       setData(response);
     });
@@ -397,7 +397,7 @@ The SDK provides Zod schemas for validating plugin configurations.
 Validate plugin manifest files.
 
 ```typescript
-import { pluginManifestSchema } from '@sperax/plugin-sdk';
+import { pluginManifestSchema } from '@nirholas/plugin-sdk';
 
 const manifest = {
   identifier: 'my-plugin',
@@ -427,7 +427,7 @@ const result = pluginManifestSchema.parse(manifest);
 Validate plugin metadata for the index.
 
 ```typescript
-import { pluginMetaSchema } from '@sperax/plugin-sdk';
+import { pluginMetaSchema } from '@nirholas/plugin-sdk';
 
 const meta = {
   author: 'MyCompany',
@@ -451,7 +451,7 @@ const result = pluginMetaSchema.parse(meta);
 Validate individual API definitions.
 
 ```typescript
-import { pluginApiSchema } from '@sperax/plugin-sdk';
+import { pluginApiSchema } from '@nirholas/plugin-sdk';
 
 const api = {
   url: 'https://api.example.com/search',
@@ -475,7 +475,7 @@ const result = pluginApiSchema.parse(api);
 Use `PluginErrorType` for standardized error responses.
 
 ```typescript
-import { PluginErrorType, createErrorResponse } from '@sperax/plugin-sdk';
+import { PluginErrorType, createErrorResponse } from '@nirholas/plugin-sdk';
 
 export default async (req: Request) => {
   // Method validation
@@ -539,7 +539,7 @@ export default async (req: Request) => {
 Extract plugin settings from the request headers.
 
 ```typescript
-import { getPluginSettingsFromRequest } from '@sperax/plugin-sdk';
+import { getPluginSettingsFromRequest } from '@nirholas/plugin-sdk';
 
 interface MySettings {
   apiKey: string;
@@ -562,7 +562,7 @@ export default async (req: Request) => {
 Create headers with plugin settings (useful for testing).
 
 ```typescript
-import { createHeadersWithPluginSettings } from '@sperax/plugin-sdk';
+import { createHeadersWithPluginSettings } from '@nirholas/plugin-sdk';
 
 const headers = createHeadersWithPluginSettings({ apiKey: 'test-key' });
 const req = new Request('https://api.example.com', { headers });
@@ -575,7 +575,7 @@ const req = new Request('https://api.example.com', { headers });
 For advanced use cases, you can use the low-level `PluginChannel` constants.
 
 ```typescript
-import { PluginChannel } from '@sperax/plugin-sdk';
+import { PluginChannel } from '@nirholas/plugin-sdk';
 ```
 
 ### Initialization
@@ -622,7 +622,7 @@ import type {
   PluginApi,
   PluginPayload,
   PluginErrorType,
-} from '@sperax/plugin-sdk';
+} from '@nirholas/plugin-sdk';
 ```
 
 ---

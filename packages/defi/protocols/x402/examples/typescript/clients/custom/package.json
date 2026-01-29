@@ -1,5 +1,5 @@
 {
-  "name": "@x402/custom-client-example",
+  "name": "@nirholas/x402-custom-client-example",
   "private": true,
   "type": "module",
   "scripts": {

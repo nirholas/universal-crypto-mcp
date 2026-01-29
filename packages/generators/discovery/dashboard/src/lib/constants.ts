@@ -233,7 +233,7 @@ export const FEATURES: Feature[] = [
   {
     icon: '🎯',
     title: 'Plugin.delivery',
-    description: 'Direct marketplace submission support for SperaxOS and plugin.delivery ecosystem.',
+    description: 'Direct marketplace submission support for Universal Crypto MCP and plugin.delivery ecosystem.',
     color: 'blue',
   },
 ];

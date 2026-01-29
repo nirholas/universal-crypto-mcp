@@ -1,5 +1,5 @@
 {
-  "name": "lyra-dashboard",
+  "name": "@nirholas/crypto-defi-protocols-packages-tools-lyra-tool-discovery-dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {

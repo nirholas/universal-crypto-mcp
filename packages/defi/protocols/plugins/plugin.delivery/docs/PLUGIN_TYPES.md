@@ -376,7 +376,7 @@ return new Response(markdown, {
 ### Frontend Implementation
 
 ```tsx
-import { useOnStandalonePluginInit, speraxChat } from '@sperax/plugin-sdk/client';
+import { useOnStandalonePluginInit, speraxChat } from '@nirholas/plugin-sdk/client';
 import { useState } from 'react';
 
 export default function Calculator() {
@@ -414,7 +414,7 @@ export default function Calculator() {
 Standalone plugins use the full client SDK:
 
 ```typescript
-import { speraxChat } from '@sperax/plugin-sdk/client';
+import { speraxChat } from '@nirholas/plugin-sdk/client';
 
 // Get initialization payload
 const payload = await speraxChat.getPluginPayload();

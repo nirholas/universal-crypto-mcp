@@ -55,7 +55,7 @@ Add to your MCP client configuration (Claude Desktop, Cursor, etc.):
   "mcpServers": {
     "llm-energy": {
       "command": "npx",
-      "args": ["-y", "@llm-energy/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }
@@ -217,7 +217,7 @@ MIT License
 - Website: https://llm.energy
 - Documentation: https://llm.energy/docs
 - GitHub: https://github.com/nirholas/extract-llms-docs
-- MCP Server: https://www.npmjs.com/package/@llm-energy/mcp-server
+- MCP Server: https://www.npmjs.com/package/@nirholas/mcp-server
 
 ## Author
 

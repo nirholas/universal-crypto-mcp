@@ -1,8 +1,8 @@
 {
-  "name": "@agenti/qr-payments",
+  "name": "@nirholas/crypto-defi-protocols-packages-web-qr-payments",
   "version": "0.1.0",
   "private": true,
-  "description": "Universal crypto to USDC payments via QR codes and usernames - Cross-chain payment & swap platform",
+  "description": "Universal Crypto MCP - Universal crypto to USDC payments via QR codes and usernames - Cross-chain payment & swap platform",
   "main": "src/index.ts",
   "scripts": {
     "dev": "next dev",

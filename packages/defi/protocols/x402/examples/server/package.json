@@ -1,7 +1,7 @@
 {
-  "name": "x402-example-server",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-server",
   "version": "1.0.0",
-  "description": "Example Express server with x402 payment paywalls",
+  "description": "Universal Crypto MCP - Example Express server with x402 payment paywalls",
   "type": "module",
   "main": "index.ts",
   "scripts": {

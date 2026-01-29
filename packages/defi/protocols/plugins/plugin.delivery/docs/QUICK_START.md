@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Build and deploy your first SperaxOS plugin in under 10 minutes.
+Build and deploy your first Universal Crypto MCP plugin in under 10 minutes.
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ bun install
 ```bash
 mkdir my-plugin && cd my-plugin
 bun init -y
-bun add @sperax/plugin-sdk
+bun add @nirholas/plugin-sdk
 ```
 
 ---
@@ -165,9 +165,9 @@ curl -X POST http://localhost:3400/api/endpoint \
   -d '{"param1": "test"}'
 ```
 
-### Test in SperaxOS
+### Test in Universal Crypto MCP
 
-1. Open SperaxOS
+1. Open Universal Crypto MCP
 2. Go to **Plugin Settings** → **Add Custom Plugin**
 3. Enter: `http://localhost:3400/manifest.json`
 4. Enable the plugin

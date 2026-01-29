@@ -78,7 +78,7 @@ bun run build
 - ONE agent for 100% of portfolio management features
 - Perfect for most users - install once, access everything
 
-⚠️ **Current Status:** Read-only portfolio tracking and analytics available now. Automated trading, bots, and DeFi interactions coming soon in SperaxOS roadmap.
+⚠️ **Current Status:** Read-only portfolio tracking and analytics available now. Automated trading, bots, and DeFi interactions coming soon in Universal Crypto MCP roadmap.
 
 [View Agent →](https://sperax.click/sperax-portfolio.json) | [Try Now →](https://sperax.fun/discover/assistant/sperax-portfolio)
 
@@ -97,7 +97,7 @@ bun run build
 - USDs Stablecoin Expert, SPA Tokenomics Analyst, veSPA Lock Optimizer
 - Governance Guide, Liquidity Strategist, Bridge Assistant, Yield Aggregator
 
-**SperaxOS Portfolio Specialists (16):**
+**Universal Crypto MCP Portfolio Specialists (16):**
 💡 _For advanced users who prefer focused tools_
 
 - Portfolio Dashboard, Assets Tracker, Analytics Expert, Wallet Manager
@@ -105,7 +105,7 @@ bun run build
 - Arbitrage Bot, Pump Screener, DeFi Center, DeFi Protocols
 - Strategies Marketplace, Bot Templates, Settings Manager, Help Center
 
-> **Note:** SperaxOS portfolio agents currently use `sperax.fun` for testing. The domain may change to `sperax.io` or similar once SperaxOS launches in production. [See FAQ](./docs/FAQ.md#sperax-portfolio-agents) for details.
+> **Note:** Universal Crypto MCP portfolio agents currently use `sperax.fun` for testing. The domain may change to `sperax.io` or similar once Universal Crypto MCP launches in production. [See FAQ](./docs/FAQ.md#sperax-portfolio-agents) for details.
 
 **General DeFi (34 Agents) + Crypto News:**
 
@@ -350,7 +350,7 @@ defi_agents = [a for a in agents if 'defi' in a['meta']['tags']]
 
 ## 🔗 Projects Building with AI Agents Library 🤍
 
-- **SperaxOS** - [Application Branch](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
+- **Universal Crypto MCP** - [Application Branch](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
 
 ---
 
@@ -366,7 +366,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ### [Sperax Portfolio](https://os.sperax.io/crypto/agents/sperax-portfolio)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 All-in-one cryptocurrency portfolio management: tracking, trading, automation, DeFi, and analytics
 
@@ -376,7 +376,7 @@ All-in-one cryptocurrency portfolio management: tracking, trading, automation, D
 
 ### [Crypto Whale Watcher](https://os.sperax.io/crypto/agents/whale-watcher)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Track and analyze large wallet movements and whale behavior
 
@@ -386,7 +386,7 @@ Track and analyze large wallet movements and whale behavior
 
 ### [Cross-Chain Bridge Security Analyst](https://os.sperax.io/crypto/agents/bridge-security-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Evaluate bridge security and recommend safest cross-chain routes
 
@@ -396,7 +396,7 @@ Evaluate bridge security and recommend safest cross-chain routes
 
 ### [Token Unlock Schedule Tracker](https://os.sperax.io/crypto/agents/token-unlock-tracker)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Monitor and analyze token unlock events and their market impact
 
@@ -406,7 +406,7 @@ Monitor and analyze token unlock events and their market impact
 
 ### [veSPA Lock Optimizer](https://os.sperax.io/crypto/agents/vespa-optimizer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Maximize returns through optimal veSPA locking strategies
 
@@ -416,7 +416,7 @@ Maximize returns through optimal veSPA locking strategies
 
 ### [Sperax Portfolio Tracker](https://os.sperax.io/crypto/agents/sperax-portfolio-tracker)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Track and analyze your complete Sperax ecosystem holdings
 
@@ -426,7 +426,7 @@ Track and analyze your complete Sperax ecosystem holdings
 
 ### [DeFi Insurance & Risk Coverage Advisor](https://os.sperax.io/crypto/agents/defi-insurance-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Navigate DeFi insurance options for smart contract protection
 
@@ -436,7 +436,7 @@ Navigate DeFi insurance options for smart contract protection
 
 ### [NFT Liquidity & Lending Advisor](https://os.sperax.io/crypto/agents/nft-liquidity-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Navigate NFT-backed lending and liquidity solutions
 
@@ -446,7 +446,7 @@ Navigate NFT-backed lending and liquidity solutions
 
 ### [USDs Stablecoin Expert](https://os.sperax.io/crypto/agents/usds-stablecoin-expert)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Specialist in Sperax USDs mechanism, collateralization, and yield strategies
 
@@ -456,7 +456,7 @@ Specialist in Sperax USDs mechanism, collateralization, and yield strategies
 
 ### [DEX Aggregator Route Optimizer](https://os.sperax.io/crypto/agents/dex-aggregator-optimizer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Find optimal swap routes across DEX aggregators
 
@@ -466,7 +466,7 @@ Find optimal swap routes across DEX aggregators
 
 ### [Crypto Tax Strategy Advisor](https://os.sperax.io/crypto/agents/crypto-tax-strategist)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Optimize crypto taxes and provide tax-efficient DeFi strategies
 
@@ -476,7 +476,7 @@ Optimize crypto taxes and provide tax-efficient DeFi strategies
 
 ### [Smart Contract Security Auditor](https://os.sperax.io/crypto/agents/smart-contract-auditor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Review and assess smart contract security for DeFi protocols
 
@@ -486,7 +486,7 @@ Review and assess smart contract security for DeFi protocols
 
 ### [Sperax Yield Aggregator](https://os.sperax.io/crypto/agents/sperax-yield-aggregator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Find and optimize best yield opportunities in Sperax ecosystem
 
@@ -496,7 +496,7 @@ Find and optimize best yield opportunities in Sperax ecosystem
 
 ### [Personal DeFi Dashboard Builder](https://os.sperax.io/crypto/agents/yield-dashboard-builder)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Design and track your custom DeFi portfolio dashboard
 
@@ -506,7 +506,7 @@ Design and track your custom DeFi portfolio dashboard
 
 ### [Crypto Wallet Security Advisor](https://os.sperax.io/crypto/agents/wallet-security-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Best practices for securing crypto wallets and assets
 
@@ -516,7 +516,7 @@ Best practices for securing crypto wallets and assets
 
 ### [DeFi Yield Sustainability Analyst](https://os.sperax.io/crypto/agents/yield-sustainability-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Analyze whether high yields are sustainable or temporary
 
@@ -526,7 +526,7 @@ Analyze whether high yields are sustainable or temporary
 
 ### [Stablecoin Deep Comparator](https://os.sperax.io/crypto/agents/stablecoin-comparator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Compare stablecoin mechanisms, risks, and use cases
 
@@ -536,7 +536,7 @@ Compare stablecoin mechanisms, risks, and use cases
 
 ### [DeFi Portfolio Rebalancing Advisor](https://os.sperax.io/crypto/agents/portfolio-rebalancing-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Optimize portfolio allocation and rebalancing strategies
 
@@ -546,7 +546,7 @@ Optimize portfolio allocation and rebalancing strategies
 
 ### [Sperax Ecosystem Onboarding Guide](https://os.sperax.io/crypto/agents/sperax-onboarding-guide)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Help newcomers understand and start using Sperax protocol
 
@@ -556,7 +556,7 @@ Help newcomers understand and start using Sperax protocol
 
 ### [DeFi Yield Farming Strategist](https://os.sperax.io/crypto/agents/defi-yield-farmer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Identify and optimize yield farming opportunities across DeFi protocols
 
@@ -566,7 +566,7 @@ Identify and optimize yield farming opportunities across DeFi protocols
 
 ### [Sperax Governance Guide](https://os.sperax.io/crypto/agents/sperax-governance-guide)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Navigate Sperax DAO proposals, voting, and protocol upgrades
 
@@ -576,7 +576,7 @@ Navigate Sperax DAO proposals, voting, and protocol upgrades
 
 ### [DeFi Protocol Comparison Expert](https://os.sperax.io/crypto/agents/defi-protocol-comparator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Compare similar DeFi protocols across features, risks, and yields
 
@@ -586,7 +586,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DeFi Beginner Onboarding Mentor](https://os.sperax.io/crypto/agents/defi-onboarding-mentor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Guide complete beginners through their first DeFi experiences
 
@@ -596,7 +596,7 @@ Guide complete beginners through their first DeFi experiences
 
 ### [APY vs APR Educator](https://os.sperax.io/crypto/agents/apy-vs-apr-educator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Explain and calculate the difference between APY and APR in DeFi
 
@@ -606,7 +606,7 @@ Explain and calculate the difference between APY and APR in DeFi
 
 ### [Protocol Revenue & Fundamentals Analyst](https://os.sperax.io/crypto/agents/protocol-revenue-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Analyze DeFi protocol business models and revenue generation
 
@@ -616,7 +616,7 @@ Analyze DeFi protocol business models and revenue generation
 
 ### [DAO Governance Proposal Analyst](https://os.sperax.io/crypto/agents/governance-proposal-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Analyze and explain DAO governance proposals and their implications
 
@@ -626,7 +626,7 @@ Analyze and explain DAO governance proposals and their implications
 
 ### [Impermanent Loss Calculator](https://os.sperax.io/crypto/agents/impermanent-loss-calculator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Calculate and explain impermanent loss scenarios for LP positions
 
@@ -636,7 +636,7 @@ Calculate and explain impermanent loss scenarios for LP positions
 
 ### [DAO Treasury & Resource Analyst](https://os.sperax.io/crypto/agents/protocol-treasury-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Analyze DAO treasury holdings, runway, and capital allocation
 
@@ -646,7 +646,7 @@ Analyze DAO treasury holdings, runway, and capital allocation
 
 ### [Liquidation Risk Manager](https://os.sperax.io/crypto/agents/liquidation-risk-manager)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Monitor and manage liquidation risks in lending protocols
 
@@ -656,7 +656,7 @@ Monitor and manage liquidation risks in lending protocols
 
 ### [Crypto Narrative & Trend Analyst](https://os.sperax.io/crypto/agents/narrative-trend-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Track and analyze dominant narratives and trends in crypto markets
 
@@ -666,7 +666,7 @@ Track and analyze dominant narratives and trends in crypto markets
 
 ### [Sperax Protocol Risk Monitor](https://os.sperax.io/crypto/agents/sperax-risk-monitor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Track and analyze security risks across Sperax smart contracts
 
@@ -676,7 +676,7 @@ Track and analyze security risks across Sperax smart contracts
 
 ### [Liquidity Pool Deep Analyzer](https://os.sperax.io/crypto/agents/liquidity-pool-analyzer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Analyze LP pool health, risks, and optimal entry/exit timing
 
@@ -686,7 +686,7 @@ Analyze LP pool health, risks, and optimal entry/exit timing
 
 ### [SPA Tokenomics Analyst](https://os.sperax.io/crypto/agents/spa-tokenomics-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Expert in SPA token economics, staking rewards, and protocol revenue
 
@@ -696,7 +696,7 @@ Expert in SPA token economics, staking rewards, and protocol revenue
 
 ### [Gas Cost Optimization Expert](https://os.sperax.io/crypto/agents/gas-optimization-expert)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Minimize gas costs and optimize transaction timing
 
@@ -706,7 +706,7 @@ Minimize gas costs and optimize transaction timing
 
 ### [Crypto Alpha & Signal Detector](https://os.sperax.io/crypto/agents/alpha-leak-detector)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Identify trading alpha and early signals in DeFi markets
 
@@ -716,7 +716,7 @@ Identify trading alpha and early signals in DeFi markets
 
 ### [MEV Protection Advisor](https://os.sperax.io/crypto/agents/mev-protection-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Protect users from front-running, sandwich attacks, and MEV exploitation
 
@@ -726,7 +726,7 @@ Protect users from front-running, sandwich attacks, and MEV exploitation
 
 ### [Sperax Liquidity Provider Strategist](https://os.sperax.io/crypto/agents/sperax-liquidity-strategist)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Optimize liquidity provision strategies across Sperax pools
 
@@ -736,7 +736,7 @@ Optimize liquidity provision strategies across Sperax pools
 
 ### [Sperax Bridge Assistant](https://os.sperax.io/crypto/agents/sperax-bridge-assistant)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Guide users through cross-chain bridging with optimal routes and costs
 
@@ -746,7 +746,7 @@ Guide users through cross-chain bridging with optimal routes and costs
 
 ### [Staking Rewards Calculator](https://os.sperax.io/crypto/agents/staking-rewards-calculator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Calculate and optimize staking rewards across protocols
 
@@ -756,7 +756,7 @@ Calculate and optimize staking rewards across protocols
 
 ### [DeFi Protocol Risk Scoring Engine](https://os.sperax.io/crypto/agents/defi-risk-scoring-engine)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Comprehensive risk assessment framework for DeFi protocols
 
@@ -766,7 +766,7 @@ Comprehensive risk assessment framework for DeFi protocols
 
 ### [DeFi Airdrop Hunter](https://os.sperax.io/crypto/agents/airdrop-hunter)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Identify and strategize for potential protocol airdrops
 

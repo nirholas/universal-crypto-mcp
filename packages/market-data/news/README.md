@@ -10,7 +10,7 @@ Provide the latest cryptocurrency news to AI agents, powered by [CryptoPanic](ht
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 
-*Try [Kukapay News MCP](https://github.com/kukapay/kukapay-news-mcp) — no API key required, fully AI-annotated*.
+*Try [Kukapay News MCP](https://github.com/nirholas/nirholas-news-mcp) — no API key required, fully AI-annotated*.
 
 ## Tools
 

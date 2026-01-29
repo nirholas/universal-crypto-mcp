@@ -285,7 +285,7 @@ Get DeFi-specific news (from The Defiant + filtered).
 
 ## Plugin Tools
 
-Access AI function call plugins from SperaxOS marketplace.
+Access AI function call plugins from Universal Crypto MCP marketplace.
 
 **API:** https://plugin.delivery
 

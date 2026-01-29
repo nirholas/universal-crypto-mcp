@@ -1,5 +1,5 @@
 /**
- * @llm-energy/core - Shared types for llm.energy
+ * @nirholas/core - Shared types for llm.energy
  * 
  * These types are used by both the web app and MCP server
  */

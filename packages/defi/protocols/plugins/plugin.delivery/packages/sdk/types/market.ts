@@ -1,17 +1,17 @@
 /**
- * SperaxOS Plugins
- * @desc SperaxOS Plugins interface
+ * Universal Crypto MCP Plugins
+ * @desc Universal Crypto MCP Plugins interface
  * @nameCN 插件列表
  * @descCN 插件市场的列表接口
  */
-export interface SperaxOSPluginsMarketIndex {
+export interface Universal Crypto MCPPluginsMarketIndex {
   /**
    * plugins
    * @desc List of plugin items
    * @nameCN 插件列表
    * @descCN 插件项列表
    */
-  plugins: SperaxOSPluginMeta[];
+  plugins: Universal Crypto MCPPluginMeta[];
   /**
    * version
    * @desc Version of the plugins
@@ -27,7 +27,7 @@ export interface SperaxOSPluginsMarketIndex {
  * @nameCN 插件项
  * @descCN 插件项接口
  */
-export interface SperaxOSPluginMeta {
+export interface Universal Crypto MCPPluginMeta {
   author: string;
   /**
    * @deprecated

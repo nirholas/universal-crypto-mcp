@@ -1,4 +1,4 @@
-import { PluginChannel, speraxOS } from '@sperax/chat-plugin-sdk/client';
+import { PluginChannel, speraxOS } from '@nirholas/chat-plugin-sdk/client';
 import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock window and postMessage before each test

@@ -1,7 +1,7 @@
 {
-  "name": "forge-std",
+  "name": "@nirholas/crypto-defi-protocols-packages-wallets-sweep-contracts-lib-forge-std",
   "version": "1.14.0",
-  "description": "Forge Standard Library is a collection of helpful contracts and libraries for use with Forge and Foundry.",
+  "description": "Universal Crypto MCP - Forge Standard Library is a collection of helpful contracts and libraries for use with Forge and Foundry.",
   "homepage": "https://book.getfoundry.sh/forge/forge-std",
   "bugs": "https://github.com/foundry-rs/forge-std/issues",
   "license": "(Apache-2.0 OR MIT)",

@@ -1,5 +1,5 @@
 {
-  "name": "sweep-frontend",
+  "name": "@nirholas/crypto-automation-sweep-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {

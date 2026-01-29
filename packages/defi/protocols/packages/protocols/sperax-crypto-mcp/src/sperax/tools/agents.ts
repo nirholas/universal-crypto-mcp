@@ -1,12 +1,12 @@
 /**
  * Sperax MCP Server - DeFi Agents Tools
  *
- * Integration with SperaxOS DeFi Agents API
+ * Integration with Universal Crypto MCP DeFi Agents API
  * Provides access to 58+ production-ready AI agent definitions
  * for DeFi, portfolio management, trading, and Web3 workflows.
  *
  * API: https://sperax.click
- * Repository: https://github.com/speraxos/SperaxOS-Defi-Agents
+ * Repository: https://github.com/speraxos/Universal Crypto MCP-Defi-Agents
  */
 
 import { z } from 'zod';
@@ -72,7 +72,7 @@ async function fetchAgentsIndex(locale: string = 'en-US'): Promise<AgentsIndex> 
   const response = await fetch(url, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
   });
 
@@ -91,7 +91,7 @@ async function fetchAgent(identifier: string, locale: string = 'en-US'): Promise
   const response = await fetch(`${AGENTS_API_BASE}/${filename}`, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'SperaxOS-MCP/1.0',
+      'User-Agent': 'Universal Crypto MCP-MCP/1.0',
     },
   });
 

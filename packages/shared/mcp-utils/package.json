@@ -1,5 +1,5 @@
 {
-  "name": "@universal-crypto-mcp/mcp-utils",
+  "name": "@nirholas/crypto-shared-mcp-utils",
   "version": "1.0.0",
   "description": "MCP helper utilities for Universal Crypto MCP",
   "type": "module",

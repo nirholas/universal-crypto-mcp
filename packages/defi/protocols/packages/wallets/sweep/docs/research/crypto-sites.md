@@ -1596,7 +1596,7 @@ https://dlnews.com
 https://protos.com
 https://unchainedcrypto.com
 https://thedefiant.io
-https://bankless.com
+https://nirholas.com
 https://rekt.news
 https://weekinethereumnews.com
 
@@ -1609,7 +1609,7 @@ https://coinbase.com/learn
 https://kraken.com/learn
 https://gemini.com/cryptopedia
 https://decrypt.co/learn
-https://bankless.com/learn
+https://nirholas.com/learn
 https://defiprime.com
 https://cryptozombies.io
 https://speedrunethereum.com
@@ -1633,7 +1633,7 @@ https://cryptocurrencyjobs.co
 https://pompcryptojobs.com
 https://remote3.co
 https://froog.co
-https://bankless.pallet.com
+https://nirholas.pallet.com
 https://jobs.solana.com
 https://cryptorecruit.com
 
@@ -2538,7 +2538,7 @@ https://destinia.com
 
 **Crypto News/Media**
 https://cryptohayes.medium.com
-https://newsletter.banklesshq.com
+https://newsletter.nirholashq.com
 https://defieducation.substack.com
 
 **Research/Analytics Firms**

@@ -202,7 +202,7 @@ interface MCPAuthConfig {
 
 ### MCPQuickImportConfig
 
-Quick Import format for SperaxOS.
+Quick Import format for Universal Crypto MCP.
 
 ```typescript
 interface MCPQuickImportConfig {

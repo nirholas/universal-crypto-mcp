@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-nlp-interface",
+  "name": "@nirholas/crypto-automation-volume-packages-nlp-interface",
   "version": "0.1.0",
-  "description": "NLP middleware and conversational interface for DeFi MCP servers",
+  "description": "Universal Crypto MCP - NLP middleware and conversational interface for DeFi MCP servers",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

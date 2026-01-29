@@ -1,7 +1,7 @@
 {
-  "name": "openbare-registry",
+  "name": "@nirholas/crypto-defi-protocols-packages-infra-openbare-registry",
   "version": "1.0.0",
-  "description": "Registry service for OpenBare - a directory of community bare server nodes",
+  "description": "Universal Crypto MCP - Registry service for OpenBare - a directory of community bare server nodes",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

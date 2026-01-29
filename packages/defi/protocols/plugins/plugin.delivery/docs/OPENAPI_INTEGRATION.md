@@ -5,12 +5,12 @@ Use OpenAPI specifications to define your plugin's API without writing manual de
 ## Table of Contents
 
 - [Overview](#overview)
-- [SperaxOS Plugin Compatibility](#speraxos-plugin-compatibility)
+- [Universal Crypto MCP Plugin Compatibility](#speraxos-plugin-compatibility)
 - [OpenAPI Specification](#openapi-specification)
 - [Creating an OpenAPI Spec](#creating-an-openapi-spec)
 - [Manifest Configuration](#manifest-configuration)
 - [OpenAPI Requirements](#openapi-requirements)
-- [Integrating OpenAPI with SperaxOS](#integrating-openapi-with-speraxos)
+- [Integrating OpenAPI with Universal Crypto MCP](#integrating-openapi-with-speraxos)
 - [Examples](#examples)
 - [Converting Existing APIs](#converting-existing-apis)
 - [Troubleshooting](#troubleshooting)
@@ -21,7 +21,7 @@ Use OpenAPI specifications to define your plugin's API without writing manual de
 
 OpenAPI (formerly Swagger) is a standard for describing RESTful APIs. The plugin system can read your OpenAPI spec and automatically create Function Call definitions.
 
-SperaxOS's plugin mechanism supports the OpenAPI specification, which is a standard for defining and describing RESTful APIs. By using OpenAPI, developers can create a clear, language-agnostic API description to facilitate the correct implementation and usage of the API.
+Universal Crypto MCP's plugin mechanism supports the OpenAPI specification, which is a standard for defining and describing RESTful APIs. By using OpenAPI, developers can create a clear, language-agnostic API description to facilitate the correct implementation and usage of the API.
 
 ### Benefits
 
@@ -44,13 +44,13 @@ SperaxOS's plugin mechanism supports the OpenAPI specification, which is a stand
 
 ---
 
-## SperaxOS Plugin Compatibility
+## Universal Crypto MCP Plugin Compatibility
 
-SperaxOS's plugin system is fully compatible with OpenAPI documents. When you create a SperaxOS plugin, you only need to follow these steps to convert an OpenAPI service into a conversation plugin:
+Universal Crypto MCP's plugin system is fully compatible with OpenAPI documents. When you create a Universal Crypto MCP plugin, you only need to follow these steps to convert an OpenAPI service into a conversation plugin:
 
 ### Step 1: Build the API
 
-Develop your service API, ensuring that it can handle requests from SperaxOS and return appropriate responses.
+Develop your service API, ensuring that it can handle requests from Universal Crypto MCP and return appropriate responses.
 
 **Example API Server:**
 
@@ -136,7 +136,7 @@ paths:
 
 ### Step 3: Create a Plugin Manifest
 
-Create a `manifest.json` plugin manifest file for SperaxOS, which includes the plugin's metadata and, most importantly, fill in the URL of your OpenAPI document in the `openapi` field:
+Create a `manifest.json` plugin manifest file for Universal Crypto MCP, which includes the plugin's metadata and, most importantly, fill in the URL of your OpenAPI document in the `openapi` field:
 
 ```json
 {
@@ -645,22 +645,22 @@ Access-Control-Allow-Headers: Content-Type
 
 ---
 
-## Integrating OpenAPI with SperaxOS
+## Integrating OpenAPI with Universal Crypto MCP
 
-Once your API and plugin manifest file are ready, you can integrate them with SperaxOS.
+Once your API and plugin manifest file are ready, you can integrate them with Universal Crypto MCP.
 
 ### Integration Flow
 
-1. **User Installation**: In the SperaxOS UI, users can install your plugin from the plugin marketplace
-2. **Manifest Loading**: SperaxOS reads your plugin manifest and fetches the OpenAPI document
+1. **User Installation**: In the Universal Crypto MCP UI, users can install your plugin from the plugin marketplace
+2. **Manifest Loading**: Universal Crypto MCP reads your plugin manifest and fetches the OpenAPI document
 3. **Schema Parsing**: The system parses endpoints defined in the OpenAPI document
 4. **Function Registration**: Each operation becomes available as a function call
 5. **User Interaction**: Users interact with your service through the AI assistant
-6. **API Communication**: The OpenAPI document guides SperaxOS on how to communicate with your API
+6. **API Communication**: The OpenAPI document guides Universal Crypto MCP on how to communicate with your API
 
 ### Example: CoinGecko Plugin
 
-The CoinGecko plugin demonstrates OpenAPI integration. Users can query cryptocurrency prices, and SperaxOS uses the OpenAPI spec to correctly format requests and interpret responses.
+The CoinGecko plugin demonstrates OpenAPI integration. Users can query cryptocurrency prices, and Universal Crypto MCP uses the OpenAPI spec to correctly format requests and interpret responses.
 
 ---
 
@@ -702,5 +702,5 @@ Validate your OpenAPI spec using tools like Swagger Editor before deployment.
 - **OpenAPI Generator**: https://openapi-generator.tech/
 - **Plugin Manifest Reference**: See PLUGIN_MANIFEST.md
 
-By following the OpenAPI specification, you ensure accurate API documentation and seamless integration with SperaxOS, providing users with a rich, reliable plugin experience.
+By following the OpenAPI specification, you ensure accurate API documentation and seamless integration with Universal Crypto MCP, providing users with a rich, reliable plugin experience.
 

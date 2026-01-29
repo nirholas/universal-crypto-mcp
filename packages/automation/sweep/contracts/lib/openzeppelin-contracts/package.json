@@ -1,6 +1,6 @@
 {
-  "name": "openzeppelin-solidity",
-  "description": "Secure Smart Contract library for Solidity",
+  "name": "@nirholas/crypto-automation-sweep-contracts-lib-openzeppelin-contracts",
+  "description": "Universal Crypto MCP - Secure Smart Contract library for Solidity",
   "version": "5.5.0",
   "private": true,
   "files": [

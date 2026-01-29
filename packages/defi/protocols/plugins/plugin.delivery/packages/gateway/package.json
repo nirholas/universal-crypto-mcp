@@ -1,7 +1,7 @@
 {
-  "name": "@sperax/chat-plugins-gateway",
+  "name": "@nirholas/crypto-chat-plugins-gateway",
   "version": "1.9.0",
-  "description": "SperaxOS Plugin Market",
+  "description": "Universal Crypto MCP - SperaxOS Plugin Market",
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/universal-crypto-mcp",

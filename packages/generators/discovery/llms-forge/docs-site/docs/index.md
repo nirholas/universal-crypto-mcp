@@ -53,7 +53,7 @@ llm.energy fetches documentation from websites that support the [llms.txt standa
   "mcpServers": {
     "llm-energy": {
       "command": "npx",
-      "args": ["-y", "@llm-energy/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }

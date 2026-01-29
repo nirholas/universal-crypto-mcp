@@ -1,5 +1,5 @@
 /**
- * @llm-energy/core
+ * @nirholas/core
  * 
  * Shared utilities for llm.energy - parser, types, and generators
  * Used by both the web app and MCP server

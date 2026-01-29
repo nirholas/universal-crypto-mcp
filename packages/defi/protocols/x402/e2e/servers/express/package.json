@@ -1,5 +1,5 @@
 {
-  "name": "@x402/express-e2e",
+  "name": "@nirholas/x402-express-e2e",
   "private": true,
   "type": "module",
   "scripts": {

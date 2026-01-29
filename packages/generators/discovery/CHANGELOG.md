@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Core Features
 - **Multi-provider AI support** - OpenAI (GPT-4o, GPT-4-turbo) and Anthropic (Claude Sonnet, Opus)
 - **Auto-detection** of AI provider from environment variables
-- **8 plugin templates** for SperaxOS integration:
+- **8 plugin templates** for Universal Crypto MCP integration:
   - `mcp-http` - Remote MCP servers over HTTP/SSE
   - `mcp-stdio` - Local MCP servers via stdio
   - `openapi` - REST API integrations
@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Output Formats
 - JSON output for CI/CD pipelines
-- Quick Import format for SperaxOS
+- Quick Import format for Universal Crypto MCP
 - Console output with rich formatting
 - Plugin manifests for plugin.delivery
 

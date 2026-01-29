@@ -1,7 +1,7 @@
 {
-  "name": "lyra-intel-mcp",
+  "name": "@nirholas/crypto-lyra-intel",
   "version": "1.0.0",
-  "description": "Model Context Protocol server for Lyra Intel codebase analysis",
+  "description": "Universal Crypto MCP - Model Context Protocol server for Lyra Intel codebase analysis",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

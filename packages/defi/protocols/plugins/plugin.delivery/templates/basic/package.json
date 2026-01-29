@@ -1,8 +1,8 @@
 {
-  "name": "plugin-identifier",
+  "name": "@nirholas/crypto-defi-protocols-plugins-plugin.delivery-templates-basic",
   "version": "1.5.1",
   "private": true,
-  "description": "This is the plugin template for SperaxOS plugin development",
+  "description": "Universal Crypto MCP - This is the plugin template for SperaxOS plugin development",
   "homepage": "https://github.com/sperax/chat-plugin-template",
   "repository": {
     "type": "git",

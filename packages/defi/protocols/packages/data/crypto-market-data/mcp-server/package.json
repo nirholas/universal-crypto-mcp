@@ -1,7 +1,7 @@
 {
-  "name": "crypto-market-data-mcp",
+  "name": "@nirholas/crypto-defi-protocols-packages-data-crypto-market-data-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for real-time crypto prices, OHLCV, DeFi TVL from CoinGecko and DeFiLlama",
+  "description": "Universal Crypto MCP - MCP server for real-time crypto prices, OHLCV, DeFi TVL from CoinGecko and DeFiLlama",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://llm.energy"><img src="https://img.shields.io/badge/🌐_Website-llm.energy-black?style=for-the-badge" alt="Website" /></a>
   <a href="https://llm.energy/docs/"><img src="https://img.shields.io/badge/📚_Docs-Read_Docs-black?style=for-the-badge" alt="Documentation" /></a>
-  <a href="https://www.npmjs.com/package/@llm-energy/mcp-server"><img src="https://img.shields.io/npm/v/@llm-energy/mcp-server?style=for-the-badge&logo=npm&label=MCP%20Server" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/@nirholas/mcp-server"><img src="https://img.shields.io/npm/v/@nirholas/mcp-server?style=for-the-badge&logo=npm&label=MCP%20Server" alt="npm version" /></a>
 </p>
 
 <p align="center">
@@ -134,7 +134,7 @@ Add to your MCP client configuration (Claude Desktop, Cursor, etc.):
   "mcpServers": {
     "llm-energy": {
       "command": "npx",
-      "args": ["-y", "@llm-energy/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }
@@ -386,7 +386,7 @@ Contributions are welcome! Please follow these steps:
   <a href="https://llm.energy">🌐 Website</a> •
   <a href="https://llm.energy/docs">📚 Documentation</a> •
   <a href="https://github.com/nirholas/extract-llms-docs">💻 GitHub</a> •
-  <a href="https://www.npmjs.com/package/@llm-energy/mcp-server">📦 NPM</a>
+  <a href="https://www.npmjs.com/package/@nirholas/mcp-server">📦 NPM</a>
 </p>
 
 ---

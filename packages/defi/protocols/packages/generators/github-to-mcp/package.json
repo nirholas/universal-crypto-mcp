@@ -1,8 +1,8 @@
 {
-  "name": "github-to-mcp-monorepo",
+  "name": "@nirholas/crypto-defi-protocols-packages-generators-github-to-mcp",
   "version": "1.0.0",
   "private": false,
-  "description": "Convert any GitHub repository into an MCP server",
+  "description": "Universal Crypto MCP - Convert any GitHub repository into an MCP server",
   "packageManager": "pnpm@10.23.0",
   "engines": {
     "node": ">=22.0.0"

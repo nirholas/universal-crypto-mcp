@@ -1,5 +1,5 @@
 {
-  "name": "express-e2e",
+  "name": "@nirholas/crypto-defi-protocols-x402-e2e-legacy-servers-express",
   "private": true,
   "type": "module",
   "scripts": {

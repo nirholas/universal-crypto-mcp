@@ -1,8 +1,8 @@
 {
-  "name": "vrfnft-example",
+  "name": "@nirholas/crypto-defi-protocols-x402-examples-typescript-legacy-clients-chainlink-vrf-nft",
   "version": "0.1.0",
   "private": true,
-  "description": "Example demonstrating x402 payment for NFT minting",
+  "description": "Universal Crypto MCP - Example demonstrating x402 payment for NFT minting",
   "type": "module",
   "scripts": {
     "resource": "tsx resource.ts",

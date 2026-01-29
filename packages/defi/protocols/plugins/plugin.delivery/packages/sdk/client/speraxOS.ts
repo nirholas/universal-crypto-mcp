@@ -18,7 +18,7 @@ export interface PluginPayload<T = any> {
   state?: any;
 }
 
-class SperaxOS {
+class Universal Crypto MCP {
   getPluginPayload = <T = any>() =>
     new Promise<PluginPayload<T>>((resolve) => {
       if (typeof window === 'undefined') {
@@ -139,4 +139,4 @@ class SperaxOS {
   };
 }
 
-export const speraxOS = new SperaxOS();
+export const speraxOS = new Universal Crypto MCP();

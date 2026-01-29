@@ -13,7 +13,7 @@ import {
   parseLlmsContent,
   ParsedSection,
   Document,
-} from '@llm-energy/core'
+} from '@nirholas/core'
 
 describe('slugify', () => {
   it('converts basic text to slug', () => {

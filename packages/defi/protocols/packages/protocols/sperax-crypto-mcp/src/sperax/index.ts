@@ -1,5 +1,5 @@
 /**
- * SperaxOS - Sperax Protocol Module
+ * Universal Crypto MCP - Sperax Protocol Module
  * 
  * Registers all Sperax DeFi tools, prompts, and resources including:
  * - Protocol tools: USDs, SPA, veSPA, Demeter, Vault operations on Arbitrum One

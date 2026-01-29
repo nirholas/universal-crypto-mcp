@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Maintains conversation context across all features
   - Perfect for 80%+ of users - install once, access everything
   - Recommended as primary Sperax agent for most use cases
-  - **Note:** Currently supports read-only portfolio features; automated trading/bots planned for future SperaxOS releases
+  - **Note:** Currently supports read-only portfolio features; automated trading/bots planned for future Universal Crypto MCP releases
 
 ### Changed
 
@@ -218,7 +218,7 @@ No migration required. The API is fully backwards compatible with all previously
 
 ### Security Policy
 
-For security concerns or vulnerability reports, please email <security@sperax.click> or open a private security advisory on GitHub.
+For security concerns or vulnerability reports, please email <security@nirholas.click> or open a private security advisory on GitHub.
 
 No vulnerabilities have been reported in the JSON API format. All agent definitions are stateless and contain no sensitive data.
 

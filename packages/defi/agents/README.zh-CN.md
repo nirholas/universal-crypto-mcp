@@ -61,7 +61,7 @@ npm run build
 - USDs 稳定币专家、SPA 代币经济分析师、veSPA 锁仓优化器
 - 治理指南、流动性策略师、跨链桥助手、收益聚合器
 
-**SperaxOS 投资组合插件智能体（16 个）：**
+**Universal Crypto MCP 投资组合插件智能体（16 个）：**
 
 - 投资组合仪表板、资产追踪器、分析专家、钱包管理器
 - 交易助手、AI 交易机器人、信号机器人、定投机器人
@@ -331,7 +331,7 @@ defi_agents = [a for a in agents if 'defi' in a['meta']['tags']]
 
 ## 🔗 相关项目
 
-- **SperaxOS** - [应用分支](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
+- **Universal Crypto MCP** - [应用分支](https://github.com/nirholas/AI-Agents-Library/tree/speraxos)
 
 ---
 
@@ -358,7 +358,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax DeFi 协议](https://os.sperax.io/crypto/agents/sperax-defi-protocols)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 包含 TVL 跟踪和 APY 比较的 DeFi 协议探索器
 
@@ -368,7 +368,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [斯佩拉克斯分析专家](https://os.sperax.io/crypto/agents/sperax-analytics-expert)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 深入的投资组合分析，包含性能图表和盈亏分析
 
@@ -378,7 +378,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax 信号机器人](https://os.sperax.io/crypto/agents/sperax-signal-bot)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 基于技术分析和市场指标的交易信号
 
@@ -388,7 +388,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax 机器人模板](https://os.sperax.io/crypto/agents/sperax-bot-templates)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 预构建的机器人配置，快速部署
 
@@ -398,7 +398,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax Pump 筛选器](https://os.sperax.io/crypto/agents/sperax-pump-screener)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 用于检测拉升代币的高动量代币筛选器
 
@@ -408,7 +408,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax 套利机器人](https://os.sperax.io/crypto/agents/sperax-arbitrage-bot)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 跨交易所套利检测与自动执行
 
@@ -418,7 +418,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax 帮助中心](https://os.sperax.io/crypto/agents/sperax-help-center)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 包含常见问题、教程和支持系统的帮助中心
 
@@ -428,7 +428,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax 交易助手](https://os.sperax.io/crypto/agents/sperax-trading-assistant)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 使用实时市场数据和订单管理执行加密货币交易
 
@@ -438,7 +438,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax DCA 机器人](https://os.sperax.io/crypto/agents/sperax-dca-bot)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 定期加密货币购买的平均成本自动化
 
@@ -448,7 +448,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax AI 交易机器人](https://os.sperax.io/crypto/agents/sperax-ai-trading-bot)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 基于人工智能的交易策略，结合机器学习、回测和自动化
 
@@ -458,7 +458,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [斯佩拉克斯投资组合仪表盘](https://os.sperax.io/crypto/agents/sperax-dashboard)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 包含总价值、资产配置和绩效指标的投资组合概览仪表盘
 
@@ -468,7 +468,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
 ### [Sperax DeFi Center](https://os.sperax.io/crypto/agents/sperax-defi-center)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 DeFi protocol aggregator for managing positions and yields
 
@@ -478,7 +478,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 设置管理器](https://os.sperax.io/crypto/agents/sperax-settings-manager)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 应用设置和偏好管理器
 
@@ -488,7 +488,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 钱包管理器](https://os.sperax.io/crypto/agents/sperax-wallet-manager)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 管理多个加密货币钱包，跟踪余额并实现同步
 
@@ -498,7 +498,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 策略市场](https://os.sperax.io/crypto/agents/sperax-strategies-marketplace)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 交易策略市场，浏览和部署经过验证的策略
 
@@ -508,7 +508,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 资产追踪器](https://os.sperax.io/crypto/agents/sperax-assets-tracker)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 跟踪并分析加密货币持有情况，提供详细的资产细分
 
@@ -518,7 +518,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 资产组合](https://os.sperax.io/crypto/agents/sperax-portfolio)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-21**</sup>
 
 一站式加密货币资产管理：追踪、交易、自动化、DeFi 和分析
 
@@ -528,7 +528,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [加密鲸鱼观察者](https://os.sperax.io/crypto/agents/whale-watcher)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 跟踪和分析大额钱包变动和鲸鱼行为
 
@@ -538,7 +538,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [跨链桥安全分析师](https://os.sperax.io/crypto/agents/bridge-security-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 评估桥安全性并推荐最安全的跨链路线
 
@@ -548,7 +548,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [代币解锁时间表追踪器](https://os.sperax.io/crypto/agents/token-unlock-tracker)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 监控和分析代币解锁事件及其市场影响
 
@@ -558,7 +558,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [veSPA 锁定优化器](https://os.sperax.io/crypto/agents/vespa-optimizer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 通过最佳的 veSPA 锁定策略最大化收益
 
@@ -568,7 +568,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [Sperax 资产组合追踪器](https://os.sperax.io/crypto/agents/sperax-portfolio-tracker)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 跟踪并分析您的完整 Sperax 生态系统持仓
 
@@ -578,7 +578,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [DeFi 保险与风险覆盖顾问](https://os.sperax.io/crypto/agents/defi-insurance-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 导航 DeFi 保险选项以保护智能合约
 
@@ -588,7 +588,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [NFT 流动性与借贷顾问](https://os.sperax.io/crypto/agents/nft-liquidity-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 导航 NFT 抵押借贷与流动性解决方案
 
@@ -598,7 +598,7 @@ DeFi protocol aggregator for managing positions and yields
 
 ### [USDs 稳定币专家](https://os.sperax.io/crypto/agents/usds-stablecoin-expert)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Sperax USDs 机制、抵押和收益策略专家
 
@@ -608,7 +608,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [去中心化交易所聚合器路线优化器](https://os.sperax.io/crypto/agents/dex-aggregator-optimizer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 在去中心化交易所聚合器中寻找最优的兑换路线
 
@@ -618,7 +618,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [加密货币税务策略顾问](https://os.sperax.io/crypto/agents/crypto-tax-strategist)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 优化加密货币税收并提供税收高效的 DeFi 策略
 
@@ -628,7 +628,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [智能合约安全审计](https://os.sperax.io/crypto/agents/smart-contract-auditor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 审查和评估 DeFi 协议的智能合约安全性
 
@@ -638,7 +638,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [Sperax 收益聚合器](https://os.sperax.io/crypto/agents/sperax-yield-aggregator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 在 Sperax 生态系统中寻找并优化最佳收益机会
 
@@ -648,7 +648,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [个人 DeFi 仪表板构建器](https://os.sperax.io/crypto/agents/yield-dashboard-builder)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 设计并跟踪您的定制 DeFi 投资组合仪表板
 
@@ -658,7 +658,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [加密钱包安全顾问](https://os.sperax.io/crypto/agents/wallet-security-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 保护加密钱包和资产的最佳实践
 
@@ -668,7 +668,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [DeFi 收益可持续性分析师](https://os.sperax.io/crypto/agents/yield-sustainability-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 分析高收益是否可持续或仅为暂时
 
@@ -678,7 +678,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [稳定币深度比较器](https://os.sperax.io/crypto/agents/stablecoin-comparator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 比较稳定币机制、风险和用例
 
@@ -688,7 +688,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [DeFi 资产组合再平衡顾问](https://os.sperax.io/crypto/agents/portfolio-rebalancing-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 优化资产组合配置和再平衡策略
 
@@ -698,7 +698,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [Sperax 生态系统入门指南](https://os.sperax.io/crypto/agents/sperax-onboarding-guide)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 帮助新手了解并开始使用 Sperax 协议
 
@@ -708,7 +708,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [DeFi 收益农业策略师](https://os.sperax.io/crypto/agents/defi-yield-farmer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 识别并优化 DeFi 协议中的收益农业机会
 
@@ -718,7 +718,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [Sperax 治理指南](https://os.sperax.io/crypto/agents/sperax-governance-guide)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 导航 Sperax DAO 提案、投票和协议升级
 
@@ -728,7 +728,7 @@ Sperax USDs 机制、抵押和收益策略专家
 
 ### [DeFi Protocol Comparison Expert](https://os.sperax.io/crypto/agents/defi-protocol-comparator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 Compare similar DeFi protocols across features, risks, and yields
 
@@ -738,7 +738,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DeFi 初学者入门导师](https://os.sperax.io/crypto/agents/defi-onboarding-mentor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 引导完全新手体验他们的第一个 DeFi 操作
 
@@ -748,7 +748,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [APY 与 APR 教育者](https://os.sperax.io/crypto/agents/apy-vs-apr-educator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 解释并计算 DeFi 中 APY 和 APR 之间的差异
 
@@ -758,7 +758,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [协议收入与基本面分析师](https://os.sperax.io/crypto/agents/protocol-revenue-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 分析 DeFi 协议的商业模型和收入生成方式
 
@@ -768,7 +768,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DAO 治理提案分析师](https://os.sperax.io/crypto/agents/governance-proposal-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 分析并解释 DAO 治理提案及其影响
 
@@ -778,7 +778,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [无常损失计算器](https://os.sperax.io/crypto/agents/impermanent-loss-calculator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 计算并解释流动性提供者（LP）头寸的无常损失场景
 
@@ -788,7 +788,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DAO 财库与资源分析师](https://os.sperax.io/crypto/agents/protocol-treasury-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 分析 DAO 财库持有、运营期限和资本配置
 
@@ -798,7 +798,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [清算风险管理器](https://os.sperax.io/crypto/agents/liquidation-risk-manager)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 监控和管理借贷协议中的清算风险
 
@@ -808,7 +808,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [加密货币叙事与趋势分析师](https://os.sperax.io/crypto/agents/narrative-trend-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 追踪并分析加密市场中的主导叙事和趋势
 
@@ -818,7 +818,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [Sperax 协议风险监控器](https://os.sperax.io/crypto/agents/sperax-risk-monitor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 跟踪和分析 Sperax 智能合约中的安全风险
 
@@ -828,7 +828,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [流动性池深度分析器](https://os.sperax.io/crypto/agents/liquidity-pool-analyzer)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 分析流动性池的健康状况、风险及最佳进出时机
 
@@ -838,7 +838,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [SPA 代币经济分析师](https://os.sperax.io/crypto/agents/spa-tokenomics-analyst)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 专注于 SPA 代币经济、质押奖励和协议收入的专家
 
@@ -848,7 +848,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [燃气成本优化专家](https://os.sperax.io/crypto/agents/gas-optimization-expert)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 最小化燃气成本并优化交易时机
 
@@ -858,7 +858,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [加密货币 Alpha 与信号检测器](https://os.sperax.io/crypto/agents/alpha-leak-detector)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 识别 DeFi 市场中的交易 Alpha 和早期信号
 
@@ -868,7 +868,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [MEV 保护顾问](https://os.sperax.io/crypto/agents/mev-protection-advisor)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 保护用户免受前置攻击、三明治攻击和 MEV 利用
 
@@ -878,7 +878,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [Sperax 流动性提供者策略师](https://os.sperax.io/crypto/agents/sperax-liquidity-strategist)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 优化 Sperax 池的流动性提供策略
 
@@ -888,7 +888,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [Sperax 桥接助手](https://os.sperax.io/crypto/agents/sperax-bridge-assistant)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 引导用户通过最佳路径和成本进行跨链桥接
 
@@ -898,7 +898,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [质押奖励计算器](https://os.sperax.io/crypto/agents/staking-rewards-calculator)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 计算和优化各协议的质押奖励
 
@@ -908,7 +908,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DeFi 协议风险评分引擎](https://os.sperax.io/crypto/agents/defi-risk-scoring-engine)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 面向 DeFi 协议的全面风险评估框架
 
@@ -918,7 +918,7 @@ Compare similar DeFi protocols across features, risks, and yields
 
 ### [DeFi 空投猎手](https://os.sperax.io/crypto/agents/airdrop-hunter)
 
-<sup>By **[@sperax](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
+<sup>By **[@nirholas](https://github.com/nirholas/AI-Agents-Library)** on **2024-12-16**</sup>
 
 识别并制定潜在协议空投的策略
 

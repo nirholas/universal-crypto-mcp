@@ -1,5 +1,5 @@
 {
-  "name": "x402_monorepo",
+  "name": "@nirholas/crypto-defi-protocols-x402-typescript",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=10.7.0"
@@ -7,7 +7,7 @@
   "packageManager": "pnpm@10.7.0",
   "private": "true",
   "version": "0.0.2",
-  "description": "x402 Payment Protocol Monorepo",
+  "description": "Universal Crypto MCP - x402 Payment Protocol Monorepo",
   "main": "index.js",
   "pnpm": {
     "overrides": {

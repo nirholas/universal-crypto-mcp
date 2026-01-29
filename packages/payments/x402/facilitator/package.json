@@ -1,7 +1,7 @@
 {
-  "name": "@x402/facilitator",
+  "name": "@nirholas/x402-facilitator",
   "version": "1.0.0",
-  "description": "Production X402 Payment Facilitator Server for Arbitrum",
+  "description": "Universal Crypto MCP - Production X402 Payment Facilitator Server for Arbitrum",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",

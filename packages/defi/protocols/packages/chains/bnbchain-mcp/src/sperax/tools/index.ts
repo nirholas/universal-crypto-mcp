@@ -10,7 +10,7 @@
  *
  * Ecosystem Tools (18):
  * - Agents: DeFi AI agent definitions API
- * - Plugins: SperaxOS plugin marketplace
+ * - Plugins: Universal Crypto MCP plugin marketplace
  * - News: Crypto news aggregation
  */
 
@@ -74,7 +74,7 @@ import { newsTools } from './news.js';
  *
  * Ecosystem Categories:
  * - Agents: 5 tools (DeFi AI agent API)
- * - Plugins: 6 tools (SperaxOS plugin marketplace)
+ * - Plugins: 6 tools (Universal Crypto MCP plugin marketplace)
  * - News: 7 tools (crypto news aggregation)
  */
 export const allTools = [

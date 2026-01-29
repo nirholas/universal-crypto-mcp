@@ -1,6 +1,6 @@
 # Contributing to Plugin Delivery
 
-Thank you for your interest in contributing to the SperaxOS Plugin Delivery ecosystem! This guide will help you get started.
+Thank you for your interest in contributing to the Universal Crypto MCP Plugin Delivery ecosystem! This guide will help you get started.
 
 ---
 
@@ -62,8 +62,8 @@ bun install
 ```
 plugins/
 ├── packages/
-│   ├── sdk/          # @sperax/plugin-sdk
-│   └── gateway/      # @sperax/chat-plugins-gateway
+│   ├── sdk/          # @nirholas/plugin-sdk
+│   └── gateway/      # @nirholas/chat-plugins-gateway
 ├── templates/        # Plugin starter templates
 ├── docs/             # Documentation
 ├── public/           # Plugin index files
@@ -132,7 +132,7 @@ This starts a local Vercel dev server at `http://localhost:3000`.
 
 - ✅ Valid JSON manifest
 - ✅ Working API endpoints
-- ✅ Tested in SperaxOS
+- ✅ Tested in Universal Crypto MCP
 - ✅ Clear documentation
 - ✅ No malicious code
 

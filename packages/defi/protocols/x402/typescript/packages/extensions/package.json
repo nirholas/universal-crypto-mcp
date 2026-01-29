@@ -1,5 +1,5 @@
 {
-  "name": "@x402/extensions",
+  "name": "@nirholas/x402-extensions",
   "version": "2.2.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -33,7 +33,7 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/x402/typescript/packages/extensions"
   },
-  "description": "x402 Payment Protocol Extensions",
+  "description": "Universal Crypto MCP - x402 Payment Protocol Extensions",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@types/node": "^22.13.4",

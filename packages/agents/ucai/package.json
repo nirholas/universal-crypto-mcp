@@ -1,7 +1,7 @@
 {
-  "name": "@universal-crypto-mcp/agent-ucai",
+  "name": "@nirholas/crypto-agents-ucai",
   "version": "1.0.0",
-  "description": "UCAI MCP Server - Universal Crypto AI agent",
+  "description": "Universal Crypto MCP - UCAI MCP Server - Universal Crypto AI agent",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

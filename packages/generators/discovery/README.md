@@ -34,7 +34,7 @@ Lyra is optimized for discovering tools related to:
 
 Lyra is built for **crypto MCP ecosystem developers** who need to rapidly onboard new tools, **plugin marketplace operators** like plugin.delivery who curate crypto plugins, and **automation engineers** building CI/CD pipelines for DeFi tool discovery and deployment.
 
-This tool is a critical piece of the discovery-to-deployment pipeline: `lyra-tool-discovery` → `github-to-mcp` → `plugin.delivery` → **SperaxOS users**. By automating the discovery and classification phase, Lyra enables fully automated plugin onboarding with minimal human intervention.
+This tool is a critical piece of the discovery-to-deployment pipeline: `lyra-tool-discovery` → `github-to-mcp` → `plugin.delivery` → **Universal Crypto MCP users**. By automating the discovery and classification phase, Lyra enables fully automated plugin onboarding with minimal human intervention.
 
 ---
 
@@ -127,7 +127,7 @@ This tool is a critical piece of the discovery-to-deployment pipeline: `lyra-too
 ### 📤 Flexible Output
 
 - Structured JSON for piping to other tools
-- Quick Import format for SperaxOS
+- Quick Import format for Universal Crypto MCP
 - Plugin manifests for plugin.delivery
 - Console output with rich formatting
 
@@ -611,7 +611,7 @@ import type {
 │                    │        Output Formats         │                       │
 │                    ├───────────────────────────────┤                       │
 │                    │ • JSON (for pipelines)        │                       │
-│                    │ • Quick Import (SperaxOS)     │                       │
+│                    │ • Quick Import (Universal Crypto MCP)     │                       │
 │                    │ • Plugin Manifests            │                       │
 │                    │ • Console (human-readable)    │                       │
 │                    └───────────────────────────────┘                       │
@@ -652,12 +652,12 @@ The AI follows this priority order when selecting templates:
 
 ## 🔗 Integration Pipeline
 
-Lyra Tool Discovery is part of a larger automation toolchain for the SperaxOS ecosystem:
+Lyra Tool Discovery is part of a larger automation toolchain for the Universal Crypto MCP ecosystem:
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │     │                 │
-│  lyra-discover  │────▶│  github-to-mcp  │────▶│ plugin.delivery │────▶│    SperaxOS     │
+│  lyra-discover  │────▶│  github-to-mcp  │────▶│ plugin.delivery │────▶│    Universal Crypto MCP     │
 │                 │     │                 │     │                 │     │                 │
 │  Discovery &    │     │   Conversion    │     │   Marketplace   │     │   End Users     │
 │   Analysis      │     │                 │     │                 │     │                 │
@@ -667,7 +667,7 @@ Lyra Tool Discovery is part of a larger automation toolchain for the SperaxOS ec
 1. **Discovery** (this tool) — Finds tools on GitHub/npm, analyzes with AI, generates configs
 2. **Conversion** — [github-to-mcp](https://github.com/nirholas/github-to-mcp) converts repos to MCP servers
 3. **Registry** — [plugin.delivery](https://plugin.delivery) hosts the plugin marketplace
-4. **Consumption** — SperaxOS users discover and install plugins
+4. **Consumption** — Universal Crypto MCP users discover and install plugins
 
 ### Automated PR Workflow
 
@@ -878,7 +878,7 @@ lyra-discover discover --dry-run --sources github --limit 50
 # ...
 ```
 
-### Example 6: Generate Quick Import for SperaxOS
+### Example 6: Generate Quick Import for Universal Crypto MCP
 
 ```typescript
 import { ToolDiscovery } from '@nirholas/lyra-tool-discovery';
@@ -886,7 +886,7 @@ import { ToolDiscovery } from '@nirholas/lyra-tool-discovery';
 const discovery = new ToolDiscovery();
 const result = await discovery.analyzeNpmPackage('@modelcontextprotocol/server-github');
 
-// The quick import format can be directly pasted into SperaxOS
+// The quick import format can be directly pasted into Universal Crypto MCP
 console.log(`Add this to your MCP configuration:`);
 console.log(JSON.stringify({
   mcpServers: {
@@ -959,8 +959,8 @@ pnpm test
 | Project | Description |
 |---------|-------------|
 | [github-to-mcp](https://github.com/nirholas/github-to-mcp) | Convert GitHub repos to MCP servers |
-| [plugin.delivery](https://plugin.delivery) | Plugin marketplace for SperaxOS |
-| [SperaxOS](https://sperax.io) | AI-native operating system |
+| [plugin.delivery](https://plugin.delivery) | Plugin marketplace for Universal Crypto MCP |
+| [Universal Crypto MCP](https://sperax.io) | AI-native operating system |
 | [lyra-registry](https://github.com/nirholas/lyra-registry) | Curated registry of discovered plugins |
 | [UCAI](https://github.com/nirholas/ucai) | Universal Context AI framework |
 | [MCP SDK](https://github.com/modelcontextprotocol/sdk) | Official Model Context Protocol SDK |
@@ -999,7 +999,7 @@ SOFTWARE.
 
 - made by nich [Model Context Protocol](https://modelcontextprotocol.io) ecosystem
 - Powered by [OpenAI](https://openai.com) and [Anthropic](https://anthropic.com)
-- Inspired by the need to automate plugin discovery for SperaxOS
+- Inspired by the need to automate plugin discovery for Universal Crypto MCP
 
 ---
 

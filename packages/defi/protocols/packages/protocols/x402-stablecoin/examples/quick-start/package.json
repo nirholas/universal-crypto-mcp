@@ -1,8 +1,8 @@
 {
-  "name": "@x402/quick-start",
+  "name": "@nirholas/x402-quick-start",
   "version": "1.0.0",
   "private": true,
-  "description": "Quick start example for X402 payments",
+  "description": "Universal Crypto MCP - Quick start example for X402 payments",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts"

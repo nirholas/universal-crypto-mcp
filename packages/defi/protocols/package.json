@@ -1,9 +1,9 @@
 {
-  "name": "@mcpdotdirect/evm-mcp-server",
+  "name": "@nirholas/crypto-evm-mcp-server",
   "module": "src/index.ts",
   "type": "module",
   "version": "2.0.4",
-  "description": "MCP server for interacting with EVM-compatible blockchains - supports 22 tools and 10 prompts across 60+ networks",
+  "description": "Universal Crypto MCP - MCP server for interacting with EVM-compatible blockchains - supports 22 tools and 10 prompts across 60+ networks",
   "bin": {
     "evm-mcp-server": "./bin/cli.js"
   },

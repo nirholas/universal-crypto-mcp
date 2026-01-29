@@ -1,7 +1,7 @@
 {
-  "name": "dexpaprika-mcp",
+  "name": "@nirholas/crypto-dex-prices",
   "version": "1.2.0",
-  "description": "A Model Context Protocol server for DexPaprika cryptocurrency data with network-specific pool queries",
+  "description": "Universal Crypto MCP - A Model Context Protocol server for DexPaprika cryptocurrency data with network-specific pool queries",
   "main": "dist/index.js",
   "type": "module",
   "bin": {

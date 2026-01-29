@@ -1,7 +1,7 @@
 {
-  "name": "free-crypto-news",
+  "name": "@nirholas/crypto-news-free",
   "version": "1.0.1",
-  "description": "Real-time crypto news aggregator with AI analysis, 12+ sources, sentiment tracking, and full market data. Works with Claude, ChatGPT, Discord, Telegram & more.",
+  "description": "Universal Crypto MCP - Real-time crypto news aggregator with AI analysis, 12+ sources, sentiment tracking, and full market data. Works with Claude, ChatGPT, Discord, Telegram & more.",
   "private": false,
   "scripts": {
     "dev": "next dev",

@@ -1,5 +1,5 @@
 {
-  "name": "x402",
+  "name": "@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402",
   "version": "1.1.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -30,7 +30,7 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/x402/typescript/packages/legacy/x402"
   },
-  "description": "x402 Payment Protocol",
+  "description": "Universal Crypto MCP - x402 Payment Protocol",
   "devDependencies": {
     "@coinbase/onchainkit": "^0.38.14",
     "@craftamap/esbuild-plugin-html": "^0.9.0",

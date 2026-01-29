@@ -1,5 +1,5 @@
 {
-  "name": "github-to-mcp-monorepo",
+  "name": "@universal-crypto-mcp/generators-repo-to-mcp",
   "version": "1.0.0",
   "private": false,
   "description": "Convert any GitHub repository into an MCP server",

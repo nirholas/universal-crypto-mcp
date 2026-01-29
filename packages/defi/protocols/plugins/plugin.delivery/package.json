@@ -1,7 +1,7 @@
 {
-  "name": "plugin.delivery",
+  "name": "@nirholas/crypto-mcp-marketplace",
   "version": "1.0.0",
-  "description": "AI Plugin Index - Function call plugins and tools for SperaxOS",
+  "description": "Universal Crypto MCP - AI Plugin Index - Function call plugins and tools for SperaxOS",
   "homepage": "https://plugin.delivery",
   "repository": {
     "type": "git",

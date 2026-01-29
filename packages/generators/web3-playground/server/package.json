@@ -1,7 +1,7 @@
 {
-  "name": "lyra-web3-server",
+  "name": "@nirholas/crypto-generators-web3-playground-server",
   "version": "0.1.0",
-  "description": "Backend server for Lyra Web3 Playground",
+  "description": "Universal Crypto MCP - Backend server for Lyra Web3 Playground",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

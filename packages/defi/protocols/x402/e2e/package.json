@@ -1,7 +1,7 @@
 {
-  "name": "x402-e2e",
+  "name": "@nirholas/crypto-defi-protocols-x402-e2e",
   "version": "1.0.0",
-  "description": "End-to-end tests for X402 protocol",
+  "description": "Universal Crypto MCP - End-to-end tests for X402 protocol",
   "main": "dist/test.js",
   "scripts": {
     "test": "tsx test.ts",

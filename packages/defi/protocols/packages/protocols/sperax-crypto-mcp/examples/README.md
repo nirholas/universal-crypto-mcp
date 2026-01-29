@@ -177,7 +177,7 @@ The Sperax MCP Server provides 85 tools across 16 categories:
 | Category | Tools | Description |
 |----------|-------|-------------|
 | Agents | 5 | DeFi AI agent definitions |
-| Plugins | 6 | SperaxOS plugin marketplace |
+| Plugins | 6 | Universal Crypto MCP plugin marketplace |
 | News | 7 | Crypto news aggregation |
 
 ## 🧪 Testing Examples

@@ -1,6 +1,6 @@
 # Tool Reference
 
-Complete reference for all SperaxOS MCP tools.
+Complete reference for all Universal Crypto MCP MCP tools.
 
 !!! info "Looking for something else?"
     - **General blockchain tools?** → [EVM Module](evm-module.md)

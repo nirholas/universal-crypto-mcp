@@ -1,5 +1,5 @@
 {
-  "name": "@universal-crypto-mcp/evm-utils",
+  "name": "@nirholas/crypto-shared-evm-utils",
   "version": "1.0.0",
   "description": "EVM helper utilities for Universal Crypto MCP",
   "type": "module",

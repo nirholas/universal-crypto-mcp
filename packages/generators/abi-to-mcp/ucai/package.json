@@ -1,5 +1,5 @@
 {
-  "name": "ucai",
+  "name": "@nirholas/crypto-generators-abi-to-mcp-ucai",
   "version": "0.1.0",
   "private": true,
   "scripts": {

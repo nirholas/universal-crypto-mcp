@@ -1,5 +1,5 @@
 {
-  "name": "solhint-plugin-openzeppelin",
+  "name": "@nirholas/crypto-automation-sweep-contracts-lib-openzeppelin-contracts-scripts-solhint-custom",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

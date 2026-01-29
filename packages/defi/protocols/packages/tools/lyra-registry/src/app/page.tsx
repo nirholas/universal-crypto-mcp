@@ -54,7 +54,7 @@ export default function Home() {
       <section style={{ marginBottom: '4rem' }}>
         <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem' }}>⭐ Trust Score Algorithm</h2>
         <p style={{ marginBottom: '1rem' }}>
-          Every tool is scored using the SperaxOS trust algorithm. The score is based on:
+          Every tool is scored using the Universal Crypto MCP trust algorithm. The score is based on:
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           <ScoreItem weight={20} name="Validated" description="Verified by community contributors" required />

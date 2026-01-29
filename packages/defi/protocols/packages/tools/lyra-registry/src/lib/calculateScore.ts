@@ -1,8 +1,8 @@
 /**
- * Trust Score Algorithm - Ported from SperaxOS
+ * Trust Score Algorithm - Ported from Universal Crypto MCP
  * 
  * This module calculates trust scores for tools in the Lyra Registry.
- * Original source: SperaxOS/src/features/MCP/calculateScore.ts
+ * Original source: Universal Crypto MCP/src/features/MCP/calculateScore.ts
  * 
  * Grades:
  * - A: 80%+ with all required items
@@ -45,7 +45,7 @@ export interface ScoreFlags {
 }
 
 /**
- * Default weights for scoring - from SperaxOS
+ * Default weights for scoring - from Universal Crypto MCP
  * Higher weight = more important for trust score
  */
 export const DEFAULT_WEIGHTS: Record<string, number> = {
@@ -106,7 +106,7 @@ export function createScoreItems(flags: ScoreFlags): Record<string, ScoreItem> {
 
 /**
  * Calculate the total score and grade
- * Ported from SperaxOS calculateScore function
+ * Ported from Universal Crypto MCP calculateScore function
  */
 export function calculateScore(
   items: Record<string, ScoreItem>,

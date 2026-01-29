@@ -2,13 +2,13 @@
 
 <div align="center">
 
-<img height="120" src="https://registry.npmmirror.com/@sperax/assets-logo/1.0.0/files/assets/logo-3d.webp">
+<img height="120" src="https://registry.npmmirror.com/@nirholas/assets-logo/1.0.0/files/assets/logo-3d.webp">
 <img height="120" src="https://gw.alipayobjects.com/zos/kitchen/qJ3l3EPsdW/split.svg">
-<img height="120" src="https://registry.npmmirror.com/@sperax/assets-emoji/1.3.0/files/assets/puzzle-piece.webp">
+<img height="120" src="https://registry.npmmirror.com/@nirholas/assets-emoji/1.3.0/files/assets/puzzle-piece.webp">
 
 <h1>Chat Plugin SDK</h1>
 
-SDK for SperaxOS funciton calling plugins
+SDK for Universal Crypto MCP funciton calling plugins
 
 [![][🤯-🧩-sperax-shield]][🤯-🧩-sperax-link]
 [![][npm-release-shield]][npm-release-link]
@@ -46,7 +46,7 @@ SDK for SperaxOS funciton calling plugins
 
 ## 🤯 Usage
 
-The SperaxOS Plugin SDK assists you in creating exceptional chat plugins for SperaxOS.
+The Universal Crypto MCP Plugin SDK assists you in creating exceptional chat plugins for Universal Crypto MCP.
 
 > \[!Important]
 > [📘 SDK Document](https://plugin-sdk.sperax.com) - <https://plugin-sdk.sperax.com>
@@ -59,12 +59,12 @@ The SperaxOS Plugin SDK assists you in creating exceptional chat plugins for Spe
 
 ## 📦 Plugin Ecosystem
 
-Plugins provide a means to extend the Function Calling capabilities of SperaxOS. They can be used to introduce new function calls and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide][plugin-development-docs] in the Docs.
+Plugins provide a means to extend the Function Calling capabilities of Universal Crypto MCP. They can be used to introduce new function calls and even new ways to render message results. If you are interested in plugin development, please refer to our [📘 Plugin Development Guide][plugin-development-docs] in the Docs.
 
-- [sperax-os-plugins][sperax-os-plugins]: This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for SperaxOS to the user.
-- [chat-plugin-template][chat-plugin-template]: This is the plugin template for SperaxOS plugin development.
-- [@sperax/plugin-sdk][plugin-sdk]: The SperaxOS Plugin SDK assists you in creating exceptional chat plugins for SperaxOS.
-- [@sperax/chat-plugins-gateway][chat-plugins-gateway]: The SperaxOS Plugins Gateway is a backend service that provides a gateway for SperaxOS plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
+- [sperax-os-plugins][sperax-os-plugins]: This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Universal Crypto MCP to the user.
+- [chat-plugin-template][chat-plugin-template]: This is the plugin template for Universal Crypto MCP plugin development.
+- [@nirholas/plugin-sdk][plugin-sdk]: The Universal Crypto MCP Plugin SDK assists you in creating exceptional chat plugins for Universal Crypto MCP.
+- [@nirholas/chat-plugins-gateway][chat-plugins-gateway]: The Universal Crypto MCP Plugins Gateway is a backend service that provides a gateway for Universal Crypto MCP plugins. We deploy this service using Vercel. The primary API POST /api/v1/runner is deployed as an Edge Function.
 
 <div align="right">
 
@@ -111,8 +111,8 @@ Contributions of all types are more than welcome, if you are interested in contr
 
 ## 🔗 Links
 
-- **[🤖 SperaxOS](https://github.com/sperax/sperax-os)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
-- **[🧩 / 🏪 Plugin Index](https://github.com/sperax/sperax-os-plugins)** - This is the plugin index for SperaxOS. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
+- **[🤖 Universal Crypto MCP](https://github.com/sperax/sperax-os)** - An open-source, extensible (Function Calling), high-performance chatbot framework. It supports one-click free deployment of your private ChatGPT/LLM web application.
+- **[🧩 / 🏪 Plugin Index](https://github.com/sperax/sperax-os-plugins)** - This is the plugin index for Universal Crypto MCP. It accesses index.json from this repository to display a list of available plugins for Function Calling to the user.
 
 <div align="right">
 
@@ -159,8 +159,8 @@ This project is [MIT](./LICENSE) licensed.
 [github-stars-link]: https://github.com/sperax/plugin-sdk/network/stargazers
 [github-stars-shield]: https://img.shields.io/github/stars/sperax/plugin-sdk?color=ffcb47&labelColor=black&style=flat-square
 [sperax-os-plugins]: https://github.com/sperax/sperax-os-plugins
-[npm-release-link]: https://www.npmjs.com/package/@sperax/plugin-sdk
-[npm-release-shield]: https://img.shields.io/npm/v/@sperax/plugin-sdk?color=369eff&labelColor=black&logo=npm&logoColor=white&style=flat-square
+[npm-release-link]: https://www.npmjs.com/package/@nirholas/plugin-sdk
+[npm-release-shield]: https://img.shields.io/npm/v/@nirholas/plugin-sdk?color=369eff&labelColor=black&logo=npm&logoColor=white&style=flat-square
 [pr-welcome-link]: https://github.com/sperax/plugin-sdk/pulls
 [pr-welcome-shield]: https://img.shields.io/badge/%F0%9F%A4%AF%20PR%20WELCOME-%E2%86%92-ffcb47?labelColor=black&style=for-the-badge
 [profile-link]: https://github.com/sperax

@@ -1,7 +1,7 @@
 {
-  "name": "@nirholas/lyra-tool-discovery",
-  "version": "0.1.0",
-  "description": "AI-powered MCP tool discovery - find, analyze, and generate plugin configs for Model Context Protocol servers",
+  "name": "@universal-crypto-mcp/generators-discovery",
+  "version": "1.0.0",
+  "description": "AI-powered MCP tool discovery - find, analyze, and generate plugin configs",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@x402/fetch-client-example",
+  "name": "@nirholas/x402-fetch-client-example",
   "private": true,
   "type": "module",
   "scripts": {

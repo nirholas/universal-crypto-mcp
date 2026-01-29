@@ -1,7 +1,7 @@
 {
-  "name": "@x402/cli",
+  "name": "@nirholas/x402-cli",
   "version": "1.0.0",
-  "description": "Command-line interface for X402 USDs payments",
+  "description": "Universal Crypto MCP - Command-line interface for X402 USDs payments",
   "main": "dist/index.js",
   "bin": {
     "x402": "./dist/index.js"

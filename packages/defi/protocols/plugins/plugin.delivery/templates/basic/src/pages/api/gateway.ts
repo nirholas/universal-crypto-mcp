@@ -4,7 +4,7 @@ export const config = {
 
 export default async (req: Request) => {
   if (process.env.NODE_ENV === 'development') {
-    const { createGatewayOnEdgeRuntime } = await import('@sperax/chat-plugins-gateway');
+    const { createGatewayOnEdgeRuntime } = await import('@nirholas/chat-plugins-gateway');
 
     return createGatewayOnEdgeRuntime()(req);
   }

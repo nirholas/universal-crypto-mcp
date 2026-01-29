@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/mcp-orchestrator",
+  "name": "@nirholas/crypto-automation-volume-packages-orchestrator",
   "version": "1.0.0",
-  "description": "Volume orchestration and bot coordination for DeFi MCP servers",
+  "description": "Universal Crypto MCP - Volume orchestration and bot coordination for DeFi MCP servers",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -1,7 +1,7 @@
 {
-  "name": "@github-to-mcp/registry",
+  "name": "@nirholas/crypto-generators-repo-to-mcp-packages-registry",
   "version": "1.0.0",
-  "description": "Registry of pre-converted MCP servers for popular repositories",
+  "description": "Universal Crypto MCP - Registry of pre-converted MCP servers for popular repositories",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

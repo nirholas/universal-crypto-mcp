@@ -9,7 +9,7 @@ OpenBare is a decentralized web proxy network consisting of four main components
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        APPLICATION LAYER                        │
-│   (Ultraviolet, SperaxOS Browser, Custom Apps)                  │
+│   (Ultraviolet, Universal Crypto MCP Browser, Custom Apps)                  │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼

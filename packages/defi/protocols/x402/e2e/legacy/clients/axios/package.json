@@ -1,5 +1,5 @@
 {
-  "name": "axios-e2e",
+  "name": "@nirholas/crypto-defi-protocols-x402-e2e-legacy-clients-axios",
   "private": true,
   "type": "module",
   "scripts": {

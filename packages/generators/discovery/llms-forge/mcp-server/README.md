@@ -15,13 +15,13 @@ An MCP (Model Context Protocol) server that extracts documentation from websites
 ## Installation
 
 ```bash
-npm install @llm-energy/mcp-server
+npm install @nirholas/mcp-server
 ```
 
 Or install globally:
 
 ```bash
-npm install -g @llm-energy/mcp-server
+npm install -g @nirholas/mcp-server
 ```
 
 ## Usage with Claude Desktop
@@ -36,7 +36,7 @@ Windows: %APPDATA%\Claude\claude_desktop_config.json
   "mcpServers": {
     "llm-energy": {
       "command": "npx",
-      "args": ["-y", "@llm-energy/mcp-server"]
+      "args": ["-y", "@nirholas/mcp-server"]
     }
   }
 }

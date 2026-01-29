@@ -1,6 +1,6 @@
 # Development Guide
 
-Build, extend, and contribute to SperaxOS MCP.
+Build, extend, and contribute to Universal Crypto MCP MCP.
 
 ---
 

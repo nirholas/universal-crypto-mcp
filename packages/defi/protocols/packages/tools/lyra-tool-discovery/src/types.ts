@@ -1,7 +1,7 @@
 /**
- * Plugin Types for SperaxOS
+ * Plugin Types for Universal Crypto MCP
  * 
- * Based on analysis of SperaxOS source code:
+ * Based on analysis of Universal Crypto MCP source code:
  * - MCP Plugins: http (Streamable HTTP) or stdio (local command)
  * - Online Link Plugins: Traditional manifest URL
  * - Templates: basic, default, markdown, openapi, settings, standalone
@@ -50,7 +50,7 @@ export interface MCPQuickImportConfig {
 }
 
 /**
- * Full custom plugin params as used in SperaxOS
+ * Full custom plugin params as used in Universal Crypto MCP
  */
 export interface CustomPluginParams {
   mcp?: MCPConnection;

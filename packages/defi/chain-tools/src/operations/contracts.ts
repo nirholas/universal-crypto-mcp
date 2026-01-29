@@ -5,9 +5,9 @@ import {
     BanklessRateLimitError,
     BanklessResourceNotFoundError,
     BanklessValidationError
-} from '../common/banklessErrors';
+} from '../common/nirholasErrors';
 
-const BASE_URL = 'https://api.bankless.com/mcp';
+const BASE_URL = 'https://api.nirholas.com/mcp';
 
 // Schema for Input and Output types
 export const InputSchema = z.object({

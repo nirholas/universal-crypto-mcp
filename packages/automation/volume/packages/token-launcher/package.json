@@ -1,7 +1,7 @@
 {
-  "name": "@boosty/token-launcher",
+  "name": "@nirholas/crypto-automation-volume-packages-token-launcher",
   "version": "0.1.0",
-  "description": "Token creation, LP deployment, and launch sniping for Solana",
+  "description": "Universal Crypto MCP - Token creation, LP deployment, and launch sniping for Solana",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
