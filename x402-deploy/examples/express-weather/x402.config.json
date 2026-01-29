@@ -1,0 +1,47 @@
+{
+  "name": "weather-api-x402",
+  "type": "express-api",
+  "payment": {
+    "wallet": "0x0000000000000000000000000000000000000000",
+    "network": "eip155:8453",
+    "token": "USDC",
+    "facilitator": "https://facilitator.x402.dev"
+  },
+  "pricing": {
+    "default": "$0.001",
+    "routes": {
+      "/api/weather/current": "$0.001",
+      "/api/weather/forecast": "$0.01",
+      "/api/weather/historical": "$0.01",
+      "/api/weather/premium": "$0.05",
+      "/api/weather/alerts": "$0.05"
+    },
+    "tiers": {
+      "basic": {
+        "price": "$0.001",
+        "routes": ["/api/weather/current"]
+      },
+      "detailed": {
+        "price": "$0.01",
+        "routes": ["/api/weather/forecast", "/api/weather/historical"]
+      },
+      "premium": {
+        "price": "$0.05",
+        "routes": ["/api/weather/premium", "/api/weather/alerts"]
+      }
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "instructions": "Real-time weather data API with tiered pricing. Get current weather for $0.001, forecasts for $0.01, or premium features for $0.05.",
+    "category": ["weather", "data", "api"],
+    "tags": ["weather", "forecast", "climate"]
+  },
+  "deployment": {
+    "platform": "railway",
+    "env": {
+      "X402_WALLET": "$WALLET_ADDRESS",
+      "PORT": "3000"
+    }
+  }
+}

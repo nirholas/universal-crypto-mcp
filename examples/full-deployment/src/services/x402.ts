@@ -204,7 +204,8 @@ export function createPaymentHeader(
     network: receipt.network,
   };
   
-  return `x402 ${Buffer.from(JSON.stringify(payload)).toString("base64")}`;
+  // Use btoa for base64 encoding (works in Node.js 16+)
+  return `x402 ${btoa(JSON.stringify(payload))}`;
 }
 
 /**

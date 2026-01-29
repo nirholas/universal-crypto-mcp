@@ -1,6 +1,6 @@
 /**
  * CLI Module Index
- * Exports live data fetchers and enhanced CLI functions
+ * Exports live data fetchers, enhanced CLI functions, and x402 tools
  *
  * @author nich
  * @github github.com/nirholas
@@ -9,3 +9,5 @@
 
 export * from "./live-data.js"
 export * from "./enhanced-cli.js"
+export * from "./commands/index.js"
+export { runWizard } from "./wizard.js"

@@ -1,0 +1,49 @@
+{
+  "name": "translation-api-x402",
+  "type": "fastapi",
+  "payment": {
+    "wallet": "0x0000000000000000000000000000000000000000",
+    "network": "eip155:8453",
+    "token": "USDC",
+    "facilitator": "https://facilitator.x402.dev"
+  },
+  "pricing": {
+    "model": "subscription",
+    "tiers": {
+      "free": {
+        "price": "$0",
+        "duration": "30d",
+        "limits": {
+          "translations": 10
+        }
+      },
+      "basic": {
+        "price": "$10",
+        "duration": "30d",
+        "limits": {
+          "translations": 1000
+        }
+      },
+      "pro": {
+        "price": "$50",
+        "duration": "30d",
+        "limits": {
+          "translations": -1
+        }
+      }
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "instructions": "Translation API with subscription-based pricing. Free tier: 10 translations/month. Basic: $10/month for 1000 translations. Pro: $50/month unlimited.",
+    "category": ["translation", "language", "nlp"],
+    "tags": ["translate", "multilingual", "api"]
+  },
+  "deployment": {
+    "platform": "railway",
+    "env": {
+      "X402_WALLET": "$WALLET_ADDRESS",
+      "PORT": "8000"
+    }
+  }
+}

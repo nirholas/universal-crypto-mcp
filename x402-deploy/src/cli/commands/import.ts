@@ -93,6 +93,12 @@ export async function importCommand(options: ImportOptions): Promise<void> {
     }
   }
 
+  // Ensure sourcePath is defined
+  if (!sourcePath) {
+    console.error(chalk.red("\n❌ No source path specified\n"));
+    process.exit(1);
+  }
+
   // Load source
   const spinner = ora("Loading source...").start();
   

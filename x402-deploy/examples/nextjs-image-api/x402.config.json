@@ -1,0 +1,50 @@
+{
+  "name": "image-api-x402",
+  "type": "nextjs",
+  "payment": {
+    "wallet": "0x0000000000000000000000000000000000000000",
+    "network": "eip155:8453",
+    "token": "USDC",
+    "facilitator": "https://facilitator.x402.dev"
+  },
+  "pricing": {
+    "model": "credits",
+    "packages": {
+      "small": {
+        "credits": 100,
+        "price": "$10",
+        "discount": 0
+      },
+      "medium": {
+        "credits": 1000,
+        "price": "$80",
+        "discount": 20
+      },
+      "large": {
+        "credits": 10000,
+        "price": "$500",
+        "discount": 50
+      }
+    },
+    "operations": {
+      "resize": 1,
+      "thumbnail": 1,
+      "watermark": 1,
+      "blur": 1,
+      "grayscale": 1,
+      "rotate": 1
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "instructions": "Image processing API with credit-based pricing. Buy credit packages (100/$10, 1000/$80, 10000/$500). Each operation costs 1 credit. Credits never expire.",
+    "category": ["image", "media", "processing"],
+    "tags": ["images", "resize", "watermark", "api"]
+  },
+  "deployment": {
+    "platform": "vercel",
+    "env": {
+      "X402_WALLET": "$WALLET_ADDRESS"
+    }
+  }
+}

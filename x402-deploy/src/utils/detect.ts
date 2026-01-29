@@ -1,6 +1,13 @@
 import fs from "fs-extra";
 import path from "path";
-import { ProjectType } from "../types/config.js";
+import { ProjectType, X402Config } from "../types/config.js";
+
+const CONFIG_FILE_NAMES = [
+  "x402.config.json",
+  "x402.json",
+  ".x402.json",
+  "x402-deploy.json",
+];
 
 export interface ProjectDetection {
   type: ProjectType;
@@ -179,4 +186,45 @@ async function detectRoutes(filePath: string, projectType: ProjectType): Promise
   } catch (error) {
     return [];
   }
+}
+
+/**
+ * Load x402 configuration from the project directory
+ */
+export async function loadConfig(dir: string): Promise<X402Config | null> {
+  for (const fileName of CONFIG_FILE_NAMES) {
+    const configPath = path.join(dir, fileName);
+    if (await fs.pathExists(configPath)) {
+      try {
+        const config = await fs.readJSON(configPath);
+        return config as X402Config;
+      } catch {
+        // Invalid JSON, try next file
+      }
+    }
+  }
+
+  // Also check package.json for x402 field
+  const packageJsonPath = path.join(dir, "package.json");
+  if (await fs.pathExists(packageJsonPath)) {
+    try {
+      const pkg = await fs.readJSON(packageJsonPath);
+      if (pkg.x402) {
+        return pkg.x402 as X402Config;
+      }
+    } catch {
+      // Invalid package.json
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Save x402 configuration to the project directory
+ */
+export async function saveConfig(dir: string, config: X402Config): Promise<string> {
+  const configPath = path.join(dir, "x402.config.json");
+  await fs.writeJSON(configPath, config, { spaces: 2 });
+  return configPath;
 }

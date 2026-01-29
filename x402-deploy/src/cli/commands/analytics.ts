@@ -82,9 +82,9 @@ export async function analyticsCommand(options: AnalyticsOptions): Promise<void>
     console.log(box);
 
     // Display route breakdown
-    if (dashboardData.routeStats && dashboardData.routeStats.length > 0) {
+    if (dashboardData.topRoutes && dashboardData.topRoutes.length > 0) {
       console.log(chalk.bold("\n🛣️  Top Routes by Revenue\n"));
-      displayRouteTable(dashboardData.routeStats.slice(0, topCount));
+      displayRouteTable(dashboardData.topRoutes.slice(0, topCount));
     }
 
     // Display time series chart
@@ -94,9 +94,9 @@ export async function analyticsCommand(options: AnalyticsOptions): Promise<void>
     }
 
     // Display payer insights
-    if (dashboardData.topPayers && dashboardData.topPayers.length > 0) {
+    if (dashboardData.payerStats?.topPayers && dashboardData.payerStats.topPayers.length > 0) {
       console.log(chalk.bold("\n👥 Top Payers\n"));
-      displayPayerTable(dashboardData.topPayers.slice(0, 5));
+      displayPayerTable(dashboardData.payerStats.topPayers.slice(0, 5));
     }
 
     // Export if requested
@@ -106,7 +106,7 @@ export async function analyticsCommand(options: AnalyticsOptions): Promise<void>
       console.log(chalk.green(`\n✅ Exported to ${exportPath}\n`));
     } else if (options.export === "csv") {
       const exportPath = path.join(process.cwd(), `analytics-${Date.now()}.csv`);
-      const csv = convertToCSV(dashboardData.routeStats || []);
+      const csv = convertToCSV(dashboardData.topRoutes || []);
       await fs.writeFile(exportPath, csv);
       console.log(chalk.green(`\n✅ Exported to ${exportPath}\n`));
     }

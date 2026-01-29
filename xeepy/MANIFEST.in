@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include xeepy.example.yml
+recursive-include xeepy *.py
+recursive-include xeepy *.yml
+recursive-include xeepy *.yaml
+recursive-include xeepy py.typed
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude tests *
+recursive-exclude docs *

@@ -16,6 +16,10 @@ import { doctorCommand } from "./commands/doctor.js";
 import { exportCommand } from "./commands/export.js";
 import { importCommand } from "./commands/import.js";
 import { compareCommand } from "./commands/compare.js";
+import { completionsCommand } from "./commands/completions.js";
+import { watchCommand } from "./commands/watch.js";
+import { benchmarkCommand } from "./commands/benchmark.js";
+import { migrateCommand } from "./commands/migrate.js";
 import {
   marketplaceListCommand,
   marketplaceViewCommand,
@@ -158,6 +162,39 @@ program
   .option("-c, --configs <configs...>", "Config files to compare")
   .option("-o, --output <format>", "Output format: table, json, chart")
   .action(compareCommand);
+
+program
+  .command("completions")
+  .description("Generate shell auto-completion scripts")
+  .option("-s, --shell <shell>", "Shell type: bash, zsh, fish, powershell")
+  .option("-o, --output <path>", "Output file path")
+  .action(completionsCommand);
+
+program
+  .command("watch")
+  .description("Live monitoring of payments and API activity")
+  .option("-i, --interval <ms>", "Refresh interval in milliseconds", "5000")
+  .option("-c, --compact", "Compact display mode")
+  .option("-r, --routes", "Show route breakdown")
+  .option("-s, --sound", "Play sound on new payments")
+  .action(watchCommand);
+
+program
+  .command("benchmark")
+  .description("Performance testing for monetized APIs")
+  .option("-u, --url <url>", "Target URL", "http://localhost:3402")
+  .option("-n, --requests <count>", "Total requests", "100")
+  .option("-c, --concurrency <count>", "Concurrent requests", "10")
+  .option("-r, --route <route>", "Route to test", "/api/test")
+  .action(benchmarkCommand);
+
+program
+  .command("migrate")
+  .description("Migrate from other payment systems to x402")
+  .option("-f, --from <platform>", "Source platform: stripe, paypal, razorpay, square")
+  .option("-k, --api-key <key>", "API key for source platform")
+  .option("--dry-run", "Preview migration without saving")
+  .action(migrateCommand);
 
 // Quick aliases
 program

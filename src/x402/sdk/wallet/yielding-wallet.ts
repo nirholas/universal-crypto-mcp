@@ -596,20 +596,71 @@ export class YieldingWallet {
       };
     }
 
-    // In production, this would:
-    // 1. Get best swap route via Rubic/1inch
-    // 2. Execute swap fromToken -> USDs
-    // 3. Return result with actual amounts
+    // Get swap quote from 1inch API
+    try {
+      const chainId = this.#chain === 'arbitrum' ? 42161 : 421614; // arbitrum mainnet or sepolia
+      const fromTokenAddress = this.getTokenAddress(fromToken);
+      const toTokenAddress = this.config.usdsAddress;
+      const amountWei = parseUnits(amount, 18);
 
-    // Placeholder for swap integration
-    return {
-      success: true,
-      fromToken,
-      toToken: 'USDs',
-      amountIn: amount,
-      amountOut: amount, // 1:1 for stablecoins
-      // transactionHash would be set after actual swap
-    };
+      // Get 1inch swap quote
+      const quoteUrl = `https://api.1inch.dev/swap/v6.0/${chainId}/quote?src=${fromTokenAddress}&dst=${toTokenAddress}&amount=${amountWei.toString()}`;
+      
+      const quoteResponse = await fetch(quoteUrl, {
+        headers: { 'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}` },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!quoteResponse.ok) {
+        throw new Error(`1inch quote failed: ${quoteResponse.statusText}`);
+      }
+
+      const quote = await quoteResponse.json() as { toAmount: string; estimatedGas: string };
+      const amountOut = formatUnits(BigInt(quote.toAmount), 18);
+
+      // Execute swap transaction
+      const swapUrl = `https://api.1inch.dev/swap/v6.0/${chainId}/swap?src=${fromTokenAddress}&dst=${toTokenAddress}&amount=${amountWei.toString()}&from=${this.address}&slippage=1`;
+      
+      const swapResponse = await fetch(swapUrl, {
+        headers: { 'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}` },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!swapResponse.ok) {
+        throw new Error(`1inch swap failed: ${swapResponse.statusText}`);
+      }
+
+      const swapData = await swapResponse.json() as { tx: { to: string; data: string; value: string; gas: string } };
+
+      // Send the swap transaction
+      const hash = await this.walletClient.sendTransaction({
+        to: swapData.tx.to as Address,
+        data: swapData.tx.data as Hex,
+        value: BigInt(swapData.tx.value || '0'),
+        gas: BigInt(swapData.tx.gas),
+      });
+
+      // Wait for confirmation
+      await this.publicClient.waitForTransactionReceipt({ hash });
+
+      return {
+        success: true,
+        fromToken,
+        toToken: 'USDs',
+        amountIn: amount,
+        amountOut,
+        transactionHash: hash,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        fromToken,
+        toToken: 'USDs',
+        amountIn: amount,
+        amountOut: '0',
+        error: error instanceof Error ? error.message : 'Swap failed',
+      };
+    }
   }
 
   /**

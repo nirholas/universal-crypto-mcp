@@ -1,0 +1,141 @@
+{
+  "dashboard": {
+    "title": "x402-deploy Monitoring",
+    "tags": ["x402", "payments", "mcp"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(x402_requests_total[5m])",
+            "legendFormat": "{{method}} {{route}} ({{status}})"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "id": 2,
+        "title": "Payment Success Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(x402_payments_total[5m])",
+            "legendFormat": "{{network}} - {{token}}"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "id": 3,
+        "title": "Revenue by Network",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "x402_revenue_total",
+            "legendFormat": "{{network}} - {{token}}"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(x402_errors_total[5m])",
+            "legendFormat": "{{type}} ({{code}})"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+      },
+      {
+        "id": 5,
+        "title": "Active Connections",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "x402_active_connections"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 16, "w": 6, "h": 6 }
+      },
+      {
+        "id": 6,
+        "title": "Total Credits Balance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "x402_credits_balance"
+          }
+        ],
+        "gridPos": { "x": 6, "y": 16, "w": 6, "h": 6 }
+      },
+      {
+        "id": 7,
+        "title": "Request Duration (p95)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(x402_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{method}} {{route}}"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 16, "w": 12, "h": 6 }
+      },
+      {
+        "id": 8,
+        "title": "Payment Verification Duration",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(x402_payment_verification_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{network}}"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 22, "w": 12, "h": 6 }
+      },
+      {
+        "id": 9,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 22, "w": 12, "h": 6 }
+      },
+      {
+        "id": 10,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m])"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 28, "w": 12, "h": 6 }
+      },
+      {
+        "id": 11,
+        "title": "Event Loop Lag",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nodejs_eventloop_lag_seconds"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 28, "w": 12, "h": 6 }
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

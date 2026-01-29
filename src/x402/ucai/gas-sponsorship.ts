@@ -298,25 +298,54 @@ export class GasSponsorshipService {
 
   /**
    * Get paymaster data for a UserOperation
+   * Generates signed paymaster data for ERC-4337 sponsorship
    */
   private async getPaymasterData(
     userOp: UserOperation,
     paymasterAddress: Address,
     network: string
   ): Promise<Hex> {
-    // In a real implementation, this would call the paymaster contract
-    // to get the signed paymaster data
-    // For now, return a placeholder
     const validUntil = Math.floor(Date.now() / 1000) + 3600 // 1 hour
     const validAfter = Math.floor(Date.now() / 1000) - 60 // 1 minute ago
 
-    // Format: paymasterAddress + validUntil + validAfter + signature
-    const paymasterData = paymasterAddress + 
-      validUntil.toString(16).padStart(12, "0") +
-      validAfter.toString(16).padStart(12, "0") +
-      "0".repeat(130) // Placeholder signature
+    // Create the paymaster data hash for signing
+    const account = privateKeyToAccount(this.sponsorPrivateKey)
+    
+    // Encode the paymaster validation data
+    // Format: validUntil (6 bytes) + validAfter (6 bytes)
+    const validUntilHex = validUntil.toString(16).padStart(12, '0')
+    const validAfterHex = validAfter.toString(16).padStart(12, '0')
+    
+    // Create the message to sign (UserOp hash + paymaster address + validity window)
+    const userOpHash = this.hashUserOp(userOp, network)
+    const messageToSign = `${userOpHash}${paymasterAddress.slice(2)}${validUntilHex}${validAfterHex}`
+    
+    // Sign the paymaster data with the sponsor's key
+    const chain = CHAINS[network as keyof typeof CHAINS]
+    if (!chain) {
+      throw new Error(`Unknown chain: ${network}`)
+    }
+    
+    const walletClient = createWalletClient({
+      account,
+      chain,
+      transport: http(),
+    })
+    
+    // Sign the hash
+    const signature = await walletClient.signMessage({
+      message: { raw: messageToSign as Hex },
+    })
 
-    return paymasterData as Hex
+    // Format: paymasterAddress (20 bytes) + validUntil (6 bytes) + validAfter (6 bytes) + signature (65 bytes)
+    const paymasterData = (
+      paymasterAddress + 
+      validUntilHex +
+      validAfterHex +
+      signature.slice(2) // Remove 0x prefix
+    ) as Hex
+
+    return paymasterData
   }
 
   /**

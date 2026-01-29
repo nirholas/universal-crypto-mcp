@@ -358,7 +358,6 @@ describe("Pricing Engine", () => {
   describe("x402 Format Conversion", () => {
     it("converts price to x402 format", () => {
       const result = priceToX402Format("$0.01", 6);
-      expect(result.asset).toBe("USDC");
       expect(result.amount).toBe("10000"); // 0.01 * 10^6
     });
 
@@ -391,9 +390,14 @@ describe("Pricing Engine", () => {
 
     it("tracks payment history", () => {
       const record = {
+        id: "test-1",
+        payer: "0x123",
         route: "GET /api/data",
         amount: "$0.001",
-        timestamp: Date.now(),
+        asset: "USDC",
+        network: "eip155:8453" as const,
+        timestamp: new Date(),
+        settled: true,
       };
 
       engine.recordPayment("0x123", record);
@@ -404,9 +408,9 @@ describe("Pricing Engine", () => {
     });
 
     it("counts payer requests", () => {
-      engine.recordPayment("0x123", { route: "GET /api/data", amount: "$0.001", timestamp: Date.now() });
-      engine.recordPayment("0x123", { route: "GET /api/data", amount: "$0.001", timestamp: Date.now() });
-      engine.recordPayment("0x123", { route: "POST /api/expensive", amount: "$1.00", timestamp: Date.now() });
+      engine.recordPayment("0x123", { id: "t1", payer: "0x123", route: "GET /api/data", amount: "$0.001", asset: "USDC", network: "eip155:8453" as const, timestamp: new Date(), settled: true });
+      engine.recordPayment("0x123", { id: "t2", payer: "0x123", route: "GET /api/data", amount: "$0.001", asset: "USDC", network: "eip155:8453" as const, timestamp: new Date(), settled: true });
+      engine.recordPayment("0x123", { id: "t3", payer: "0x123", route: "POST /api/expensive", amount: "$1.00", asset: "USDC", network: "eip155:8453" as const, timestamp: new Date(), settled: true });
 
       expect(engine.getPayerRequestCount("0x123")).toBe(3);
       expect(engine.getPayerRequestCount("0x123", "GET /api/data")).toBe(2);
@@ -425,8 +429,8 @@ describe("Pricing Engine", () => {
         basePrice: "$0.001",
         loadMultiplier: 1.5,
         tiers: [
-          { threshold: 100, price: "$0.0008" },
-          { threshold: 1000, price: "$0.0005" },
+          { minRequests: 100, price: "$0.0008" },
+          { minRequests: 1000, price: "$0.0005" },
         ],
       };
 

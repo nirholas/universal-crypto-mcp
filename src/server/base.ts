@@ -10,6 +10,7 @@ import { registerEVM } from "@/evm.js"
 import { registerX402 } from "@/x402/index.js"
 import { registerToolMarketplace } from "@/modules/tool-marketplace/index.js"
 import { registerAIPredictions } from "@/modules/ai-predictions/index.js"
+import { registerUnlockTools } from "@/modules/token-unlocks/index.js"
 import Logger from "@/utils/logger.js"
 
 // Create and start the MCP server
@@ -36,6 +37,10 @@ export const startServer = () => {
     // Register AI Predictions module
     // ML-powered crypto predictions monetized via x402
     registerAIPredictions(server)
+    
+    // Register Token Unlock & Vesting Schedule Tracker
+    // Track token unlocks, vesting schedules, and market impact analysis
+    registerUnlockTools(server)
     
     return server
   } catch (error) {

@@ -13,75 +13,92 @@ import { z } from "zod"
 const dataCache = new Map<string, { data: any; timestamp: Date }>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-// Generate mock OHLCV data
-function generateOHLCV(
+// Fetch real OHLCV data from CoinGecko
+async function fetchOHLCV(
   symbol: string,
   startTime: number,
   endTime: number,
   interval: string
-): Array<{
+): Promise<Array<{
   timestamp: number
   open: number
   high: number
   low: number
   close: number
   volume: number
-}> {
-  const intervalMs: Record<string, number> = {
-    "1m": 60 * 1000,
-    "5m": 5 * 60 * 1000,
-    "15m": 15 * 60 * 1000,
-    "1h": 60 * 60 * 1000,
-    "4h": 4 * 60 * 60 * 1000,
-    "1d": 24 * 60 * 60 * 1000,
-    "1w": 7 * 24 * 60 * 60 * 1000,
+}>> {
+  // Map symbols to CoinGecko IDs
+  const symbolMap: Record<string, string> = {
+    BTC: 'bitcoin',
+    ETH: 'ethereum',
+    BNB: 'binancecoin',
+    SOL: 'solana',
+    AVAX: 'avalanche-2',
+    ATOM: 'cosmos',
+    DOT: 'polkadot',
+    LINK: 'chainlink',
+    UNI: 'uniswap',
+    MATIC: 'matic-network',
+    NEAR: 'near',
+    SUI: 'sui',
+    APT: 'aptos',
   }
 
-  const ms = intervalMs[interval] || intervalMs["1h"]
-  const data: Array<{
-    timestamp: number
-    open: number
-    high: number
-    low: number
-    close: number
-    volume: number
-  }> = []
-
-  // Base prices for common symbols
-  const basePrices: Record<string, number> = {
-    BTC: 95000,
-    ETH: 3500,
-    BNB: 600,
-    SOL: 180,
-    AVAX: 35,
-    ATOM: 8,
-    DOT: 7,
-    LINK: 15,
-    UNI: 12,
+  const coinId = symbolMap[symbol.toUpperCase()]
+  if (!coinId) {
+    throw new Error(`Unknown symbol: ${symbol}. Available: ${Object.keys(symbolMap).join(', ')}`);
   }
 
-  const basePrice = basePrices[symbol.toUpperCase()] || 100
-  let currentPrice = basePrice
+  // Map interval to CoinGecko days parameter
+  const intervalDays: Record<string, number> = {
+    "1m": 1,
+    "5m": 1,
+    "15m": 1,
+    "1h": 7,
+    "4h": 30,
+    "1d": 90,
+    "1w": 365,
+  }
 
-  for (let t = startTime; t <= endTime; t += ms) {
-    const change = (Math.random() - 0.5) * basePrice * 0.02 // ±1% per candle
-    const open = currentPrice
-    const close = currentPrice + change
-    const high = Math.max(open, close) * (1 + Math.random() * 0.005)
-    const low = Math.min(open, close) * (1 - Math.random() * 0.005)
-    const volume = Math.random() * 1000000 * (basePrice / 100)
+  const days = intervalDays[interval] || 7
+  const apiKey = process.env.COINGECKO_API_KEY
+  const baseUrl = apiKey
+    ? 'https://pro-api.coingecko.com/api/v3'
+    : 'https://api.coingecko.com/api/v3'
 
-    data.push({
-      timestamp: t,
-      open,
-      high,
-      low,
-      close,
-      volume,
+  const url = `${baseUrl}/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+  }
+  if (apiKey) {
+    headers['x-cg-pro-api-key'] = apiKey
+  }
+
+  const response = await fetch(url, {
+    headers,
+    signal: AbortSignal.timeout(10000),
+  })
+
+  if (!response.ok) {
+    throw new Error(`CoinGecko API error: ${response.statusText}`);
+  }
+
+  const rawData = await response.json() as Array<[number, number, number, number, number]>
+
+  // Convert CoinGecko format [timestamp, open, high, low, close] to our format
+  const data = rawData
+    .filter(candle => {
+      const ts = candle[0]
+      return ts >= startTime && ts <= endTime
     })
-
-    currentPrice = close
-  }
+    .map(candle => ({
+      timestamp: candle[0],
+      open: candle[1],
+      high: candle[2],
+      low: candle[3],
+      close: candle[4],
+      volume: 0, // CoinGecko OHLC endpoint doesn't include volume
+    }))
 
   return data
 }
@@ -126,24 +143,38 @@ export function registerHistoricalData(server: McpServer) {
         }
       }
 
-      const candles = generateOHLCV(symbol, start, end, interval).slice(-limit)
+      try {
+        const candles = (await fetchOHLCV(symbol, start, end, interval)).slice(-limit)
 
-      const result = {
-        symbol,
-        interval,
-        startTime: new Date(start).toISOString(),
-        endTime: new Date(end).toISOString(),
-        candleCount: candles.length,
-        candles: candles.map((c) => ({
-          ...c,
-          time: new Date(c.timestamp).toISOString(),
-        })),
-      }
+        const result = {
+          symbol,
+          interval,
+          startTime: new Date(start).toISOString(),
+          endTime: new Date(end).toISOString(),
+          candleCount: candles.length,
+          candles: candles.map((c) => ({
+            ...c,
+            time: new Date(c.timestamp).toISOString(),
+          })),
+        }
 
-      dataCache.set(cacheKey, { data: result, timestamp: new Date() })
+        dataCache.set(cacheKey, { data: result, timestamp: new Date() })
 
-      return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        }
+      } catch (error) {
+        return {
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify({ 
+              error: error instanceof Error ? error.message : 'Failed to fetch historical data',
+              symbol,
+              interval,
+            }, null, 2) 
+          }],
+          isError: true,
+        }
       }
     }
   )
@@ -212,48 +243,94 @@ export function registerHistoricalData(server: McpServer) {
       days: z.number().default(30).describe("Number of days"),
     },
     async ({ symbol, days }) => {
-      const now = Date.now()
-
-      // Mock market cap data
-      const baseMcap: Record<string, number> = {
-        BTC: 1900000000000,
-        ETH: 420000000000,
-        BNB: 90000000000,
-        SOL: 80000000000,
+      // Map symbols to CoinGecko IDs
+      const symbolMap: Record<string, string> = {
+        BTC: 'bitcoin',
+        ETH: 'ethereum',
+        BNB: 'binancecoin',
+        SOL: 'solana',
+        AVAX: 'avalanche-2',
+        ATOM: 'cosmos',
       }
 
-      const base = baseMcap[symbol.toUpperCase()] || 1000000000
-      const data: Array<{ timestamp: number; date: string; marketCap: number }> = []
+      const coinId = symbolMap[symbol.toUpperCase()]
+      if (!coinId) {
+        return {
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify({ 
+              error: `Unknown symbol: ${symbol}. Available: ${Object.keys(symbolMap).join(', ')}` 
+            }, null, 2) 
+          }],
+          isError: true,
+        }
+      }
 
-      for (let i = days; i >= 0; i--) {
-        const timestamp = now - i * 24 * 60 * 60 * 1000
-        const variation = (Math.random() - 0.5) * 0.1 // ±5%
-        data.push({
+      try {
+        const apiKey = process.env.COINGECKO_API_KEY
+        const baseUrl = apiKey
+          ? 'https://pro-api.coingecko.com/api/v3'
+          : 'https://api.coingecko.com/api/v3'
+
+        const url = `${baseUrl}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
+        const headers: Record<string, string> = {
+          'Accept': 'application/json',
+        }
+        if (apiKey) {
+          headers['x-cg-pro-api-key'] = apiKey
+        }
+
+        const response = await fetch(url, {
+          headers,
+          signal: AbortSignal.timeout(10000),
+        })
+
+        if (!response.ok) {
+          throw new Error(`CoinGecko API error: ${response.statusText}`)
+        }
+
+        const chartData = await response.json() as { 
+          market_caps: Array<[number, number]>
+        }
+
+        const data = chartData.market_caps.map(([timestamp, marketCap]) => ({
           timestamp,
           date: new Date(timestamp).toISOString().split("T")[0],
-          marketCap: base * (1 + variation * (1 - i / days)),
-        })
-      }
+          marketCap,
+        }))
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                symbol,
-                days,
-                dataPoints: data.length,
-                currentMarketCap: data[data.length - 1].marketCap,
-                highestMarketCap: Math.max(...data.map((d) => d.marketCap)),
-                lowestMarketCap: Math.min(...data.map((d) => d.marketCap)),
-                data: data.slice(-30),
-              },
-              null,
-              2
-            ),
-          },
-        ],
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  symbol,
+                  days,
+                  dataPoints: data.length,
+                  currentMarketCap: data[data.length - 1]?.marketCap || 0,
+                  highestMarketCap: Math.max(...data.map((d) => d.marketCap)),
+                  lowestMarketCap: Math.min(...data.map((d) => d.marketCap)),
+                  data: data.slice(-30),
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        }
+      } catch (error) {
+        return {
+          content: [{ 
+            type: "text", 
+            text: JSON.stringify({ 
+              error: error instanceof Error ? error.message : 'Failed to fetch market cap data',
+              symbol,
+              days,
+            }, null, 2) 
+          }],
+          isError: true,
+        }
       }
     }
   )

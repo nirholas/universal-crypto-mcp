@@ -32,6 +32,38 @@ import type {
 import { UCAI_PRICING } from "./types.js"
 import Logger from "@/utils/logger.js"
 
+// Debug trace call types for transaction tracing
+interface DebugTraceCall {
+  type: string
+  from: string
+  to?: string
+  value?: string
+  gas?: string
+  gasUsed?: string
+  input?: string
+  output?: string
+  calls?: DebugTraceCall[]
+}
+
+interface DebugTraceLog {
+  address: string
+  topics: string[]
+  data: string
+}
+
+interface DebugTraceResult {
+  type?: string
+  from?: string
+  to?: string
+  value?: string
+  gas?: string
+  gasUsed?: string
+  input?: string
+  output?: string
+  calls?: DebugTraceCall[]
+  logs?: DebugTraceLog[]
+}
+
 // Chain configurations - use any to avoid viem's strict chain typing
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CHAINS: Record<string, any> = {
@@ -236,32 +268,136 @@ export class TransactionSimulationService {
   }> {
     const stateChanges: StateChange[] = []
     const events: SimulatedEvent[] = []
+    let gasUsed: bigint | undefined
 
     try {
-      // Try eth_simulateV1 (newer nodes)
-      // This is a simplified version - real implementation would use actual trace
-      const result = await (client as any).request({
-        method: "eth_call",
-        params: [
-          {
-            from,
-            to,
-            data,
-            value: value ? `0x${value.toString(16)}` : "0x0",
-          },
-          "latest",
-        ],
-      })
+      // Try debug_traceCall first (most detailed, requires archive node)
+      try {
+        const traceResult = await (client as any).request({
+          method: "debug_traceCall",
+          params: [
+            {
+              from,
+              to,
+              data,
+              value: value ? `0x${value.toString(16)}` : "0x0",
+            },
+            "latest",
+            { tracer: "callTracer", tracerConfig: { withLog: true } },
+          ],
+        }) as DebugTraceResult
 
-      // Parse logs from trace if available
-      // This is a placeholder - real implementation would parse actual trace
+        if (traceResult) {
+          gasUsed = BigInt(traceResult.gasUsed || "0")
+          
+          // Parse logs from trace
+          if (traceResult.logs) {
+            for (const log of traceResult.logs) {
+              events.push({
+                address: log.address as Address,
+                topics: log.topics as Hex[],
+                data: log.data as Hex,
+              })
+            }
+          }
+
+          // Parse state changes from trace calls
+          if (traceResult.calls) {
+            this.parseCallsForStateChanges(traceResult.calls, stateChanges)
+          }
+
+          return { stateChanges, events, gasUsed }
+        }
+      } catch {
+        // debug_traceCall not available
+      }
+
+      // Try eth_call with state override for simulation
+      try {
+        const estimatedGas = await (client as any).request({
+          method: "eth_estimateGas",
+          params: [
+            {
+              from,
+              to,
+              data,
+              value: value ? `0x${value.toString(16)}` : "0x0",
+            },
+          ],
+        })
+        gasUsed = BigInt(estimatedGas)
+      } catch {
+        // Gas estimation failed
+      }
+
+      // Try to get logs via eth_getLogs simulation using pending filter
+      try {
+        const callResult = await (client as any).request({
+          method: "eth_call",
+          params: [
+            {
+              from,
+              to,
+              data,
+              value: value ? `0x${value.toString(16)}` : "0x0",
+            },
+            "latest",
+          ],
+        })
+
+        // Parse return data for potential state info
+        if (callResult && callResult !== "0x") {
+          stateChanges.push({
+            address: to,
+            slot: "0x0" as Hex,
+            before: "0x0" as Hex,
+            after: callResult as Hex,
+          })
+        }
+      } catch {
+        // eth_call failed
+      }
 
     } catch (error) {
-      // Tracing not supported, return empty
       Logger.debug("Trace not supported:", error)
     }
 
-    return { stateChanges, events }
+    return { stateChanges, events, gasUsed }
+  }
+
+  /**
+   * Parse nested calls for state changes
+   */
+  private parseCallsForStateChanges(
+    calls: DebugTraceCall[],
+    stateChanges: StateChange[]
+  ): void {
+    for (const call of calls) {
+      // Track value transfers as state changes
+      if (call.value && BigInt(call.value) > 0n) {
+        stateChanges.push({
+          address: call.to as Address,
+          slot: "0x0" as Hex,
+          before: "0x0" as Hex,
+          after: call.value as Hex,
+        })
+      }
+
+      // Track contract creations
+      if (call.type === "CREATE" || call.type === "CREATE2") {
+        stateChanges.push({
+          address: (call.to || "0x0") as Address,
+          slot: "code" as Hex,
+          before: "0x" as Hex,
+          after: (call.output || "0x") as Hex,
+        })
+      }
+
+      // Recursively parse nested calls
+      if (call.calls) {
+        this.parseCallsForStateChanges(call.calls, stateChanges)
+      }
+    }
   }
 
   /**

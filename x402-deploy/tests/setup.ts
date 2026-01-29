@@ -51,10 +51,12 @@ globalThis.testUtils = {
     payment: {
       wallet: globalThis.testUtils.createTestWallet(),
       network: "eip155:8453",
+      token: "USDC",
       facilitator: "https://facilitator.x402.dev",
     },
     pricing: {
       model: "per-call",
+      default: "$0.001",
       routes: {
         "GET /api/test": "$0.001",
       },

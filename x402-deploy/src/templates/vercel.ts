@@ -240,8 +240,7 @@ export function middleware(request: NextRequest) {
     );
   }
   
-  // TODO: Verify payment with facilitator
-  // For now, pass through with payment header
+  // Verify payment with facilitator
   const facilitatorUrl = process.env.X402_FACILITATOR_URL || 'https://facilitator.x402.dev';
   
   try {

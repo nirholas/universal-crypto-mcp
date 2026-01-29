@@ -11,7 +11,6 @@
 declare const globalThis: {
   setInterval?: (fn: () => void, ms: number) => { unref?: () => void };
   clearInterval?: (timer: unknown) => void;
-  URL: typeof URL;
 };
 
 /**
@@ -39,12 +38,21 @@ export interface HttpResponse {
   removeHeader(name: string): void;
 }
 
-interface NextFunction {
-  (err?: Error): void;
-}
+/**
+ * Next function type
+ */
+export type NextFunction = (err?: Error) => void;
 
-interface Express {
-  use(handler: (req: Request, res: Response, next: NextFunction) => void): void;
+/**
+ * Middleware function type
+ */
+export type Middleware = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+
+/**
+ * Express-like app interface
+ */
+interface ExpressApp {
+  use(handler: Middleware): void;
   set(setting: string, value: unknown): void;
 }
 
@@ -55,10 +63,10 @@ export interface RateLimitConfig {
   windowMs: number;
   maxRequests: number;
   message?: string;
-  keyGenerator?: (req: Request) => string;
+  keyGenerator?: (req: HttpRequest) => string;
   skipSuccessfulRequests?: boolean;
   skipFailedRequests?: boolean;
-  onLimitReached?: (req: Request, res: Response) => void;
+  onLimitReached?: (req: HttpRequest, res: HttpResponse) => void;
 }
 
 /**
@@ -75,34 +83,37 @@ interface RateLimitEntry {
 export class RateLimiter {
   private store: Map<string, RateLimitEntry> = new Map();
   private config: Required<RateLimitConfig>;
-  private cleanupInterval: ReturnType<typeof setInterval>;
+  private cleanupTimer: unknown = null;
 
   constructor(config: Partial<RateLimitConfig> = {}) {
     this.config = {
       windowMs: config.windowMs || 15 * 60 * 1000, // 15 minutes
       maxRequests: config.maxRequests || 100,
       message: config.message || 'Too many requests, please try again later.',
-      keyGenerator: config.keyGenerator || this.defaultKeyGenerator,
+      keyGenerator: config.keyGenerator || this.defaultKeyGenerator.bind(this),
       skipSuccessfulRequests: config.skipSuccessfulRequests || false,
       skipFailedRequests: config.skipFailedRequests || false,
       onLimitReached: config.onLimitReached || (() => {}),
     };
 
-    // Clean up expired entries every minute
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
-    if (this.cleanupInterval.unref) {
-      this.cleanupInterval.unref();
+    // Clean up expired entries every minute using globalThis
+    if (globalThis.setInterval) {
+      const timer = globalThis.setInterval(() => this.cleanup(), 60000);
+      if (timer && timer.unref) {
+        timer.unref();
+      }
+      this.cleanupTimer = timer;
     }
   }
 
-  private defaultKeyGenerator(req: Request): string {
+  private defaultKeyGenerator(req: HttpRequest): string {
     // Use X-Forwarded-For for proxied requests, otherwise use IP
     const forwarded = req.headers['x-forwarded-for'];
     if (typeof forwarded === 'string') {
       const firstIp = forwarded.split(',')[0];
       return firstIp ? firstIp.trim() : 'unknown';
     }
-    return req.ip || req.socket.remoteAddress || 'unknown';
+    return req.ip || req.socket?.remoteAddress || 'unknown';
   }
 
   private cleanup(): void {
@@ -139,8 +150,8 @@ export class RateLimiter {
   /**
    * Express middleware
    */
-  middleware() {
-    return (req: Request, res: Response, next: NextFunction) => {
+  middleware(): Middleware {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
       const key = this.config.keyGenerator(req);
       const { limited, remaining, resetAt } = this.isRateLimited(key);
 
@@ -152,11 +163,12 @@ export class RateLimiter {
       if (limited) {
         this.config.onLimitReached(req, res);
         res.setHeader('Retry-After', Math.ceil((resetAt - Date.now()) / 1000).toString());
-        return res.status(429).json({
+        res.status(429).json({
           error: this.config.message,
           code: 'RATE_LIMIT_EXCEEDED',
           retryAfter: Math.ceil((resetAt - Date.now()) / 1000),
         });
+        return;
       }
 
       next();
@@ -167,7 +179,9 @@ export class RateLimiter {
    * Destroy and clean up
    */
   destroy(): void {
-    clearInterval(this.cleanupInterval);
+    if (this.cleanupTimer && globalThis.clearInterval) {
+      globalThis.clearInterval(this.cleanupTimer);
+    }
     this.store.clear();
   }
 }
@@ -201,8 +215,8 @@ export interface SecurityHeadersConfig {
 /**
  * Apply security headers (helmet-like functionality)
  */
-export function securityHeaders(config: SecurityHeadersConfig = {}) {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function securityHeaders(config: SecurityHeadersConfig = {}): Middleware {
+  return (_req: HttpRequest, res: HttpResponse, next: NextFunction) => {
     // Content Security Policy
     if (config.contentSecurityPolicy) {
       const csp = config.contentSecurityPolicy;
@@ -264,7 +278,7 @@ export function securityHeaders(config: SecurityHeadersConfig = {}) {
 /**
  * Apply all security middleware to an Express app
  */
-export function applySecurityMiddleware(app: Express, options: {
+export function applySecurityMiddleware(app: ExpressApp, options: {
   rateLimit?: Partial<RateLimitConfig>;
   headers?: SecurityHeadersConfig;
   trustProxy?: boolean;
@@ -300,15 +314,17 @@ export function applySecurityMiddleware(app: Express, options: {
   app.use(rateLimiter.middleware());
 
   // Content-Type validation for POST requests
-  app.use((req: Request, res: Response, next: NextFunction) => {
+  app.use((req: HttpRequest, res: HttpResponse, next: NextFunction) => {
     if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
       const contentType = req.headers['content-type'];
-      if (contentType && !contentType.includes('application/json') && !contentType.includes('multipart/form-data')) {
-        return res.status(415).json({
+      const ct = typeof contentType === 'string' ? contentType : '';
+      if (ct && !ct.includes('application/json') && !ct.includes('multipart/form-data')) {
+        res.status(415).json({
           error: 'Unsupported Media Type',
           code: 'UNSUPPORTED_MEDIA_TYPE',
           message: 'Content-Type must be application/json',
         });
+        return;
       }
     }
     next();
@@ -413,12 +429,10 @@ export function isValidTxHash(hash: string): boolean {
  * Validate URL format
  */
 export function isValidUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return ['http:', 'https:'].includes(parsed.protocol);
-  } catch {
-    return false;
-  }
+  // Simple URL validation without using URL constructor
+  if (!url || typeof url !== 'string') return false;
+  const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+  return urlPattern.test(url);
 }
 
 /**
@@ -464,7 +478,7 @@ export interface CorsConfig {
 /**
  * CORS middleware
  */
-export function cors(config: CorsConfig = {}) {
+export function cors(config: CorsConfig = {}): Middleware {
   const {
     origin = '*',
     methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -474,8 +488,9 @@ export function cors(config: CorsConfig = {}) {
     maxAge = 86400, // 24 hours
   } = config;
 
-  return (req: Request, res: Response, next: NextFunction) => {
-    const requestOrigin = req.headers.origin || '';
+  return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
+    const originHeader = req.headers.origin;
+    const requestOrigin = typeof originHeader === 'string' ? originHeader : '';
 
     // Determine if origin is allowed
     let allowedOrigin: string = '';
@@ -512,7 +527,8 @@ export function cors(config: CorsConfig = {}) {
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-      return res.status(204).end();
+      res.status(204).end();
+      return;
     }
 
     next();
@@ -522,30 +538,35 @@ export function cors(config: CorsConfig = {}) {
 /**
  * Request body size limiter
  */
-export function bodySizeLimit(maxBytes: number = 1024 * 1024) { // 1MB default
-  return (req: Request, res: Response, next: NextFunction) => {
-    let size = 0;
+export function bodySizeLimit(maxBytes: number = 1024 * 1024): Middleware { // 1MB default
+  return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
     const contentLength = req.headers['content-length'];
+    const cl = typeof contentLength === 'string' ? contentLength : '';
 
-    if (contentLength && parseInt(contentLength, 10) > maxBytes) {
-      return res.status(413).json({
+    if (cl && parseInt(cl, 10) > maxBytes) {
+      res.status(413).json({
         error: 'Payload too large',
         code: 'PAYLOAD_TOO_LARGE',
         maxSize: maxBytes,
       });
+      return;
     }
 
-    req.on('data', (chunk: Buffer) => {
-      size += chunk.length;
-      if (size > maxBytes) {
-        req.destroy();
-        res.status(413).json({
-          error: 'Payload too large',
-          code: 'PAYLOAD_TOO_LARGE',
-          maxSize: maxBytes,
-        });
-      }
-    });
+    // For streaming body size check
+    if (req.on) {
+      let size = 0;
+      req.on('data', (chunk: { length: number }) => {
+        size += chunk.length;
+        if (size > maxBytes && req.destroy) {
+          req.destroy();
+          res.status(413).json({
+            error: 'Payload too large',
+            code: 'PAYLOAD_TOO_LARGE',
+            maxSize: maxBytes,
+          });
+        }
+      });
+    }
 
     next();
   };

@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  # Xeepy API Server
+  xeepy-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xeepy-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8000
+      - WORKERS=4
+      - LOG_LEVEL=INFO
+      # AI Configuration (set your keys)
+      - AI_PROVIDER=${AI_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      # Auth Configuration
+      - AUTH_ENABLED=true
+      - JWT_SECRET=${JWT_SECRET:-change-this-in-production}
+      - REQUIRE_API_KEY=false
+      # Rate Limiting
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_PER_MINUTE=60
+      - RATE_LIMIT_PER_HOUR=1000
+      # Database (if using PostgreSQL)
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-xeepy}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-xeepy}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE:-xeepy}
+      # Redis (if using)
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=6379
+    volumes:
+      - ./xeepy.yml:/app/xeepy.yml:ro
+      - xeepy-data:/app/data
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database (optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: xeepy-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-xeepy}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-xeepy}
+      - POSTGRES_DB=${POSTGRES_DATABASE:-xeepy}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xeepy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: xeepy-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama (optional - for local AI models)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: xeepy-ollama
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+
+  # Prometheus (optional - for metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: xeepy-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+
+  # Grafana (optional - for dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: xeepy-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - xeepy-network
+
+volumes:
+  xeepy-data:
+  postgres-data:
+  redis-data:
+  ollama-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  xeepy-network:
+    driver: bridge

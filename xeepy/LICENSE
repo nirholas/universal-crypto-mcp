@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2025 Xeepy Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Educational Use Disclaimer
+
+This software is provided for **EDUCATIONAL AND DEMONSTRATION PURPOSES ONLY**.
+
+The authors and contributors:
+- Do NOT endorse or encourage violation of X/Twitter's Terms of Service
+- Are NOT responsible for any misuse of this software
+- Provide this software "as is" with no guarantees or warranties
+- Recommend always respecting platform guidelines and rate limits
+- Emphasize that automation should be used ethically and responsibly
+
+By using this software, you agree to:
+- Use it only for learning, research, and demonstration purposes
+- NOT use it to spam, harass, or abuse X/Twitter or its users
+- Take full responsibility for your actions and any consequences
+- Comply with all applicable laws and platform policies
+- Respect the rights and privacy of others
+
+**No actual X/Twitter API calls are made by default (demo mode).**

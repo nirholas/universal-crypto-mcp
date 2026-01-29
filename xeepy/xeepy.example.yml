@@ -1,0 +1,144 @@
+# Xeepy Configuration Example
+# Copy this file to xeepy.yml and customize for your environment
+
+# Environment: development, staging, production
+environment: development
+
+# =============================================================================
+# AI Configuration
+# =============================================================================
+ai:
+  # Default AI provider: openai, anthropic, ollama
+  default_provider: openai
+  
+  # OpenAI Configuration
+  openai_api_key: null  # Set to your OpenAI API key or use env var OPENAI_API_KEY
+  openai_model: gpt-4
+  openai_max_tokens: 1000
+  openai_temperature: 0.7
+  
+  # Anthropic Configuration
+  anthropic_api_key: null  # Set to your Anthropic API key or use env var ANTHROPIC_API_KEY
+  anthropic_model: claude-3-opus-20240229
+  anthropic_max_tokens: 1000
+  anthropic_temperature: 0.7
+  
+  # Ollama Configuration (for local models)
+  ollama_base_url: http://localhost:11434
+  ollama_model: llama2
+  ollama_max_tokens: 1000
+  ollama_temperature: 0.7
+  
+  # General AI settings
+  enable_caching: true
+  cache_ttl_seconds: 3600
+  max_retries: 3
+  timeout_seconds: 30
+
+# =============================================================================
+# Rate Limiting
+# =============================================================================
+rate_limit:
+  enabled: true
+  requests_per_minute: 60
+  requests_per_hour: 1000
+  requests_per_day: 10000
+  burst_size: 10
+  cooldown_seconds: 60
+
+# =============================================================================
+# Authentication
+# =============================================================================
+auth:
+  enabled: true
+  jwt_secret: demo-secret-key-change-in-production  # CHANGE THIS IN PRODUCTION!
+  jwt_algorithm: HS256
+  jwt_expiry_minutes: 60
+  
+  # Twitter OAuth (for real integration)
+  twitter_client_id: null
+  twitter_client_secret: null
+  twitter_callback_url: http://localhost:8000/auth/callback
+  
+  # API Keys
+  require_api_key: false
+  api_keys: []  # Add API keys here: ["key1", "key2"]
+
+# =============================================================================
+# Database
+# =============================================================================
+database:
+  # SQLite (default)
+  sqlite_path: xeepy.db
+  
+  # PostgreSQL (optional)
+  postgres_host: null
+  postgres_port: 5432
+  postgres_user: null
+  postgres_password: null
+  postgres_database: null
+  
+  # Redis (optional for caching)
+  redis_host: null
+  redis_port: 6379
+  redis_password: null
+  redis_db: 0
+  
+  # Connection pooling
+  pool_size: 10
+  max_overflow: 20
+  pool_timeout_seconds: 30
+
+# =============================================================================
+# Server Configuration
+# =============================================================================
+server:
+  host: 0.0.0.0
+  port: 8000
+  workers: 1
+  reload: false
+  debug: false
+  
+  # CORS
+  cors_enabled: true
+  cors_origins:
+    - "*"  # Allow all origins in development. Restrict in production!
+  cors_allow_credentials: true
+  
+  # WebSocket
+  websocket_enabled: true
+  websocket_heartbeat_interval: 30
+  
+  # Static files
+  static_dir: null
+
+# =============================================================================
+# Logging
+# =============================================================================
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+  
+  # File logging
+  log_to_file: true
+  log_file: xeepy.log
+  log_rotation: "500 MB"
+  log_retention: "10 days"
+  
+  # JSON logging
+  json_logs: false
+  
+  # Sensitive data masking
+  mask_sensitive: true
+
+# =============================================================================
+# General Settings
+# =============================================================================
+demo_mode: true  # Set to false for real API usage (not recommended)
+enable_metrics: true
+enable_analytics: true
+
+# Twitter simulation settings (for demo mode)
+simulate_delays: true
+min_delay_ms: 100
+max_delay_ms: 500

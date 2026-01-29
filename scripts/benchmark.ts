@@ -275,29 +275,29 @@ async function benchmarkSecurity(): Promise<void> {
   // Test sanitizeInput
   const testString = '<script>alert("xss")</script>Hello World! This is a test string with <html> tags.';
   console.log(`  Sanitizing ${iterations.toLocaleString()} strings...`);
-  const sanitizeStart = performance.now();
+  const sanitizeStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     sanitizeInput(testString);
   }
-  const sanitizeTime = performance.now() - sanitizeStart;
+  const sanitizeTime = Date.now() - sanitizeStart;
   
   // Test address validation
   const testAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f7fAcE';
   console.log(`  Validating ${iterations.toLocaleString()} addresses...`);
-  const addressStart = performance.now();
+  const addressStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     isValidAddress(testAddress);
   }
-  const addressTime = performance.now() - addressStart;
+  const addressTime = Date.now() - addressStart;
   
   // Test tx hash validation
   const testHash = '0x' + 'a'.repeat(64);
   console.log(`  Validating ${iterations.toLocaleString()} tx hashes...`);
-  const hashStart = performance.now();
+  const hashStart = Date.now();
   for (let i = 0; i < iterations; i++) {
     isValidTxHash(testHash);
   }
-  const hashTime = performance.now() - hashStart;
+  const hashTime = Date.now() - hashStart;
   
   // Test object sanitization
   const testObj = {
@@ -306,11 +306,11 @@ async function benchmarkSecurity(): Promise<void> {
     nested: { value: 'hello<br>world' }
   };
   console.log(`  Sanitizing ${(iterations / 10).toLocaleString()} objects...`);
-  const objStart = performance.now();
+  const objStart = Date.now();
   for (let i = 0; i < iterations / 10; i++) {
     sanitizeObject(testObj);
   }
-  const objTime = performance.now() - objStart;
+  const objTime = Date.now() - objStart;
   
   console.log('\n' + '='.repeat(60));
   console.log('📊 Security Benchmark Results');

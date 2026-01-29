@@ -1,0 +1,33 @@
+{
+  "name": "calculator-x402",
+  "type": "mcp-server",
+  "payment": {
+    "wallet": "0x0000000000000000000000000000000000000000",
+    "network": "eip155:8453",
+    "token": "USDC",
+    "facilitator": "https://facilitator.x402.dev"
+  },
+  "pricing": {
+    "default": "$0.001",
+    "routes": {
+      "tool:add": "$0.001",
+      "tool:subtract": "$0.001",
+      "tool:multiply": "$0.002",
+      "tool:divide": "$0.002",
+      "tool:power": "$0.003",
+      "tool:sqrt": "$0.001"
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "instructions": "A calculator MCP server that accepts cryptocurrency payments. Each calculation requires a small USDC payment on Base network.",
+    "category": ["utilities", "math"],
+    "tags": ["calculator", "math", "mcp"]
+  },
+  "deployment": {
+    "platform": "railway",
+    "env": {
+      "X402_WALLET": "$WALLET_ADDRESS"
+    }
+  }
+}

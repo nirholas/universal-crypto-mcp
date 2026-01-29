@@ -56,7 +56,13 @@
     "x402:config": "tsx src/x402/cli/index.ts config",
     "x402:networks": "tsx src/x402/cli/index.ts networks",
     "x402:testnet": "tsx src/x402/cli/index.ts testnet",
-    "x402:mainnet": "tsx src/x402/cli/index.ts mainnet"
+    "x402:mainnet": "tsx src/x402/cli/index.ts mainnet",
+    "discover:mcp-servers": "tsx scripts/discover-mcp-servers.ts --report",
+    "verify:license": "tsx scripts/verify-license.ts",
+    "add:subtree": "bash scripts/add-subtree.sh",
+    "update:attributions": "tsx scripts/update-attributions.ts",
+    "audit:licenses": "tsx scripts/audit-licenses.ts",
+    "licenses": "license-checker --summary"
   },
   "bin": {
     "universal-crypto-mcp": "./dist/index.js",

@@ -1,229 +1,197 @@
 # Full Deployment Example
 
-A complete production-ready MCP server with all features.
+A production-ready MCP server with **fully implemented** market data, DeFi analytics, wallet operations, technical analysis, and x402 payment integrations.
 
-## Features
+## 🌟 Features
 
-### Market Data
-- `get_price` - Get cryptocurrency prices
-- `get_market_overview` - Market summary
+This example provides **27 real, working tools** across 5 categories:
 
-### Trading (Binance)
-- `get_balance` - Account balances
-- `place_order` - Place trading orders
+### 📊 Market Data (7 tools)
+- `get_price` - Real-time crypto prices from CoinGecko
+- `get_prices` - Batch price queries for multiple assets
+- `get_market_overview` - Global market cap, volume, dominance
+- `get_trending` - Top 10 trending cryptocurrencies
+- `get_coin_details` - Comprehensive coin information
+- `get_fear_greed_index` - Market sentiment indicator
+- `get_ohlcv` - Candlestick data for charting
 
-### Wallet
-- `get_wallet_balance` - Multi-chain balances
-- `send_transaction` - Send transactions
+### 🏦 DeFi Analytics (7 tools)
+- `get_defi_protocols` - Top protocols by TVL from DefiLlama
+- `get_protocol_details` - Detailed protocol information
+- `get_best_yields` - Best yield farming opportunities
+- `get_chain_tvl` - TVL comparison across chains
+- `get_stablecoins` - Stablecoin market data
+- `get_dex_volume` - DEX trading volumes
+- `get_bridge_volume` - Cross-chain bridge activity
 
-### DeFi
-- `get_swap_quote` - DEX swap quotes
-- `get_lending_position` - Aave positions
+### 👛 Wallet Operations (6 tools)
+- `get_wallet_balance` - Native token balances (ETH, MATIC, etc.)
+- `get_token_balance` - ERC20 token balances
+- `get_gas_price` - Current gas prices with EIP-1559 data
+- `get_block_number` - Latest block number
+- `get_transaction` - Transaction details by hash
+- `get_supported_chains` - List of supported networks
 
-### Payments (x402)
-- `x402_balance` - Payment wallet balance
-- `x402_send` - Send payments
+### 📈 Technical Analysis (2 tools)
+- `get_trading_signal` - Comprehensive signals with RSI, MACD, Bollinger Bands
+- `get_support_resistance` - Support/resistance levels with pivot points
 
-## Quick Start
+### 💰 x402 Payments (5 tools)
+- `x402_get_balance` - USDC balance for payments
+- `x402_estimate_payment` - Gas cost estimation
+- `x402_verify_payment` - Transaction verification
+- `x402_get_networks` - Supported payment networks
+- `x402_get_endpoints` - Payment-enabled API endpoints
 
-### 1. Install Dependencies
+## 🏗️ Architecture
 
-```bash
-npm install
-```
+\`\`\`
+src/
+├── server.ts              # Main MCP server with all tools
+├── test.ts                # Integration tests
+└── services/
+    ├── index.ts           # Service exports
+    ├── market-data.ts     # CoinGecko integration
+    ├── defi.ts            # DefiLlama integration
+    ├── wallet.ts          # Multi-chain RPC calls
+    ├── technical-analysis.ts  # RSI, MACD, Bollinger
+    └── x402.ts            # Payment protocol
+\`\`\`
 
-### 2. Configure Environment
+## 🚀 Quick Start
 
-```bash
-# Required for basic operation
-export MCP_SERVER_NAME="my-crypto-mcp"
+\`\`\`bash
+# Install dependencies
+pnpm install
 
-# Optional: Trading
-export BINANCE_API_KEY=your-key
-export BINANCE_API_SECRET=your-secret
+# Run tests to verify everything works
+pnpm test
 
-# Optional: Wallet
-export PRIVATE_KEY=0x...
+# Start the server
+pnpm start
 
-# Optional: x402 Payments
-export X402_PRIVATE_KEY=0x...
-export X402_CHAIN=arbitrum
+# Or for development with hot reload
+pnpm dev
+\`\`\`
 
-# Optional: Enhanced market data
-export COINGECKO_API_KEY=your-key
-```
+## 📡 Supported Chains
 
-### 3. Run the Server
+| Chain | Native Token | Chain ID |
+|-------|--------------|----------|
+| Ethereum | ETH | 1 |
+| Arbitrum One | ETH | 42161 |
+| Base | ETH | 8453 |
+| Optimism | ETH | 10 |
+| Polygon | MATIC | 137 |
+| BNB Smart Chain | BNB | 56 |
+| Avalanche C-Chain | AVAX | 43114 |
 
-```bash
-# stdio mode (Claude Desktop)
-npm run dev
+## 🔗 API Sources
 
-# HTTP mode (ChatGPT, web apps)
-npm run start:http
+All data comes from **real, free APIs**:
 
-# SSE mode (legacy HTTP clients)
-npm run start:sse
-```
+- **CoinGecko** - Market data, prices, trending coins
+- **DefiLlama** - DeFi TVL, yields, protocols, DEX volume
+- **Alternative.me** - Fear & Greed Index
+- **Public RPCs** - Wallet balances, gas prices, transactions
 
-### 4. Add to Claude Desktop
+## 📊 Example Outputs
 
-```json
+### Trading Signal
+\`\`\`json
+{
+  "symbol": "BTC",
+  "signal": "buy",
+  "score": 35,
+  "confidence": 0.44,
+  "indicators": {
+    "rsi": { "current": 45.2, "signal": "neutral" },
+    "macd": { "histogram": 150.5, "trend": "bullish" },
+    "bollinger": { "percentB": 0.65, "signal": "neutral" },
+    "movingAverages": { "priceVsSma200": "above" }
+  },
+  "analysis": "MACD shows bullish momentum. Price is above the 200-day SMA."
+}
+\`\`\`
+
+### DeFi Yields
+\`\`\`json
+[
+  {
+    "pool": "0x...",
+    "chain": "Ethereum",
+    "project": "Aave V3",
+    "symbol": "USDC",
+    "tvlUsd": 500000000,
+    "apy": 4.5,
+    "stablecoin": true
+  }
+]
+\`\`\`
+
+## 🧪 Running Tests
+
+\`\`\`bash
+# Run all integration tests
+pnpm test
+
+# Expected output:
+# ✅ getPrice - Bitcoin
+# ✅ getMarketOverview
+# ✅ getTrending
+# ... (27+ tests)
+# 📋 Test Summary: X passed, 0 failed
+\`\`\`
+
+## 🔧 Configuration
+
+### MCP Client Setup
+
+Add to your Claude Desktop or MCP client config:
+
+\`\`\`json
 {
   "mcpServers": {
-    "full-crypto": {
+    "universal-crypto": {
       "command": "node",
-      "args": ["/path/to/full-deployment/dist/index.js"],
-      "env": {
-        "BINANCE_API_KEY": "your-key",
-        "BINANCE_API_SECRET": "your-secret",
-        "PRIVATE_KEY": "0x...",
-        "X402_PRIVATE_KEY": "0x..."
-      }
+      "args": ["/path/to/examples/full-deployment/dist/server.js"]
     }
   }
 }
-```
+\`\`\`
 
-## Transport Modes
+### Environment Variables (Optional)
 
-### stdio (Default)
-For Claude Desktop and other stdio-based clients.
+\`\`\`bash
+# For higher rate limits (optional)
+COINGECKO_API_KEY=your_api_key
 
-```bash
-npm start
-```
+# For x402 payments
+X402_NETWORK=base-mainnet
+X402_PAY_TO=0x...
+\`\`\`
 
-### HTTP
-For ChatGPT, web applications, and REST clients.
+## 📝 Technical Indicators
 
-```bash
-npm run start:http
-# Server at http://localhost:3000
-```
+### RSI (Relative Strength Index)
+- Period: 14
+- Oversold: < 30
+- Overbought: > 70
 
-### SSE
-For legacy HTTP clients that support Server-Sent Events.
+### MACD
+- Fast EMA: 12
+- Slow EMA: 26
+- Signal: 9
 
-```bash
-npm run start:sse
-# Server at http://localhost:3000
-```
+### Bollinger Bands
+- Period: 20
+- Standard Deviations: 2
 
-## Docker Deployment
+### Moving Averages
+- SMA 20, 50, 200
+- EMA 12, 26
+- Golden/Death Cross detection
 
-### Build Image
+## 📄 License
 
-```bash
-docker build -t full-crypto-mcp .
-```
-
-### Run Container
-
-```bash
-docker run -d \
-  --name crypto-mcp \
-  -p 3000:3000 \
-  -e BINANCE_API_KEY=$BINANCE_API_KEY \
-  -e BINANCE_API_SECRET=$BINANCE_API_SECRET \
-  -e PRIVATE_KEY=$PRIVATE_KEY \
-  -e X402_PRIVATE_KEY=$X402_PRIVATE_KEY \
-  full-crypto-mcp --http
-```
-
-### Docker Compose
-
-```yaml
-version: "3.8"
-services:
-  mcp:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - MCP_TRANSPORT=http
-      - BINANCE_API_KEY=${BINANCE_API_KEY}
-      - BINANCE_API_SECRET=${BINANCE_API_SECRET}
-      - PRIVATE_KEY=${PRIVATE_KEY}
-      - X402_PRIVATE_KEY=${X402_PRIVATE_KEY}
-```
-
-## Cloud Deployment
-
-### Vercel
-
-```bash
-vercel deploy
-```
-
-### Railway
-
-```bash
-railway up
-```
-
-### AWS/GCP/Azure
-
-See [deployment docs](../../docs/content/getting-started/deployment.md) for cloud-specific instructions.
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `MCP_SERVER_NAME` | Server name | No |
-| `MCP_TRANSPORT` | Transport mode | No |
-| `MCP_PORT` | HTTP port | No |
-| `BINANCE_API_KEY` | Binance API key | For trading |
-| `BINANCE_API_SECRET` | Binance API secret | For trading |
-| `PRIVATE_KEY` | EVM private key | For wallet |
-| `X402_PRIVATE_KEY` | x402 private key | For payments |
-| `X402_CHAIN` | x402 chain | No |
-| `COINGECKO_API_KEY` | CoinGecko API key | No |
-| `LOG_LEVEL` | Logging level | No |
-
-### x402 Configuration
-
-Edit `x402.config.json` for payment settings:
-
-```json
-{
-  "payment": {
-    "wallet": "${X402_WALLET}",
-    "network": "eip155:42161"
-  },
-  "pricing": {
-    "routes": {
-      "GET /api/premium/*": "$0.001"
-    }
-  }
-}
-```
-
-## Project Structure
-
-```
-full-deployment/
-├── src/
-│   └── index.ts        # Main server
-├── x402.config.json    # x402 configuration
-├── package.json        # Dependencies
-├── Dockerfile          # Docker build
-└── README.md           # This file
-```
-
-## Security
-
-- Never commit API keys or private keys
-- Use environment variables for secrets
-- Rotate keys regularly
-- Use IP whitelisting where available
-- Test on testnets before mainnet
-
-## Next Steps
-
-- Add more tools as needed
-- Set up monitoring
-- Configure alerts
-- See [full documentation](../../docs/content/)
+Apache-2.0

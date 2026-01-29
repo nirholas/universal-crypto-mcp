@@ -57,82 +57,39 @@ const BANNER_COMPACT = `
 // Loading spinner frames
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
-// Demo data for CLI (replace with actual API calls for production use)
-// These prices are illustrative - integrate with market data APIs for live prices
-const demoPrices: Record<string, { price: number; change24h: number }> = {
-  BTC: { price: 95000, change24h: 2.5 },
-  ETH: { price: 3500, change24h: 1.8 },
-  SOL: { price: 180, change24h: 4.2 },
-  BNB: { price: 600, change24h: -0.5 },
-  AVAX: { price: 35, change24h: 3.1 },
-  ATOM: { price: 8, change24h: -1.2 },
-  NEAR: { price: 5, change24h: 2.8 },
-  SUI: { price: 3.5, change24h: 5.5 },
-  APT: { price: 9, change24h: 1.5 },
-  USDS: { price: 1.0, change24h: 0.01 },
-}
+// Import the live data fetchers
+import { getLivePrice, getLiveMarketOverview, getLiveGasPrice, getLiveBalance } from './cli/enhanced-cli.js'
 
 async function getPrice(symbol: string): Promise<string> {
-  const data = demoPrices[symbol.toUpperCase()]
-  if (!data) {
-    return `${c("red", "✗")} Unknown symbol: ${symbol}`
+  try {
+    return await getLivePrice(symbol)
+  } catch (error) {
+    return `${c("red", "✗")} Error fetching price: ${error instanceof Error ? error.message : 'Unknown error'}`
   }
-  const changeColor = data.change24h >= 0 ? "green" : "red"
-  const changeSign = data.change24h >= 0 ? "+" : ""
-  return `${c("cyan", symbol.toUpperCase())}: ${c("bold", "$" + data.price.toLocaleString())} (${c(changeColor, changeSign + data.change24h + "%")} 24h)`
 }
 
 async function getMarketOverview(): Promise<string> {
-  const lines = [
-    c("bold", "\n📊 Market Overview\n"),
-    `${c("dim", "Total Market Cap:")} $3.2T`,
-    `${c("dim", "24h Volume:")} $125B`,
-    `${c("dim", "BTC Dominance:")} 58.5%`,
-    `${c("dim", "Fear & Greed:")} 72 (Greed)`,
-    "",
-    c("bold", "Top Coins:"),
-  ]
-
-  for (const [symbol, data] of Object.entries(demoPrices).slice(0, 5)) {
-    const changeColor = data.change24h >= 0 ? "green" : "red"
-    const changeSign = data.change24h >= 0 ? "+" : ""
-    lines.push(
-      `  ${symbol.padEnd(6)} $${data.price.toLocaleString().padEnd(10)} ${c(changeColor, changeSign + data.change24h + "%")}`
-    )
+  try {
+    return await getLiveMarketOverview()
+  } catch (error) {
+    return `${c("red", "✗")} Error fetching market data: ${error instanceof Error ? error.message : 'Unknown error'}`
   }
-
-  return lines.join("\n")
 }
 
 async function getGasPrice(chain: string): Promise<string> {
-  const gasPrices: Record<string, { low: number; avg: number; high: number }> = {
-    ethereum: { low: 15, avg: 22, high: 35 },
-    bsc: { low: 1, avg: 3, high: 5 },
-    polygon: { low: 30, avg: 50, high: 80 },
-    arbitrum: { low: 0.1, avg: 0.15, high: 0.25 },
+  try {
+    return await getLiveGasPrice(chain)
+  } catch (error) {
+    return `${c("red", "✗")} Error fetching gas price: ${error instanceof Error ? error.message : 'Unknown error'}`
   }
-
-  const data = gasPrices[chain.toLowerCase()]
-  if (!data) {
-    return `${c("red", "✗")} Unknown chain: ${chain}. Available: ethereum, bsc, polygon, arbitrum`
-  }
-
-  return `
-${c("bold", "⛽ Gas Prices")} (${chain})
-  ${c("green", "Low:")}  ${data.low} Gwei
-  ${c("yellow", "Avg:")}  ${data.avg} Gwei
-  ${c("red", "High:")} ${data.high} Gwei`
 }
 
 async function getBalance(address: string, chain: string): Promise<string> {
-  // Demo balance for CLI (integrate with actual RPC calls for production)
-  const balance = (Math.random() * 10).toFixed(4)
-  const symbol = chain === "ethereum" ? "ETH" : chain === "bsc" ? "BNB" : "MATIC"
-  return `
-${c("bold", "💰 Balance")}
-  Address: ${c("dim", address.slice(0, 10) + "..." + address.slice(-8))}
-  Chain: ${chain}
-  Balance: ${c("green", balance)} ${symbol}`
+  try {
+    return await getLiveBalance(address, chain)
+  } catch (error) {
+    return `${c("red", "✗")} Error fetching balance: ${error instanceof Error ? error.message : 'Unknown error'}`
+  }
 }
 
 function showHelp(): string {

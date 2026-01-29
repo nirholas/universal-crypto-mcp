@@ -219,8 +219,12 @@ describe("Discovery Document Generator", () => {
         version: "1.0.0",
         type: "mcp-server",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
@@ -236,8 +240,12 @@ describe("Discovery Document Generator", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
@@ -353,8 +361,9 @@ describe("Edge Cases", () => {
       version: "1.0.0",
       type: "express-api",
       payment: {
-        wallet: "0x123",
+        wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
       },
       pricing: {
         model: "per-call",
@@ -374,8 +383,12 @@ describe("Edge Cases", () => {
       version: "1.0.0",
       type: "express-api",
       payment: {
-        wallet: "0x123",
+        wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
+      },
+      pricing: {
+        model: "per-call",
       },
     };
 

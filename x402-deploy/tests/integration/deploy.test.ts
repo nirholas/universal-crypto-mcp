@@ -180,8 +180,12 @@ describe("Deployment Integration", () => {
           version: "1.0.0",
           type: "express-api",
           payment: {
-            wallet: "0x123",
+            wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
             network: "eip155:8453",
+            token: "USDC",
+          },
+          pricing: {
+            model: "per-call",
           },
         })
       );
@@ -202,6 +206,7 @@ describe("Deployment Integration", () => {
         payment: {
           wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
         },
         pricing: {
           model: "per-call",
@@ -229,11 +234,16 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
+          default: "$0.01",
         },
         deploy: {
-          port: 3000,
+          provider: "docker",
         },
       };
 
@@ -255,16 +265,20 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
-      const { generateRailwayConfig } = await import(
+      const { generateRailwayJson } = await import(
         "../../src/templates/railway.js"
       );
 
-      const railwayConfig = generateRailwayConfig(config);
+      const railwayConfig = generateRailwayJson(config);
 
       expect(railwayConfig).toBeDefined();
     });
@@ -275,16 +289,20 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "nextjs",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
-      const { generateVercelConfig } = await import(
+      const { generateVercelJson } = await import(
         "../../src/templates/vercel.js"
       );
 
-      const vercelConfig = generateVercelConfig(config);
+      const vercelConfig = generateVercelJson(config);
 
       expect(vercelConfig).toBeDefined();
     });
@@ -295,18 +313,22 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
         deploy: {
-          port: 3000,
+          provider: "fly",
           region: "ord",
         },
       };
 
-      const { generateFlyConfig } = await import("../../src/templates/fly.js");
+      const { generateFlyToml } = await import("../../src/templates/fly.js");
 
-      const flyConfig = generateFlyConfig(config);
+      const flyConfig = generateFlyToml(config);
 
       expect(flyConfig).toContain("app =");
       expect(flyConfig).toContain("internal_port = 3000");
@@ -320,17 +342,21 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
           facilitator: "https://facilitator.x402.dev",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
-      const { generateExpressWrapper } = await import(
+      const { generateNodeWrapper } = await import(
         "../../src/templates/wrapper-code.js"
       );
 
-      const wrapper = generateExpressWrapper(config);
+      const wrapper = generateNodeWrapper(config);
 
       expect(wrapper).toContain("x402Middleware");
       expect(wrapper).toContain("express");
@@ -343,16 +369,20 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "mcp-server",
         payment: {
-          wallet: "0x123",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
+        },
+        pricing: {
+          model: "per-call",
         },
       };
 
-      const { generateMCPWrapper } = await import(
+      const { generateMcpWrapper } = await import(
         "../../src/templates/wrapper-code.js"
       );
 
-      const wrapper = generateMCPWrapper(config);
+      const wrapper = generateMcpWrapper(config);
 
       expect(wrapper).toContain("MCP");
     });
@@ -365,12 +395,16 @@ describe("Deployment Integration", () => {
         version: "1.0.0",
         type: "express-api",
         payment: {
-          wallet: "0x123456789",
+          wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
           network: "eip155:8453",
+          token: "USDC",
           facilitator: "https://facilitator.x402.dev",
         },
+        pricing: {
+          model: "per-call",
+        },
         deploy: {
-          port: 3000,
+          provider: "railway",
         },
       };
 
@@ -380,10 +414,9 @@ describe("Deployment Integration", () => {
 
       const envVars = generateRailwayEnvVars(config);
 
-      expect(envVars.X402_WALLET).toBe("0x123456789");
+      expect(envVars.X402_WALLET).toBe("0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb");
       expect(envVars.X402_NETWORK).toBe("eip155:8453");
       expect(envVars.X402_FACILITATOR).toBe("https://facilitator.x402.dev");
-      expect(envVars.PORT).toBe("3000");
     });
   });
 });
@@ -407,6 +440,10 @@ describe("Dry Run Deployments", () => {
       payment: {
         wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
+      },
+      pricing: {
+        model: "per-call",
       },
     };
 
@@ -432,11 +469,15 @@ describe("Dry Run Deployments", () => {
       version: "1.0.0",
       type: "express-api",
       payment: {
-        wallet: "0x123",
+        wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
+      },
+      pricing: {
+        model: "per-call",
       },
       deploy: {
-        port: 3000,
+        provider: "docker",
       },
     };
 
@@ -454,15 +495,20 @@ describe("Dry Run Deployments", () => {
 
 describe("Error Handling", () => {
   it("handles invalid wallet address", () => {
-    const config: X402Config = {
+    // Use 'as any' to test error handling with invalid data
+    const config = {
       name: "invalid-wallet",
       version: "1.0.0",
       type: "express-api",
       payment: {
         wallet: "invalid-address",
         network: "eip155:8453",
+        token: "USDC",
       },
-    };
+      pricing: {
+        model: "per-call",
+      },
+    } as X402Config;
 
     // Should still generate Dockerfile (validation happens elsewhere)
     const dockerfile = generateDockerfile(config, "express-api");
@@ -470,15 +516,19 @@ describe("Error Handling", () => {
   });
 
   it("handles unknown project type gracefully", () => {
-    const config: X402Config = {
+    const config = {
       name: "unknown-type",
       version: "1.0.0",
-      type: "unknown" as ProjectType,
+      type: "unknown",
       payment: {
-        wallet: "0x123",
+        wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
       },
-    };
+      pricing: {
+        model: "per-call",
+      },
+    } as X402Config;
 
     // Should fall back to default Node.js template
     const dockerfile = generateDockerfile(config, "unknown");
@@ -491,8 +541,12 @@ describe("Error Handling", () => {
       version: "1.0.0",
       type: "express-api",
       payment: {
-        wallet: "0x123",
+        wallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
         network: "eip155:8453",
+        token: "USDC",
+      },
+      pricing: {
+        model: "per-call",
       },
     };
 

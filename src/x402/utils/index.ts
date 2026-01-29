@@ -191,8 +191,8 @@ export function normalizeChain(chain: string): X402Chain | null {
  */
 export function getUSDsAddress(chain: X402Chain): `0x${string}` | null {
   const addresses: Partial<Record<X402Chain, `0x${string}`>> = {
-    arbitrum: '0xD74f5255D557944cf7Dd0e45FF521520002D5748',
-    'arbitrum-sepolia': '0x5555555555555555555555555555555555555555', // Placeholder
+    arbitrum: '0xD74f5255D557944cf7Dd0e45FF521520002D5748', // Sperax USDs mainnet
+    'arbitrum-sepolia': '0x4Af0b4EeA8857E45243b31FfC0019Ff74aD87Cc3', // Sperax USDs testnet
   };
   
   return addresses[chain] || null;

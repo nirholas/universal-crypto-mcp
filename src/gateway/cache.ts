@@ -194,7 +194,7 @@ export interface PaymentVerificationResult {
  */
 export class PaymentCache {
   private cache: LRUCache<string, PaymentVerificationResult>;
-  private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private cleanupTimer: unknown = null;
 
   constructor(options: { maxSize?: number; ttl?: number; cleanupIntervalMs?: number } = {}) {
     this.cache = new LRUCache({
@@ -202,15 +202,18 @@ export class PaymentCache {
       ttl: options.ttl || 300000 // 5 minutes
     });
 
-    // Start automatic cleanup
+    // Start automatic cleanup using globalThis
     const cleanupMs = options.cleanupIntervalMs || 60000; // 1 minute
-    this.cleanupInterval = setInterval(() => {
-      this.cache.cleanup();
-    }, cleanupMs);
+    if (globalThis.setInterval) {
+      const timer = globalThis.setInterval(() => {
+        this.cache.cleanup();
+      }, cleanupMs);
 
-    // Ensure cleanup interval doesn't prevent process exit
-    if (this.cleanupInterval.unref) {
-      this.cleanupInterval.unref();
+      // Ensure cleanup interval doesn't prevent process exit
+      if (timer && timer.unref) {
+        timer.unref();
+      }
+      this.cleanupTimer = timer;
     }
   }
 
@@ -263,9 +266,9 @@ export class PaymentCache {
    * Stop the cleanup interval
    */
   destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-      this.cleanupInterval = null;
+    if (this.cleanupTimer && globalThis.clearInterval) {
+      globalThis.clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
     }
   }
 }

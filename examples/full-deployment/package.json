@@ -1,16 +1,27 @@
 {
   "name": "full-deployment-example",
   "version": "1.0.0",
-  "description": "Complete production deployment with all features",
+  "description": "Complete production deployment with real market data, DeFi, wallet, and payment integrations",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
+    "start": "node dist/server.js",
+    "start:legacy": "node dist/index.js",
+    "dev": "tsx src/server.ts",
+    "dev:legacy": "tsx src/index.ts",
     "start:http": "node dist/index.js --http",
-    "start:sse": "node dist/index.js --sse"
+    "start:sse": "node dist/index.js --sse",
+    "test": "tsx src/test.ts"
   },
+  "keywords": [
+    "mcp",
+    "crypto",
+    "defi",
+    "wallet",
+    "trading",
+    "x402"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@universal-crypto-mcp/core": "workspace:*",
