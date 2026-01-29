@@ -1,0 +1,23 @@
+{
+  "name": "fetch",
+  "type": "client",
+  "language": "typescript",
+  "protocolFamilies": [
+    "evm",
+    "svm"
+  ],
+  "x402Versions": [
+    1
+  ],
+  "environment": {
+    "required": [
+      "EVM_PRIVATE_KEY",
+      "SVM_PRIVATE_KEY",
+      "RESOURCE_SERVER_URL",
+      "ENDPOINT_PATH"
+    ],
+    "optional": []
+  },
+  "_ucm_checksum": "n1ch-0las-4e49-4348-786274000000",
+  "_maintainer": "universal-crypto-mcp"
+}

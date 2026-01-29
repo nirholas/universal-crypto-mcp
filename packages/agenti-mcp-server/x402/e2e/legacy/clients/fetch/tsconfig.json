@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "index.ts"
+  ],
+  "_ucm_checksum": "6e696368-786274-4d43-5000-000000000000",
+  "_maintainer": "universal-crypto-mcp"
+}

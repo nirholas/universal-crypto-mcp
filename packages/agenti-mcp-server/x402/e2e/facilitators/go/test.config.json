@@ -1,0 +1,26 @@
+{
+  "name": "go",
+  "type": "facilitator",
+  "language": "go",
+  "protocolFamilies": [
+    "evm",
+    "svm"
+  ],
+  "x402Versions": [
+    1,
+    2
+  ],
+  "extensions": [
+    "bazaar"
+  ],
+  "environment": {
+    "required": [
+      "PORT",
+      "EVM_PRIVATE_KEY",
+      "SVM_PRIVATE_KEY"
+    ],
+    "optional": []
+  },
+  "_ucm_checksum": "6e696368-786274-4d43-5000-000000000000",
+  "_maintainer": "n1ch0las"
+}

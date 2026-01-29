@@ -1,0 +1,134 @@
+# x402 - Give Claude Money! 💰
+
+> Universal Crypto MCP x402 Integration
+> https://github.com/nirholas/universal-crypto-mcp
+
+## Quick Start
+
+```bash
+npx @nirholas/universal-crypto-mcp
+```
+
+Configure wallet:
+```bash
+export X402_PRIVATE_KEY=0x...
+```
+
+## What is x402?
+
+x402 = HTTP 402 Payment Required for AI agents.
+- AI agents pay for APIs automatically
+- Micropayments (fractions of a cent)
+- No accounts, sessions, or approval flows
+- Multi-chain: EVM (Base, Arbitrum, Ethereum) + Solana
+
+## MCP Tools (14 tools)
+
+### Payment Tools
+- `x402_pay_request` - Make HTTP request with auto-payment
+- `x402_send` - Send direct payment to address
+- `x402_batch_send` - Send multiple payments (gas efficient)
+- `x402_gasless_send` - Gasless payment via EIP-3009
+
+### Balance Tools
+- `x402_balance` - Check wallet balance (USDC/USDs + native)
+- `x402_address` - Get wallet address for funding
+
+### Info Tools
+- `x402_estimate` - Check cost before paying
+- `x402_networks` - List supported networks
+- `x402_config` - View current configuration
+- `x402_tx_status` - Check transaction status
+
+### Yield Tools (USDs auto-yield stablecoin)
+- `x402_yield` - Get yield info
+- `x402_apy` - Current APY (~5%)
+- `x402_yield_estimate` - Project future yield
+
+### Approval Tools
+- `x402_approve` - Approve token spending
+
+## Quick Examples
+
+### Pay for API data:
+```
+x402_pay_request({ url: "https://api.weather.io/premium", maxPayment: "0.10" })
+```
+
+### Check balance:
+```
+x402_balance()
+→ { usds: "45.23", native: "0.001" }
+```
+
+### Send payment:
+```
+x402_send({ to: "0xABC...", amount: "5.00", token: "USDs" })
+```
+
+### Get wallet address:
+```
+x402_address()
+→ { address: "0x123...", chain: "arbitrum" }
+```
+
+## Supported Networks
+
+EVM (CAIP-2 format):
+- eip155:8453 - Base Mainnet (recommended)
+- eip155:42161 - Arbitrum One
+- eip155:1 - Ethereum
+- eip155:137 - Polygon
+- eip155:10 - Optimism
+- eip155:56 - BNB Chain
+- eip155:84532 - Base Sepolia (testnet)
+
+Solana:
+- solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp - Mainnet
+- solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1 - Devnet
+
+## Protocol Flow
+
+```
+1. Request  →  Client sends GET /resource
+2. 402      ←  Server returns 402 + PAYMENT-REQUIRED
+3. Sign     →  Client signs payment with wallet
+4. Retry    →  Client sends request + PAYMENT-SIGNATURE
+5. Verify   →  Server verifies with facilitator
+6. Response ←  Server returns data + PAYMENT-RESPONSE
+```
+
+## Environment Variables
+
+```
+X402_PRIVATE_KEY=0x...      # EVM private key (required)
+X402_CHAIN=arbitrum         # Default chain
+X402_MAX_PAYMENT=1.00       # Max per request ($)
+X402_ENABLE_GASLESS=true    # Gasless payments
+```
+
+## Security Notes
+
+- Use dedicated wallet (not main wallet)
+- Set payment limits (X402_MAX_PAYMENT)
+- Monitor transactions via x402_tx_status
+- Keep minimal balance in hot wallet
+
+## Documentation
+
+- docs/QUICKSTART.md - 5-minute setup
+- docs/MCP_TOOLS.md - Full tool reference
+- docs/ARCHITECTURE.md - Protocol deep dive
+- docs/EXAMPLES.md - Real-world examples
+- docs/SECURITY.md - Best practices
+
+## Resources
+
+- x402 Protocol: https://x402.org
+- x402 Docs: https://docs.x402.org
+- GitHub: https://github.com/coinbase/x402
+- Universal Crypto MCP: https://github.com/nirholas/universal-crypto-mcp
+
+## License
+
+Apache-2.0

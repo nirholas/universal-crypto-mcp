@@ -1,0 +1,55 @@
+{
+  "name": "@boosty/token-launcher",
+  "version": "0.1.0",
+  "description": "Token creation, LP deployment, and launch sniping for Solana",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --declaration --outDir dist",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@boosty/mcp-wallet-manager": "workspace:*",
+    "@boosty/mcp-shared": "workspace:*",
+    "@solana/web3.js": "^1.91.0",
+    "@solana/spl-token": "^0.4.0",
+    "@metaplex-foundation/mpl-token-metadata": "^3.0.0",
+    "@metaplex-foundation/umi": "^0.9.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.9.0",
+    "bs58": "^5.0.0",
+    "uuid": "^9.0.0",
+    "pino": "^8.17.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "tsup": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "solana",
+    "token",
+    "launch",
+    "pumpfun",
+    "raydium",
+    "meteora",
+    "defi"
+  ]
+}

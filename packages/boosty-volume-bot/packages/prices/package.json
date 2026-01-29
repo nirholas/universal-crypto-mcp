@@ -1,0 +1,61 @@
+{
+  "name": "@boosty/mcp-prices",
+  "version": "0.1.0",
+  "description": "Real-time DeFi price data MCP server",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "boosty-mcp-prices": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "echo 'No ESLint configured - using TypeScript for type checking'",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@boosty/mcp-shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "defi",
+    "prices",
+    "crypto",
+    "coingecko",
+    "ethereum",
+    "arbitrum",
+    "boosty"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/defi-mcp-servers.git",
+    "directory": "packages/prices"
+  },
+  "license": "MIT"
+}

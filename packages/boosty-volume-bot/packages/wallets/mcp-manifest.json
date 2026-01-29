@@ -1,0 +1,150 @@
+{
+  "name": "@boosty/mcp-wallets",
+  "version": "0.1.0",
+  "description": "MCP server for wallet analytics, portfolio tracking, and balance data",
+  "tools": [
+    {
+      "name": "getWalletPortfolio",
+      "description": "Get complete portfolio overview for a wallet across multiple chains",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address or ENS name"
+          },
+          "chains": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional list of chains to query (default: all supported)"
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "getTokenBalances",
+      "description": "Get all token balances for a wallet on a specific chain",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "chain": {
+            "type": "string",
+            "description": "Chain identifier (e.g., ethereum, arbitrum, polygon)"
+          }
+        },
+        "required": ["address", "chain"]
+      }
+    },
+    {
+      "name": "getNFTs",
+      "description": "Get NFTs owned by a wallet",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "chain": {
+            "type": "string",
+            "description": "Optional chain filter"
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "getDeFiPositions",
+      "description": "Get DeFi positions (lending, staking, LP, etc.) for a wallet",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "chains": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional list of chains to query"
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "getWalletHistory",
+      "description": "Get transaction history for a wallet",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "chain": {
+            "type": "string",
+            "description": "Chain identifier"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Maximum number of transactions to return (default: 50)"
+          }
+        },
+        "required": ["address", "chain"]
+      }
+    },
+    {
+      "name": "getApprovals",
+      "description": "Get token approvals for security auditing",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "chain": {
+            "type": "string",
+            "description": "Chain identifier"
+          }
+        },
+        "required": ["address", "chain"]
+      }
+    },
+    {
+      "name": "resolveENS",
+      "description": "Resolve ENS name to address or reverse lookup",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "ENS name to resolve (e.g., vitalik.eth)"
+          },
+          "address": {
+            "type": "string",
+            "description": "Address for reverse lookup"
+          }
+        }
+      }
+    }
+  ],
+  "capabilities": {
+    "caching": true,
+    "rateLimiting": true
+  },
+  "requiredEnvVars": [
+    "ALCHEMY_API_KEY",
+    "DEBANK_API_KEY"
+  ],
+  "optionalEnvVars": [
+    "ETHERSCAN_API_KEY",
+    "COVALENT_API_KEY"
+  ]
+}

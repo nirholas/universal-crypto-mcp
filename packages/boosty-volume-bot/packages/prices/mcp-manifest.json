@@ -1,0 +1,150 @@
+{
+  "name": "boosty-mcp-prices",
+  "version": "0.1.0",
+  "description": "Real-time DeFi price data MCP server",
+  "tools": [
+    {
+      "name": "getTokenPrice",
+      "description": "Get current price and market data for a cryptocurrency token including 24h change, market cap, and volume",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Token symbol (e.g., BTC, ETH, ARB)"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency for price (default: usd)",
+            "default": "usd"
+          }
+        },
+        "required": ["symbol"]
+      }
+    },
+    {
+      "name": "getTokenPriceHistory",
+      "description": "Get historical price data for a cryptocurrency token over a specified number of days",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Token symbol (e.g., BTC, ETH, ARB)"
+          },
+          "days": {
+            "type": "number",
+            "description": "Number of days of history (1-365)",
+            "minimum": 1,
+            "maximum": 365
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency for price (default: usd)",
+            "default": "usd"
+          }
+        },
+        "required": ["symbol", "days"]
+      }
+    },
+    {
+      "name": "getGasPrices",
+      "description": "Get current gas prices for EVM chains. Returns low, medium, and high gas estimates in gwei.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "description": "Chain name (ethereum, arbitrum, base, polygon, optimism, avalanche). If not specified, returns all chains.",
+            "enum": ["ethereum", "arbitrum", "base", "polygon", "optimism", "avalanche"]
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "getTopMovers",
+      "description": "Get the top gaining and losing cryptocurrency tokens by price change percentage",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeframe": {
+            "type": "string",
+            "description": "Timeframe for price change (1h, 24h, 7d)",
+            "enum": ["1h", "24h", "7d"],
+            "default": "24h"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of tokens to return per category (default: 10, max: 50)",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 10
+          },
+          "direction": {
+            "type": "string",
+            "description": "Direction to filter (gainers, losers, or both)",
+            "enum": ["gainers", "losers", "both"],
+            "default": "both"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "getFearGreedIndex",
+      "description": "Get the current Crypto Fear & Greed Index value and classification (0-100 scale: 0-24 Extreme Fear, 25-49 Fear, 50-74 Greed, 75-100 Extreme Greed)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "comparePrices",
+      "description": "Compare prices and market data for multiple cryptocurrency tokens in a single request",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of token symbols to compare (max 25)",
+            "minItems": 1,
+            "maxItems": 25
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency for price (default: usd)",
+            "default": "usd"
+          }
+        },
+        "required": ["symbols"]
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": [],
+  "server": {
+    "command": "npx",
+    "args": ["boosty-mcp-prices"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/defi-mcp-servers.git"
+  },
+  "keywords": [
+    "mcp",
+    "defi",
+    "prices",
+    "crypto",
+    "coingecko",
+    "gas",
+    "ethereum",
+    "arbitrum",
+    "boosty"
+  ],
+  "license": "MIT"
+}

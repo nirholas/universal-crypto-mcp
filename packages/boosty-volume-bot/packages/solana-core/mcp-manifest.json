@@ -1,0 +1,55 @@
+{
+  "name": "@defi-mcp/solana-core",
+  "version": "1.0.0",
+  "description": "Production Solana MCP Server for DeFi operations",
+  "tools": [
+    {
+      "name": "getSolanaBalance",
+      "description": "Get SOL balance for a Solana wallet address"
+    },
+    {
+      "name": "getSolanaTokens",
+      "description": "Get all token holdings for a Solana wallet including metadata"
+    },
+    {
+      "name": "getTokenPrice",
+      "description": "Get real-time token price from Pyth oracle"
+    },
+    {
+      "name": "getMultipleTokenPrices",
+      "description": "Get prices for multiple tokens at once"
+    },
+    {
+      "name": "getTokenMetadata",
+      "description": "Get metadata for a Solana token"
+    },
+    {
+      "name": "getTokenMintInfo",
+      "description": "Get token mint information"
+    },
+    {
+      "name": "getCurrentSlot",
+      "description": "Get the current Solana slot number"
+    },
+    {
+      "name": "getTransaction",
+      "description": "Get details of a Solana transaction by signature"
+    },
+    {
+      "name": "getRecentTransactions",
+      "description": "Get recent transactions for a Solana address"
+    },
+    {
+      "name": "estimatePriorityFee",
+      "description": "Estimate priority fee for a transaction"
+    },
+    {
+      "name": "getRpcHealth",
+      "description": "Get health status of all RPC endpoints"
+    },
+    {
+      "name": "getAvailablePriceFeeds",
+      "description": "Get list of available price feeds from oracles"
+    }
+  ]
+}

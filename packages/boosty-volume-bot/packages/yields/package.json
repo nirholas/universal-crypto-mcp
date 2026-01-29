@@ -1,0 +1,39 @@
+{
+  "name": "@boosty/mcp-yields",
+  "version": "0.1.0",
+  "description": "MCP server for DeFi yield discovery and comparison",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "boosty-mcp-yields": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.3.0"
+  },
+  "files": [
+    "dist",
+    "mcp-manifest.json"
+  ],
+  "keywords": [
+    "mcp",
+    "defi",
+    "yields",
+    "apy",
+    "defillama"
+  ],
+  "license": "MIT"
+}

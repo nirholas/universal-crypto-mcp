@@ -1,0 +1,55 @@
+{
+  "name": "@boosty/mcp-defi",
+  "version": "0.1.0",
+  "description": "All-in-one DeFi MCP server combining prices, wallets, and yields",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "boosty-mcp": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "ts-node src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@boosty/mcp-shared": "workspace:*",
+    "@boosty/mcp-prices": "workspace:*",
+    "@boosty/mcp-wallets": "workspace:*",
+    "@boosty/mcp-yields": "workspace:*",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "ts-node": "^10.9.0",
+    "tsup": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "defi",
+    "prices",
+    "wallets",
+    "yields",
+    "boosty"
+  ],
+  "license": "MIT"
+}

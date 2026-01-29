@@ -1,0 +1,689 @@
+// Prisma Schema for QR Pay
+// Supports User, Transaction, Merchant, Invoice, and Webhook models
+// Also includes MCP Hosting models for Agenti
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// ============================================================================
+// USER MODEL
+// ============================================================================
+
+model User {
+  id              String    @id @default(cuid())
+  walletAddress   String    @unique
+  username        String?   @unique // X/Twitter handle
+  displayName     String?
+  email           String?
+  avatarUrl       String?
+  
+  // Verification
+  isVerified      Boolean   @default(false)
+  verifiedAt      DateTime?
+  
+  // Preferences
+  defaultChainId  Int       @default(8453) // Base
+  preferredToken  String    @default("USDC")
+  notifyOnPayment Boolean   @default(true)
+  
+  // Stats
+  totalReceived   String    @default("0") // Cumulative USD value
+  totalSent       String    @default("0")
+  transactionCount Int      @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastActiveAt    DateTime?
+  
+  // Relations
+  sentTransactions      Transaction[] @relation("Sender")
+  receivedTransactions  Transaction[] @relation("Recipient")
+  merchant              Merchant?
+  
+  @@index([walletAddress])
+  @@index([username])
+}
+
+// ============================================================================
+// TRANSACTION MODEL
+// ============================================================================
+
+model Transaction {
+  id                String            @id @default(cuid())
+  
+  // Participants
+  senderId          String?
+  sender            User?             @relation("Sender", fields: [senderId], references: [id])
+  senderAddress     String
+  recipientId       String?
+  recipient         User?             @relation("Recipient", fields: [recipientId], references: [id])
+  recipientAddress  String
+  
+  // Token details
+  inputTokenAddress   String
+  inputTokenSymbol    String
+  inputTokenDecimals  Int
+  inputAmount         String          // Raw amount
+  inputAmountFormatted String         // Human readable
+  
+  outputTokenAddress  String
+  outputTokenSymbol   String
+  outputTokenDecimals Int
+  outputAmount        String          // Raw amount
+  outputAmountFormatted String        // Human readable
+  
+  // Value tracking
+  inputValueUSD       String?
+  outputValueUSD      String?
+  
+  // Chain info
+  chainId             Int
+  isCrossChain        Boolean         @default(false)
+  sourceChainId       Int?
+  destinationChainId  Int?
+  
+  // Transaction details
+  txHash              String          @unique
+  blockNumber         Int?
+  gasUsed             String?
+  gasFeeUSD           String?
+  
+  // Status
+  status              TransactionStatus @default(PENDING)
+  confirmations       Int             @default(0)
+  errorMessage        String?
+  
+  // Metadata
+  memo                String?
+  invoiceId           String?
+  invoice             Invoice?        @relation(fields: [invoiceId], references: [id])
+  
+  // Swap details
+  swapRoute           String?         // JSON encoded route
+  slippage            Float?
+  priceImpact         Float?
+  aggregator          String?         // Which aggregator was used
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  confirmedAt         DateTime?
+  
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([txHash])
+  @@index([chainId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  CONFIRMED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+// ============================================================================
+// MERCHANT MODEL
+// ============================================================================
+
+model Merchant {
+  id              String          @id @default(cuid())
+  
+  // Owner
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id])
+  
+  // Business info
+  businessName    String
+  displayName     String?
+  description     String?
+  logoUrl         String?
+  websiteUrl      String?
+  supportEmail    String?
+  category        MerchantCategory @default(OTHER)
+  
+  // Verification
+  isVerified      Boolean         @default(false)
+  verifiedAt      DateTime?
+  
+  // Payment settings
+  defaultChainId  Int             @default(8453)
+  acceptedChains  Int[]           @default([1, 10, 137, 42161, 8453])
+  acceptedTokens  String[]        @default(["USDC", "USDT", "DAI"])
+  autoConvert     Boolean         @default(true)
+  preferredStable String          @default("USDC")
+  
+  // Limits
+  minPaymentUSD   String?
+  maxPaymentUSD   String?
+  dailyLimitUSD   String?
+  
+  // Notifications
+  webhookUrl      String?
+  webhookSecret   String?
+  notifyEmail     Boolean         @default(true)
+  
+  // Stats
+  totalVolume     String          @default("0")
+  totalTransactions Int           @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  invoices        Invoice[]
+  webhooks        Webhook[]
+  apiKeys         ApiKey[]
+  
+  @@index([userId])
+  @@index([businessName])
+}
+
+enum MerchantCategory {
+  RETAIL
+  RESTAURANT
+  SERVICES
+  SOFTWARE
+  NONPROFIT
+  CREATOR
+  OTHER
+}
+
+// ============================================================================
+// INVOICE MODEL
+// ============================================================================
+
+model Invoice {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Amount
+  amount          String          // Raw amount
+  amountFormatted String          // Human readable
+  currency        String          @default("USDC")
+  chainId         Int             @default(8453)
+  
+  // Recipient
+  recipientAddress String
+  
+  // Status
+  status          InvoiceStatus   @default(PENDING)
+  
+  // Payment info
+  paidAt          DateTime?
+  paidTxHash      String?
+  paidAmount      String?
+  paidToken       String?
+  paidChainId     Int?
+  
+  // Metadata
+  memo            String?
+  metadata        Json?           // Custom key-value pairs
+  externalId      String?         // Merchant's reference ID
+  customerEmail   String?
+  
+  // URLs
+  paymentUrl      String
+  qrCodeUrl       String?
+  redirectUrl     String?
+  
+  // Expiration
+  expiresAt       DateTime
+  
+  // Refund
+  refundedAt      DateTime?
+  refundTxHash    String?
+  refundAmount    String?
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  transactions    Transaction[]
+  
+  @@index([merchantId])
+  @@index([status])
+  @@index([externalId])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PROCESSING
+  PAID
+  EXPIRED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+// ============================================================================
+// WEBHOOK MODEL
+// ============================================================================
+
+model Webhook {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Configuration
+  url             String
+  secret          String
+  events          WebhookEvent[]
+  
+  // Status
+  isActive        Boolean         @default(true)
+  
+  // Health tracking
+  failureCount    Int             @default(0)
+  lastTriggeredAt DateTime?
+  lastSuccessAt   DateTime?
+  lastFailureAt   DateTime?
+  lastError       String?
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  deliveries      WebhookDelivery[]
+  
+  @@index([merchantId])
+  @@index([isActive])
+}
+
+enum WebhookEvent {
+  INVOICE_CREATED
+  INVOICE_PAID
+  INVOICE_EXPIRED
+  INVOICE_CANCELLED
+  PAYMENT_RECEIVED
+  PAYMENT_CONFIRMED
+  PAYMENT_FAILED
+  REFUND_INITIATED
+  REFUND_COMPLETED
+}
+
+// ============================================================================
+// WEBHOOK DELIVERY MODEL
+// ============================================================================
+
+model WebhookDelivery {
+  id              String          @id @default(cuid())
+  
+  // Webhook
+  webhookId       String
+  webhook         Webhook         @relation(fields: [webhookId], references: [id])
+  
+  // Event
+  event           WebhookEvent
+  payload         Json
+  
+  // Delivery status
+  statusCode      Int?
+  response        String?
+  error           String?
+  
+  // Retry info
+  attempts        Int             @default(1)
+  maxAttempts     Int             @default(5)
+  nextRetryAt     DateTime?
+  
+  // Timestamps
+  deliveredAt     DateTime?
+  createdAt       DateTime        @default(now())
+  
+  @@index([webhookId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([nextRetryAt])
+}
+
+// ============================================================================
+// API KEY MODEL
+// ============================================================================
+
+model ApiKey {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Key info
+  name            String
+  keyPrefix       String          // First 8 chars for identification
+  keyHash         String          // Hashed full key
+  
+  // Permissions
+  permissions     ApiPermission[]
+  
+  // Rate limiting
+  rateLimit       Int             @default(100) // requests per minute
+  
+  // Status
+  isActive        Boolean         @default(true)
+  expiresAt       DateTime?
+  
+  // Usage tracking
+  lastUsedAt      DateTime?
+  usageCount      Int             @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@index([merchantId])
+  @@index([keyPrefix])
+  @@index([isActive])
+}
+
+enum ApiPermission {
+  INVOICES_READ
+  INVOICES_WRITE
+  PAYMENTS_READ
+  WEBHOOKS_MANAGE
+  SETTINGS_READ
+  SETTINGS_WRITE
+}
+
+// ============================================================================
+// PRICE CACHE MODEL (Optional - for caching token prices)
+// ============================================================================
+
+model PriceCache {
+  id              String          @id @default(cuid())
+  
+  // Token info
+  tokenAddress    String
+  chainId         Int
+  
+  // Price data
+  priceUSD        String
+  priceChange24h  Float?
+  volume24h       String?
+  marketCap       String?
+  
+  // Timestamps
+  updatedAt       DateTime        @updatedAt
+  
+  @@unique([tokenAddress, chainId])
+  @@index([chainId])
+  @@index([updatedAt])
+}
+
+// ============================================================================
+// MCP HOSTING MODELS
+// ============================================================================
+// These models support the Agenti MCP server hosting platform
+
+// ============================================================================
+// MCP USER MODEL
+// ============================================================================
+
+model MCPUser {
+  id                    String      @id @default(cuid())
+  email                 String      @unique
+  passwordHash          String
+  username              String      @unique
+  tier                  MCPUserTier @default(FREE)
+  
+  // Stripe integration
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  
+  // Timestamps
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Relations
+  servers               MCPServer[]
+  
+  @@index([email])
+  @@index([username])
+  @@index([stripeCustomerId])
+}
+
+enum MCPUserTier {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+// ============================================================================
+// MCP SERVER MODEL
+// ============================================================================
+
+model MCPServer {
+  id              String          @id @default(cuid())
+  
+  // Owner
+  userId          String
+  user            MCPUser         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Server info
+  name            String
+  description     String?
+  subdomain       String          @unique
+  customDomain    String?         @unique
+  
+  // Status
+  status          MCPServerStatus @default(ACTIVE)
+  
+  // Payment settings
+  payoutAddress   String?
+  creatorShare    Int             @default(85) // Percentage creator keeps
+  
+  // Stats
+  totalCalls      Int             @default(0)
+  totalRevenue    Decimal         @default(0)
+  callsThisMonth  Int             @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  tools           MCPTool[]
+  prompts         MCPPrompt[]
+  resources       MCPResource[]
+  usageLogs       MCPUsageLog[]
+  
+  @@index([userId])
+  @@index([subdomain])
+  @@index([status])
+}
+
+enum MCPServerStatus {
+  ACTIVE
+  PAUSED
+  SUSPENDED
+}
+
+// ============================================================================
+// MCP TOOL MODEL
+// ============================================================================
+
+model MCPTool {
+  id              String        @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer     @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Tool info
+  name            String
+  description     String?
+  inputSchema     Json          // JSON Schema for tool inputs
+  
+  // Implementation type
+  type            MCPToolType   @default(HTTP)
+  endpoint        String?       // For HTTP type
+  code            String?       // For CODE type (JavaScript)
+  proxyTarget     String?       // For PROXY type
+  
+  // Pricing
+  price           Decimal       @default(0)
+  
+  // Rate limiting (JSON object with limits config)
+  rateLimit       Json?
+  
+  // Status
+  enabled         Boolean       @default(true)
+  callCount       Int           @default(0)
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Relations
+  usageLogs       MCPUsageLog[]
+  
+  @@unique([serverId, name])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+enum MCPToolType {
+  HTTP
+  CODE
+  PROXY
+}
+
+// ============================================================================
+// MCP PROMPT MODEL
+// ============================================================================
+
+model MCPPrompt {
+  id              String      @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Prompt info
+  name            String
+  description     String?
+  template        String
+  arguments       Json?       // Array of argument definitions
+  
+  // Pricing
+  price           Decimal     @default(0)
+  
+  // Status
+  enabled         Boolean     @default(true)
+  callCount       Int         @default(0)
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@unique([serverId, name])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+// ============================================================================
+// MCP RESOURCE MODEL
+// ============================================================================
+
+model MCPResource {
+  id              String            @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer         @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Resource info
+  uri             String
+  name            String
+  description     String?
+  mimeType        String            @default("text/plain")
+  
+  // Implementation type
+  type            MCPResourceType   @default(STATIC)
+  content         String?           // For STATIC type
+  endpoint        String?           // For DYNAMIC/PROXY types
+  
+  // Pricing
+  price           Decimal           @default(0)
+  
+  // Status
+  enabled         Boolean           @default(true)
+  
+  // Timestamps
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@unique([serverId, uri])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+enum MCPResourceType {
+  STATIC
+  DYNAMIC
+  PROXY
+}
+
+// ============================================================================
+// MCP USAGE LOG MODEL
+// ============================================================================
+
+model MCPUsageLog {
+  id              String      @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Tool (optional - could be prompt or resource call)
+  toolId          String?
+  tool            MCPTool?    @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  
+  // Call type
+  type            MCPUsageType
+  
+  // Caller info
+  callerIp        String?
+  
+  // Payment
+  paymentTx       String?     // Transaction hash if paid
+  amount          Decimal     @default(0)
+  
+  // Timestamp
+  timestamp       DateTime    @default(now())
+  
+  @@index([serverId])
+  @@index([toolId])
+  @@index([type])
+  @@index([timestamp])
+}
+
+enum MCPUsageType {
+  TOOL_CALL
+  PROMPT_GET
+  RESOURCE_READ
+}

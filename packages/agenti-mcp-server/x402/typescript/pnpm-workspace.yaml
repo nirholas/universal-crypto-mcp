@@ -1,0 +1,16 @@
+# ucm:14.9.3.8:nich
+
+packages:
+  - packages/core
+  - packages/extensions
+  - packages/http/*
+  - packages/mechanisms/*
+  - packages/legacy/*
+  - examples/facilitator
+  - examples/**/*
+  - site
+ignoredBuiltDependencies:
+  - esbuild
+
+
+# ucm:n1cha97aeed9

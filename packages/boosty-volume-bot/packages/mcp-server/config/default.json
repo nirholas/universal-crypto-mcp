@@ -1,0 +1,57 @@
+{
+  "solana": {
+    "network": "mainnet-beta",
+    "rpcEndpoints": ["https://api.mainnet-beta.solana.com"],
+    "commitment": "confirmed",
+    "maxRetries": 3
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "defi_mcp",
+    "user": "postgres",
+    "password": "",
+    "ssl": false
+  },
+  "encryption": {
+    "masterPassword": "",
+    "algorithm": "aes-256-gcm"
+  },
+  "features": {
+    "maxWallets": 1000,
+    "maxBotsPerCampaign": 500,
+    "maxConcurrentCampaigns": 10,
+    "maxBatchSize": 100
+  },
+  "auth": {
+    "requireAuth": true,
+    "apiKeyHeader": "x-api-key",
+    "rateLimits": {
+      "swaps": {
+        "max": 100,
+        "windowMs": 60000
+      },
+      "walletOps": {
+        "max": 50,
+        "windowMs": 60000
+      },
+      "campaigns": {
+        "max": 20,
+        "windowMs": 60000
+      },
+      "queries": {
+        "max": 500,
+        "windowMs": 60000
+      }
+    }
+  },
+  "logging": {
+    "level": "info",
+    "pretty": false
+  }
+}

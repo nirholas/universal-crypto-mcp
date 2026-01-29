@@ -1,0 +1,46 @@
+/**
+ * @file tsup.config.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1489314938
+ */
+
+import { defineConfig } from "tsup";
+
+const baseConfig = {
+  entry: {
+    index: "src/index.ts",
+    "v1/index": "src/v1/index.ts",
+    "exact/client/index": "src/exact/client/index.ts",
+    "exact/server/index": "src/exact/server/index.ts",
+    "exact/facilitator/index": "src/exact/facilitator/index.ts",
+    "exact/v1/client/index": "src/exact/v1/client/index.ts",
+    "exact/v1/facilitator/index": "src/exact/v1/facilitator/index.ts",
+  },
+  dts: {
+    resolve: true,
+  },
+  sourcemap: true,
+  target: "es2020",
+};
+
+export default defineConfig([
+  {
+    ...baseConfig,
+    format: "esm",
+    outDir: "dist/esm",
+    clean: true,
+  },
+  {
+    ...baseConfig,
+    format: "cjs",
+    outDir: "dist/cjs",
+    clean: false,
+  },
+]);
+
+
+/* ucm:n1ch2abfa956 */

@@ -1,0 +1,39 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: #1a1a2e;
+    --color-foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@utility full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+@utility unset-full-bleed {
+  width: unset;
+  margin-left: unset;
+}
+
+
+/* universal-crypto-mcp © n1ch0las */

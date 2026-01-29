@@ -1,0 +1,126 @@
+{
+  "name": "boosty-mcp-defi",
+  "version": "0.1.0",
+  "description": "All-in-one DeFi MCP server for boostyOS",
+  "tools": [
+    {
+      "name": "getTokenPrice",
+      "description": "Get current price and market data for a cryptocurrency token",
+      "category": "prices"
+    },
+    {
+      "name": "getGasPrices",
+      "description": "Get current gas prices across multiple chains",
+      "category": "prices"
+    },
+    {
+      "name": "getTopMovers",
+      "description": "Get top gaining and losing tokens in the last 24h",
+      "category": "prices"
+    },
+    {
+      "name": "getFearGreedIndex",
+      "description": "Get the current crypto Fear & Greed Index",
+      "category": "prices"
+    },
+    {
+      "name": "comparePrices",
+      "description": "Compare prices of multiple tokens side by side",
+      "category": "prices"
+    },
+    {
+      "name": "getTokenPriceHistory",
+      "description": "Get historical price data for a token",
+      "category": "prices"
+    },
+    {
+      "name": "getWalletPortfolio",
+      "description": "Get complete portfolio overview for a wallet address",
+      "category": "wallets"
+    },
+    {
+      "name": "getTokenBalances",
+      "description": "Get detailed ERC20 token balances for a wallet",
+      "category": "wallets"
+    },
+    {
+      "name": "getNFTs",
+      "description": "Get NFT holdings for a wallet address",
+      "category": "wallets"
+    },
+    {
+      "name": "getDeFiPositions",
+      "description": "Get DeFi protocol positions for a wallet",
+      "category": "wallets"
+    },
+    {
+      "name": "getApprovals",
+      "description": "Get token approvals (allowances) for a wallet",
+      "category": "wallets"
+    },
+    {
+      "name": "getTopYields",
+      "description": "Get top yield farming opportunities across DeFi",
+      "category": "yields"
+    },
+    {
+      "name": "getPoolDetails",
+      "description": "Get detailed information about a specific yield pool",
+      "category": "yields"
+    },
+    {
+      "name": "compareYields",
+      "description": "Compare multiple yield pools side by side",
+      "category": "yields"
+    },
+    {
+      "name": "getStablecoinYields",
+      "description": "Get best stablecoin yield opportunities",
+      "category": "yields"
+    },
+    {
+      "name": "getRiskAssessment",
+      "description": "Get detailed risk assessment for a yield pool",
+      "category": "yields"
+    },
+    {
+      "name": "getYieldHistory",
+      "description": "Get historical APY data for a yield pool",
+      "category": "yields"
+    },
+    {
+      "name": "getLPYields",
+      "description": "Get liquidity provider yield opportunities",
+      "category": "yields"
+    },
+    {
+      "name": "estimateReturns",
+      "description": "Estimate returns for a given investment amount and duration",
+      "category": "yields"
+    }
+  ],
+  "configuration": {
+    "environment": {
+      "COINGECKO_API_KEY": {
+        "description": "API key for CoinGecko price data",
+        "required": false
+      },
+      "ALCHEMY_API_KEY": {
+        "description": "API key for Alchemy blockchain data",
+        "required": true
+      },
+      "ETHERSCAN_API_KEY": {
+        "description": "API key for Etherscan",
+        "required": false
+      },
+      "ARBISCAN_API_KEY": {
+        "description": "API key for Arbiscan",
+        "required": false
+      },
+      "BASESCAN_API_KEY": {
+        "description": "API key for Basescan",
+        "required": false
+      }
+    }
+  }
+}

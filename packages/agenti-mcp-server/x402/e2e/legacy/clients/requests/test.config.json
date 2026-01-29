@@ -1,0 +1,22 @@
+{
+  "name": "requests",
+  "type": "client",
+  "language": "python",
+  "protocolFamilies": [
+    "evm"
+  ],
+  "x402Versions": [
+    1
+  ],
+  "description": "Python requests client with x402 HTTP adapter",
+  "environment": {
+    "required": [
+      "EVM_PRIVATE_KEY",
+      "RESOURCE_SERVER_URL",
+      "ENDPOINT_PATH"
+    ],
+    "optional": []
+  },
+  "_ucm_checksum": "n1ch-0las-4e49-4348-786274000000",
+  "_maintainer": "n1ch0las"
+}

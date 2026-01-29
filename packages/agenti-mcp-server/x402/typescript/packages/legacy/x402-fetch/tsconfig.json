@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "lib": [
+      "DOM"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "_ucm_checksum": "1489314938",
+  "_maintainer": "nich"
+}

@@ -1,0 +1,19 @@
+# dependabot.yml | nich.xbt | bmljaCBuaXJob2xhcw==
+
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: daily
+  - package-ecosystem: github-actions
+    directory: /
+    groups:
+      actions:
+        patterns:
+          - "*"
+    schedule:
+      interval: daily
+
+
+# ucm:n1ch7e230225

@@ -1,0 +1,76 @@
+{
+  "name": "@boosty/mcp-server",
+  "version": "1.0.0",
+  "description": "Production DeFi operations MCP server for Solana with wallet management, trading, and volume campaigns",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "defi-mcp-server": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "config"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "db:init": "node dist/cli.js db:init",
+    "db:migrate": "node dist/cli.js db:migrate"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@boosty/mcp-shared": "workspace:*",
+    "@boosty/mcp-orchestrator": "workspace:*",
+    "@boosty/mcp-wallet-manager": "workspace:*",
+    "@boosty/mcp-trading-engine": "workspace:*",
+    "@solana/web3.js": "^1.87.0",
+    "commander": "^12.0.0",
+    "fastify": "^4.25.0",
+    "ioredis": "^5.3.0",
+    "pg": "^8.11.0",
+    "pino": "^8.17.0",
+    "pino-pretty": "^10.3.0",
+    "viem": "^2.0.0",
+    "zod": "^3.22.0",
+    "dotenv": "^16.3.0"
+  },
+  "optionalDependencies": {
+    "@x402/core": "^2.0.0",
+    "@x402/evm": "^2.0.0",
+    "@x402/svm": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "ts-node": "^10.9.0",
+    "tsup": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "defi",
+    "solana",
+    "trading",
+    "wallets",
+    "volume-generation"
+  ],
+  "license": "MIT"
+}

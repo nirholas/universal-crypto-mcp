@@ -1,0 +1,38 @@
+{
+  "name": "boosty-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Boosty MCP servers for DeFi - Volume generation, trading, and wallet management",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean",
+    "typecheck": "pnpm -r typecheck",
+    "dev": "pnpm --filter @boosty/mcp-server dev",
+    "start": "pnpm --filter @boosty/mcp-server start",
+    "db:init": "pnpm --filter @boosty/mcp-server db:init",
+    "db:migrate": "pnpm --filter @boosty/mcp-server db:migrate",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

@@ -1,0 +1,85 @@
+{
+  "name": "@boosty/mcp-trading-engine",
+  "version": "1.0.0",
+  "description": "Solana DEX integration and trading engine for DeFi MCP server",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./jupiter": {
+      "import": "./dist/jupiter/index.js",
+      "types": "./dist/jupiter/index.d.ts"
+    },
+    "./raydium": {
+      "import": "./dist/raydium/index.js",
+      "types": "./dist/raydium/index.d.ts"
+    },
+    "./orca": {
+      "import": "./dist/orca/index.js",
+      "types": "./dist/orca/index.d.ts"
+    },
+    "./pumpfun": {
+      "import": "./dist/pumpfun/index.js",
+      "types": "./dist/pumpfun/index.d.ts"
+    },
+    "./executor": {
+      "import": "./dist/executor/index.js",
+      "types": "./dist/executor/index.d.ts"
+    },
+    "./analytics": {
+      "import": "./dist/analytics/index.js",
+      "types": "./dist/analytics/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/spl-token": "^0.4.6",
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^5.0.0",
+    "decimal.js": "^10.4.3",
+    "node-cache": "^5.1.2",
+    "p-retry": "^6.2.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/bs58": "^4.0.4",
+    "@types/node": "^20.11.0",
+    "@types/ws": "^8.5.10",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "peerDependencies": {
+    "@boosty/mcp-shared": "workspace:*",
+    "@boosty/mcp-solana-core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "solana",
+    "defi",
+    "dex",
+    "jupiter",
+    "raydium",
+    "orca",
+    "pumpfun",
+    "trading",
+    "mcp"
+  ],
+  "author": "",
+  "license": "MIT"
+}

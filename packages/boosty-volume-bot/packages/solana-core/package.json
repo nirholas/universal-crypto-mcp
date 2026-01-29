@@ -1,0 +1,73 @@
+{
+  "name": "@boosty/mcp-solana-core",
+  "version": "1.0.0",
+  "description": "Production Solana core infrastructure for DeFi MCP server",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "solana-mcp": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./connection": {
+      "import": "./dist/connection/index.js",
+      "types": "./dist/connection/index.d.ts"
+    },
+    "./transactions": {
+      "import": "./dist/transactions/index.js",
+      "types": "./dist/transactions/index.d.ts"
+    },
+    "./tokens": {
+      "import": "./dist/tokens/index.js",
+      "types": "./dist/tokens/index.d.ts"
+    },
+    "./oracles": {
+      "import": "./dist/oracles/index.js",
+      "types": "./dist/oracles/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.js",
+      "types": "./dist/server.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/cli.js",
+    "start:dev": "tsx watch src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
+    "@metaplex-foundation/umi": "^0.9.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.9.1",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@pythnetwork/client": "^2.21.0",
+    "@solana/spl-token": "^0.4.6",
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^5.0.0",
+    "jito-ts": "^4.1.0",
+    "node-cache": "^5.1.2",
+    "p-retry": "^6.2.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/bs58": "^4.0.4",
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

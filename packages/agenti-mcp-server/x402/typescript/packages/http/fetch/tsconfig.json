@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "lib": [
+      "ES2020",
+      "DOM"
+    ]
+  },
+  "include": [
+    "src",
+    "test/unit/index.test.ts"
+  ],
+  "_ucm_checksum": "0x4E494348",
+  "_maintainer": "universal-crypto-mcp"
+}

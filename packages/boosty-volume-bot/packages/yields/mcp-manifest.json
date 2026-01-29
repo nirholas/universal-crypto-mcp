@@ -1,0 +1,53 @@
+{
+  "name": "boosty-mcp-yields",
+  "version": "0.1.0",
+  "description": "MCP server for DeFi yield discovery and comparison powered by DeFiLlama",
+  "repository": "https://github.com/nirholas/defi-mcp-servers",
+  "author": "boosty",
+  "license": "MIT",
+  "tools": [
+    {
+      "name": "getTopYields",
+      "description": "Get top DeFi yields across protocols and chains with filtering options"
+    },
+    {
+      "name": "getPoolDetails",
+      "description": "Get detailed information about a specific yield pool"
+    },
+    {
+      "name": "getYieldHistory",
+      "description": "Get historical APY and TVL data for a yield pool"
+    },
+    {
+      "name": "compareYields",
+      "description": "Compare multiple yield pools with analysis and recommendations"
+    },
+    {
+      "name": "getStablecoinYields",
+      "description": "Get yield opportunities for stablecoins"
+    },
+    {
+      "name": "getLPYields",
+      "description": "Find LP pool yields for a specific token pair"
+    },
+    {
+      "name": "estimateReturns",
+      "description": "Estimate potential returns for an investment"
+    },
+    {
+      "name": "getRiskAssessment",
+      "description": "Get comprehensive risk assessment for a yield pool"
+    }
+  ],
+  "capabilities": {
+    "tools": true
+  },
+  "transport": ["stdio"],
+  "dataSources": [
+    {
+      "name": "DeFiLlama Yields API",
+      "url": "https://yields.llama.fi",
+      "description": "Aggregated DeFi yield data from DeFiLlama"
+    }
+  ]
+}

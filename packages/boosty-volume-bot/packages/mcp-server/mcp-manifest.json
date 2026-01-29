@@ -1,0 +1,64 @@
+{
+  "name": "defi-mcp-server",
+  "version": "1.0.0",
+  "description": "Production DeFi operations via MCP for Solana - wallet management, trading, and volume campaigns",
+  "tools": [
+    "create_wallet_swarm",
+    "get_wallet_balances",
+    "distribute_funds",
+    "consolidate_funds",
+    "list_wallets",
+    "delete_wallet",
+    "execute_swap",
+    "get_swap_quote",
+    "execute_batch_swaps",
+    "buy_token",
+    "sell_token",
+    "create_volume_campaign",
+    "start_campaign",
+    "pause_campaign",
+    "stop_campaign",
+    "get_campaign_status",
+    "get_campaign_metrics",
+    "list_campaigns",
+    "get_token_info",
+    "get_pool_info",
+    "get_price_history",
+    "analyze_liquidity",
+    "get_top_holders",
+    "get_market_overview",
+    "create_bot",
+    "configure_bot",
+    "start_bot",
+    "stop_bot",
+    "get_bot_status",
+    "list_active_bots"
+  ],
+  "resources": [
+    "wallets://list",
+    "wallets://{walletId}",
+    "wallets://{walletId}/transactions",
+    "campaigns://list",
+    "campaigns://{campaignId}",
+    "campaigns://{campaignId}/metrics",
+    "bots://list",
+    "bots://{botId}/status",
+    "tokens://{mint}/info"
+  ],
+  "prompts": [
+    "volume_campaign_wizard",
+    "wallet_setup_guide",
+    "analyze_token_for_trading",
+    "campaign_optimization_report"
+  ],
+  "capabilities": {
+    "tools": true,
+    "resources": true,
+    "prompts": true
+  },
+  "requirements": {
+    "solana": "mainnet-beta or devnet",
+    "redis": "optional for caching",
+    "postgresql": "required for persistent storage"
+  }
+}
