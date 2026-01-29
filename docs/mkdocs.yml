@@ -118,10 +118,21 @@ nav:
     - Cross-Chain Portfolio: tutorials/cross-chain-portfolio.md
     - DeFi Analytics: tutorials/defi-analytics.md
     - Security Scanner: tutorials/security-scanner.md
+    - Paid API Service: tutorials/paid-api-service.md
+  - x402-deploy:
+    - Overview: x402-deploy/overview.md
+    - Complete Guide: x402-deploy/complete-guide.md
+    - Quick Start: x402-deploy/quick-start.md
+    - Configuration: x402-deploy/configuration.md
+    - API Reference: x402-deploy/api-reference.md
+    - Discovery Protocol: x402-deploy/discovery.md
+    - Deployment Providers: x402-deploy/providers.md
   - x402 Ecosystem:
     - Overview: x402-ecosystem/README.md
     - DeFi Agents: x402-ecosystem/defi-agents.md
     - Free Crypto News: x402-ecosystem/free-crypto-news.md
+  - Complete Documentation:
+    - Full Guide: complete-guide.md
   - Prompt Library: prompts/index.md
   - Use Cases: use-cases.md
   - Comparison: comparison.md

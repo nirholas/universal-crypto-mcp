@@ -2,7 +2,27 @@
 
 Complete, runnable examples showing how to monetize different types of APIs.
 
-## 📁 Example Projects
+## 📁 Quick Examples
+
+### Quick Start (`quickstart.ts`)
+The simplest possible x402 API with marketplace integration.
+- **Language:** TypeScript
+- **Lines:** ~30
+- **Features:** Discovery + Marketplace
+- **Run:** `tsx quickstart.ts`
+
+### Full Integration (`marketplace-integration.ts`)
+Complete example with all Agent 13 & 14 features.
+- **Language:** TypeScript
+- **Features:** 
+  - ✅ Marketplace API endpoints
+  - ✅ Discovery document (/.well-known/x402)
+  - ✅ OpenAPI specification
+  - ✅ AI instructions (llms.txt)
+  - ✅ x402scan registration
+- **Run:** `tsx marketplace-integration.ts`
+
+## 📁 Complete Projects
 
 ### 1. MCP Server (`mcp-calculator/`)
 A simple calculator Model Context Protocol server with x402 payments.
@@ -40,7 +60,17 @@ Each example has its own README with:
 - Deployment commands
 - Testing steps
 
-### Run an Example
+### Run a Simple Example
+
+```bash
+# Quick start (30 lines)
+npx tsx examples/quickstart.ts
+
+# Full integration (all features)
+npx tsx examples/marketplace-integration.ts
+```
+
+### Run a Complete Project
 
 ```bash
 # Choose an example

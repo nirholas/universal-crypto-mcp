@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>x402-deploy — Monetize any API in 5 minutes</title>
+    <meta name="description" content="Turn any API or MCP server into a paid service. One command. Zero code changes. Enterprise-ready.">
+    <meta name="keywords" content="API monetization, x402, MCP server, deployment, crypto payments, developer tools">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="x402-deploy — Monetize any API in 5 minutes">
+    <meta property="og:description" content="Turn any API or MCP server into a paid service. One command. Zero code changes.">
+    <meta property="og:type" content="website">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        code, pre {
+            font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--black);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--black);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            line-height: 1.1;
+            margin-bottom: 30px;
+        }
+        
+        .hero p {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--gray-600);
+            margin-bottom: 50px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 18px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--black);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--black);
+            border: 2px solid var(--gray-200);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--black);
+            transform: translateY(-2px);
+        }
+        
+        /* Code Demo */
+        .code-demo {
+            margin-top: 80px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+        
+        .terminal {
+            background: var(--black);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .terminal-header {
+            background: var(--gray-900);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gray-600);
+        }
+        
+        .terminal-dot:nth-child(1) { background: #FF5F56; }
+        .terminal-dot:nth-child(2) { background: #FFBD2E; }
+        .terminal-dot:nth-child(3) { background: #27C93F; }
+        
+        .terminal-body {
+            padding: 30px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--gray-300);
+        }
+        
+        .terminal-line {
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: typeLine 0.5s ease-out forwards;
+        }
+        
+        .terminal-line:nth-child(1) { animation-delay: 1s; }
+        .terminal-line:nth-child(2) { animation-delay: 1.3s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.6s; }
+        .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+        
+        .prompt { color: #27C93F; }
+        .command { color: var(--white); font-weight: 500; }
+        .output { color: var(--gray-500); }
+        .success { color: #27C93F; }
+        
+        /* Features Section */
+        .section {
+            padding: 120px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .section-header h2 {
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+        
+        .section-header p {
+            font-size: 20px;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            padding: 40px;
+            border-radius: 20px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: var(--gray-300);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .feature-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        
+        .feature-card p {
+            color: var(--gray-600);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        /* How It Works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 60px;
+            margin-top: 80px;
+        }
+        
+        .step {
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--black);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 24px;
+        }
+        
+        .step h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .step p {
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+        
+        /* Capabilities Grid */
+        .capabilities {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            background: var(--gray-200);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+        
+        .capability {
+            background: var(--white);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .capability-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .capability-icon {
+            font-size: 24px;
+        }
+        
+        .capability-desc {
+            color: var(--gray-600);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 60px;
+            text-align: center;
+            margin: 100px 0;
+            padding: 80px 40px;
+            border-top: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .stat-number {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+        
+        /* Pricing Section */
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .pricing-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 50px;
+            transition: var(--transition);
+        }
+        
+        .pricing-card.featured {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+            transform: scale(1.05);
+        }
+        
+        .pricing-card:hover {
+            border-color: var(--black);
+            transform: translateY(-8px);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-8px);
+        }
+        
+        .pricing-name {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+            color: var(--gray-500);
+        }
+        
+        .pricing-card.featured .pricing-name {
+            color: var(--gray-400);
+        }
+        
+        .pricing-price {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+        
+        .pricing-period {
+            color: var(--gray-500);
+            margin-bottom: 30px;
+        }
+        
+        .pricing-card.featured .pricing-period {
+            color: var(--gray-400);
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+        
+        .pricing-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 15px;
+        }
+        
+        .pricing-card.featured .pricing-features li {
+            border-bottom-color: var(--gray-800);
+            color: var(--gray-200);
+        }
+        
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            padding: 120px 40px;
+            border-radius: 40px;
+            margin: 0 40px;
+        }
+        
+        .cta-section h2 {
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 20px;
+            color: var(--gray-400);
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-section .btn-primary {
+            background: var(--white);
+            color: var(--black);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 80px 40px 40px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 120px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+        
+        .footer-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+            color: var(--gray-900);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-section a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        
+        .footer-section a:hover {
+            color: var(--black);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes typeLine {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .capabilities {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .cta-section {
+                margin: 0 20px;
+                padding: 80px 30px;
+            }
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Selection */
+        ::selection {
+            background: var(--black);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">x402-deploy</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how">How it works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="https://github.com/nirholas/universal-crypto-mcp" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Monetize any API<br>in 5 minutes</h1>
+            <p>Turn any API or MCP server into a paid service. One command. Zero code changes. Enterprise-ready.</p>
+            
+            <div class="cta-group">
+                <a href="#how" class="btn btn-primary">Get Started</a>
+                <a href="https://github.com/nirholas/universal-crypto-mcp" class="btn btn-secondary">View on GitHub</a>
+            </div>
+            
+            <div class="code-demo">
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line"><span class="prompt">$</span> <span class="command">npm install -g @nirholas/x402-deploy</span></div>
+                        <div class="terminal-line"><span class="prompt">$</span> <span class="command">x402-deploy deploy</span></div>
+                        <div class="terminal-line"><span class="output">✓ Deploying to Railway...</span></div>
+                        <div class="terminal-line"><span class="success">✓ Live at https://my-api.up.railway.app</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">&lt;5m</div>
+            <div class="stat-label">Time to deploy</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Code changes needed</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">8+</div>
+            <div class="stat-label">Deployment platforms</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Revenue ownership</div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <h2>Everything you need.</h2>
+            <p>Production-ready infrastructure for API monetization. No surprises.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>Instant Deploy</h3>
+                <p>One command deploys to Railway, Fly.io, Vercel, or Docker. Automatic SSL, scaling, and monitoring.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">💰</span>
+                <h3>Crypto Payments</h3>
+                <p>Accept USDC, USDT, DAI on Base, Arbitrum, Polygon. Sub-second verification. Zero platform fees.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Live Dashboard</h3>
+                <p>Real-time earnings, usage analytics, and customer insights. Beautiful terminal and web UI.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Auto-Discovery</h3>
+                <p>Automatic listing on x402scan.com marketplace. Get found by AI agents and developers.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🛡️</span>
+                <h3>Enterprise Security</h3>
+                <p>Fraud detection, KYC/AML compliance, audit logging. SOC2-ready from day one.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3>Smart Pricing</h3>
+                <p>Dynamic pricing, volume discounts, subscriptions. ML-optimized revenue maximization.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how">
+        <div class="section-header">
+            <h2>How it works</h2>
+            <p>Three steps. Five minutes. Start earning.</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Initialize</h3>
+                <p>Run <code>x402-deploy init</code> in your API directory. Automatically detects Express, Fastify, Next.js, FastAPI, and more.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Deploy</h3>
+                <p>Run <code>x402-deploy deploy</code>. Creates wallet, wraps API with payment gateway, deploys to your platform of choice.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Earn</h3>
+                <p>Watch <code>x402-deploy dashboard</code>. See real-time earnings as AI agents and developers use your API.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Enterprise-ready</h2>
+            <p>Built for scale from the start</p>
+        </div>
+        
+        <div class="capabilities">
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🌐</span>
+                    Multi-Chain Support
+                </div>
+                <div class="capability-desc">
+                    Accept payments on Base, Arbitrum, Polygon, and Ethereum. Automatic chain selection for lowest fees.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🔄</span>
+                    Subscription Models
+                </div>
+                <div class="capability-desc">
+                    Offer pay-per-call, monthly subscriptions, or credit bundles. Flexible pricing to maximize revenue.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">📡</span>
+                    Load Balancing
+                </div>
+                <div class="capability-desc">
+                    Built-in clustering and Redis caching. Handle millions of requests with zero downtime.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🎨</span>
+                    White-Label
+                </div>
+                <div class="capability-desc">
+                    Custom branding, domains, and checkout flows. Multi-tenant architecture for agencies.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🔒</span>
+                    Fraud Protection
+                </div>
+                <div class="capability-desc">
+                    7-layer fraud detection with ML. Blocks duplicate txs, rate limiting, VPN detection, and more.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">📊</span>
+                    Advanced Analytics
+                </div>
+                <div class="capability-desc">
+                    Cohort analysis, funnel tracking, churn prediction. ML-powered insights to grow revenue.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🛠️</span>
+                    SDK Generation
+                </div>
+                <div class="capability-desc">
+                    Auto-generate TypeScript, Python, Go SDKs from your API. Beautiful docs with live examples.
+                </div>
+            </div>
+            
+            <div class="capability">
+                <div class="capability-title">
+                    <span class="capability-icon">🤖</span>
+                    MCP Native
+                </div>
+                <div class="capability-desc">
+                    First-class support for Model Context Protocol. AI agents can discover and pay for your tools.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="pricing">
+        <div class="section-header">
+            <h2>Simple pricing</h2>
+            <p>Keep 100% of your revenue. Forever.</p>
+        </div>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="pricing-name">Starter</div>
+                <div class="pricing-price">$0</div>
+                <div class="pricing-period">Forever free</div>
+                <ul class="pricing-features">
+                    <li>Unlimited API calls</li>
+                    <li>One deployment platform</li>
+                    <li>Basic analytics</li>
+                    <li>Community support</li>
+                    <li>Auto-discovery</li>
+                </ul>
+                <a href="#how" class="btn btn-secondary" style="width: 100%;">Get Started</a>
+            </div>
+            
+            <div class="pricing-card featured">
+                <div class="pricing-name">Pro</div>
+                <div class="pricing-price">$49</div>
+                <div class="pricing-period">per month</div>
+                <ul class="pricing-features">
+                    <li>Everything in Starter</li>
+                    <li>All deployment platforms</li>
+                    <li>Advanced analytics & ML</li>
+                    <li>Priority support</li>
+                    <li>Custom branding</li>
+                    <li>Team collaboration</li>
+                </ul>
+                <a href="#how" class="btn btn-primary" style="width: 100%;">Start Free Trial</a>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="pricing-name">Enterprise</div>
+                <div class="pricing-price">Custom</div>
+                <div class="pricing-period">Talk to sales</div>
+                <ul class="pricing-features">
+                    <li>Everything in Pro</li>
+                    <li>White-label platform</li>
+                    <li>Multi-tenant support</li>
+                    <li>SLA guarantees</li>
+                    <li>Dedicated support</li>
+                    <li>Custom integrations</li>
+                </ul>
+                <a href="mailto:sales@x402.dev" class="btn btn-secondary" style="width: 100%;">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Start earning in 5 minutes</h2>
+        <p>Join thousands of developers monetizing their APIs with x402-deploy. No credit card required.</p>
+        <a href="https://github.com/nirholas/universal-crypto-mcp" class="btn btn-primary">Get Started Free</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp">Documentation</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/CHANGELOG.md">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Developers</h4>
+                <ul>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp">GitHub</a></li>
+                    <li><a href="https://www.npmjs.com/package/@nirholas/x402-deploy">NPM Package</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+                    <li><a href="https://discord.gg/x402">Discord</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/README.md">About</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/MARKETING.md">Blog</a></li>
+                    <li><a href="mailto:hello@x402.dev">Contact</a></li>
+                    <li><a href="https://twitter.com/nichxbt">Twitter</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/LICENSE">License</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/SECURITY.md">Security</a></li>
+                    <li><a href="https://github.com/nirholas/universal-crypto-mcp/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 x402-deploy. MIT License. Built with ◈ by developers, for developers.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Parallax effect for hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-content');
+            if (hero && scrolled < window.innerHeight) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                hero.style.opacity = 1 - (scrolled / window.innerHeight) * 0.8;
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .step, .capability, .pricing-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

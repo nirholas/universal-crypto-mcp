@@ -1,5 +1,5 @@
 {
-  "name": "@nirholas/crypto-lyra-playground",
+  "name": "@nirholas/web3-playground",
   "version": "0.1.0",
   "description": "Universal Crypto MCP - Lyra Web3 Playground - Learn blockchain development with interactive examples. Compile and deploy Solidity in your browser. Built by nich.",
   "author": {

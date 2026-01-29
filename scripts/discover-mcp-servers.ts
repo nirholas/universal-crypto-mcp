@@ -52,9 +52,12 @@ class MCPDiscovery {
   private octokit: Octokit;
 
   constructor() {
-    this.octokit = new Octokit({
-      auth: process.env.GITHUB_TOKEN
-    });
+    const token = process.env.GITHUB_TOKEN;
+    this.octokit = new Octokit(token ? { auth: token } : {});
+    
+    if (!token) {
+      console.log(chalk.yellow('⚠️  Running without GITHUB_TOKEN - rate limited to 60 requests/hour'));
+    }
   }
 
   async discoverServers(options: {
@@ -276,13 +279,6 @@ class MCPDiscovery {
 // CLI
 async function main() {
   const args = process.argv.slice(2);
-  
-  if (!process.env.GITHUB_TOKEN) {
-    console.error(chalk.red('❌ GITHUB_TOKEN environment variable required'));
-    console.log(chalk.yellow('\nGet a token at: https://github.com/settings/tokens'));
-    console.log(chalk.yellow('Then run: export GITHUB_TOKEN=your_token\n'));
-    process.exit(1);
-  }
 
   const discovery = new MCPDiscovery();
 

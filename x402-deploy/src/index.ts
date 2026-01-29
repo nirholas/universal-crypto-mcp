@@ -62,8 +62,11 @@ export {
   generateMcpWrapper,
 } from "./templates/index.js";
 
-// Discovery exports
-export { registerWithX402Scan } from "./discovery/register.js";
+// Discovery exports - Full module
+export * from "./discovery/index.js";
+
+// Marketplace exports - Full module
+export * from "./marketplace/index.js";
 
 // Dashboard exports
 export * from "./dashboard/index.js";

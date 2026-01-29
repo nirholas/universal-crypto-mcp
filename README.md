@@ -55,9 +55,24 @@ npx @nirholas/universal-crypto-mcp
   <img src=".github/demo.svg" alt="Universal Crypto MCP Demo" width="800">
 </p>
 
-## ✨ What's New: x402 Payment Protocol
+## ✨ What's New: AI Service Marketplace
 
-> **AI agents can now pay for things on the internet!** 💸
+> **Monetize your AI services & discover the best APIs!** 💸
+
+The **AI Service Marketplace** is a complete ecosystem for AI service discovery, monetization, and reputation management:
+
+- 🏪 **Register your AI service** - Instant monetization with pay-per-use or subscriptions
+- 🔍 **AI agents discover services** - Automatic discovery by category, price, and rating
+- ⭐ **On-chain reputation** - Build trust with verified ratings and reviews
+- 💳 **Flexible pricing** - Pay-per-use, subscriptions, free tiers
+- 📊 **Analytics dashboard** - Track usage, revenue, and performance
+- 🔒 **Secure payments** - Escrow, dispute resolution, automatic refunds
+
+**[Learn more →](MARKETPLACE.md)** | **[View Tutorial →](docs/content/tutorials/marketplace-service.md)**
+
+### x402 Payment Protocol
+
+**AI agents can now pay for things on the internet!** 💸
 
 ```
 User: "Get premium weather data for Tokyo"
