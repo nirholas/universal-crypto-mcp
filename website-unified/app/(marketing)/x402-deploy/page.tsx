@@ -20,20 +20,6 @@ export default function X402DeployPage() {
       <Features />
       <Dashboard />
       <Pricing />
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-500 mb-2">1 min</div>
-            <div className="text-sm text-gray-400">Deployment time</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-500 mb-2">0 code</div>
-            <div className="text-sm text-gray-400">Changes required</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-500 mb-2">∞ scale</div>
-            <div className="text-sm text-gray-400">Auto-scaling included</div>
-          </div>
-        </div>
-      </div>
     </main>
   )
 }

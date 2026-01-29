@@ -20,24 +20,6 @@ export default function MCPServerPage() {
       <UseCases />
       <Integration />
       <Pricing />
-            </p>
-          </div>
-          
-          <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">⚡ Real-time Data</h3>
-            <p className="text-sm text-gray-400">
-              Live blockchain data, prices, gas fees, and transaction monitoring
-            </p>
-          </div>
-          
-          <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">🔒 Secure</h3>
-            <p className="text-sm text-gray-400">
-              Enterprise-grade security with wallet encryption and secure key management
-            </p>
-          </div>
-        </div>
-      </div>
     </main>
   )
 }

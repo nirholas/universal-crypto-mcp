@@ -142,7 +142,7 @@ export function Pricing() {
                 <Button
                   size="lg"
                   className="w-full mb-6"
-                  variant={tier.highlight ? 'default' : 'outline'}
+                  variant={tier.highlight ? 'primary' : 'outline'}
                   asChild
                 >
                   <Link href={tier.href}>
