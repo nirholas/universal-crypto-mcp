@@ -4,7 +4,11 @@
   "private": true,
   "description": "This is the plugin template for SperaxOS plugin development",
   "homepage": "https://github.com/sperax/chat-plugin-template",
-  "repository": "https://github.com/sperax/chat-plugin-template.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/plugins/plugin.delivery/templates/basic"
+  },
   "workspaces": [
     "docs/*",
     "./*"
@@ -85,5 +89,21 @@
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
-  }
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

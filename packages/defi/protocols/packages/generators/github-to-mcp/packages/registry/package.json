@@ -32,11 +32,16 @@
     "ai",
     "tools"
   ],
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/github-to-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/generators/github-to-mcp/packages/registry"
   },
   "dependencies": {
     "semver": "^7.6.0"
@@ -55,5 +60,16 @@
     "@nirholas/github-to-mcp": {
       "optional": true
     }
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

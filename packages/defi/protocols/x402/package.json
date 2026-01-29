@@ -1,7 +1,11 @@
 {
   "private": true,
   "packageManager": "pnpm@10.7.0",
-  "author": "nirholas/universal-crypto-mcp",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nicholas",

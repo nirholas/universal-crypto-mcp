@@ -1,0 +1,54 @@
+{
+  "name": "@universal-crypto-mcp/agent-agenti",
+  "version": "1.0.0",
+  "description": "Agenti MCP Server - AI agent framework",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@universal-crypto-mcp/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "viem": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0"
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/agents/agenti"
+  },
+  "license": "Apache-2.0",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
+}

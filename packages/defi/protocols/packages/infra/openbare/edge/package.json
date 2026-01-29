@@ -24,7 +24,11 @@
     "tomphtp",
     "openbare"
   ],
-  "author": "SPA-OS",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "devDependencies": {
     "wrangler": "^3.22.0",
@@ -35,9 +39,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/SPA-OS"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/infra/openbare/edge"
   },
   "bugs": {
     "url": "https://github.com/nirholas/SPA-OS/issues"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

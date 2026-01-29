@@ -5,7 +5,8 @@
   "homepage": "https://xactions.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/xactions.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/social/xactions"
   },
   "bugs": {
     "url": "https://github.com/nirholas/xactions/issues"
@@ -79,7 +80,7 @@
   "author": {
     "name": "nich",
     "url": "https://github.com/nirholas",
-    "twitter": "@nichxbt"
+    "twitter": "https://x.com/nichxbt"
   },
   "license": "MIT",
   "keywords": [
@@ -125,5 +126,16 @@
   ],
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

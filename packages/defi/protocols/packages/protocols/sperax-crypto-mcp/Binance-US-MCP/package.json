@@ -23,11 +23,13 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://x.com/nichxbt"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/universal-crypto-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/protocols/sperax-crypto-mcp/Binance-US-MCP"
   },
   "keywords": [
     "mcp",
@@ -52,5 +54,16 @@
     "@types/node": "^20.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

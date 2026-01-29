@@ -16,7 +16,11 @@
     "registry",
     "openbare"
   ],
-  "author": "OpenBare Community",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^9.4.3",
@@ -26,5 +30,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

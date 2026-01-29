@@ -34,11 +34,16 @@
     "tools",
     "openapi"
   ],
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/github-to-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/generators/github-to-mcp/packages/core"
   },
   "dependencies": {
     "@github-to-mcp/openapi-parser": "workspace:*",
@@ -57,5 +62,16 @@
     "typescript": "^5.4.0",
     "@types/node": "^20.0.0",
     "@types/prompts": "^2.4.9"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

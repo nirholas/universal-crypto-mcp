@@ -23,11 +23,13 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://github.com/nirholas"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/universal-crypto-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/trading/binance-us"
   },
   "keywords": [
     "mcp",

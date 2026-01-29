@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
-  "author": "nich.xbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "type": "module",
   "main": "index.js",
   "scripts": {

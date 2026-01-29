@@ -1,0 +1,40 @@
+{
+  "name": "@universal-crypto-mcp/evm-utils",
+  "version": "1.0.0",
+  "description": "EVM helper utilities for Universal Crypto MCP",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@universal-crypto-mcp/core": "workspace:*",
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0"
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/shared/evm-utils"
+  },
+  "license": "Apache-2.0"
+}

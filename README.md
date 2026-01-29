@@ -104,6 +104,59 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 
 ---
 
+## 📦 Package Structure
+
+The most comprehensive crypto MCP monorepo with **10+ integrated packages** from the best MIT-licensed projects:
+
+```
+packages/
+├── core/               # Shared types, utilities, configuration
+├── trading/            # CEX exchange integrations
+│   ├── binance/        # Binance spot & futures
+│   └── binance-us/     # Binance US
+├── market-data/        # Prices, news, analytics
+│   ├── prices/         # CoinGecko, DexPaprika, CoinMarketCap
+│   ├── news/           # CryptoPanic, aggregated news
+│   ├── analytics/      # Whale tracking, Fear/Greed, Dune
+│   └── predictions/    # AI price predictions
+├── defi/               # On-chain DeFi tools (60+ networks!)
+│   ├── protocols/      # EVM MCP Server (360⭐), Sperax, DEX
+│   ├── chain-tools/    # BNB Chain, Onchain MCP
+│   └── agents/         # Autonomous DeFi agents
+├── wallets/            # Wallet management
+│   ├── evm/            # Ethereum & EVM wallets
+│   └── solana/         # Solana wallets
+├── payments/           # Payment infrastructure
+│   └── x402/           # x402 protocol, USDC transfers
+├── automation/         # Bots & automation
+│   ├── social/         # XActions Twitter automation
+│   ├── sweep/          # Dust sweeping
+│   └── volume/         # Volume tools
+└── generators/         # Meta-tools for building MCP servers
+    ├── abi-to-mcp/     # Convert ABIs to MCP tools
+    ├── repo-to-mcp/    # GitHub repos → MCP servers
+    ├── doc-extractor/  # Extract docs for LLMs
+    ├── registry/       # Lyra tool registry
+    └── discovery/      # Tool discovery & search
+```
+
+### Integrated External Projects
+
+This repo consolidates the best MIT-licensed crypto MCP projects:
+
+| Project | Stars | Category | Description |
+|---------|-------|----------|-------------|
+| [evm-mcp-server](https://github.com/mcpdotdirect/evm-mcp-server) | 360⭐ | defi | 60+ networks, 22+ tools |
+| [cryptopanic-mcp-server](https://github.com/kukapay/cryptopanic-mcp-server) | 65⭐ | market-data | Crypto news aggregation |
+| [whale-tracker-mcp](https://github.com/kukapay/whale-tracker-mcp) | - | analytics | Large wallet tracking |
+| [crypto-feargreed-mcp](https://github.com/kukapay/crypto-feargreed-mcp) | - | analytics | Fear & Greed Index |
+| [mcp-web3-stats](https://github.com/crazyrabbitLTC/mcp-web3-stats) | - | analytics | Dune Analytics integration |
+| [dexpaprika-mcp](https://github.com/coinpaprika/dexpaprika-mcp) | - | prices | DEX price data |
+| [onchain-mcp](https://github.com/bankless/onchain-mcp) | - | defi | Bankless on-chain tools |
+| [mcp-free-usdc-transfer](https://github.com/magnetai/mcp-free-usdc-transfer) | - | payments | Free USDC transfers |
+
+---
+
 ## Supported Networks
 
 ### EVM Chains

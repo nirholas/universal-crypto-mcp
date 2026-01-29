@@ -28,7 +28,11 @@
     "typescript": "^5",
     "eslint": "^8"
   },
-  "author": "n1ch0las",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nichxbt",

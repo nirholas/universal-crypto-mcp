@@ -34,11 +34,16 @@
     "failover",
     "load-balancing"
   ],
-  "author": "OpenBare Contributors",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openbare/client"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/infra/openbare/client"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -49,5 +54,16 @@
   },
   "browser": {
     "./src/index.js": "./src/index.js"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

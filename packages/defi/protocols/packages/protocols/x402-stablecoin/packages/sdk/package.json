@@ -2,7 +2,11 @@
   "name": "@x402/sdk",
   "version": "1.0.0",
   "description": "X402 Payment Protocol SDK for Sperax USDs - Gasless payments, yield tracking, and HTTP 402 handling",
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -84,7 +88,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/x402.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/protocols/x402-stablecoin/packages/sdk"
   },
   "homepage": "https://github.com/nirholas/x402#readme",
   "bugs": {
@@ -92,5 +97,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

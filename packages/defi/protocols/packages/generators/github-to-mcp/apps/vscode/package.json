@@ -31,7 +31,8 @@
   "icon": "resources/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/github-to-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/generators/github-to-mcp/apps/vscode"
   },
   "contributes": {
     "commands": [
@@ -377,5 +378,21 @@
   },
   "dependencies": {
     "@nirholas/github-to-mcp": "workspace:*"
-  }
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

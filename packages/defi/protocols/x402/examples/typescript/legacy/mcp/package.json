@@ -29,7 +29,11 @@
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "@nichxbt",

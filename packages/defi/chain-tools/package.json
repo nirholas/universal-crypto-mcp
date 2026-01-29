@@ -21,7 +21,11 @@
     "smart-contracts",
     "ai"
   ],
-  "author": "Victor Zhang",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "dependencies": {
     "modelcontextprotocol": "modelcontextprotocol/typescript-sdk",
@@ -60,5 +64,16 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

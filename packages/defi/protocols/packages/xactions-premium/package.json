@@ -20,11 +20,16 @@
     "mcp",
     "nichxbt"
   ],
-  "author": "nich (@nichxbt)",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/XActions"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/xactions-premium"
   },
   "dependencies": {
     "@x402/core": "^2.2.0",

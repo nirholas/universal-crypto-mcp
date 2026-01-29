@@ -10,6 +10,14 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./chains": {
+      "import": "./dist/chains.js",
+      "types": "./dist/chains.d.ts"
+    },
+    "./tokens": {
+      "import": "./dist/tokens.js",
+      "types": "./dist/tokens.d.ts"
+    },
     "./types": {
       "import": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"
@@ -38,7 +46,8 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://github.com/nirholas"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
@@ -52,5 +61,16 @@
     "blockchain",
     "web3",
     "core"
+  ],
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
   ]
 }

@@ -36,11 +36,16 @@
     "typescript",
     "sdk"
   ],
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nirholas/free-crypto-news.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/data/crypto-data-aggregator/sdk/typescript"
   },
   "bugs": {
     "url": "https://github.com/nirholas/free-crypto-news/issues"
@@ -54,5 +59,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

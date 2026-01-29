@@ -30,7 +30,11 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
-  "author": "@nichxbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nirholas/universal-crypto-mcp",

@@ -70,13 +70,15 @@
     "plugin-delivery"
   ],
   "author": {
-    "name": "nirholas",
-    "url": "https://github.com/nirholas"
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nirholas/lyra-tool-discovery.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/generators/discovery"
   },
   "bugs": {
     "url": "https://github.com/nirholas/lyra-tool-discovery/issues"
@@ -116,5 +118,16 @@
     "openai": {
       "optional": true
     }
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

@@ -33,7 +33,11 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   },
-  "author": "nich.xbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nirholas/universal-crypto-mcp",

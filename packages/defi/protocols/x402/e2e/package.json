@@ -30,7 +30,11 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "author": "@nichxbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nichxbt",

@@ -5,10 +5,15 @@
   "homepage": "https://github.com/nirholas/ai-agents-library",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/ai-agents-library.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/agents"
   },
   "license": "MIT",
-  "author": "nich <nirholasi@github.io>",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "type": "module",
   "main": "public/index.json",
   "files": [
@@ -60,5 +65,16 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

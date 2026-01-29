@@ -32,11 +32,16 @@
     "web-proxy",
     "privacy"
   ],
-  "author": "OpenBare Contributors",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/openbare.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/infra/openbare"
   },
   "homepage": "https://github.com/nirholas/openbare#readme",
   "bugs": {
@@ -48,5 +53,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

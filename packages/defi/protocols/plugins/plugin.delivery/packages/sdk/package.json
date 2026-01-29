@@ -2,14 +2,25 @@
   "name": "@sperax/plugin-sdk",
   "version": "1.0.0",
   "description": "SperaxOS Plugin SDK - Build plugins for SperaxOS",
-  "keywords": ["sperax", "speraxos", "sdk", "plugin", "chat-plugin"],
+  "keywords": [
+    "sperax",
+    "speraxos",
+    "sdk",
+    "plugin",
+    "chat-plugin"
+  ],
   "homepage": "https://github.com/nirholas/plugin.delivery",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/plugin.delivery.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/plugins/plugin.delivery/packages/sdk"
   },
   "license": "MIT",
-  "author": "Sperax <contact@sperax.io>",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "sideEffects": false,
   "main": "./index.ts",
   "types": "./index.ts",
@@ -50,5 +61,16 @@
   "devDependencies": {
     "@types/react": "^18",
     "typescript": "^5.7.3"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

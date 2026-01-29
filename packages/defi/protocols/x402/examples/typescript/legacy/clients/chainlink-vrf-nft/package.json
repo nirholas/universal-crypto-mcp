@@ -21,7 +21,11 @@
     "tsx": "^4.19.3",
     "@types/node": "^22.13.5"
   },
-  "author": "n1ch0las",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nirholas/universal-crypto-mcp",

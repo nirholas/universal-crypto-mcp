@@ -17,11 +17,16 @@
     "trading",
     "edge-runtime"
   ],
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nirholas/crypto-market-data.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/data/crypto-market-data-ts"
   },
   "homepage": "https://github.com/nirholas/crypto-market-data#readme",
   "bugs": {
@@ -75,5 +80,16 @@
   },
   "peerDependencies": {
     "@nirholas/agenti": ">= 0.1.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

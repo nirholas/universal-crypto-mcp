@@ -7,7 +7,11 @@
     "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', '755')\""
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "ISC",
   "dependencies": {
     "@coinbase/coinbase-sdk": "^0.13.0",
@@ -29,5 +33,16 @@
   },
   "files": [
     "dist"
+  ],
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
   ]
 }

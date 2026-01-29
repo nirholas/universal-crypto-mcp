@@ -1,5 +1,10 @@
 /**
  * Core utilities for Universal Crypto MCP
+ * 
+ * @author nich
+ * @license Apache-2.0
+ * @see https://github.com/nirholas/universal-crypto-mcp
+ * @see https://x.com/nichxbt
  */
 
 import type { Address } from 'viem';

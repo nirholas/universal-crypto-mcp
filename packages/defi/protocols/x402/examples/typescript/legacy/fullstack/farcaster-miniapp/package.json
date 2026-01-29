@@ -41,7 +41,11 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
-  "author": "@nichxbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nirholas",

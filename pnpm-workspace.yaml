@@ -1,0 +1,13 @@
+packages:
+  - "packages/*"
+  - "packages/core"
+  - "packages/shared/*"
+  - "packages/agents/*"
+  - "packages/automation/*"
+  - "packages/generators/*"
+  - "packages/trading/*"
+  - "packages/market-data/*"
+  - "packages/wallets/*"
+  - "packages/defi/*"
+  - "packages/payments/*"
+  - "x402-deploy"

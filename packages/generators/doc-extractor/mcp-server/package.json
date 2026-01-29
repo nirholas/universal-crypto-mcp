@@ -21,11 +21,16 @@
     "ai",
     "llms-txt"
   ],
-  "author": "nich (https://x.com/nichxbt)",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/extract-llms-docs"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/generators/doc-extractor/mcp-server"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
@@ -36,5 +41,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

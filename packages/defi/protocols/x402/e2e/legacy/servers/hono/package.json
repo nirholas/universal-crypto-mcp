@@ -28,7 +28,11 @@
     "eslint-plugin-import": "^2.31.0",
     "prettier": "3.5.2"
   },
-  "author": "nicholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "@nichxbt",

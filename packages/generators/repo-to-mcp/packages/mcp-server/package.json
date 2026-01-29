@@ -34,11 +34,16 @@
     "tools",
     "server"
   ],
-  "author": "nirholas",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/github-to-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/generators/repo-to-mcp/packages/mcp-server"
   },
   "dependencies": {
     "@nirholas/github-to-mcp": "workspace:*",
@@ -51,5 +56,16 @@
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

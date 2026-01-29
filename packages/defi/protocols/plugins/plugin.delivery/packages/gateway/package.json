@@ -2,8 +2,16 @@
   "name": "@sperax/chat-plugins-gateway",
   "version": "1.9.0",
   "description": "SperaxOS Plugin Market",
-  "repository": "https://github.com/sperax/chat-plugins-gateway.git",
-  "author": "Sperax <i@sperax.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/plugins/plugin.delivery/packages/gateway"
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -87,5 +95,16 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

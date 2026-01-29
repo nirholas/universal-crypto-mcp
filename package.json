@@ -5,13 +5,16 @@
   "type": "module",
   "workspaces": [
     "packages/core",
+    "packages/shared/*",
+    "packages/agents/*",
     "packages/trading/*",
     "packages/market-data/*",
     "packages/defi/*",
     "packages/wallets/*",
     "packages/payments/*",
     "packages/automation/*",
-    "packages/generators/*"
+    "packages/generators/*",
+    "x402-deploy"
   ],
   "main": "./dist/lib.js",
   "exports": {

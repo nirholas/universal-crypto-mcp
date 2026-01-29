@@ -27,7 +27,11 @@
   "keywords": [
     "nichxbt"
   ],
-  "author": "nichxbt",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "ISC",
   "devDependencies": {
     "next": "^16.0.0",

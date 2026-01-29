@@ -1,3 +1,13 @@
+/**
+ * Universal Crypto MCP
+ * The most extensive crypto MCP repository
+ * 
+ * @author nich
+ * @license Apache-2.0
+ * @see https://github.com/nirholas/universal-crypto-mcp
+ * @see https://x.com/nichxbt
+ */
+
 import { GitHubSource } from './sources/github.js';
 import { NpmSource } from './sources/npm.js';
 import { AIAnalyzer, type AIConfig } from './ai.js';

@@ -45,12 +45,13 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://github.com/nirholas"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/universal-crypto-mcp",
-    "directory": "packages/x402-ecosystem"
+    "directory": "packages/defi/protocols/packages/protocols/x402-ecosystem"
   },
   "keywords": [
     "x402",

@@ -21,7 +21,11 @@
     "auth",
     "nichxbt"
   ],
-  "author": "Your Name",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "dependencies": {
     "@hono/node-server": "^1.11.2",

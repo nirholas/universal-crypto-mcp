@@ -5,7 +5,24 @@
  * @description Core type definitions for the x402 gateway wrapper system
  */
 
-import type { Network, Price } from "@x402/core/types";
+// Local type definitions (previously from @x402/core/types)
+export type Network = 
+  | "eip155:1"        // Ethereum Mainnet
+  | "eip155:42161"    // Arbitrum One
+  | "eip155:8453"     // Base
+  | "eip155:84532"    // Base Sepolia (testnet)
+  | "eip155:137"      // Polygon
+  | "eip155:10"       // Optimism
+  | "eip155:56"       // BSC
+  | "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"  // Solana Mainnet
+  | "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"  // Solana Devnet
+  | string;
+
+export interface Price {
+  amount: string;
+  currency: string;
+  decimals?: number;
+}
 
 /**
  * Payment configuration for the gateway

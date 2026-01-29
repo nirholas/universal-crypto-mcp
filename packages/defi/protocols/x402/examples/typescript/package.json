@@ -14,7 +14,11 @@
   "keywords": [
     "nichxbt"
   ],
-  "author": "universal-crypto-mcp",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "ISC",
   "packageManager": "pnpm@10.7.0",
   "devDependencies": {

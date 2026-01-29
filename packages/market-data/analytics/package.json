@@ -2,7 +2,11 @@
   "name": "mcp-web3-stats",
   "version": "1.0.1",
   "description": "MCP Server for Dune API to analyze blockchain data and wallet information",
-  "author": "Dennison Bertram <dennison@dennisonbertram.com>",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "keywords": [
     "mcp",
@@ -16,7 +20,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/crazyrabbitLTC/mcp-web3-stats"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/market-data/analytics"
   },
   "bugs": {
     "url": "https://github.com/crazyrabbitLTC/mcp-web3-stats/issues"
@@ -50,5 +55,16 @@
     "@modelcontextprotocol/sdk": "^1.11.4",
     "dotenv": "^16.4.5",
     "zod": "^3.23.8"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

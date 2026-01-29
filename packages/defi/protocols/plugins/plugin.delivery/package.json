@@ -5,10 +5,15 @@
   "homepage": "https://plugin.delivery",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/plugin.delivery.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/plugins/plugin.delivery"
   },
   "license": "MIT",
-  "author": "Sperax <contact@sperax.io>",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "type": "module",
   "main": "public/index.json",
   "files": [
@@ -50,5 +55,16 @@
     "vercel": "^39.0.0",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

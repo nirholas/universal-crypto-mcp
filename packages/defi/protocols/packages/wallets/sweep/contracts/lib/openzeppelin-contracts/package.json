@@ -35,7 +35,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/wallets/sweep/contracts/lib/openzeppelin-contracts"
   },
   "keywords": [
     "solidity",
@@ -45,7 +46,11 @@
     "security",
     "zeppelin"
   ],
-  "author": "OpenZeppelin Community <maintainers@openzeppelin.org>",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/OpenZeppelin/openzeppelin-contracts/issues"
@@ -104,5 +109,16 @@
       "prettier --log-level warn --ignore-path .gitignore --check",
       "solhint --config solhint.config.js --noPoster"
     ]
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

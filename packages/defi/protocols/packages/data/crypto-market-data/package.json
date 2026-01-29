@@ -4,11 +4,13 @@
   "description": "Lyra Web3 Playground - Learn blockchain development with interactive examples. Compile and deploy Solidity in your browser.",
   "author": {
     "name": "nich",
-    "url": "https://github.com/nirholas"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/lyra-web3-playground.git"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/data/crypto-market-data"
   },
   "homepage": "https://lyra.works/",
   "type": "module",
@@ -75,5 +77,16 @@
   ],
   "peerDependencies": {
     "@nirholas/agenti": ">= 0.1.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

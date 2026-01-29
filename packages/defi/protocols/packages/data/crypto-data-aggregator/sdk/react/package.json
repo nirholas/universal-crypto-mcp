@@ -43,12 +43,27 @@
     "component",
     "widget"
   ],
-  "author": "nicholasrq",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/free-crypto-news.git",
-    "directory": "sdk/react"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/packages/data/crypto-data-aggregator/sdk/react"
   },
-  "homepage": "https://free-crypto-news.vercel.app"
+  "homepage": "https://free-crypto-news.vercel.app",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

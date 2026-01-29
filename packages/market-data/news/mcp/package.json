@@ -13,10 +13,38 @@
     "start:stdio": "node index.js",
     "dev": "node http-server.js"
   },
-  "keywords": ["mcp", "crypto", "news", "claude", "chatgpt", "ai", "developer-mode"],
-  "author": "nirholas",
+  "keywords": [
+    "mcp",
+    "crypto",
+    "news",
+    "claude",
+    "chatgpt",
+    "ai",
+    "developer-mode"
+  ],
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/market-data/news/mcp"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

@@ -1,3 +1,13 @@
+/**
+ * Universal Crypto MCP
+ * The most extensive crypto MCP repository
+ * 
+ * @author nich
+ * @license Apache-2.0
+ * @see https://github.com/nirholas/universal-crypto-mcp
+ * @see https://x.com/nichxbt
+ */
+
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import startServer from "./server/server.js";
 

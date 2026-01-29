@@ -5,13 +5,14 @@
  * @description Dynamic pricing engine with support for flat, tiered, and load-based pricing
  */
 
-import type { Network, Price } from "@x402/core/types";
 import type { 
+  Network,
+  Price,
   PricingConfig, 
   PricingTier, 
   DynamicPricing,
   PaymentRecord 
-} from "./types";
+} from "./types.js";
 
 /**
  * Parse a price string (e.g., "$0.001", "0.001 USDC") to a normalized value

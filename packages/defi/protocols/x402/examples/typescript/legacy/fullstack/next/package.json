@@ -38,7 +38,11 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
-  "author": "nirholas/universal-crypto-mcp",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "universal-crypto-mcp",

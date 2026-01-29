@@ -15,15 +15,30 @@
     "cli",
     "terminal"
   ],
-  "author": "Free Crypto News",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/free-crypto-news.git",
-    "directory": "cli"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/market-data/news/cli"
   },
   "homepage": "https://github.com/nirholas/free-crypto-news#readme",
   "engines": {
     "node": ">=14.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

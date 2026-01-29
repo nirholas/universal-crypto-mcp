@@ -19,8 +19,16 @@
     "nichxbt"
   ],
   "license": "Apache-2.0",
-  "author": "Coinbase Inc.",
-  "repository": "https://github.com/coinbase/x402",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/protocols/x402/typescript/packages/legacy/x402-fetch"
+  },
   "description": "x402 Payment Protocol",
   "devDependencies": {
     "@types/node": "^22.13.4",

@@ -35,7 +35,11 @@
     "vite": "^5.0.8",
     "vitest": "^3.2.2"
   },
-  "author": "nich",
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
   "contributors": [
     {
       "name": "nicholas",

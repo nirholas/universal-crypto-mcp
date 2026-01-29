@@ -76,9 +76,9 @@
     "pwa"
   ],
   "author": {
-    "name": "Nicholas",
-    "email": "nirholas@users.noreply.github.com",
-    "url": "https://github.com/nirholas"
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
@@ -134,5 +134,16 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

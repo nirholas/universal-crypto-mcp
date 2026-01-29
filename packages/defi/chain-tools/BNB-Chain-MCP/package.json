@@ -34,11 +34,13 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://x.com/nichxbt"
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/universal-crypto-mcp"
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/chain-tools/BNB-Chain-MCP"
   },
   "keywords": [
     "mcp",
@@ -77,5 +79,16 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
 }

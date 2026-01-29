@@ -49,10 +49,12 @@ program
   .action(pricingCommand);
 
 program
-  .command("dashboard")
-  .description("Open the earnings dashboard")
+  .command("dashboard [project]")
+  .description("View earnings dashboard for a project")
   .option("--json", "Output earnings as JSON")
-  .option("--days <days>", "Number of days to show", "7")
+  .option("--period <period>", "Time period: day, week, month, all", "week")
+  .option("--compact", "Show compact one-line summary")
+  .option("--trends", "Show revenue trends chart")
   .action(dashboardCommand);
 
 program

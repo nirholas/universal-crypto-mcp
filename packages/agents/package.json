@@ -1,0 +1,28 @@
+{
+  "name": "@nirholas/crypto-mcp-agents",
+  "version": "1.0.0",
+  "description": "AI Agent frameworks for Universal Crypto MCP",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "agenti",
+    "ucai",
+    "defi-agents"
+  ],
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas",
+      "twitter": "https://x.com/nichxbt"
+    }
+  ]
+}
