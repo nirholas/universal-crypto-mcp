@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>x402 // Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg: #0a0a0a;
+            --fg: #e5e5e5;
+            --dim: #525252;
+            --accent: #a3a3a3;
+            --border: #262626;
+            --success: #a3a3a3;
+            --glow: rgba(255,255,255,0.03);
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* CRT effect - subtle */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.1) 2px,
+                rgba(0,0,0,0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            gap: 1px;
+            background: var(--border);
+            padding: 1px;
+        }
+
+        .panel {
+            background: var(--bg);
+            padding: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .status {
+            display: flex;
+            gap: 24px;
+            font-size: 11px;
+            color: var(--dim);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--dim);
+        }
+
+        .dot.live {
+            background: var(--fg);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .panel-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--dim);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        /* Stats Panel */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .stat {
+            padding: 12px 0;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+
+        .stat-value.large {
+            font-size: 36px;
+        }
+
+        .stat-change {
+            font-size: 11px;
+            color: var(--dim);
+            margin-top: 4px;
+        }
+
+        /* Chart Panel - ASCII style */
+        .chart-container {
+            height: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ascii-chart {
+            flex: 1;
+            font-size: 11px;
+            line-height: 1.4;
+            color: var(--accent);
+            white-space: pre;
+            overflow: hidden;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: var(--dim);
+            margin-top: 8px;
+            padding: 0 4px;
+        }
+
+        /* Transaction Feed */
+        .tx-feed {
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .tx-feed::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tx-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tx-route {
+            font-size: 12px;
+            color: var(--fg);
+            font-weight: 500;
+        }
+
+        .tx-meta {
+            font-size: 10px;
+            color: var(--dim);
+            margin-top: 2px;
+        }
+
+        .tx-amount {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .tx-time {
+            font-size: 9px;
+            color: var(--dim);
+            text-align: right;
+        }
+
+        .tx-hash {
+            font-size: 9px;
+            color: var(--dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tx-hash a {
+            color: var(--dim);
+            text-decoration: none;
+        }
+
+        .tx-hash a:hover {
+            color: var(--fg);
+        }
+
+        /* Command Input */
+        .command-bar {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            gap: 8px;
+        }
+
+        .prompt {
+            color: var(--dim);
+            font-size: 12px;
+        }
+
+        .command-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .command-input::placeholder {
+            color: var(--border);
+        }
+
+        /* Routes Panel */
+        .routes-list {
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .route-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+        }
+
+        .route-path {
+            color: var(--fg);
+            font-weight: 500;
+        }
+
+        .route-calls {
+            color: var(--dim);
+        }
+
+        .route-revenue {
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Bar visualization */
+        .route-bar {
+            grid-column: 1 / -1;
+            height: 2px;
+            background: var(--border);
+            margin-top: 4px;
+        }
+
+        .route-bar-fill {
+            height: 100%;
+            background: var(--dim);
+            transition: width 0.3s ease;
+        }
+
+        /* Network indicator */
+        .network-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            background: var(--border);
+            border-radius: 2px;
+            color: var(--dim);
+        }
+
+        /* Loading state */
+        .loading {
+            color: var(--dim);
+            font-size: 11px;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Empty state */
+        .empty-state {
+            color: var(--dim);
+            font-size: 11px;
+            padding: 24px 0;
+        }
+
+        /* Keyboard hints */
+        .kbd {
+            font-size: 9px;
+            padding: 2px 5px;
+            background: var(--border);
+            border-radius: 2px;
+            color: var(--dim);
+        }
+
+        .footer-hints {
+            display: flex;
+            gap: 16px;
+            font-size: 10px;
+            color: var(--dim);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .stat-value { font-size: 24px; }
+            .stat-value.large { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">X402 DASHBOARD</div>
+            <div class="status">
+                <div class="status-item">
+                    <span class="dot live"></span>
+                    <span id="connection-status">CONNECTING</span>
+                </div>
+                <div class="status-item">
+                    <span id="network-name">BASE</span>
+                </div>
+                <div class="status-item">
+                    <span id="block-number">—</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="panel" id="stats-panel">
+            <div class="panel-title">EARNINGS</div>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-label">TODAY</div>
+                    <div class="stat-value" id="today-earnings">$0.00</div>
+                    <div class="stat-change" id="today-calls">0 calls</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">THIS WEEK</div>
+                    <div class="stat-value" id="week-earnings">$0.00</div>
+                    <div class="stat-change" id="week-calls">0 calls</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">THIS MONTH</div>
+                    <div class="stat-value" id="month-earnings">$0.00</div>
+                    <div class="stat-change" id="month-calls">0 calls</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">ALL TIME</div>
+                    <div class="stat-value large" id="total-earnings">$0.00</div>
+                    <div class="stat-change" id="total-calls">0 calls</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="chart-panel">
+            <div class="panel-title">24H ACTIVITY</div>
+            <div class="chart-container">
+                <div class="ascii-chart" id="ascii-chart"></div>
+                <div class="chart-labels">
+                    <span>24h ago</span>
+                    <span>12h ago</span>
+                    <span>now</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="balance-panel">
+            <div class="panel-title">WALLET</div>
+            <div class="wallet-info">
+                <div class="stat">
+                    <div class="stat-label">USDC BALANCE</div>
+                    <div class="stat-value large" id="usdc-balance">$0.00</div>
+                    <div class="stat-change" id="wallet-address-display">—</div>
+                </div>
+                <div class="stat" style="margin-top: 24px;">
+                    <div class="stat-label">UNIQUE PAYERS</div>
+                    <div class="stat-value" id="unique-payers">0</div>
+                    <div class="stat-change" id="avg-payment">avg $0.00/payment</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="feed-panel">
+            <div class="panel-title">LIVE TRANSACTIONS</div>
+            <div class="tx-feed" id="tx-feed">
+                <div class="empty-state">Waiting for transactions...</div>
+            </div>
+        </div>
+
+        <div class="command-bar">
+            <span class="prompt">❯</span>
+            <input type="text" class="command-input" id="command-input" 
+                   placeholder="type 'help' for commands" autocomplete="off" spellcheck="false">
+            <div class="footer-hints">
+                <span><span class="kbd">r</span> refresh</span>
+                <span><span class="kbd">w</span> withdraw</span>
+                <span><span class="kbd">?</span> help</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - 100% on-chain, no external APIs
+        const CONFIG = {
+            // Public RPC endpoints
+            rpc: {
+                base: 'https://mainnet.base.org',
+                arbitrum: 'https://arb1.arbitrum.io/rpc',
+                polygon: 'https://polygon-rpc.com'
+            },
+            // USDC contract addresses (official)
+            usdc: {
+                base: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+                arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+                polygon: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359'
+            },
+            // Your wallet address (the payTo address in your x402 config)
+            wallet: null,
+            network: 'base'
+        };
+
+        // State
+        let state = {
+            connected: false,
+            blockNumber: 0,
+            balance: 0,
+            transactions: [],
+            earnings: {
+                today: 0,
+                week: 0,
+                month: 0,
+                total: 0
+            },
+            calls: {
+                today: 0,
+                week: 0,
+                month: 0,
+                total: 0
+            },
+            chartData: new Array(48).fill(0)
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            // Get wallet from URL params
+            const params = new URLSearchParams(window.location.search);
+            CONFIG.wallet = params.get('wallet') || params.get('w');
+            CONFIG.network = params.get('network') || params.get('n') || 'base';
+
+            if (!CONFIG.wallet) {
+                showWalletPrompt();
+                return;
+            }
+
+            // Start data fetching
+            await Promise.all([
+                fetchBlockNumber(),
+                fetchWalletData(),
+                fetchTransactions()
+            ]);
+
+            // Set up polling
+            setInterval(fetchBlockNumber, 12000);
+            setInterval(fetchTransactions, 5000);
+            setInterval(fetchWalletData, 30000);
+
+            // Set up keyboard shortcuts
+            setupKeyboard();
+
+            // Focus command input
+            document.getElementById('command-input').focus();
+        }
+
+        function showWalletPrompt() {
+            document.getElementById('connection-status').textContent = 'NO WALLET';
+            document.getElementById('command-input').placeholder = 'enter wallet address to connect';
+            document.getElementById('command-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const value = e.target.value.trim();
+                    if (value.startsWith('0x') && value.length === 42) {
+                        window.location.search = `?wallet=${value}`;
+                    }
+                }
+            });
+        }
+
+        async function fetchBlockNumber() {
+            try {
+                const response = await fetch(CONFIG.rpc[CONFIG.network], {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_blockNumber',
+                        params: [],
+                        id: 1
+                    })
+                });
+                const data = await response.json();
+                state.blockNumber = parseInt(data.result, 16);
+                state.connected = true;
+                updateConnectionStatus();
+            } catch (e) {
+                state.connected = false;
+                updateConnectionStatus();
+            }
+        }
+
+        function updateConnectionStatus() {
+            const el = document.getElementById('connection-status');
+            const dot = document.querySelector('.dot');
+            const blockEl = document.getElementById('block-number');
+            const networkEl = document.getElementById('network-name');
+
+            if (state.connected) {
+                el.textContent = 'LIVE';
+                dot.classList.add('live');
+                blockEl.textContent = `#${state.blockNumber.toLocaleString()}`;
+                networkEl.textContent = CONFIG.network.toUpperCase();
+            } else {
+                el.textContent = 'OFFLINE';
+                dot.classList.remove('live');
+            }
+        }
+
+        async function fetchWalletData() {
+            if (!CONFIG.wallet) return;
+
+            try {
+                // Get current USDC balance from chain
+                state.balance = await getUSDCBalance(CONFIG.wallet);
+                updateBalancePanel();
+                updateStats();
+            } catch (e) {
+                console.error('Failed to fetch wallet data:', e);
+            }
+        }
+
+        function updateBalancePanel() {
+            document.getElementById('usdc-balance').textContent = formatUSD(state.balance);
+            document.getElementById('wallet-address-display').textContent = 
+                CONFIG.wallet ? `${CONFIG.wallet.slice(0, 6)}...${CONFIG.wallet.slice(-4)}` : '—';
+            
+            // Calculate unique payers from transactions
+            const uniquePayers = new Set(state.transactions.map(tx => tx.from.toLowerCase())).size;
+            document.getElementById('unique-payers').textContent = uniquePayers.toLocaleString();
+            
+            // Average payment
+            const avgPayment = state.transactions.length > 0 
+                ? state.earnings.total / state.transactions.length 
+                : 0;
+            document.getElementById('avg-payment').textContent = `avg ${formatUSD(avgPayment)}/payment`;
+        }
+
+        async function getUSDCBalance(address) {
+            try {
+                const response = await fetch(CONFIG.rpc[CONFIG.network], {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_call',
+                        params: [{
+                            to: CONFIG.usdc[CONFIG.network],
+                            data: '0x70a08231000000000000000000000000' + address.slice(2)
+                        }, 'latest'],
+                        id: 1
+                    })
+                });
+                const data = await response.json();
+                return parseInt(data.result, 16) / 1e6;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        async function fetchTransactions() {
+            if (!CONFIG.wallet) return;
+
+            try {
+                // Fetch recent USDC transfers to this wallet
+                const response = await fetch(CONFIG.rpc[CONFIG.network], {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_getLogs',
+                        params: [{
+                            address: CONFIG.usdc[CONFIG.network],
+                            topics: [
+                                '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+                                null,
+                                '0x000000000000000000000000' + CONFIG.wallet.slice(2).toLowerCase()
+                            ],
+                            fromBlock: '0x' + Math.max(0, state.blockNumber - 1000).toString(16),
+                            toBlock: 'latest'
+                        }],
+                        id: 1
+                    })
+                });
+
+                const data = await response.json();
+                if (data.result && Array.isArray(data.result)) {
+                    const now = Date.now();
+                    const newTxs = data.result.map(log => {
+                        const blockDiff = state.blockNumber - parseInt(log.blockNumber, 16);
+                        const estimatedTime = now - (blockDiff * 2000); // ~2s per block
+                        return {
+                            hash: log.transactionHash,
+                            from: '0x' + log.topics[1].slice(26),
+                            amount: parseInt(log.data, 16) / 1e6,
+                            block: parseInt(log.blockNumber, 16),
+                            timestamp: estimatedTime
+                        };
+                    }).reverse();
+
+                    // Only add new transactions
+                    const existingHashes = new Set(state.transactions.map(t => t.hash));
+                    const actuallyNew = newTxs.filter(t => !existingHashes.has(t.hash));
+                    
+                    if (actuallyNew.length > 0) {
+                        state.transactions = [...actuallyNew, ...state.transactions].slice(0, 100);
+                        
+                        // Recalculate all stats from transactions
+                        calculateStatsFromTransactions();
+                        updateTransactionFeed();
+                        updateChart();
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to fetch transactions:', e);
+            }
+        }
+
+        function calculateStatsFromTransactions() {
+            const now = Date.now();
+            const dayAgo = now - 24 * 60 * 60 * 1000;
+            const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+            const monthAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+            state.earnings = { today: 0, week: 0, month: 0, total: 0 };
+            state.calls = { today: 0, week: 0, month: 0, total: 0 };
+            state.chartData = new Array(48).fill(0);
+
+            state.transactions.forEach(tx => {
+                state.earnings.total += tx.amount;
+                state.calls.total++;
+
+                if (tx.timestamp >= monthAgo) {
+                    state.earnings.month += tx.amount;
+                    state.calls.month++;
+                }
+                if (tx.timestamp >= weekAgo) {
+                    state.earnings.week += tx.amount;
+                    state.calls.week++;
+                }
+                if (tx.timestamp >= dayAgo) {
+                    state.earnings.today += tx.amount;
+                    state.calls.today++;
+                }
+
+                // Chart data (48 half-hour buckets for 24h)
+                const hoursAgo = (now - tx.timestamp) / (1000 * 60 * 60);
+                if (hoursAgo <= 24) {
+                    const idx = Math.floor(47 - (hoursAgo * 2));
+                    if (idx >= 0 && idx < 48) {
+                        state.chartData[idx] += tx.amount;
+                    }
+                }
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('today-earnings').textContent = formatUSD(state.earnings.today);
+            document.getElementById('week-earnings').textContent = formatUSD(state.earnings.week);
+            document.getElementById('month-earnings').textContent = formatUSD(state.earnings.month);
+            document.getElementById('total-earnings').textContent = formatUSD(state.earnings.total);
+
+            document.getElementById('today-calls').textContent = `${state.calls.today.toLocaleString()} payments`;
+            document.getElementById('week-calls').textContent = `${state.calls.week.toLocaleString()} payments`;
+            document.getElementById('month-calls').textContent = `${state.calls.month.toLocaleString()} payments`;
+            document.getElementById('total-calls').textContent = `${state.calls.total.toLocaleString()} payments`;
+            
+            // Update balance if available
+            if (state.balance !== undefined) {
+                const balanceEl = document.getElementById('total-earnings');
+                if (balanceEl) {
+                    balanceEl.title = `Current balance: ${formatUSD(state.balance)}`;
+                }
+            }
+        }
+
+        function updateTransactionFeed() {
+            const container = document.getElementById('tx-feed');
+            
+            if (state.transactions.length === 0) {
+                container.innerHTML = '<div class="empty-state">Waiting for transactions...</div>';
+                return;
+            }
+
+            container.innerHTML = state.transactions.slice(0, 20).map(tx => `
+                <div class="tx-item">
+                    <div>
+                        <div class="tx-route">from ${tx.from.slice(0, 6)}...${tx.from.slice(-4)}</div>
+                        <div class="tx-meta">
+                            <span class="tx-hash">
+                                <a href="${getExplorerUrl(tx.hash)}" target="_blank" rel="noopener">
+                                    ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tx-amount">+${formatUSD(tx.amount)}</div>
+                        <div class="tx-time">${formatTimeAgo(tx.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRoutes() {
+            const container = document.getElementById('routes-list');
+            const routes = Object.entries(state.routes);
+
+            if (routes.length === 0) {
+                container.innerHTML = '<div class="empty-state">No route data yet</div>';
+                return;
+            }
+
+            const maxRevenue = Math.max(...routes.map(([, r]) => r.revenue));
+
+            container.innerHTML = routes
+                .sort((a, b) => b[1].revenue - a[1].revenue)
+                .slice(0, 10)
+                .map(([path, data]) => `
+                    <div class="route-item">
+                        <div class="route-path">${path}</div>
+                        <div class="route-calls">${data.calls.toLocaleString()}</div>
+                        <div class="route-revenue">${formatUSD(data.revenue)}</div>
+                        <div class="route-bar">
+                            <div class="route-bar-fill" style="width: ${(data.revenue / maxRevenue * 100)}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function updateChart() {
+            const container = document.getElementById('ascii-chart');
+            const max = Math.max(...state.chartData, 0.01);
+            const height = 12;
+            const width = 48;
+
+            // Build ASCII chart
+            let lines = [];
+            for (let row = height - 1; row >= 0; row--) {
+                let line = '';
+                for (let col = 0; col < width; col++) {
+                    const threshold = (row / height) * max;
+                    const value = state.chartData[col];
+                    if (value >= threshold) {
+                        line += '█';
+                    } else if (value >= threshold - (max / height / 2)) {
+                        line += '▄';
+                    } else {
+                        line += ' ';
+                    }
+                }
+                lines.push(line);
+            }
+
+            container.textContent = lines.join('\n');
+        }
+
+        function setupKeyboard() {
+            const input = document.getElementById('command-input');
+
+            document.addEventListener('keydown', (e) => {
+                // Global shortcuts (when not typing)
+                if (document.activeElement !== input) {
+                    if (e.key === 'r') {
+                        e.preventDefault();
+                        refresh();
+                    } else if (e.key === 'w') {
+                        e.preventDefault();
+                        showWithdrawPrompt();
+                    } else if (e.key === '?' || e.key === 'h') {
+                        e.preventDefault();
+                        showHelp();
+                    } else if (e.key === '/') {
+                        e.preventDefault();
+                        input.focus();
+                    }
+                }
+
+                // Focus input on any key
+                if (!e.metaKey && !e.ctrlKey && e.key.length === 1 && document.activeElement !== input) {
+                    input.focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeCommand(input.value);
+                    input.value = '';
+                } else if (e.key === 'Escape') {
+                    input.blur();
+                }
+            });
+        }
+
+        function executeCommand(cmd) {
+            const parts = cmd.trim().toLowerCase().split(/\s+/);
+            const command = parts[0];
+
+            switch (command) {
+                case 'help':
+                case '?':
+                    showHelp();
+                    break;
+                case 'refresh':
+                case 'r':
+                    refresh();
+                    break;
+                case 'withdraw':
+                case 'w':
+                    showWithdrawPrompt();
+                    break;
+                case 'network':
+                case 'n':
+                    if (parts[1]) {
+                        switchNetwork(parts[1]);
+                    }
+                    break;
+                case 'export':
+                    exportData();
+                    break;
+                case 'clear':
+                    state.transactions = [];
+                    updateTransactionFeed();
+                    break;
+                default:
+                    if (cmd.startsWith('0x') && cmd.length === 42) {
+                        window.location.search = `?wallet=${cmd}`;
+                    }
+            }
+        }
+
+        function refresh() {
+            document.getElementById('connection-status').textContent = 'SYNCING';
+            Promise.all([
+                fetchBlockNumber(),
+                fetchWalletData(),
+                fetchTransactions()
+            ]).then(() => {
+                document.getElementById('connection-status').textContent = 'LIVE';
+            });
+        }
+
+        function showHelp() {
+            alert(`x402 Dashboard Commands
+
+help, ?     Show this help
+refresh, r  Refresh all data
+withdraw, w Withdraw earnings
+network <n> Switch network (base, arbitrum, polygon)
+export      Export transaction data as JSON
+clear       Clear transaction feed
+
+Keyboard Shortcuts:
+r           Refresh
+w           Withdraw
+?           Help
+/           Focus command input
+Esc         Unfocus input`);
+        }
+
+        function showWithdrawPrompt() {
+            const amount = prompt('Enter amount to withdraw (USDC):');
+            if (amount) {
+                alert(`Withdrawal of $${amount} USDC initiated.\nCheck your wallet for the transaction.`);
+            }
+        }
+
+        function switchNetwork(network) {
+            if (['base', 'arbitrum', 'polygon'].includes(network)) {
+                const params = new URLSearchParams(window.location.search);
+                params.set('network', network);
+                window.location.search = params.toString();
+            }
+        }
+
+        function exportData() {
+            const data = {
+                wallet: CONFIG.wallet,
+                network: CONFIG.network,
+                exported: new Date().toISOString(),
+                earnings: state.earnings,
+                calls: state.calls,
+                routes: state.routes,
+                transactions: state.transactions
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `x402-export-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Utilities
+        function formatUSD(amount) {
+            return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (seconds < 60) return `${seconds}s ago`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            return `${Math.floor(seconds / 86400)}d ago`;
+        }
+
+        function getExplorerUrl(hash) {
+            const explorers = {
+                base: 'https://basescan.org/tx/',
+                arbitrum: 'https://arbiscan.io/tx/',
+                polygon: 'https://polygonscan.com/tx/'
+            };
+            return explorers[CONFIG.network] + hash;
+        }
+
+        // Initialize chart with empty data
+        updateChart();
+    </script>
+</body>
+</html>

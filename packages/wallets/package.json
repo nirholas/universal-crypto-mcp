@@ -6,7 +6,10 @@
   "workspaces": [
     "shared",
     "evm",
-    "solana"
+    "solana",
+    "ens-domains-mcp",
+    "walletconnect-mcp",
+    "safe-gnosis-mcp"
   ],
   "scripts": {
     "build": "pnpm -r build",

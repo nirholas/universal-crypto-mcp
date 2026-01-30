@@ -1,0 +1,47 @@
+{
+  "name": "@nirholas/verbwire-mcp",
+  "version": "1.0.0",
+  "description": "Verbwire integration - Smart contract deployment, NFT minting, and IPFS storage",
+  "author": {
+    "name": "Nich",
+    "email": "nich@nichxbt.com",
+    "url": "https://x.com/nichxbt"
+  },
+  "contributors": [
+    {
+      "name": "Verbwire",
+      "url": "https://github.com/verbwire",
+      "note": "Official Verbwire MCP Server"
+    }
+  ],
+  "license": "MIT AND Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/novel/verbwire"
+  },
+  "keywords": [
+    "mcp",
+    "nft",
+    "smart-contracts",
+    "ipfs",
+    "web3"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

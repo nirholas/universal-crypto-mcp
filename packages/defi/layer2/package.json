@@ -1,0 +1,28 @@
+{
+  "name": "@nirholas/layer2-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Layer 2 MCP servers - Arbitrum, Optimism, Polygon zkEVM, Base Chain",
+  "workspaces": [
+    "arbitrum-mcp",
+    "optimism-mcp",
+    "polygon-zkevm-mcp",
+    "base-chain-mcp"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/layer2"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "nirholas",
+    "url": "https://github.com/nirholas",
+    "twitter": "https://x.com/nichxbt"
+  }
+}

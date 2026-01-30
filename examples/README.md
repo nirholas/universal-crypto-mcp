@@ -34,6 +34,34 @@ npm install
 npm start
 ```
 
+### [marketplace-migration](./marketplace-migration/)
+
+Step-by-step example migrating from x402 to the AI Service Marketplace.
+
+```bash
+cd marketplace-migration
+pnpm install
+
+# Run before migration (x402 only)
+pnpm demo:before
+
+# Run after migration (x402 + marketplace)
+pnpm demo:after
+
+# Run with MigrationHelper
+pnpm demo:full
+```
+
+### [marketplace-service](./marketplace-service/)
+
+A complete AI service registered in the marketplace.
+
+```bash
+cd marketplace-service
+npm install
+npm start
+```
+
 ### [full-deployment](./full-deployment/)
 
 A complete production deployment with all features.
