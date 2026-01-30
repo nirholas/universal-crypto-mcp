@@ -1,6 +1,33 @@
 # Memecoin Trading Bot 🚀
 
-Advanced automated trading bot for Solana memecoins on Pump.fun, Raydium, and Jupiter DEX.
+⚠️ **IMPORTANT**: This bot integrates **battle-tested risk management** from proven open-source projects (Freqtrade 15k⭐, Jesse AI, CCXT 28k⭐) to protect your capital.
+
+## 🛡️ Safety Features (NEW)
+
+### Proven Risk Management from Freqtrade
+- ✅ **Position Sizing**: Automatic calculation based on capital
+- ✅ **Max Drawdown Protection**: Stops trading at 15% loss (default)
+- ✅ **Daily Loss Limits**: Prevents bad trading days
+- ✅ **Emergency Stop**: Critical 25% total loss trigger
+- ✅ **Cooldown Periods**: Time-based trading restrictions after losses
+- ✅ **Consecutive Loss Protection**: Stops after 3+ consecutive losses
+
+### Backtesting & Dry-Run (from Jesse AI)
+- ✅ **Paper Trading Mode**: Test without real money
+- ✅ **Historical Backtesting**: Validate strategies on past data
+- ✅ **Performance Metrics**: Win rate, profit factor, drawdown analysis
+
+## ⚠️ CRITICAL WARNINGS
+
+**READ THIS BEFORE RUNNING THE BOT:**
+
+1. **Memecoins are EXTREMELY risky** - You can lose 100% of your investment
+2. **Start with DRY-RUN mode** - Test without real money first
+3. **Use SMALL amounts** - Start with 0.05-0.1 SOL maximum
+4. **Monitor constantly** - Automated doesn't mean unsupervised
+5. **Only trade what you can afford to LOSE COMPLETELY**
+
+**The authors assume NO responsibility for your trading losses. This software is provided AS-IS for educational purposes.**
 
 ## Features
 
@@ -42,6 +69,34 @@ pnpm install
 
 ## Configuration
 
+### Risk Management Configuration (NEW)
+
+Choose a risk profile based on your experience and risk tolerance:
+
+```typescript
+import { CONSERVATIVE_RISK, MODERATE_RISK, AGGRESSIVE_RISK } from '@universal-crypto/memecoin-trader';
+
+// CONSERVATIVE (RECOMMENDED for beginners)
+// - 2% position size
+// - 5% daily loss limit
+// - 15% max drawdown
+const bot = new MemecoinTradingBot(config, CONSERVATIVE_RISK);
+
+// MODERATE (For experienced traders)
+// - 5% position size
+// - 8% daily loss limit
+// - 20% max drawdown
+const bot = new MemecoinTradingBot(config, MODERATE_RISK);
+
+// AGGRESSIVE (NOT RECOMMENDED - High risk)
+// - 10% position size
+// - 12% daily loss limit
+// - 25% max drawdown
+const bot = new MemecoinTradingBot(config, AGGRESSIVE_RISK);
+```
+
+### Environment Configuration
+
 Create `.env` file:
 
 ```env
@@ -68,9 +123,46 @@ BIRDEYE_API_KEY=xxx         # For price/volume data
 
 ## Usage
 
-### Start the Bot
+### 1. START WITH DRY-RUN MODE (REQUIRED)
+
+**NEVER skip this step!** Test without risking real money first:
 
 ```bash
+# Dry-run mode - simulates trades, no real transactions
+pnpm run dev -- --dry-run
+```
+
+```typescript
+// Dry-run in code
+const bot = new MemecoinTradingBot(config, CONSERVATIVE_RISK, true); // true = dry-run
+await bot.start();
+```
+
+### 2. Backtest Your Strategy
+
+Test on historical data before live trading:
+
+```typescript
+import { Backtester } from '@universal-crypto/memecoin-trader';
+
+const backtester = new Backtester({
+  initialBalance: 1.0, // 1 SOL
+  riskConfig: CONSERVATIVE_RISK
+});
+
+const results = await backtester.runBacktest(historicalData);
+backtester.printResults();
+
+// Check metrics before going live:
+// - Win Rate > 55%?
+// - Profit Factor > 1.5?
+// - Max Drawdown < 20%?
+```
+
+### 3. Start Live Trading (With Small Amounts)
+
+```bash
+# Start with 0.05-0.1 SOL maximum
 pnpm run dev
 ```
 

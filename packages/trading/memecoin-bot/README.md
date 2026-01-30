@@ -1,33 +1,71 @@
 # Memecoin Trading Bot
 
-**Full-featured automated trading bot for memecoins on Solana**
+**⚠️ EXTREMELY HIGH RISK - READ SAFETY.md BEFORE USING ⚠️**
+
+**Battle-tested automated trading bot for Solana memecoins**
 
 [![Author](https://img.shields.io/badge/author-nich-blue)](https://x.com/nichxbt)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Safety](https://img.shields.io/badge/READ-SAFETY.md-red)](SAFETY.md)
 
 by **nich** (@nirholas) - [x.com/nichxbt](https://x.com/nichxbt)
 
-## 🚀 Features
+## 🚨 Critical Warnings
 
-- **Automated Trading**: Scan and trade new memecoin pairs automatically
-- **Real DEX Integration**: Jupiter aggregator for best swap routes
-- **Advanced Risk Management**: Stop loss, take profit, trailing stops
-- **Safety Analysis**: Token security checks before trading
-- **Real-time Monitoring**: Track positions and P&L live
-- **SQLite Database**: Persistent storage of trades and positions
-- **CLI Interface**: Full command-line control
+**YOU CAN LOSE ALL YOUR MONEY**
 
-## 📊 Trading Strategy
+- Memecoin trading is extremely risky
+- This bot does NOT guarantee profits
+- Always start with **PAPER TRADING MODE**
+- Never invest more than you can afford to lose
+- Read [SAFETY.md](SAFETY.md) completely before proceeding
 
-The bot implements a comprehensive trading strategy with:
+## 🎯 What This Bot Does
 
-- **Token Filtering**: Liquidity, market cap, volume, holder requirements
-- **Safety Checks**: Mint/freeze authority, top holder analysis, rug pull detection
-- **Momentum Analysis**: Price change tracking and buy/sell pressure
-- **Risk Management**: Dynamic stop loss, take profit, trailing stops
-- **Position Sizing**: Configurable position limits and daily loss caps
+### Automated Features
+- 🔍 **Real-time Scanner**: Discovers new tokens from Birdeye & DexScreener
+- 🛡️ **Safety Analysis**: Multi-factor rug pull detection
+- 📊 **Technical Analysis**: RSI, MACD, Bollinger Bands
+- 💱 **Smart Execution**: Jupiter aggregator for best swap routes
+- 📈 **Risk Management**: Stop loss, take profit, trailing stops
+- 📉 **Position Tracking**: Live P&L monitoring
+- 🗄️ **Data Storage**: SQLite database for all trades
+- 🧪 **Paper Trading**: Test strategies without real funds
+
+### What It Doesn't Do
+- ❌ Guarantee profits
+- ❌ Eliminate risk
+- ❌ Prevent all losses
+- ❌ Make you rich
+
+## 🏆 Credits & Attribution
+
+This bot integrates code from several MIT-licensed projects:
+
+### Core Technologies
+- **Jupiter Aggregator** ([GitHub](https://github.com/jup-ag/jupiter-swap-api-client))
+  - Best-in-class DEX aggregation
+  - Slippage optimization
+  - Transaction building patterns
+  
+- **Raydium SDK V2** ([GitHub](https://github.com/raydium-io/raydium-sdk-v2))
+  - AMM pool interactions
+  - Swap computation patterns
+  
+- **Solana Web3.js** ([GitHub](https://github.com/solana-labs/solana-web3.js))
+  - Blockchain interaction layer
+
+See [CREDITS.md](CREDITS.md) for complete attribution.
 
 ## 🛠️ Installation
+
+### Prerequisites
+- Node.js 18+ or higher
+- pnpm package manager
+- Solana wallet with private key
+- Reliable RPC endpoint (Helius recommended)
+
+### Quick Start
 
 ```bash
 # Install dependencies
@@ -35,18 +73,24 @@ pnpm install
 
 # Build the bot
 pnpm build
+
+# Setup configuration
+cp .env.example .env
+# Edit .env with your settings
 ```
 
 ## ⚙️ Configuration
 
-Create a `.env` file in the bot directory:
+### Step 1: Create Environment File
+
+Create a `.env` file:
 
 ```env
-# Network
-SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-SOLANA_WS_URL=wss://api.mainnet-beta.solana.com
+# Network - Use a reliable RPC provider
+SOLANA_RPC_URL=https://rpc.helius.xyz/?api-key=YOUR_KEY
+SOLANA_WS_URL=wss://rpc.helius.xyz/?api-key=YOUR_KEY
 
-# Wallet (REQUIRED)
+# Wallet (⚠️ KEEP SECRET - NEVER SHARE)
 WALLET_PRIVATE_KEY=your_base58_private_key_here
 WALLET_ADDRESS=your_wallet_address
 

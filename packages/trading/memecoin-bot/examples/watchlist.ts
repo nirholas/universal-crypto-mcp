@@ -20,7 +20,7 @@ async function monitorTokens() {
   console.log(chalk.cyan.bold('\n👀 Token Watchlist Monitor\n'))
   
   const solana = new SolanaService()
-  const jupiter = new JupiterService(solana)
+  const jupiter = new JupiterService(solana.getConnection(), solana.getWallet())
   const dexScreener = new DexScreenerService()
   
   const previousPrices = new Map<string, number>()

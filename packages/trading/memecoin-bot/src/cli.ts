@@ -187,7 +187,7 @@ program
     const spinner = ora('Executing buy...').start()
     
     const solana = new SolanaService()
-    const jupiter = new JupiterService(solana)
+    const jupiter = new JupiterService(solana.getConnection(), solana.getWallet())
     
     try {
       const result = await jupiter.buy(token, parseFloat(amount))
@@ -216,7 +216,7 @@ program
     const spinner = ora('Executing sell...').start()
     
     const solana = new SolanaService()
-    const jupiter = new JupiterService(solana)
+    const jupiter = new JupiterService(solana.getConnection(), solana.getWallet())
     
     try {
       const result = await jupiter.sell(token, amount)

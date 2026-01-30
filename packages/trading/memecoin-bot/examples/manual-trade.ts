@@ -16,7 +16,7 @@ async function manualTrade() {
   const TOKEN_ADDRESS = '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr' // Replace with target token
   
   const solana = new SolanaService()
-  const jupiter = new JupiterService(solana)
+  const jupiter = new JupiterService(solana.getConnection(), solana.getWallet())
   const analyzer = new TokenAnalyzer(solana)
   
   try {
