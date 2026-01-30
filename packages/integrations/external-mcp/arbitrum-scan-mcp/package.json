@@ -1,0 +1,19 @@
+{
+  "name": "@nirholas/arbitrum-scan-mcp",
+  "version": "1.0.0",
+  "description": "Arbitrum L2 blockchain explorer MCP server",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/arbitrum-scan-mcp"
+  },
+  "keywords": ["nirholas", "arbitrum", "l2", "explorer", "mcp"],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  }
+}

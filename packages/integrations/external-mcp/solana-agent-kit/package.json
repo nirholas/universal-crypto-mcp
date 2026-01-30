@@ -1,0 +1,24 @@
+{
+  "name": "@nirholas/solana-agent-kit",
+  "version": "1.0.0",
+  "description": "Solana AI agent toolkit - MCP server for Solana blockchain operations",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/solana-agent-kit"
+  },
+  "keywords": ["nirholas", "solana", "agent", "ai", "mcp", "blockchain"],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@solana/web3.js": "^1.95.0",
+    "zod": "^3.22.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  }
+}

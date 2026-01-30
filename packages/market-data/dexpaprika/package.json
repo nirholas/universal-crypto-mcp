@@ -1,0 +1,59 @@
+{
+  "name": "@nirholas/dexpaprika-mcp",
+  "version": "1.0.0",
+  "description": "DEX analytics via DexPaprika - Real-time DEX data, liquidity pools, token info across multiple chains",
+  "author": {
+    "name": "Nich",
+    "email": "nich@nichxbt.com",
+    "url": "https://x.com/nichxbt"
+  },
+  "contributors": [
+    {
+      "name": "CoinPaprika",
+      "url": "https://github.com/coinpaprika",
+      "note": "Official DexPaprika MCP Server"
+    }
+  ],
+  "license": "MIT AND Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/market-data/dexpaprika"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/market-data/dexpaprika",
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "dex",
+    "defi",
+    "liquidity",
+    "pools",
+    "trading",
+    "analytics"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

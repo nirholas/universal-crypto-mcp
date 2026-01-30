@@ -17,11 +17,7 @@
     "onLanguage:javascript",
     "onLanguage:go",
     "onLanguage:rust",
-    "onLanguage:java",
-    "onCommand:lyraIntel.analyze",
-    "onCommand:lyraIntel.analyzeCurrent",
-    "onCommand:lyraIntel.securityScan",
-    "onCommand:lyraIntel.showInsights"
+    "onLanguage:java"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -77,19 +73,20 @@
         }
       }
     },
-    "views": {
-      "explorer": [
-        {
-          "id": "lyraIntelInsights",
-          "name": "Lyra Intel Insights"
-        }
-      ]
-    },
     "viewsContainers": {
       "activitybar": [
         {
           "id": "lyraIntel",
           "title": "Lyra Intel",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "lyraIntel": [
+        {
+          "id": "lyraIntelInsights",
+          "name": "Lyra Intel Insights",
           "icon": "resources/icon.svg"
         }
       ]

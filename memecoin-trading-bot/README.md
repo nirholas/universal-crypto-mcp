@@ -343,4 +343,3 @@ For issues and questions:
 
 ---
 
-**Built with ❤️ for the crypto community**

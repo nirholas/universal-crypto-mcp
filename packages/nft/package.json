@@ -1,0 +1,21 @@
+{
+  "name": "@nirholas/crypto-nft",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NFT & Gaming MCP Servers - OpenSea, Blur, Axie Infinity",
+  "workspaces": [
+    "opensea-mcp",
+    "blur-mcp",
+    "axie-infinity-mcp"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "nirholas",
+    "url": "https://github.com/nirholas"
+  }
+}

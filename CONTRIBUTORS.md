@@ -77,6 +77,68 @@ This project integrates and builds upon several open-source MCP servers from the
 - **Integration Path**: `packages/defi/chain-tools/bsc-operations/`
 - **Our Modifications**: Security scanning improvements, gas optimization
 
+---
+
+## 🚀 Wave 2 Integrations (January 30, 2026)
+
+### Market Data & Analytics
+
+#### 9. CoinGecko MCP (Official)
+- **Original Repository**: [coingecko/coingecko-typescript](https://github.com/coingecko/coingecko-typescript/tree/main/packages/mcp-server)
+- **Original Author**: CoinGecko
+- **License**: MIT
+- **Description**: Official CoinGecko API - 200+ blockchains, 8M+ tokens
+- **Integration Path**: `packages/market-data/coingecko/`
+- **Our Modifications**: Caching layer, batch queries, unified API
+
+#### 10. DexPaprika MCP
+- **Original Repository**: [coinpaprika/dexpaprika-mcp](https://github.com/coinpaprika/dexpaprika-mcp)
+- **Original Author**: CoinPaprika
+- **License**: MIT
+- **Description**: Real-time DEX data, liquidity pools, trading analytics
+- **Integration Path**: `packages/market-data/dexpaprika/`
+- **Our Modifications**: Impermanent loss calculator, cross-chain comparison
+
+### DeFi Protocols
+
+#### 11. DeFi Rates MCP
+- **Original Repository**: [qingfeng/defi-rates-mcp](https://github.com/qingfeng/defi-rates-mcp)
+- **Original Author**: qingfeng
+- **License**: MIT
+- **Description**: Lending rates across 13+ protocols (Aave, Compound, Morpho, Venus, etc.)
+- **Integration Path**: `packages/defi/rates/`
+- **Our Modifications**: Rate comparison, looping strategy calculator, best rate finder
+
+#### 12. BNB Chain MCP (Official)
+- **Original Repository**: [bnb-chain/bnbchain-mcp](https://github.com/bnb-chain/bnbchain-mcp)
+- **Original Author**: BNB Chain
+- **License**: MIT
+- **Description**: Official BSC, opBNB, and Greenfield blockchain interaction
+- **Integration Path**: `packages/defi/bnbchain-mcp/`
+- **Our Modifications**: PancakeSwap integration, multi-network support
+
+### Security & Analytics
+
+#### 13. ChainAware Behavioral Prediction MCP
+- **Original Repository**: [ChainAware/behavioral-prediction-mcp](https://github.com/ChainAware/behavioral-prediction-mcp)
+- **Original Author**: ChainAware
+- **License**: MIT
+- **Description**: Wallet behavior prediction, fraud detection, rug pull prediction
+- **Integration Path**: `packages/security/chainaware/`
+- **Our Modifications**: Batch analysis, risk scoring normalization
+
+### Trading & Exchanges
+
+#### 14. Binance MCP
+- **Original Repository**: [ethancod1ng/binance-mcp-server](https://github.com/ethancod1ng/binance-mcp-server)
+- **Original Author**: ethancod1ng
+- **License**: MIT
+- **Description**: Binance exchange integration - trading, market data, account management
+- **Integration Path**: `packages/trading/binance-mcp/`
+- **Our Modifications**: Smart order routing, cross-exchange comparison
+
+---
+
 ## Original Components
 
 The following components are original work developed specifically for this project:
@@ -106,6 +168,24 @@ Please open an issue or contact: [@nichxbt](https://x.com/nichxbt)
 
 We thank all the open-source developers in the MCP ecosystem who make projects like this possible. The crypto and blockchain MCP community continues to grow, and we're proud to contribute to and build upon this foundation.
 
+### Special Thanks To
+
+| Author | Projects | Contribution |
+|--------|----------|--------------|
+| Kukapay | 4 | Technical indicators, sentiment, fear/greed, news |
+| CoinGecko | 1 | Official price/market data API |
+| CoinPaprika | 1 | DEX analytics and liquidity data |
+| BNB Chain | 1 | Official BSC/opBNB blockchain tools |
+| ChainAware | 1 | Security and fraud detection |
+| qingfeng | 1 | DeFi lending rates |
+| ethancod1ng | 2 | Exchange integrations (Binance, Bybit) |
+| Shinzo Labs | 1 | CoinMarketCap integration |
+| GoPlausible | 1 | Algorand blockchain tools |
+| TermiX | 1 | BSC operations |
+
 ---
 
-**Last Updated**: January 29, 2026
+**Last Updated**: January 30, 2026
+**Total Integrated Servers**: 14
+**Wave 1**: 8 servers (January 29, 2026)
+**Wave 2**: 6 servers (January 30, 2026)

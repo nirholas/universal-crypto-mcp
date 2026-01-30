@@ -1,0 +1,23 @@
+{
+  "name": "@nirholas/arkham-intelligence-mcp",
+  "version": "1.0.0",
+  "description": "Arkham Intelligence entity tracking and on-chain intelligence MCP server",
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/integrations/external-mcp/arkham-intelligence-mcp"
+  },
+  "keywords": ["nirholas", "arkham", "intelligence", "entity", "mcp", "tracking"],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  }
+}

@@ -9,10 +9,12 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerCryptoIndicators } from "../crypto-indicators/src/index.js";
+import { registerCoinGeckoTools } from "../coingecko/src/index.js";
+import { registerDexPaprikaTools } from "../dexpaprika/src/index.js";
 
 /**
  * Unified Market Data Server
- * Combines indicators, sentiment, fear/greed, and news into one API
+ * Combines indicators, sentiment, fear/greed, news, CoinGecko, and DEX data
  */
 export class UnifiedMarketData {
   private server: McpServer;
@@ -27,6 +29,12 @@ export class UnifiedMarketData {
   registerAll() {
     // Technical Indicators (Kukapay)
     registerCryptoIndicators(this.server);
+    
+    // CoinGecko (Official)
+    registerCoinGeckoTools(this.server);
+    
+    // DexPaprika (CoinPaprika)
+    registerDexPaprikaTools(this.server);
 
     // Market Overview Tool - combines multiple sources
     this.server.registerTool(

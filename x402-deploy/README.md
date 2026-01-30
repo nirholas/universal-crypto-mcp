@@ -4,10 +4,6 @@
 
 Turn any API or MCP server into a paid service in **5 minutes**. No code changes required.
 
-[![npm version](https://badge.fury.io/js/@nirholas%2Fx402-deploy.svg)](https://www.npmjs.com/package/@nirholas/x402-deploy)
-[![Tests](https://github.com/nirholas/universal-crypto-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/nirholas/universal-crypto-mcp/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 ---
 
 ## ✨ Features

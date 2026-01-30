@@ -1,0 +1,58 @@
+{
+  "name": "@nirholas/binance-mcp",
+  "version": "1.0.0",
+  "description": "Binance exchange integration - Trading, market data, and account management",
+  "author": {
+    "name": "Nich",
+    "email": "nich@nichxbt.com",
+    "url": "https://x.com/nichxbt"
+  },
+  "contributors": [
+    {
+      "name": "ethancod1ng",
+      "url": "https://github.com/ethancod1ng",
+      "note": "Original binance-mcp-server implementation"
+    }
+  ],
+  "license": "MIT AND Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/trading/binance"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/trading/binance",
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "binance",
+    "trading",
+    "exchange",
+    "crypto",
+    "market-data"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
