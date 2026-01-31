@@ -408,3 +408,4 @@ function getTierRateLimit(tier: string): number {
 }
 
 export default authMiddleware;
+
