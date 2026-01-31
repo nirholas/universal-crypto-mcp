@@ -329,3 +329,4 @@ function formatUptime(ms: number): string {
 }
 
 export default { healthCheck, livenessCheck, readinessCheck, detailedHealthCheck };
+
