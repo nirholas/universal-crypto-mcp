@@ -417,3 +417,4 @@ Checks if a chain is supported
 #### Returns
 
 `boolean`
+
