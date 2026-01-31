@@ -109,3 +109,4 @@ Defined in: [defi/protocols/src/cli.ts:214](https://github.com/nirholas/universa
 #### Returns
 
 `Promise`\<`string`\>
+
