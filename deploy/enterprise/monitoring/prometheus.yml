@@ -83,3 +83,4 @@ scrape_configs:
     static_configs:
       - targets: ['nginx:80']
     scrape_interval: 30s
+
