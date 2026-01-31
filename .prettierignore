@@ -19,3 +19,4 @@ docs/site/
 # Ignore compiled Python
 __pycache__
 *.pyc
+
