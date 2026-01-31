@@ -1,7 +1,7 @@
 {
   "targetURL": "https://httpbin.org",
   "amount": 0.01,
-  "payTo": "0x0000000000000000000000000000000000000000",
+  "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
   "facilitatorURL": "https://x402.org/facilitator",
   "testnet": true,
   "description": "Example paywall",

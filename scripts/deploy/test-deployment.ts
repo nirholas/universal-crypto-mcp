@@ -32,7 +32,7 @@ async function main() {
   console.log('');
 
   // Skip tests if contracts not deployed
-  if (addresses.toolRegistry === '0x0000000000000000000000000000000000000000') {
+  if (addresses.toolRegistry === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
     console.log('⚠️  Contracts not yet deployed. Run deploy-marketplace.ts first.');
     return;
   }
@@ -83,7 +83,7 @@ async function main() {
   try {
     console.log('Test 5: Check non-existent tool');
     const exists = await registry.toolExists(
-      '0x0000000000000000000000000000000000000000000000000000000000000001'
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001'
     );
     console.log(`   ✅ Tool exists: ${exists}`);
   } catch (error: any) {

@@ -14,7 +14,7 @@
     }
   ],
   "env": {
-    "X402_WALLET": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+    "X402_WALLET": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "X402_NETWORK": "eip155:8453",
     "X402_FACILITATOR": "https://facilitator.x402.dev"
   },

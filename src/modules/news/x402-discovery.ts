@@ -70,7 +70,7 @@ export interface X402DiscoveryDocument {
 const BASE_URL = process.env.PREMIUM_NEWS_API_URL || "https://free-crypto-news.vercel.app"
 
 /** Payment recipient address */
-const PAY_TO_ADDRESS = process.env.X402_PAY_TO_ADDRESS || "0x0000000000000000000000000000000000000000"
+const PAY_TO_ADDRESS = process.env.X402_PAY_TO_ADDRESS || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
 
 /** Default network (Base Mainnet) */
 const DEFAULT_NETWORK = "eip155:8453"

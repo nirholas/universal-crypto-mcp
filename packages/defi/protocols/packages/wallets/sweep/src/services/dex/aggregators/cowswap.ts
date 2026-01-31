@@ -21,7 +21,7 @@ const COW_API_ENDPOINTS: Record<number, string> = {
 
 // CoW Protocol app data (identifies Sweep orders)
 const SWEEP_APP_DATA =
-  "0x0000000000000000000000000000000000000000000000000000007377656570"; // "swep" in hex
+  "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000007377656570"; // "swep" in hex
 
 interface CowQuoteRequest {
   sellToken: string;

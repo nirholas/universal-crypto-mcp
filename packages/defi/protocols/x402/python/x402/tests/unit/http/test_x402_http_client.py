@@ -38,7 +38,7 @@ def make_payment_requirements() -> PaymentRequirements:
     return PaymentRequirements(
         scheme="exact",
         network="eip155:8453",
-        asset="0x0000000000000000000000000000000000000000",
+        asset="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         amount="1000000",
         pay_to="0x1234567890123456789012345678901234567890",
         max_timeout_seconds=300,
@@ -155,7 +155,7 @@ class TestX402HTTPClientBase:
                     "mimeType": "application/json",
                     "payTo": "0x1234567890123456789012345678901234567890",
                     "maxTimeoutSeconds": 300,
-                    "asset": "0x0000000000000000000000000000000000000000",
+                    "asset": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                     "extra": {},
                 }
             ],
@@ -184,7 +184,7 @@ class TestX402HTTPClientBase:
                     "mimeType": "application/json",
                     "payTo": "0x1234567890123456789012345678901234567890",
                     "maxTimeoutSeconds": 300,
-                    "asset": "0x0000000000000000000000000000000000000000",
+                    "asset": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                     "extra": {},
                 }
             ],

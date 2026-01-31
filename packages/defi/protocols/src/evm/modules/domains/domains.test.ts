@@ -461,7 +461,7 @@ describe("Domains Module Tools", () => {
       mockPublicClient.getEnsAddress.mockResolvedValue(null)
       mockPublicClient.getEnsAvatar.mockResolvedValue(null)
       mockPublicClient.readContract.mockImplementation(({ functionName }: { functionName: string }) => {
-        if (functionName === "owner") return Promise.resolve("0x0000000000000000000000000000000000000000")
+        if (functionName === "owner") return Promise.resolve("0x40252CFDF8B20Ed757D61ff157719F33Ec332402")
         return Promise.resolve(null)
       })
 
@@ -641,7 +641,7 @@ describe("Domains Module Tools", () => {
 
       const tool = registeredTools.get("reverse_resolve_address")
       const result = await tool!.handler({
-        address: "0x0000000000000000000000000000000000000000"
+        address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
       })
       const data = JSON.parse(result.content[0].text)
 

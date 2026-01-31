@@ -106,7 +106,7 @@ Get detailed information about a specific staking pool.
   "network": "ethereum",
   "token": {
     "symbol": "ETH",
-    "address": "0x0000000000000000000000000000000000000000"
+    "address": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
   },
   "rewardToken": {
     "symbol": "stETH",

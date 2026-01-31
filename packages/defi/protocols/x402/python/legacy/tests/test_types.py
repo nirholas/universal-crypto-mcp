@@ -28,7 +28,7 @@ def test_payment_requirements_serde():
         output_schema=None,
         pay_to="0x123",
         max_timeout_seconds=60,
-        asset="0x0000000000000000000000000000000000000000",
+        asset="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         extra=None,
     )
     expected = {
@@ -41,7 +41,7 @@ def test_payment_requirements_serde():
         "outputSchema": None,
         "payTo": "0x123",
         "maxTimeoutSeconds": 60,
-        "asset": "0x0000000000000000000000000000000000000000",
+        "asset": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         "extra": None,
     }
     assert original.model_dump(by_alias=True) == expected
@@ -59,7 +59,7 @@ def test_x402_payment_required_response_serde():
         output_schema=None,
         pay_to="0x123",
         max_timeout_seconds=60,
-        asset="0x0000000000000000000000000000000000000000",
+        asset="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         extra=None,
     )
     original = x402PaymentRequiredResponse(

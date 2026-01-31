@@ -122,7 +122,7 @@ describe('Strings', function () {
   describe('toHexString fixed', function () {
     it('converts a positive number (long)', async function () {
       expect(await this.mock.getFunction('$toHexString(uint256,uint256)')(0x4132n, 32n)).to.equal(
-        '0x0000000000000000000000000000000000000000000000000000000000004132',
+        '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000004132',
       );
     });
 

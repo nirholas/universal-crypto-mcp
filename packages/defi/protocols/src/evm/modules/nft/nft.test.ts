@@ -521,7 +521,7 @@ describe("NFT Module", () => {
         new Error("ERC721: transfer to the zero address")
       )
 
-      const zeroAddress = "0x0000000000000000000000000000000000000000" as Address
+      const zeroAddress = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address
 
       await expect(
         services.transferERC721(
@@ -762,7 +762,7 @@ describe("NFT Module", () => {
 
       it("should return zero address for non-approved token", async () => {
         // cleared in beforeEach
-        const zeroAddress = "0x0000000000000000000000000000000000000000" as Address
+        const zeroAddress = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address
         mockPublicClient.readContract.mockResolvedValueOnce(zeroAddress)
 
         const approved = await mockPublicClient.readContract({

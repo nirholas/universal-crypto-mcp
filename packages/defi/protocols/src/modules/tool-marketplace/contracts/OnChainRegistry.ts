@@ -318,7 +318,7 @@ export class OnChainRegistry {
         args: [toolId],
       });
 
-      if (result.owner === '0x0000000000000000000000000000000000000000') {
+      if (result.owner === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
         return null;
       }
 

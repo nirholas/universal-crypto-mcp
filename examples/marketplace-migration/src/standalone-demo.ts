@@ -102,7 +102,7 @@ class SubscriptionManager {
 
 const config = {
   port: 3002,
-  walletAddress: "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+  walletAddress: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
   pricing: {
     "/api/weather": "$0.001",
     "/api/forecast": "$0.005",

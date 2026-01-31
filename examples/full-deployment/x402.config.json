@@ -4,7 +4,7 @@
   "description": "Complete crypto MCP server with x402 payments",
   
   "payment": {
-    "wallet": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+    "wallet": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "network": "eip155:42161"
   },
   

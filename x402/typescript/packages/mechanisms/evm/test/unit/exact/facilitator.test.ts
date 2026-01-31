@@ -181,7 +181,7 @@ describe("ExactEvmScheme (Facilitator)", () => {
       // Change payTo in requirements
       const modifiedRequirements = {
         ...requirements,
-        payTo: "0x0000000000000000000000000000000000000000", // Different recipient
+        payTo: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", // Different recipient
       };
 
       const result = await facilitator.verify(fullPayload, modifiedRequirements);

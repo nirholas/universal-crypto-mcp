@@ -40,7 +40,7 @@ const CheckDeviationInput = z.object({
 // Additional oracles for non-collateral assets
 const ADDITIONAL_ORACLES: Record<string, { oracle: `0x${string}`; decimals: number }> = {
   SPA: {
-    oracle: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Would be actual address
+    oracle: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402' as `0x${string}`, // Would be actual address
     decimals: 8,
   },
   ETH: {

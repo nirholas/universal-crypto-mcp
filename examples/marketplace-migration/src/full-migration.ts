@@ -23,7 +23,7 @@ const existingX402Config = {
     "GET /api/forecast": "$0.005",
     "GET /api/alerts": "$0.002",
   },
-  wallet: "0xB1314Ed50b273A9c1dA9a43860d853F179868296" as `0x${string}`,
+  wallet: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as `0x${string}`,
 };
 
 // ============================================================================
@@ -32,7 +32,7 @@ const existingX402Config = {
 
 const migration = createMigrationHelper({
   chain: "arbitrum",
-  privateKey: process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001",
+  privateKey: process.env.PRIVATE_KEY || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001",
   existingConfig: existingX402Config,
 });
 
@@ -77,7 +77,7 @@ async function runMigration() {
     serviceId,
     subscriberWallet: "0xDEMO000000000000000000000000000000000001" as `0x${string}`,
     plan: "monthly",
-    txHash: "0x0000000000000000000000000000000000000000000000000000000000000001" as `0x${string}`,
+    txHash: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001" as `0x${string}`,
     price: "$9.99",
   });
 

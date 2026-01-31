@@ -46,7 +46,7 @@ const ALL_SUPPORTED_NETWORKS = [NETWORKS.BASE_MAINNET, NETWORKS.BASE_SEPOLIA];
 export async function GET() {
   // Check if payment is properly configured
   const isConfigured =
-    PAYMENT_ADDRESS && PAYMENT_ADDRESS !== '0x0000000000000000000000000000000000000000';
+    PAYMENT_ADDRESS && PAYMENT_ADDRESS !== '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 
   const resources = DISCOVERABLE_ENDPOINTS.map((ep) => ({
     ...ep,

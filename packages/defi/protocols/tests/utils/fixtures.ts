@@ -430,7 +430,7 @@ export const ERROR_SCENARIOS = {
     expectedError: "Invalid address"
   },
   ZERO_ADDRESS: {
-    input: "0x0000000000000000000000000000000000000000",
+    input: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     expectedError: "zero address"
   },
   UNSUPPORTED_NETWORK: {

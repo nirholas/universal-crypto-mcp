@@ -25,7 +25,7 @@ import { UsageTracker } from "./usage-tracker"
 
 // Environment configuration
 const PORT = parseInt(process.env.PORT || "3402", 10)
-const PAY_TO_ADDRESS = process.env.X402_PAY_TO || "0xB1314Ed50b273A9c1dA9a43860d853F179868296"
+const PAY_TO_ADDRESS = process.env.X402_PAY_TO || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
 const NETWORK = process.env.X402_NETWORK || "eip155:8453" // Base mainnet
 const REDIS_URL = process.env.REDIS_URL || undefined
 const FACILITATOR_URL = process.env.X402_FACILITATOR_URL || "https://x402.org/facilitator"

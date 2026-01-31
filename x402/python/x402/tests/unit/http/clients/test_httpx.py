@@ -35,7 +35,7 @@ def make_payment_requirements() -> PaymentRequirements:
     return PaymentRequirements(
         scheme="exact",
         network="eip155:8453",
-        asset="0x0000000000000000000000000000000000000000",
+        asset="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         amount="1000000",
         pay_to="0x1234567890123456789012345678901234567890",
         max_timeout_seconds=300,
@@ -402,7 +402,7 @@ class MockX402HTTPClientForTransport:
             network="base-sepolia",
             asset="0x036CbD53842c5426634e7929541eC2318f3dCF7e",
             amount="10000",
-            pay_to="0x0000000000000000000000000000000000000000",
+            pay_to="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         )
 
     def encode_payment_signature_header(self, _payload):

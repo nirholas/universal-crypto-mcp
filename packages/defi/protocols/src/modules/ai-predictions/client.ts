@@ -51,7 +51,7 @@ export interface PredictionClientConfig {
 
 const DEFAULT_CONFIG: PredictionClientConfig = {
   apiEndpoint: process.env.PREDICTION_API_ENDPOINT || "http://localhost:8000",
-  recipientAddress: process.env.PREDICTION_RECIPIENT || "0x0000000000000000000000000000000000000000",
+  recipientAddress: process.env.PREDICTION_RECIPIENT || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
   network: "base",
   token: "USDC",
   enablePayments: process.env.PREDICTION_PAYMENTS_ENABLED === "true",

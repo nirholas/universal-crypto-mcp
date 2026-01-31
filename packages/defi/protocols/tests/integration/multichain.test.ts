@@ -313,7 +313,7 @@ describe("Multi-Chain Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text
@@ -327,7 +327,7 @@ describe("Multi-Chain Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.BSC_MAINNET.WBNB,
         network: "bsc",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text
@@ -341,7 +341,7 @@ describe("Multi-Chain Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.POLYGON.WMATIC,
         network: "polygon",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text

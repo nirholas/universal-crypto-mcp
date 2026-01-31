@@ -69,7 +69,7 @@ export default function SwapWidget({ onSuccess, defaultFromToken, defaultToToken
           fromAssetAddress: fromToken.address,
           toAssetAddress: toToken.address,
           inputAmountHuman: amountInWei,
-          userWalletAddress: address || '0x0000000000000000000000000000000000000000',
+          userWalletAddress: address || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
           slippage,
         };
 

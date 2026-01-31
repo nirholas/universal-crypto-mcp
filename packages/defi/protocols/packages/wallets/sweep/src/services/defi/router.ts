@@ -237,7 +237,7 @@ export class DeFiRouter {
   private isNativeToken(address: string): boolean {
     const nativeAddresses = [
       "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-      "0x0000000000000000000000000000000000000000",
+      "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
       "So11111111111111111111111111111111111111112", // Wrapped SOL mint
     ];
     return nativeAddresses.includes(address);

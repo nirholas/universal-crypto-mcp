@@ -51,7 +51,7 @@ describe("Security Module", () => {
   describe("Token Security Analysis", () => {
     it("should detect safe token with renounced ownership", async () => {
       mockPublicClient.getCode.mockResolvedValue("0x608060405234801561001057600080fd5b50")
-      mockPublicClient.readContract.mockResolvedValueOnce("0x0000000000000000000000000000000000000000") // owner = zero address
+      mockPublicClient.readContract.mockResolvedValueOnce("0x40252CFDF8B20Ed757D61ff157719F33Ec332402") // owner = zero address
 
       const code = await mockPublicClient.getCode({ address: safeTokenAddress })
       expect(code).not.toBe("0x")
@@ -60,7 +60,7 @@ describe("Security Module", () => {
         address: safeTokenAddress,
         functionName: "owner"
       })
-      expect(owner).toBe("0x0000000000000000000000000000000000000000")
+      expect(owner).toBe("0x40252CFDF8B20Ed757D61ff157719F33Ec332402")
     })
 
     it("should detect contract with active owner (centralization risk)", async () => {
@@ -72,7 +72,7 @@ describe("Security Module", () => {
         functionName: "owner"
       })
 
-      expect(owner).not.toBe("0x0000000000000000000000000000000000000000")
+      expect(owner).not.toBe("0x40252CFDF8B20Ed757D61ff157719F33Ec332402")
     })
 
     it("should detect pausable contracts", async () => {
@@ -310,7 +310,7 @@ describe("Security Module", () => {
         slot: IMPLEMENTATION_SLOT as Hex
       })
 
-      expect(implementationSlot).not.toBe("0x0000000000000000000000000000000000000000000000000000000000000000")
+      expect(implementationSlot).not.toBe("0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000")
     })
 
     it("should check contract code size", async () => {

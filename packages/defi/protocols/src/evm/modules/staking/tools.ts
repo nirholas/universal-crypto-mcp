@@ -690,7 +690,7 @@ export function registerStakingTools(server: McpServer) {
           address: stETHAddress,
           abi: LIDO_STETH_ABI,
           functionName: "submit",
-          args: [referral as Address || "0x0000000000000000000000000000000000000000"],
+          args: [referral as Address || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"],
           value: amountWei,
           account,
           chain: walletClient.chain

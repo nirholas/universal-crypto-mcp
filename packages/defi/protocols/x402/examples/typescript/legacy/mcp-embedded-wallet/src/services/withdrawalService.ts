@@ -38,7 +38,7 @@ function getAssetConfig(chain: Chain, asset: Asset): { address: Address; decimal
 
   if (asset === "ETH") {
     return {
-      address: "0x0000000000000000000000000000000000000000" as Address,
+      address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
       decimals: chainConfig.nativeCurrency.decimals,
     };
   }

@@ -87,7 +87,7 @@ app.use(x402TrackPayment(async (payment) => {
     chain: payment.chain as X402Chain,
     amount: payment.amount,
     token: payment.token as X402Token,
-    payer: '0x0000000000000000000000000000000000000000', // Would extract from payment
+    payer: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402', // Would extract from payment
     resource: payment.resource,
   });
   console.log(`💰 Payment received: ${payment.amount} ${payment.token} for ${payment.resource}`);

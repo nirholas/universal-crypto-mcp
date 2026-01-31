@@ -227,7 +227,7 @@ describe("Governance Module", () => {
     })
 
     it("should abstain from voting", async () => {
-      const mockTxHash = "0x0000000000000000000000000000000000000000000000000000000000000001" as Hash
+      const mockTxHash = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001" as Hash
       mockWalletClient.writeContract.mockResolvedValueOnce(mockTxHash)
 
       const txHash = await mockWalletClient.writeContract({

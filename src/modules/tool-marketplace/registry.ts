@@ -83,7 +83,7 @@ export class ToolRegistryService {
   private platformAddress: Address
 
   constructor(platformAddress?: Address) {
-    this.platformAddress = platformAddress || "0x0000000000000000000000000000000000000000" as Address
+    this.platformAddress = platformAddress || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address
   }
 
   // ============================================================================

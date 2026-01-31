@@ -53,7 +53,7 @@ function loadConfig(): DocsConfig {
       description: config.description || 'A paid API powered by x402',
       url: config.url || 'https://api.example.com',
       payment: {
-        wallet: config.payment?.wallet || '0x0000000000000000000000000000000000000000',
+        wallet: config.payment?.wallet || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
         network: config.payment?.network || 'eip155:8453',
         facilitator: config.payment?.facilitator || 'https://facilitator.x402.org',
       },
@@ -72,7 +72,7 @@ function loadConfig(): DocsConfig {
     description: 'A paid API powered by x402',
     url: 'https://api.example.com',
     payment: {
-      wallet: '0x0000000000000000000000000000000000000000',
+      wallet: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
       network: 'eip155:8453',
       facilitator: 'https://facilitator.x402.org',
     },

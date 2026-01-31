@@ -119,7 +119,7 @@ const result = await client.callTool('security_check_token', {
     "gasAbuse": false
   },
   "ownership": {
-    "ownerAddress": "0x0000000000000000000000000000000000000000",
+    "ownerAddress": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "ownerPercent": "0%",
     "ownerChangeBalance": false,
     "creatorAddress": "0x...",

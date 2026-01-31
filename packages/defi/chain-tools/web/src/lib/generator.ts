@@ -101,7 +101,7 @@ async def ${fn.name}(${argsWithTypes}, simulate: bool = True) -> str:
         func = contract.functions.${fn.name}(${args})
         if simulate:
             # Simulate the transaction
-            gas_estimate = func.estimate_gas({"from": "0x0000000000000000000000000000000000000000"})
+            gas_estimate = func.estimate_gas({"from": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"})
             return json.dumps({
                 "success": True,
                 "simulated": True,

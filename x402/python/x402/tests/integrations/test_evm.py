@@ -566,7 +566,7 @@ class TestEvmSignersIntegration:
         """Test that FacilitatorWeb3Signer.get_balance works for native token."""
         balance = self.facilitator_signer.get_balance(
             self.facilitator_address,
-            "0x0000000000000000000000000000000000000000",
+            "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         )
 
         # Should return an integer

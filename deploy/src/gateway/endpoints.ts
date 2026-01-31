@@ -7,6 +7,7 @@
 
 import { Request, Response, NextFunction, Router } from 'express';
 import { Logger } from './logger';
+import { MCPManager } from './mcp-manager.js';
 
 // ============================================================================
 // Types
@@ -68,10 +69,12 @@ export class EndpointRegistry {
   private endpoints: Map<string, EndpointConfig> = new Map();
   private router: Router;
   private logger: Logger;
+  private mcpManager: MCPManager | null = null;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, mcpManager?: MCPManager) {
     this.router = Router();
     this.logger = logger.child({ component: 'EndpointRegistry' });
+    this.mcpManager = mcpManager || null;
     this.initializeDefaultEndpoints();
   }
 
@@ -144,43 +147,77 @@ export class EndpointRegistry {
    * Forward request to MCP server
    */
   async forwardTo(server: string, method: string, params: Record<string, unknown>): Promise<unknown> {
+    if (!this.mcpManager) {
+      throw new Error('MCP Manager not initialized');
+    }
+
     this.logger.info(`Forwarding to ${server}.${method}`, params);
     
-    // TODO: Implement actual MCP server forwarding
-    // For now, return mock data
-    return {
-      server,
-      method,
-      params,
-      result: { success: true, data: 'Mock response - implement MCP forwarding' },
-    };
+    try {
+      const result = await this.mcpManager.callTool(server, method, params);
+      return result;
+    } catch (error) {
+      this.logger.error(`Failed to forward to ${server}.${method}:`, error as Error);
+      throw error;
+    }
   }
 
   /**
-   * Execute MCP tool by name
+   * Execute MCP tool by name (format: serverId.toolName)
    */
-  async executeMCPTool(method: string, params: Record<string, unknown>): Promise<unknown> {
-    this.logger.info(`Executing MCP tool: ${method}`, params);
+  async executeMCPTool(toolName: string, params: Record<string, unknown>): Promise<unknown> {
+    if (!this.mcpManager) {
+      throw new Error('MCP Manager not initialized');
+    }
+
+    this.logger.info(`Executing MCP tool: ${toolName}`, params);
     
-    // TODO: Implement actual MCP tool execution
-    return {
-      method,
-      params,
-      result: { success: true, data: 'Mock response - implement MCP tool execution' },
-    };
+    // Parse toolName as serverId.toolName
+    const parts = toolName.split('.');
+    if (parts.length < 2) {
+      throw new Error('Tool name must be in format: serverId.toolName');
+    }
+
+    const [serverId, ...toolParts] = parts;
+    const actualToolName = toolParts.join('.');
+    
+    try {
+      const result = await this.mcpManager.callTool(serverId, actualToolName, params);
+      return result;
+    } catch (error) {
+      this.logger.error(`Failed to execute tool ${toolName}:`, error as Error);
+      throw error;
+    }
   }
 
   /**
    * List available MCP tools
    */
   async listMCPTools(): Promise<unknown[]> {
-    // TODO: Implement actual MCP tool listing
-    return this.getAll().map(e => ({
-      name: e.id,
-      description: e.description,
-      category: e.category,
-      parameters: e.parameters,
-    }));
+    if (!this.mcpManager) {
+      return this.getAll().map(e => ({
+        name: e.id,
+        description: e.description,
+        category: e.category,
+        parameters: e.parameters,
+      }));
+    }
+
+    try {
+      const allTools = await this.mcpManager.listAllTools();
+      const flattened = allTools.flatMap(({ serverId, tools }) =>
+        tools.map(tool => ({
+          name: `${serverId}.${tool.name}`,
+          description: tool.description,
+          serverId,
+          inputSchema: tool.inputSchema,
+        }))
+      );
+      return flattened;
+    } catch (error) {
+      this.logger.error('Failed to list MCP tools:', error as Error);
+      throw error;
+    }
   }
 
   /**
@@ -1510,6 +1547,523 @@ export class EndpointRegistry {
       methods: ['POST'],
       pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
       rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // CRYPTOCOMPARE API (26 endpoints)
+    // ========================================
+
+    this.register({
+      id: 'cryptocompare.price',
+      name: 'CryptoCompare Price',
+      description: 'Get current crypto price',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/price/:fsym/:tsyms',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.multiprice',
+      name: 'CryptoCompare Multi Price',
+      description: 'Get multiple crypto prices',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/multiprice',
+      methods: ['POST'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.pricefull',
+      name: 'CryptoCompare Price Full',
+      description: 'Get full price data',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/pricefull/:fsym/:tsyms',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.histohour',
+      name: 'CryptoCompare Hourly OHLCV',
+      description: 'Historical hourly price data',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/histohour/:fsym/:tsym',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.histoday',
+      name: 'CryptoCompare Daily OHLCV',
+      description: 'Historical daily price data',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/histoday/:fsym/:tsym',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.histominute',
+      name: 'CryptoCompare Minute OHLCV',
+      description: 'Historical minute price data',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/histominute/:fsym/:tsym',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.news',
+      name: 'CryptoCompare News',
+      description: 'Latest crypto news articles',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/news',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.newsfeeds',
+      name: 'CryptoCompare News Feeds',
+      description: 'Available news feed sources',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/newsfeeds',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.newscategories',
+      name: 'CryptoCompare News Categories',
+      description: 'Available news categories',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/newscategories',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.coinlist',
+      name: 'CryptoCompare Coin List',
+      description: 'List all cryptocurrencies',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/coinlist',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.topmarketcap',
+      name: 'Top by Market Cap',
+      description: 'Top coins by market capitalization',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/topmarketcap/:tsym',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.topvolume',
+      name: 'Top by Volume',
+      description: 'Top coins by trading volume',
+      category: 'market-data',
+      path: '/api/v1/cryptocompare/topvolume/:tsym',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'cryptocompare.socialstats',
+      name: 'Social Stats',
+      description: 'Social media statistics for coin',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/social/:coinId',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'cryptocompare.blockchain',
+      name: 'Blockchain Data',
+      description: 'On-chain blockchain statistics',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/blockchain/:fsym',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'cryptocompare.mining',
+      name: 'Mining Equipment',
+      description: 'Mining hardware and contracts',
+      category: 'analytics',
+      path: '/api/v1/cryptocompare/mining',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // MESSARI API (23 endpoints)
+    // ========================================
+
+    this.register({
+      id: 'messari.assets',
+      name: 'Messari All Assets',
+      description: 'Get all crypto assets',
+      category: 'market-data',
+      path: '/api/v1/messari/assets',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'messari.asset',
+      name: 'Messari Asset',
+      description: 'Get asset details',
+      category: 'market-data',
+      path: '/api/v1/messari/asset/:assetKey',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.asset.profile',
+      name: 'Messari Asset Profile',
+      description: 'Detailed asset profile',
+      category: 'analytics',
+      path: '/api/v1/messari/asset/:assetKey/profile',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'messari.asset.metrics',
+      name: 'Messari Asset Metrics',
+      description: 'Quantitative asset metrics',
+      category: 'analytics',
+      path: '/api/v1/messari/asset/:assetKey/metrics',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'messari.price.timeseries',
+      name: 'Messari Price Timeseries',
+      description: 'Historical price data',
+      category: 'market-data',
+      path: '/api/v1/messari/timeseries/:assetKey/price',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.volume.timeseries',
+      name: 'Messari Volume Timeseries',
+      description: 'Historical volume data',
+      category: 'market-data',
+      path: '/api/v1/messari/timeseries/:assetKey/volume',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.marketcap.timeseries',
+      name: 'Messari Market Cap Timeseries',
+      description: 'Historical market cap data',
+      category: 'market-data',
+      path: '/api/v1/messari/timeseries/:assetKey/marketcap',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.mvrv',
+      name: 'Messari MVRV Ratio',
+      description: 'Market-Value-to-Realized-Value ratio',
+      category: 'analytics',
+      path: '/api/v1/messari/timeseries/:assetKey/mvrv',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'messari.nvt',
+      name: 'Messari NVT Ratio',
+      description: 'Network-Value-to-Transaction ratio',
+      category: 'analytics',
+      path: '/api/v1/messari/timeseries/:assetKey/nvt',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'messari.news',
+      name: 'Messari News',
+      description: 'Crypto news and research',
+      category: 'analytics',
+      path: '/api/v1/messari/news',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.asset.news',
+      name: 'Messari Asset News',
+      description: 'News for specific asset',
+      category: 'analytics',
+      path: '/api/v1/messari/news/:assetKey',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'messari.research',
+      name: 'Messari Research',
+      description: 'Research reports',
+      category: 'analytics',
+      path: '/api/v1/messari/research',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // GLASSNODE API (24 endpoints)
+    // ========================================
+
+    this.register({
+      id: 'glassnode.addresses.active',
+      name: 'Glassnode Active Addresses',
+      description: 'Number of active addresses',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/addresses/active',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.addresses.new',
+      name: 'Glassnode New Addresses',
+      description: 'Number of new addresses',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/addresses/new',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.mvrv',
+      name: 'Glassnode MVRV',
+      description: 'Market-Value-to-Realized-Value',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/mvrv',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.15', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.nvt',
+      name: 'Glassnode NVT',
+      description: 'Network-Value-to-Transaction',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/nvt',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.15', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.hashrate',
+      name: 'Glassnode Hash Rate',
+      description: 'Network hash rate',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/mining/hashrate',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.difficulty',
+      name: 'Glassnode Difficulty',
+      description: 'Mining difficulty',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/mining/difficulty',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.exchange.inflow',
+      name: 'Glassnode Exchange Inflow',
+      description: 'Exchange inflow volume',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/exchange/inflow',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.exchange.outflow',
+      name: 'Glassnode Exchange Outflow',
+      description: 'Exchange outflow volume',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/exchange/outflow',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'glassnode.supply.whales',
+      name: 'Glassnode Whale Supply',
+      description: 'Supply held by whales',
+      category: 'analytics',
+      path: '/api/v1/glassnode/:asset/supply/whales',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.25', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // EXCHANGE APIS (~140 endpoints total)
+    // ========================================
+
+    // GEMINI (16 endpoints)
+    ['getTicker', 'getOrderbook', 'getTrades', 'getSymbols', 'getSymbolDetails',
+     'getBalances', 'getTransfers', 'getDepositAddresses', 'placeOrder',
+     'cancelOrder', 'cancelAllOrders', 'getOrderStatus', 'getActiveOrders',
+     'getPastTrades', 'testConnection', 'getServerTime'].forEach((method, i) => {
+      this.register({
+        id: `gemini.${method}`,
+        name: `Gemini ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `Gemini ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/gemini/${method.toLowerCase()}`,
+        methods: method.startsWith('get') ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
+    });
+
+    // BITFINEX (18 endpoints)
+    ['getTicker', 'getTickers', 'getOrderbook', 'getTrades', 'getCandles',
+     'getPlatformStatus', 'getBalances', 'getAccountInfo', 'getMarginInfo',
+     'submitOrder', 'updateOrder', 'cancelOrder', 'cancelAllOrders',
+     'getActiveOrders', 'getOrderHistory', 'getTradeHistory', 'testConnection'].forEach((method) => {
+      this.register({
+        id: `bitfinex.${method}`,
+        name: `Bitfinex ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `Bitfinex ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/bitfinex/${method.toLowerCase()}`,
+        methods: method.startsWith('get') ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
+    });
+
+    // HTX (18 endpoints)
+    ['getTicker', 'getAllTickers', 'getOrderbook', 'getTrades', 'getKlines',
+     'getSymbols', 'getCurrencies', 'getTimestamp', 'getAccounts', 'getBalance',
+     'getAccountHistory', 'placeOrder', 'cancelOrder', 'cancelAllOrders',
+     'getOrder', 'getOpenOrders', 'getOrderHistory', 'getMatchResults'].forEach((method) => {
+      this.register({
+        id: `htx.${method}`,
+        name: `HTX ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `HTX ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/htx/${method.toLowerCase()}`,
+        methods: method.startsWith('get') ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
+    });
+
+    // GATE.IO (26 endpoints)
+    ['getTicker', 'getAllTickers', 'getOrderbook', 'getTrades', 'getCandles',
+     'getCurrencyPairs', 'getCurrencyPairDetails', 'getCurrencies', 'getCurrencyDetails',
+     'getBalances', 'getAccountDetail', 'getDepositAddress', 'getWithdrawals',
+     'getDeposits', 'placeOrder', 'cancelOrder', 'cancelAllOrders', 'getOrder',
+     'getOpenOrders', 'getOrderHistory', 'getMyTrades', 'testConnection', 'getServerTime'].forEach((method) => {
+      this.register({
+        id: `gateio.${method}`,
+        name: `Gate.io ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `Gate.io ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/gateio/${method.toLowerCase()}`,
+        methods: method.startsWith('get') ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
+    });
+
+    // MEXC (21 endpoints)
+    ['ping', 'getTime', 'getExchangeInfo', 'getTicker', 'getAllTickers',
+     'getTickerPrice', 'getBookTicker', 'getOrderbook', 'getTrades',
+     'getHistoricalTrades', 'getAggregateTrades', 'getKlines', 'getAvgPrice',
+     'getAccount', 'getBalances', 'getMyTrades', 'testOrder', 'placeOrder',
+     'cancelOrder', 'cancelAllOrders', 'getOrder', 'getOpenOrders', 'getAllOrders'].forEach((method) => {
+      this.register({
+        id: `mexc.${method}`,
+        name: `MEXC ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `MEXC ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/mexc/${method.toLowerCase()}`,
+        methods: method.startsWith('get') || method === 'ping' ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
+    });
+
+    // BITGET (21 endpoints)
+    ['getTime', 'getAllTickers', 'getTicker', 'getOrderbook', 'getTrades',
+     'getCandles', 'getSymbols', 'getCoins', 'getBalances', 'getAccountInfo',
+     'getBills', 'getTransferRecords', 'placeOrder', 'placeBatchOrders',
+     'cancelOrder', 'cancelBatchOrders', 'getOrder', 'getOpenOrders',
+     'getOrderHistory', 'getFills', 'testConnection'].forEach((method) => {
+      this.register({
+        id: `bitget.${method}`,
+        name: `Bitget ${method.replace(/([A-Z])/g, ' $1').trim()}`,
+        description: `Bitget ${method}`,
+        category: 'trading',
+        path: `/api/v1/exchange/bitget/${method.toLowerCase()}`,
+        methods: method.startsWith('get') ? ['GET'] : ['POST'],
+        pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+        rateLimit: { free: 0, paid: 1000 },
+      });
     });
   }
 }

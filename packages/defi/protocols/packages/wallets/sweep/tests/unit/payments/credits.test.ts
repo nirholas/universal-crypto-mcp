@@ -131,7 +131,7 @@ describe("Prepaid Credits Service", () => {
       const { getCredits } = await import("../../../src/services/payments/credits.js");
 
       // No cached data, no DB results
-      const result = await getCredits("0x0000000000000000000000000000000000000000");
+      const result = await getCredits("0x40252CFDF8B20Ed757D61ff157719F33Ec332402");
 
       expect(result.balanceCents).toBe(0);
       expect(result.balanceUsd).toBe("0.00");

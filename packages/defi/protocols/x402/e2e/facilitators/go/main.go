@@ -402,7 +402,7 @@ func (s *realFacilitatorEvmSigner) WaitForTransactionReceipt(ctx context.Context
 }
 
 func (s *realFacilitatorEvmSigner) GetBalance(ctx context.Context, address string, tokenAddress string) (*big.Int, error) {
-	if tokenAddress == "" || tokenAddress == "0x0000000000000000000000000000000000000000" {
+	if tokenAddress == "" || tokenAddress == "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" {
 		// Native balance
 		balance, err := s.client.BalanceAt(ctx, common.HexToAddress(address), nil)
 		if err != nil {

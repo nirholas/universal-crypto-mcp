@@ -257,7 +257,7 @@ export async function getApprovals(
   for (const [, approval] of latestApprovals) {
     // Skip zero approvals (revoked)
     if (approval.allowance === '0x' || approval.allowance === '0x0' || 
-        approval.allowance === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+        approval.allowance === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000') {
       continue;
     }
 

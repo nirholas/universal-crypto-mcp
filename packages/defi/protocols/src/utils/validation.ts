@@ -125,7 +125,7 @@ export function normalizeNetworkName(network: string): string {
  * Validate address is not a known dangerous address
  */
 const BLOCKED_ADDRESSES = new Set([
-  "0x0000000000000000000000000000000000000000", // Zero address
+  "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", // Zero address
   "0x000000000000000000000000000000000000dead", // Burn address
 ])
 

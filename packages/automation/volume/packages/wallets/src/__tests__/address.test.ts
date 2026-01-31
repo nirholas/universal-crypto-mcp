@@ -15,7 +15,7 @@ describe('Address Utilities', () => {
   describe('isValidAddress', () => {
     it('should validate correct Ethereum addresses', () => {
       expect(isValidAddress('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')).toBe(true);
-      expect(isValidAddress('0x0000000000000000000000000000000000000000')).toBe(true);
+      expect(isValidAddress('0x40252CFDF8B20Ed757D61ff157719F33Ec332402')).toBe(true);
     });
 
     it('should reject invalid addresses', () => {

@@ -733,13 +733,13 @@ describe('Math', function () {
 
     it('specific patterns', async function () {
       await expect(
-        this.mock.$clz('0x0000000000000000000000000000000000000000000000000000000000000100'),
+        this.mock.$clz('0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000100'),
       ).to.eventually.equal(247);
       await expect(
-        this.mock.$clz('0x0000000000000000000000000000000000000000000000000000000000010000'),
+        this.mock.$clz('0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000010000'),
       ).to.eventually.equal(239);
       await expect(
-        this.mock.$clz('0x0000000000000000000000000000000000000000000000000000000001000000'),
+        this.mock.$clz('0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000001000000'),
       ).to.eventually.equal(231);
     });
   });

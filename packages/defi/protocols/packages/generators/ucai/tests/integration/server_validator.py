@@ -307,7 +307,7 @@ sys.path.insert(0, "{server_dir}")
 
 # Mock environment variables to avoid connection errors
 os.environ.setdefault("RPC_URL", "http://localhost:8545")
-os.environ.setdefault("CONTRACT_ADDRESS", "0x0000000000000000000000000000000000000000")
+os.environ.setdefault("CONTRACT_ADDRESS", "0x40252CFDF8B20Ed757D61ff157719F33Ec332402")
 
 # Try to import - but we need to skip actual web3 connection
 # We'll just validate that the Python code parses and basic imports work

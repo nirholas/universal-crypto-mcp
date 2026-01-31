@@ -8,6 +8,7 @@
  */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { Logger } from "../utils/logger.js";
 
 // Simple in-memory storage for research sessions
 const researchStorage = new Map<string, ResearchSession>();
@@ -66,7 +67,7 @@ async function performSearch(query: string, type: "web" | "news" = "web"): Promi
     
     return { results };
   } catch (error) {
-    console.error("Search error:", error);
+    Logger.error("Search error", { error, query });
     return { results: [] };
   }
 }

@@ -17,7 +17,7 @@ export interface ServerPricing {
   tools: Record<string, PricingTier>;
 }
 
-export const WALLET_ADDRESS = process.env.X402_WALLET || "0xB1314Ed50b273A9c1dA9a43860d853F179868296";
+export const WALLET_ADDRESS = process.env.X402_WALLET || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402";
 export const NETWORK = process.env.X402_NETWORK || "eip155:8453"; // Base
 export const FACILITATOR = process.env.X402_FACILITATOR || "https://facilitator.x402.dev";
 

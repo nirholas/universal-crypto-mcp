@@ -232,7 +232,7 @@ describe("ExactEvmSchemeV1", () => {
           signature: "0xsig",
           authorization: {
             from: "0x1234567890123456789012345678901234567890",
-            to: "0x0000000000000000000000000000000000000000", // Wrong recipient
+            to: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", // Wrong recipient
             value: "100000",
             validAfter: (Math.floor(Date.now() / 1000) - 300).toString(),
             validBefore: (Math.floor(Date.now() / 1000) + 3600).toString(),

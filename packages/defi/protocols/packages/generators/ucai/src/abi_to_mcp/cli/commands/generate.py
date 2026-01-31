@@ -73,7 +73,7 @@ async def _generate_async(
                 fetch_result = await registry.fetch(source)
                 if not contract_address:
                     rprint("[yellow]Warning: No contract address - using placeholder[/yellow]")
-                    contract_address = "0x0000000000000000000000000000000000000000"
+                    contract_address = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
 
             progress.update(task, description="✓ ABI fetched")
 

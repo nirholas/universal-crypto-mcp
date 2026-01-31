@@ -52,11 +52,11 @@ TYPED_DATA_TEMPLATES = {
                 "name": "TOKEN_NAME",
                 "version": "1",
                 "chainId": 1,
-                "verifyingContract": "0x0000000000000000000000000000000000000000"
+                "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
             },
             "message": {
-                "owner": "0x0000000000000000000000000000000000000000",
-                "spender": "0x0000000000000000000000000000000000000000",
+                "owner": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+                "spender": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 "value": "0",
                 "nonce": 0,
                 "deadline": 0
@@ -104,12 +104,12 @@ TYPED_DATA_TEMPLATES = {
             },
             "message": {
                 "details": {
-                    "token": "0x0000000000000000000000000000000000000000",
+                    "token": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                     "amount": "0",
                     "expiration": 0,
                     "nonce": 0
                 },
-                "spender": "0x0000000000000000000000000000000000000000",
+                "spender": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 "sigDeadline": 0
             }
         },
@@ -150,13 +150,13 @@ TYPED_DATA_TEMPLATES = {
                 "name": "Exchange",
                 "version": "1.0",
                 "chainId": 1,
-                "verifyingContract": "0x0000000000000000000000000000000000000000"
+                "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
             },
             "message": {
-                "maker": "0x0000000000000000000000000000000000000000",
-                "taker": "0x0000000000000000000000000000000000000000",
-                "makerToken": "0x0000000000000000000000000000000000000000",
-                "takerToken": "0x0000000000000000000000000000000000000000",
+                "maker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+                "taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+                "makerToken": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+                "takerToken": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 "makerAmount": "0",
                 "takerAmount": "0",
                 "expiry": 0,
@@ -168,7 +168,7 @@ TYPED_DATA_TEMPLATES = {
             "domain.name": "0x Exchange",
             "domain.verifyingContract": "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
             "message.maker": "0xYourAddress",
-            "message.taker": "0x0000000000000000000000000000000000000000",
+            "message.taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             "message.makerToken": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             "message.takerToken": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "message.makerAmount": "1000000000000000000",
@@ -198,10 +198,10 @@ TYPED_DATA_TEMPLATES = {
                 "name": "TOKEN_NAME",
                 "version": "1",
                 "chainId": 1,
-                "verifyingContract": "0x0000000000000000000000000000000000000000"
+                "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
             },
             "message": {
-                "delegatee": "0x0000000000000000000000000000000000000000",
+                "delegatee": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 "nonce": 0,
                 "expiry": 0
             }
@@ -245,11 +245,11 @@ TYPED_DATA_TEMPLATES = {
             "message": {
                 "from": {
                     "name": "",
-                    "wallet": "0x0000000000000000000000000000000000000000"
+                    "wallet": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
                 },
                 "to": {
                     "name": "",
-                    "wallet": "0x0000000000000000000000000000000000000000"
+                    "wallet": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
                 },
                 "contents": ""
             }
@@ -284,12 +284,12 @@ TYPED_DATA_TEMPLATES = {
                 "name": "Your App Name",
                 "version": "1",
                 "chainId": 1,
-                "verifyingContract": "0x0000000000000000000000000000000000000000"
+                "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
             },
             "message": {
                 "field1": "",
                 "field2": 0,
-                "field3": "0x0000000000000000000000000000000000000000"
+                "field3": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
             }
         },
         "required_fields": ["types", "primaryType", "domain", "message"],

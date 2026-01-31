@@ -24,6 +24,8 @@ import { requestLogger, errorLogger } from './logging.js';
 import { loadGatewayConfig, GatewayConfig } from './config.js';
 import { EndpointRegistry } from './endpoints.js';
 import { logger as Logger } from './logger.js';
+import { MCPManager } from './mcp-manager.js';
+import { MCP_SERVERS } from './mcp-servers.config.js';
 
 // ============================================================================
 // Gateway Server
@@ -33,18 +35,29 @@ export class UniversalCryptoGateway {
   private app: Express;
   private config: GatewayConfig;
   private redis: Redis | null = null;
+  private mcpManager: MCPManager;
   private endpoints: EndpointRegistry;
   private x402: x402Gateway;
 
   constructor() {
     this.app = express();
     this.config = loadGatewayConfig();
-    this.endpoints = new EndpointRegistry(Logger);
+    this.mcpManager = new MCPManager(Logger);
+    this.endpoints = new EndpointRegistry(Logger, this.mcpManager);
     this.x402 = new x402Gateway(this.config);
     
+    this.initializeMCPServers();
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
+  }
+
+  private initializeMCPServers(): void {
+    Logger.info(`Registering ${MCP_SERVERS.length} MCP servers...`);
+    for (const serverConfig of MCP_SERVERS) {
+      this.mcpManager.registerServer(serverConfig);
+    }
+    Logger.info('MCP servers registered');
   }
 
   private async initRedis(): Promise<void> {
@@ -386,7 +399,11 @@ export class UniversalCryptoGateway {
   async start(): Promise<void> {
     await this.initRedis();
     await this.x402.initialize();
-    // Endpoints are initialized in constructor
+    
+    // Start all MCP servers
+    Logger.info('Starting MCP servers...');
+    await this.mcpManager.startAll();
+    Logger.info('MCP servers started successfully');
 
     const port = this.config.port;
     
@@ -397,9 +414,19 @@ export class UniversalCryptoGateway {
       Logger.info(`   x402 Network: ${this.config.x402.network}`);
       Logger.info(`   x402 Wallet: ${this.config.x402.walletAddress}`);
       Logger.info(`   Redis: ${this.config.redis.enabled ? 'enabled' : 'disabled'}`);
+      Logger.info(`   MCP Servers: ${this.mcpManager.getAllServerInfo().length} active`);
       Logger.info(`   Health: http://localhost:${port}/health`);
       Logger.info(`   API Docs: http://localhost:${port}/api`);
     });
+  }
+
+  async shutdown(): Promise<void> {
+    Logger.info('Shutting down gateway...');
+    await this.mcpManager.stopAll();
+    if (this.redis) {
+      await this.redis.quit();
+    }
+    Logger.info('Gateway shutdown complete');
   }
 }
 
@@ -425,6 +452,19 @@ const gateway = new UniversalCryptoGateway();
 gateway.start().catch((err) => {
   console.error('Failed to start gateway:', err);
   process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  Logger.info('SIGTERM received, shutting down gracefully...');
+  await gateway.shutdown();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  Logger.info('SIGINT received, shutting down gracefully...');
+  await gateway.shutdown();
+  process.exit(0);
 });
 
 export default UniversalCryptoGateway;

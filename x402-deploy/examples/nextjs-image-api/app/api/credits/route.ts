@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const WALLET_ADDRESS = process.env.X402_WALLET || '0x0000000000000000000000000000000000000000';
+const WALLET_ADDRESS = process.env.X402_WALLET || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 
 // Credit packages
 const PACKAGES = {

@@ -114,7 +114,7 @@ describe("Deployment Module", () => {
     it("should calculate CREATE2 address deterministically", async () => {
       const { getCreate2Address } = await import("viem")
       
-      const salt = "0x0000000000000000000000000000000000000000000000000000000000000001" as Hex
+      const salt = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001" as Hex
       const initCodeHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as Hash
 
       vi.mocked(getCreate2Address).mockReturnValue(mockContractAddress)

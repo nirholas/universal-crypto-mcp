@@ -803,7 +803,7 @@ export function registerSwapTools(server: McpServer) {
           args: [tokenA as Address, tokenB as Address]
         })
 
-        if (pairAddress === "0x0000000000000000000000000000000000000000") {
+        if (pairAddress === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
           return mcpToolRes.success({
             tokenA,
             tokenB,
@@ -874,7 +874,7 @@ export function registerSwapTools(server: McpServer) {
           args: [tokenA as Address, tokenB as Address]
         })
 
-        if (pairAddress === "0x0000000000000000000000000000000000000000") {
+        if (pairAddress === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
           return mcpToolRes.success({
             tokenA,
             tokenB,

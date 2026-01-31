@@ -323,13 +323,13 @@ export async function resolveEns(name: string, chainId = 1): Promise<ResolvedAdd
     
     // Get resolver address
     const resolverAddress = await getEnsResolver(rpcUrl, normalizedName);
-    if (!resolverAddress || resolverAddress === '0x0000000000000000000000000000000000000000') {
+    if (!resolverAddress || resolverAddress === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
       return null;
     }
 
     // Resolve address
     const address = await resolveEnsAddress(rpcUrl, resolverAddress, normalizedName);
-    if (!address || address === '0x0000000000000000000000000000000000000000') {
+    if (!address || address === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
       return null;
     }
 
@@ -466,7 +466,7 @@ async function getEnsAvatar(
  * Compute ENS namehash
  */
 function computeNamehash(name: string): string {
-  let node = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  let node = '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000';
   
   if (name) {
     const labels = name.split('.');
@@ -512,7 +512,7 @@ export async function reverseResolveEns(address: string, chainId = 1): Promise<s
 
     // Get resolver
     const resolverAddress = await getEnsResolver(rpcUrl, reverseName);
-    if (!resolverAddress || resolverAddress === '0x0000000000000000000000000000000000000000') {
+    if (!resolverAddress || resolverAddress === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
       return null;
     }
 

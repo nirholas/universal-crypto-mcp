@@ -464,10 +464,10 @@ export function registerTokenTools(server: McpServer) {
         for (const log of logs) {
           if (log.args && typeof log.args === "object") {
             const args = log.args as { from?: string; to?: string }
-            if (args.from && args.from !== "0x0000000000000000000000000000000000000000") {
+            if (args.from && args.from !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
               holders.add(args.from.toLowerCase())
             }
-            if (args.to && args.to !== "0x0000000000000000000000000000000000000000") {
+            if (args.to && args.to !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
               holders.add(args.to.toLowerCase())
             }
           }
@@ -668,7 +668,7 @@ export function registerTokenTools(server: McpServer) {
 
         // Check common burn addresses
         const burnAddresses = [
-          "0x0000000000000000000000000000000000000000",
+          "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
           "0x000000000000000000000000000000000000dEaD",
           "0x0000000000000000000000000000000000000001"
         ]

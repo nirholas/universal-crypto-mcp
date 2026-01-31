@@ -99,7 +99,7 @@ async def test_handle_unverified_contract(etherscan_fetcher, mock_not_verified_r
         
         with pytest.raises(ContractNotVerifiedError) as exc_info:
             await etherscan_fetcher.fetch(
-                "0x0000000000000000000000000000000000000000",
+                "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 network="mainnet"
             )
         

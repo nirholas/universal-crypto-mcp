@@ -555,7 +555,7 @@ export async function testWebhooks() {
   const testPayment = {
     price: '$0.00',
     operation: 'test:webhook',
-    payerAddress: '0x0000000000000000000000000000000000000000',
+    payerAddress: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
     network: process.env.X402_NETWORK || 'eip155:84532',
     transactionHash: '0x' + '0'.repeat(64),
     metadata: { test: true },

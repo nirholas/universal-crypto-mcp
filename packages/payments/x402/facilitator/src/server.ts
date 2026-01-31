@@ -20,6 +20,7 @@ import { createUSdsService } from './services/usds.js';
 import { createPaymentCache } from './services/cache.js';
 import { createFeeService } from './services/fees.js';
 import { createMultiChainClient } from './services/multichain.js';
+import { createFeeSettlementService } from './services/settlement.js';
 import { type NetworkId, DEFAULT_NETWORKS, getNetworkById } from './services/networks.js';
 import { metricsMiddleware, getMetrics, getMetricsContentType, updateHealth, healthStatus } from './services/metrics.js';
 import { logger, requestLogger, errorLogger } from './middleware/logger.js';
@@ -29,6 +30,7 @@ import { createSettleRouter } from './routes/settle.js';
 import { createQuoteRouter } from './routes/quote.js';
 import { createPaymentsRouter } from './routes/payments.js';
 import { createFeesRouter } from './routes/fees.js';
+import { createSettlementRoutes } from './routes/settlement.js';
 import type { Network, ServerConfig, HealthResponse, ErrorResponse } from './types.js';
 
 /**
@@ -63,6 +65,10 @@ function loadConfig(): ServerConfig & {
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10),
     rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
     paymentCacheTtlMs: parseInt(process.env.PAYMENT_CACHE_TTL_MS || '86400000', 10), // 24 hours
+    settlementMinBatchSize: process.env.SETTLEMENT_MIN_BATCH_SIZE || '10.0', // $10 USD minimum
+    settlementMaxBatchSize: process.env.SETTLEMENT_MAX_BATCH_SIZE || '100000.0',
+    settlementIntervalMs: parseInt(process.env.SETTLEMENT_INTERVAL_MS || '3600000', 10), // 1 hour
+    autoSettlement: process.env.AUTO_SETTLEMENT !== 'false', // default enabled
   };
 }
 
@@ -125,6 +131,27 @@ function createApp(config: ServerConfig) {
     networks: config.enabledNetworks,
   });
 
+  // Initialize fee settlement service
+  const settlementService = createFeeSettlementService(
+    {
+      minBatchSize: config.settlementMinBatchSize,
+      maxBatchSize: config.settlementMaxBatchSize,
+      networks: config.enabledNetworks,
+      feeRecipient: config.feeRecipient,
+    },
+    multiChainClient,
+    feeService
+  );
+
+  // Start automatic settlement if enabled
+  if (config.autoSettlement) {
+    settlementService.startAutoSettlement(config.settlementIntervalMs);
+    logger.info('Automatic fee settlement enabled', {
+      intervalMs: config.settlementIntervalMs,
+      minBatchSize: config.settlementMinBatchSize,
+    });
+  }
+
   // Prometheus metrics endpoint
   app.get('/metrics', async (_req: Request, res: Response) => {
     try {
@@ -183,6 +210,9 @@ function createApp(config: ServerConfig) {
   
   // Fee management routes (revenue tracking)
   app.use('/fees', createFeesRouter(feeService));
+  
+  // Settlement routes (admin access for fee withdrawal)
+  app.use('/settlement', createSettlementRoutes(settlementService));
 
   // Networks info endpoint
   app.get('/networks', (_req: Request, res: Response) => {

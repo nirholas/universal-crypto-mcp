@@ -180,7 +180,9 @@
       const summary = bookmarkList.map(b => `@${b.handle}: ${b.text.slice(0, 100)}... - ${b.url}`).join('\n');
       await navigator.clipboard.writeText(summary);
       console.log('📋 Summary copied to clipboard!');
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to copy bookmark summary to clipboard:', error.message);
+    }
 
     // Store globally
     window.exportedBookmarks = bookmarkList;

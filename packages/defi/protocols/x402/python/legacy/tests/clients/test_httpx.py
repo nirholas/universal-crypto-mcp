@@ -29,7 +29,7 @@ def payment_requirements():
         scheme="exact",
         network="base-sepolia",
         asset="0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-        pay_to="0x0000000000000000000000000000000000000000",
+        pay_to="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         max_amount_required="10000",
         resource="https://example.com",
         description="test",

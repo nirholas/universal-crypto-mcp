@@ -104,7 +104,12 @@ const CONFIG = {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) JSON.parse(saved).forEach(u => followedUsers.add(u));
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load followed engagers:', {
+      error: error.message,
+      storageKey: STORAGE_KEY
+    });
+  }
   
   let totalFollowed = 0;
   

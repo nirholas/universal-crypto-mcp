@@ -269,7 +269,7 @@ describe("DEX Analytics Module", () => {
 
       const result = await server.executeTool("dex_get_pool_details", {
         network: "ethereum",
-        poolAddress: "0x0000000000000000000000000000000000000000"
+        poolAddress: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
       })
 
       expect((result as any).content[0].text).toContain("Failed to fetch pool details")

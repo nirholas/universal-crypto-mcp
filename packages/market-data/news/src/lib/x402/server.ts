@@ -61,7 +61,7 @@ export function validateConfig(): ConfigValidation {
   const warnings: string[] = [];
 
   // Check payment address
-  if (!PAYMENT_ADDRESS || PAYMENT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+  if (!PAYMENT_ADDRESS || PAYMENT_ADDRESS === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
     if (IS_PRODUCTION) {
       errors.push('X402_PAYMENT_ADDRESS not set - payments will fail in production!');
     } else {

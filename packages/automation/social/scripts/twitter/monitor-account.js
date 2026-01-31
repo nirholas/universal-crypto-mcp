@@ -132,7 +132,13 @@ const CONFIG = {
   try {
     const saved = localStorage.getItem(storageKey);
     if (saved) previous = JSON.parse(saved);
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load previous account snapshot:', {
+      error: error.message,
+      storageKey,
+      username
+    });
+  }
   
   const timestamp = new Date().toISOString();
   

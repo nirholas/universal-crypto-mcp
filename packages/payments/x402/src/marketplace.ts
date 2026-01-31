@@ -108,7 +108,7 @@ export class ToolRegistry {
       registryUrl: config.registryUrl ?? "https://registry.nirholas.dev",
       chain: config.chain ?? "eip155:42161",
       platformFeePercent: config.platformFeePercent ?? 5, // 5% platform fee
-      platformAddress: config.platformAddress ?? "0x0000000000000000000000000000000000000000" as Address,
+      platformAddress: config.platformAddress ?? "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
     };
   }
   

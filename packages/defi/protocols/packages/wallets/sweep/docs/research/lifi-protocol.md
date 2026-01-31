@@ -179,8 +179,8 @@ import { getQuote, ChainId } from '@lifi/sdk'
 const quote = await getQuote({
   fromChain: ChainId.ARB,
   toChain: ChainId.OPT,
-  fromToken: '0x0000000000000000000000000000000000000000', // Native ETH
-  toToken: '0x0000000000000000000000000000000000000000',
+  fromToken: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402', // Native ETH
+  toToken: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
   fromAmount: '1000000000000000000', // 1 ETH
   fromAddress: '0xYourAddress',
 })

@@ -35,19 +35,19 @@ const LIDO_ADDRESSES: Record<string, {
     withdrawalQueue: "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
   },
   arbitrum: {
-    stETH: "0x0000000000000000000000000000000000000000", // Not available
+    stETH: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", // Not available
     wstETH: "0x5979D7b546E38E414F7E9822514be443A4800529",
   },
   polygon: {
-    stETH: "0x0000000000000000000000000000000000000000",
+    stETH: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     wstETH: "0x03b54A6e9a984069379fae1a4fC4dBAE93B3bCCD",
   },
   optimism: {
-    stETH: "0x0000000000000000000000000000000000000000",
+    stETH: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     wstETH: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
   },
   base: {
-    stETH: "0x0000000000000000000000000000000000000000",
+    stETH: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     wstETH: "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",
   },
 };
@@ -468,7 +468,7 @@ export class LidoProvider implements DeFiProvider {
       calldata = encodeFunctionData({
         abi: STETH_ABI,
         functionName: "submit",
-        args: ["0x0000000000000000000000000000000000000000" as Address], // No referral
+        args: ["0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address], // No referral
       });
       value = parsedAmount.toString();
       to = addresses.stETH;
@@ -646,7 +646,7 @@ export class LidoProvider implements DeFiProvider {
     const pools = await this.getVaults(chain);
 
     // Check stETH balance (mainnet only)
-    if (chain === "ethereum" && addresses.stETH !== "0x0000000000000000000000000000000000000000") {
+    if (chain === "ethereum" && addresses.stETH !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
       try {
         const stETHBalance = await client.readContract({
           address: addresses.stETH,

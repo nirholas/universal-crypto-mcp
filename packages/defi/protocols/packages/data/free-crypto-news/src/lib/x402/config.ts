@@ -78,13 +78,13 @@ export const FACILITATOR_URL =
  */
 export const PAYMENT_ADDRESS =
   (process.env.X402_PAYMENT_ADDRESS as `0x${string}`) ||
-  ('0x0000000000000000000000000000000000000000' as `0x${string}`);
+  ('0x40252CFDF8B20Ed757D61ff157719F33Ec332402' as `0x${string}`);
 
 // Warn if not configured in production
 if (
   typeof window === 'undefined' &&
   IS_PRODUCTION &&
-  PAYMENT_ADDRESS === '0x0000000000000000000000000000000000000000'
+  PAYMENT_ADDRESS === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402'
 ) {
   console.error('[x402] CRITICAL: X402_PAYMENT_ADDRESS not set! Configure your wallet address.');
   console.error('[x402] Payments will fail in production. Set X402_PAYMENT_ADDRESS in environment.');

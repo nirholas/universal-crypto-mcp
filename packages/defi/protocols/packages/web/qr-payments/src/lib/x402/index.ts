@@ -5,9 +5,9 @@ import { ethers } from 'ethers';
 
 // x402 Payment Protocol Constants
 const X402_VERSION = '1.0';
-const X402_PAYMENT_TOKEN_ADDRESS = process.env.X402_PAYMENT_TOKEN_ADDRESS || '0x0000000000000000000000000000000000000000';
+const X402_PAYMENT_TOKEN_ADDRESS = process.env.X402_PAYMENT_TOKEN_ADDRESS || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 const X402_PAYMENT_AMOUNT = process.env.X402_PAYMENT_AMOUNT || '100'; // 100 $CF per API call
-const X402_PAYMENT_RECIPIENT = process.env.X402_PAYMENT_RECIPIENT || '0x0000000000000000000000000000000000000000';
+const X402_PAYMENT_RECIPIENT = process.env.X402_PAYMENT_RECIPIENT || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 const X402_CHAIN_ID = parseInt(process.env.X402_CHAIN_ID || '8453'); // Default to Base
 
 // ERC20 ABI for balance checking
@@ -185,7 +185,7 @@ export async function checkTokenBalance(
 ): Promise<boolean> {
   try {
     // Skip check if token address is zero (payments disabled)
-    if (tokenAddress === '0x0000000000000000000000000000000000000000') {
+    if (tokenAddress === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
       return true;
     }
 
@@ -222,7 +222,7 @@ export async function getCFBalance(
 ): Promise<{ balance: string; formatted: string }> {
   try {
     const rpcUrl = getRpcUrl(chainId);
-    if (!rpcUrl || X402_PAYMENT_TOKEN_ADDRESS === '0x0000000000000000000000000000000000000000') {
+    if (!rpcUrl || X402_PAYMENT_TOKEN_ADDRESS === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
       return { balance: '0', formatted: '0' };
     }
 

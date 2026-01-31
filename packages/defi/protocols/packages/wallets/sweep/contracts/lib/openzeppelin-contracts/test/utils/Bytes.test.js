@@ -171,14 +171,14 @@ describe('Bytes', function () {
     it('multiple leading zeros', async function () {
       await expect(this.mock.$clz('0x0000000001')).to.eventually.equal(39);
       await expect(
-        this.mock.$clz('0x0000000000000000000000000000000000000000000000000000000000000001'),
+        this.mock.$clz('0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001'),
       ).to.eventually.equal(255);
     });
 
     it('all zeros of various lengths', async function () {
       await expect(this.mock.$clz('0x00000000')).to.eventually.equal(32);
       await expect(
-        this.mock.$clz('0x0000000000000000000000000000000000000000000000000000000000000000'),
+        this.mock.$clz('0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000'),
       ).to.eventually.equal(256);
 
       // Complete chunks

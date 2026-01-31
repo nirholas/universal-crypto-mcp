@@ -34,7 +34,7 @@ def payment_requirements():
         scheme="exact",
         network="base-sepolia",
         asset="0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-        pay_to="0x0000000000000000000000000000000000000000",
+        pay_to="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         max_amount_required="10000",
         resource="https://example.com",
         description="test",
@@ -116,7 +116,7 @@ def test_sign_payment_header(account, payment_requirements):
 
 def test_sign_payment_header_no_account(payment_requirements):
     unsigned_header = prepare_payment_header(
-        "0x0000000000000000000000000000000000000000", 1, payment_requirements
+        "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", 1, payment_requirements
     )
 
     # Convert nonce to hex string for signing

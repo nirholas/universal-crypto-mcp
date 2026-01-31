@@ -106,7 +106,7 @@ describe("JupiterAggregator", () => {
     it("should return null for non-solana chains", async () => {
       const quote = await aggregator.getQuote({
         chain: "ethereum",
-        inputToken: "0x0000000000000000000000000000000000000000",
+        inputToken: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         outputToken: "0x0000000000000000000000000000000000000001",
         inputAmount: "1000000000000000000",
         slippage: 0.5,

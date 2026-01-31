@@ -868,7 +868,7 @@ export function getWethAddress(chainId: number): string | undefined {
 export function isNativeToken(address: string): boolean {
   return (
     address.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() ||
-    address === '0x0000000000000000000000000000000000000000'
+    address === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402'
   );
 }
 

@@ -374,6 +374,117 @@ Get information about enabled networks.
 }
 ```
 
+## Fee Settlement (Admin)
+
+Automatic settlement of collected fees runs every hour by default. Manual settlement requires an admin key.
+
+### GET /settlement/pending
+
+Get pending fees ready for settlement. No authentication required.
+
+**Response:**
+```json
+{
+  "pending": [
+    {
+      "network": "eip155:42161",
+      "token": "USDC",
+      "totalAmount": "125500000",
+      "feeCount": 523,
+      "payerCount": 87
+    }
+  ],
+  "shouldSettle": true
+}
+```
+
+### POST /settlement/settle-all
+
+Settle all pending fees across all networks. **Requires admin key.**
+
+**Request:**
+```json
+{
+  "adminKey": "your_secure_admin_key_here"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "success": true,
+      "network": "eip155:42161",
+      "token": "USDC",
+      "totalAmount": "125.50",
+      "feeCount": 523,
+      "txHash": "0x...",
+      "timestamp": 1705000000000
+    }
+  ],
+  "summary": {
+    "totalSettlements": 1,
+    "successful": 1,
+    "failed": 0
+  }
+}
+```
+
+### POST /settlement/settle-network
+
+Settle fees for a specific network and token. **Requires admin key.**
+
+**Request:**
+```json
+{
+  "adminKey": "your_secure_admin_key_here",
+  "network": "eip155:42161",
+  "token": "USDC"
+}
+```
+
+### GET /settlement/history
+
+Get settlement history (last 100 by default).
+
+**Response:**
+```json
+{
+  "history": [
+    {
+      "success": true,
+      "network": "eip155:42161",
+      "token": "USDC",
+      "totalAmount": "125.50",
+      "feeCount": 523,
+      "txHash": "0x...",
+      "timestamp": 1705000000000
+    }
+  ]
+}
+```
+
+### GET /settlement/stats
+
+Get settlement statistics and status.
+
+**Response:**
+```json
+{
+  "totalSettlements": 42,
+  "successfulSettlements": 41,
+  "failedSettlements": 1,
+  "totalAmountSettled": "5250.00",
+  "settlementsByNetwork": {
+    "eip155:42161": 25,
+    "eip155:8453": 17
+  },
+  "isCurrentlySettling": false
+}
+```
+
 ## Configuration
 
 | Variable | Description | Default |
@@ -389,6 +500,11 @@ Get information about enabled networks.
 | `PRIVATE_KEY` | Wallet private key for settlements | - |
 | `RECIPIENT_ADDRESS` | Default payment recipient | - |
 | `FEE_RECIPIENT` | Platform fee recipient (0.1%) | Same as `RECIPIENT_ADDRESS` |
+| `SETTLEMENT_MIN_BATCH_SIZE` | Min fees before settlement (USD) | `10.0` |
+| `SETTLEMENT_MAX_BATCH_SIZE` | Max fees per settlement (USD) | `100000.0` |
+| `SETTLEMENT_INTERVAL_MS` | Auto-settlement interval | `3600000` (1 hour) |
+| `AUTO_SETTLEMENT` | Enable automatic settlement | `true` |
+| `ADMIN_KEY` | Admin key for manual settlement | - |
 | `CORS_ORIGINS` | Allowed CORS origins | `*` |
 | `RATE_LIMIT_WINDOW_MS` | Rate limit window | `60000` |
 | `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100` |

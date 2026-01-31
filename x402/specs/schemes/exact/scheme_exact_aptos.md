@@ -272,7 +272,7 @@ CAIP-2 format is used for network identifiers:
 
 Aptos account addresses are 32-byte hex strings, represented with a `0x` prefix. All addresses in the x402 protocol must use the long form (64 hex characters) for consistency and ease of validation.
 
-Example: `0x0000000000000000000000000000000000000000000000000000000000000001` (64 hex characters)
+Example: `0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001` (64 hex characters)
 
 ## Recommendation
 

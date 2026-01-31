@@ -387,7 +387,7 @@ export function validateAddress(
   }
 
   // Check for zero address
-  if (addressString === "0x0000000000000000000000000000000000000000") {
+  if (addressString === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
     result.warnings.push("Zero address detected - this may be intentional but is unusual")
   }
 

@@ -261,7 +261,7 @@ export const VAULTS = {
     tvlUsd: 30000000000,
     riskLevel: RiskLevel.LOW,
     depositToken: {
-      address: "0x0000000000000000000000000000000000000000" as Address,
+      address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
       symbol: "ETH",
       name: "Ether",
       decimals: 18,

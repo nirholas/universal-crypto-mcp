@@ -110,7 +110,7 @@ describe("Portfolio Module", () => {
 
       await expect(
         mockPublicClient.readContract({
-          address: "0x0000000000000000000000000000000000000000" as Address,
+          address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
           abi: [],
           functionName: "balanceOf",
           args: [mockAddress]

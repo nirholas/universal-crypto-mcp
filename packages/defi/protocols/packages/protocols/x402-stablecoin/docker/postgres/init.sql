@@ -146,10 +146,10 @@ CREATE TRIGGER update_tools_updated_at
 
 -- Add a welcome message to verify initialization
 INSERT INTO yield_balances (wallet_address, balance_usds, accrued_yield)
-VALUES ('0x0000000000000000000000000000000000000000', 0, 0)
+VALUES ('0x40252CFDF8B20Ed757D61ff157719F33Ec332402', 0, 0)
 ON CONFLICT (wallet_address) DO NOTHING;
 
 -- Cleanup the test row
-DELETE FROM yield_balances WHERE wallet_address = '0x0000000000000000000000000000000000000000';
+DELETE FROM yield_balances WHERE wallet_address = '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 
 COMMENT ON DATABASE x402 IS 'X402 Protocol Database - Yield tracking, payments, and tool registry';

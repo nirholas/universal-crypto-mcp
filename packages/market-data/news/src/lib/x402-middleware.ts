@@ -16,7 +16,7 @@ import {
 
 // Environment configuration
 const PAYMENT_ADDRESS =
-  process.env.X402_PAYMENT_ADDRESS || '0x0000000000000000000000000000000000000000';
+  process.env.X402_PAYMENT_ADDRESS || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 const FACILITATOR_URL = process.env.X402_FACILITATOR_URL || 'https://x402.org/facilitator';
 const IS_TESTNET = process.env.X402_TESTNET === 'true';
 const NETWORK = IS_TESTNET ? 'baseSepolia' : 'base';

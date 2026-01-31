@@ -32,11 +32,11 @@ PERMIT_TEMPLATE = {
             "name": "TOKEN_NAME",
             "version": "1",
             "chainId": 1,
-            "verifyingContract": "0x0000000000000000000000000000000000000000"
+            "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
         },
         "message": {
-            "owner": "0x0000000000000000000000000000000000000000",
-            "spender": "0x0000000000000000000000000000000000000000",
+            "owner": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+            "spender": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             "value": "1000000000000000000",
             "nonce": 0,
             "deadline": 1893456000
@@ -83,12 +83,12 @@ PERMIT2_TEMPLATE = {
         },
         "message": {
             "details": {
-                "token": "0x0000000000000000000000000000000000000000",
+                "token": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 "amount": "1461501637330902918203684832716283019655932542975",
                 "expiration": 1893456000,
                 "nonce": 0
             },
-            "spender": "0x0000000000000000000000000000000000000000",
+            "spender": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             "sigDeadline": 1893456000
         }
     },
@@ -131,13 +131,13 @@ DEX_ORDER_TEMPLATE = {
             "name": "Exchange",
             "version": "1.0",
             "chainId": 1,
-            "verifyingContract": "0x0000000000000000000000000000000000000000"
+            "verifyingContract": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
         },
         "message": {
-            "maker": "0x0000000000000000000000000000000000000000",
-            "taker": "0x0000000000000000000000000000000000000000",
-            "makerToken": "0x0000000000000000000000000000000000000000",
-            "takerToken": "0x0000000000000000000000000000000000000000",
+            "maker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+            "taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+            "makerToken": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+            "takerToken": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             "makerAmount": "1000000000000000000",
             "takerAmount": "3000000000",
             "expiry": 1893456000,

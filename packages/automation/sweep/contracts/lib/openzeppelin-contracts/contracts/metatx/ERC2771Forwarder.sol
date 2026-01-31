@@ -317,7 +317,7 @@ contract ERC2771Forwarder is EIP712, Nonces {
             // | Location  | Content  | Content (Hex)                                                      |
             // |-----------|----------|--------------------------------------------------------------------|
             // |           |          |                                                           result ↓ |
-            // | 0x00:0x1F | selector | 0x0000000000000000000000000000000000000000000000000000000000000001 |
+            // | 0x00:0x1F | selector | 0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001 |
             success := staticcall(gas(), target, add(encodedParams, 0x20), mload(encodedParams), 0x00, 0x20)
             returnSize := returndatasize()
             returnValue := mload(0x00)

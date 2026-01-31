@@ -179,7 +179,7 @@ describe("Validation Utilities", () => {
     it("should return false for blocked addresses", () => {
       expect(
         validateNotBlockedAddress(
-          "0x0000000000000000000000000000000000000000"
+          "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
         )
       ).toBe(false)
       expect(

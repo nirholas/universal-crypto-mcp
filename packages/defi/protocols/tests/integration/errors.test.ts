@@ -160,7 +160,7 @@ describe("Error Handling Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: "invalid_address",
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       expect(result).toBeDefined()
@@ -202,7 +202,7 @@ describe("Error Handling Integration Tests", () => {
       )
 
       const result = await mockServer.executeTool("get_erc20_token_info", {
-        tokenAddress: "0x0000000000000000000000000000000000000000",
+        tokenAddress: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         network: "ethereum"
       })
 
@@ -595,7 +595,7 @@ describe("Error Handling Integration Tests", () => {
         tokenAddress: "0x1234567890123456789012345678901234567890",
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text

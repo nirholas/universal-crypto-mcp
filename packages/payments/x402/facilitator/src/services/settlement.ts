@@ -214,7 +214,7 @@ export class FeeSettlementService {
         token: group.token,
         totalAmount: formatUnits(group.totalAmount, decimals),
         feeCount: group.feeIds.length,
-        txHash: '0x0000000000000000000000000000000000000000000000000000000000000000' as Hash,
+        txHash: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000' as Hash,
         timestamp: Date.now(),
       };
 

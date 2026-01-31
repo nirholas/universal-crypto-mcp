@@ -134,7 +134,7 @@ contract Verify is Script {
     }
 
     function _toHexString(address addr) internal pure returns (string memory) {
-        if (addr == address(0)) return "0x0000000000000000000000000000000000000000";
+        if (addr == address(0)) return "0x40252CFDF8B20Ed757D61ff157719F33Ec332402";
         return vm.toString(addr);
     }
 

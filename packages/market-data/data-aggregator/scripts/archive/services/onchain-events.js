@@ -189,7 +189,7 @@ const WhaleTracker = {
     const etherscanKey = process.env.ETHERSCAN_API_KEY;
     if (etherscanKey) {
       try {
-        const url = `${ETHERSCAN_API}?module=account&action=txlist&address=0x0000000000000000000000000000000000000000&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${etherscanKey}`;
+        const url = `${ETHERSCAN_API}?module=account&action=txlist&address=0x40252CFDF8B20Ed757D61ff157719F33Ec332402&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${etherscanKey}`;
         // Note: This is a placeholder - for real whale tracking, we'd monitor known whale addresses
         // from services like Arkham Intelligence or maintain our own list
         

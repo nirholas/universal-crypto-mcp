@@ -1047,7 +1047,7 @@ async function getCowQuote(params: {
         from: params.userAddress,
         kind: 'sell',
         sellAmountBeforeFee: params.amount,
-        appData: '0x0000000000000000000000000000000000000000000000000000000000000000',
+        appData: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000',
         partiallyFillable: false,
         sellTokenBalance: 'erc20',
         buyTokenBalance: 'erc20',

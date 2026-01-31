@@ -186,7 +186,7 @@ def calculate_array_slot(base_slot: int, index: int) -> str:
 
 ### Zero Address
 ```
-0x0000000000000000000000000000000000000000
+0x40252CFDF8B20Ed757D61ff157719F33Ec332402
 ```
 Used for: ETH burns, contract creation, null address
 

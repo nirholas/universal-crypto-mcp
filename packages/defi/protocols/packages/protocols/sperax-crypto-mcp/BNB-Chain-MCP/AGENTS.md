@@ -703,7 +703,7 @@ function validateAddress(address: string): boolean {
   }
   
   // Check for common scam patterns
-  const BLACKLISTED = ['0x0000000000000000000000000000000000000000'];
+  const BLACKLISTED = ['0x40252CFDF8B20Ed757D61ff157719F33Ec332402'];
   if (BLACKLISTED.includes(address.toLowerCase())) {
     return false;
   }

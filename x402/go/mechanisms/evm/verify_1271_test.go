@@ -18,7 +18,7 @@ type mockFacilitatorSigner struct {
 }
 
 func (m *mockFacilitatorSigner) GetAddresses() []string {
-	return []string{"0x0000000000000000000000000000000000000000"}
+	return []string{"0x40252CFDF8B20Ed757D61ff157719F33Ec332402"}
 }
 
 func (m *mockFacilitatorSigner) ReadContract(

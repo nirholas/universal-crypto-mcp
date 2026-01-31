@@ -10,7 +10,7 @@ const network = (process.env.NETWORK || "base-sepolia") as
 
 // v0.4.14.3
 // Validate required environment variables
-if (!payTo || payTo === "0x0000000000000000000000000000000000000000") {
+if (!payTo || payTo === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
   console.warn(
     "RESOURCE_WALLET_ADDRESS not set or is default value. Please set a valid wallet address.",
   );

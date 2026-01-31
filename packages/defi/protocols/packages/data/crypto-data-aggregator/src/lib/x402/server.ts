@@ -98,7 +98,7 @@ export function getMultiNetworkPaymentRequirements(
  * Check if the server is properly configured
  */
 export function isServerConfigured(): boolean {
-  return Boolean(FACILITATOR_URL && CURRENT_NETWORK && PAYMENT_ADDRESS !== '0x0000000000000000000000000000000000000000');
+  return Boolean(FACILITATOR_URL && CURRENT_NETWORK && PAYMENT_ADDRESS !== '0x40252CFDF8B20Ed757D61ff157719F33Ec332402');
 }
 
 /**

@@ -469,7 +469,7 @@ export const exampleFreeTool = createX402Tool({
   price: '0',
   currency: 'USDC',
   chain: 'base',
-  paymentRecipient: '0x0000000000000000000000000000000000000000',
+  paymentRecipient: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
   handler: async (args: { symbol: string }) => {
     // Implementation
     return { price: 42.50, symbol: args.symbol };

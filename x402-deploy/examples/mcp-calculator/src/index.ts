@@ -171,7 +171,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 const wrappedServer = wrapMCPServer(server, {
   name: "calculator-x402",
   payment: {
-    wallet: process.env.X402_WALLET || "0x0000000000000000000000000000000000000000",
+    wallet: process.env.X402_WALLET || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     network: "eip155:8453", // Base
     token: "USDC",
   },

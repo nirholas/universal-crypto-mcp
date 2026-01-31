@@ -8,6 +8,9 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
+import { createPublicClient, http, formatEther } from "viem"
+import { mainnet, bsc, polygon, arbitrum, avalanche, optimism } from "viem/chains"
+import { Logger } from "../utils/logger.js"
 
 // In-memory portfolio storage (would use database in production)
 const portfolios = new Map<
@@ -27,6 +30,16 @@ const portfolios = new Map<
 
 // Price cache
 const priceCache = new Map<string, { price: number; timestamp: Date }>()
+
+// Chain config mapping
+const chainConfigs: Record<string, any> = {
+  ethereum: mainnet,
+  bsc: bsc,
+  polygon: polygon,
+  arbitrum: arbitrum,
+  avalanche: avalanche,
+  optimism: optimism,
+}
 
 // Mock prices for demo (in production, use real API)
 const mockPrices: Record<string, number> = {
@@ -252,7 +265,7 @@ export function registerPortfolioTracker(server: McpServer) {
         }
       }
 
-      // Simulate fetching balances (in production, call actual chain APIs)
+      // Fetch real balances from blockchain
       const holdings: Array<{
         wallet: string
         chain: string
@@ -268,13 +281,13 @@ export function registerPortfolioTracker(server: McpServer) {
       const assetTotals: Record<string, { balance: number; valueUSD: number }> = {}
 
       for (const wallet of portfolio.wallets) {
-        // Mock data - in production, fetch real balances
         const nativeSymbol = {
           ethereum: "ETH",
           bsc: "BNB",
           polygon: "MATIC",
           arbitrum: "ETH",
           avalanche: "AVAX",
+          optimism: "ETH",
           solana: "SOL",
           cosmos: "ATOM",
           near: "NEAR",
@@ -282,30 +295,51 @@ export function registerPortfolioTracker(server: McpServer) {
           aptos: "APT",
         }[wallet.chain] || "ETH"
 
-        const mockBalance = Math.random() * 10
-        const price = mockPrices[nativeSymbol] || 0
-        const valueUSD = mockBalance * price
+        try {
+          // Get real balance from chain (EVM chains only)
+          let balance = 0
+          if (chainConfigs[wallet.chain]) {
+            const client = createPublicClient({
+              chain: chainConfigs[wallet.chain],
+              transport: http(),
+            })
+            const balanceWei = await client.getBalance({
+              address: wallet.address as `0x${string}`,
+            })
+            balance = Number(formatEther(balanceWei))
+          }
 
-        holdings.push({
-          wallet: wallet.address,
-          chain: wallet.chain,
-          label: wallet.label,
-          assets: [
-            {
-              symbol: nativeSymbol,
-              balance: mockBalance,
-              valueUSD,
-            },
-          ],
-        })
+          const price = mockPrices[nativeSymbol] || 0
+          const valueUSD = balance * price
 
-        totalValueUSD += valueUSD
+          holdings.push({
+            wallet: wallet.address,
+            chain: wallet.chain,
+            label: wallet.label,
+            assets: [
+              {
+                symbol: nativeSymbol,
+                balance,
+                valueUSD,
+              },
+            ],
+          })
 
-        if (!assetTotals[nativeSymbol]) {
-          assetTotals[nativeSymbol] = { balance: 0, valueUSD: 0 }
+          totalValueUSD += valueUSD
+
+          if (!assetTotals[nativeSymbol]) {
+            assetTotals[nativeSymbol] = { balance: 0, valueUSD: 0 }
+          }
+          assetTotals[nativeSymbol].balance += balance
+          assetTotals[nativeSymbol].valueUSD += valueUSD
+        } catch (error) {
+          // Skip wallets with errors (e.g., unsupported chains)
+          Logger.error("Failed to fetch wallet balance", { 
+            address: wallet.address, 
+            chain: wallet.chain, 
+            error 
+          })
         }
-        assetTotals[nativeSymbol].balance += mockBalance
-        assetTotals[nativeSymbol].valueUSD += valueUSD
       }
 
       // Calculate allocation percentages

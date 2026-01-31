@@ -198,7 +198,7 @@ export function useCreateSubscription() {
             name: "Sweep",
             version: "1",
             chainId: request.outputChainId,
-            verifyingContract: "0x0000000000000000000000000000000000000000", // Will be set to actual contract
+            verifyingContract: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", // Will be set to actual contract
           },
           types: {
             SpendPermission: [

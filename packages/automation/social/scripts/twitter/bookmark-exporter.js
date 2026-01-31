@@ -256,7 +256,9 @@ const CONFIG = {
     try {
       await navigator.clipboard.writeText(JSON.stringify(result, null, 2));
       console.log('📋 JSON copied to clipboard!');
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to copy bookmarks to clipboard:', error.message);
+    }
   }
   
   console.log('');

@@ -4,7 +4,7 @@ pragma solidity >=0.8.13 <0.9.0;
 /// @author philogy <https://github.com/philogy>
 /// @dev Code generated automatically by script.
 library safeconsole {
-    uint256 constant CONSOLE_ADDR = 0x000000000000000000000000000000000000000000636F6e736F6c652e6c6f67;
+    uint256 constant CONSOLE_ADDR = 0x40252CFDF8B20Ed757D61ff157719F33Ec33240200636F6e736F6c652e6c6f67;
 
     // Credit to [0age](https://twitter.com/z0age/status/1654922202930888704) and [0xdapper](https://github.com/foundry-rs/forge-std/pull/374)
     // for the view-to-pure log trick.

@@ -79,7 +79,7 @@ async function loadConfig(): Promise<{
     name: process.env.X402_API_NAME || 'my-api',
     url: process.env.X402_API_URL || 'https://api.example.com',
     payment: {
-      wallet: (process.env.X402_WALLET || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+      wallet: (process.env.X402_WALLET || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') as `0x${string}`,
       facilitator: process.env.X402_FACILITATOR || 'https://facilitator.x402.org',
       network: process.env.X402_NETWORK || 'eip155:8453',
     },

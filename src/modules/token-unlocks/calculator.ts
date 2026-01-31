@@ -138,9 +138,15 @@ export function analyzeMarketImpact(
   
   // Score factors (0-100)
   const unlockSizeScore = Math.min(unlockPercentage * 10, 100);
-  const liquidityRatio = 50; // placeholder - would calculate from DEX data
-  const historicalVolatility = 50; // placeholder - from price history
-  const marketSentiment = 50; // placeholder - from social/news data
+  
+  // Calculate liquidity ratio from historical data or estimate
+  const liquidityRatio = historicalData?.liquidityRatio || estimateLiquidityRatio(project, historicalData);
+  
+  // Calculate historical volatility from price data
+  const historicalVolatility = historicalData?.volatility || calculateVolatility(historicalData?.priceHistory);
+  
+  // Calculate market sentiment from recent metrics
+  const marketSentiment = historicalData?.sentiment || calculateMarketSentiment(project, historicalData);
   
   // Estimate hodl probability based on beneficiary type
   const hodlProbabilities: Record<string, number> = {
@@ -310,4 +316,99 @@ export function formatTokenAmount(amount: string, decimals: number = 2): string 
   if (num >= 1e6) return `${(num / 1e6).toFixed(decimals)}M`;
   if (num >= 1e3) return `${(num / 1e3).toFixed(decimals)}K`;
   return num.toFixed(decimals);
+}
+
+/**
+ * Estimate liquidity ratio for a token unlock event
+ * Compares unlock amount to available DEX liquidity
+ */
+function estimateLiquidityRatio(
+  project: TokenUnlockProject,
+  historicalData?: HistoricalData
+): number {
+  if (!historicalData?.volumeHistory || historicalData.volumeHistory.length === 0) {
+    return 50; // Neutral if no data
+  }
+
+  // Calculate average daily volume (last 30 days)
+  const avgVolume = historicalData.volumeHistory.reduce((sum, v) => sum + v.volume, 0) / historicalData.volumeHistory.length;
+  
+  // Estimate unlock amount in USD
+  const currentPrice = historicalData.priceHistory?.[historicalData.priceHistory.length - 1]?.price || 1;
+  const unlockValueUSD = project.nextUnlock.amount * currentPrice;
+  
+  // Ratio: unlock value / average daily volume
+  // Higher ratio = more pressure
+  const ratio = unlockValueUSD / avgVolume;
+  
+  // Convert to 0-100 scale (capped at 100)
+  // ratio > 10 = very high pressure (100)
+  // ratio = 1 = moderate pressure (50)
+  // ratio < 0.1 = low pressure (10)
+  return Math.min(100, Math.max(0, ratio * 50));
+}
+
+/**
+ * Calculate historical volatility from price data
+ */
+function calculateVolatility(priceHistory?: Array<{ timestamp: number; price: number }>): number {
+  if (!priceHistory || priceHistory.length < 2) {
+    return 50; // Neutral if no data
+  }
+
+  // Calculate daily returns
+  const returns: number[] = [];
+  for (let i = 1; i < priceHistory.length; i++) {
+    const dailyReturn = (priceHistory[i].price - priceHistory[i - 1].price) / priceHistory[i - 1].price;
+    returns.push(dailyReturn);
+  }
+
+  // Calculate standard deviation of returns
+  const mean = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Annualize volatility (assuming daily data)
+  const annualizedVol = stdDev * Math.sqrt(365);
+
+  // Convert to 0-100 scale
+  // 200% annual vol = 100
+  // 50% annual vol = 25
+  return Math.min(100, annualizedVol * 50);
+}
+
+/**
+ * Calculate market sentiment from various indicators
+ */
+function calculateMarketSentiment(
+  project: TokenUnlockProject,
+  historicalData?: HistoricalData
+): number {
+  if (!historicalData?.priceHistory || historicalData.priceHistory.length < 7) {
+    return 50; // Neutral if no data
+  }
+
+  const prices = historicalData.priceHistory.map(p => p.price);
+  const latest = prices[prices.length - 1];
+  const week7Ago = prices[prices.length - 7];
+  const week30Ago = prices[prices.length - Math.min(30, prices.length)];
+
+  // Calculate price momentum
+  const momentum7d = (latest - week7Ago) / week7Ago;
+  const momentum30d = (latest - week30Ago) / week30Ago;
+
+  // Calculate volume trend
+  let volumeTrend = 0;
+  if (historicalData.volumeHistory && historicalData.volumeHistory.length >= 7) {
+    const recentVol = historicalData.volumeHistory.slice(-7).reduce((sum, v) => sum + v.volume, 0) / 7;
+    const olderVol = historicalData.volumeHistory.slice(-30, -7).reduce((sum, v) => sum + v.volume, 0) / 23;
+    volumeTrend = (recentVol - olderVol) / olderVol;
+  }
+
+  // Weighted sentiment score
+  // Positive momentum + increasing volume = bullish (>50)
+  // Negative momentum + decreasing volume = bearish (<50)
+  const sentimentScore = 50 + (momentum7d * 100) + (momentum30d * 50) + (volumeTrend * 25);
+
+  return Math.min(100, Math.max(0, sentimentScore));
 }

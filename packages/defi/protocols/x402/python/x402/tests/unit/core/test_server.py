@@ -103,7 +103,7 @@ class MockSchemeServer:
             extra: dict | None = None
 
         return AssetAmount(
-            asset="0x0000000000000000000000000000000000000000",
+            asset="0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             amount="1000000",
         )
 

@@ -11,7 +11,7 @@ services:
       - NODE_ENV=production
       - PORT=3402
       - REDIS_URL=redis://redis:6379
-      - PAY_TO_ADDRESS=${PAY_TO_ADDRESS:-0xB1314Ed50b273A9c1dA9a43860d853F179868296}
+      - PAY_TO_ADDRESS=${PAY_TO_ADDRESS:-0x40252CFDF8B20Ed757D61ff157719F33Ec332402}
       - FACILITATOR_URL=https://x402.org/facilitator
       - DEFAULT_NETWORK=base
     depends_on:

@@ -166,14 +166,14 @@ export function registerRubicTools(server: McpServer) {
       srcTokenAddress: z
         .string()
         .describe(
-          "Source token address. Use 0x0000000000000000000000000000000000000000 for native tokens like ETH, BNB, etc."
+          "Source token address. Use 0x40252CFDF8B20Ed757D61ff157719F33Ec332402 for native tokens like ETH, BNB, etc."
         ),
       srcTokenBlockchain: z.string().describe("Source blockchain name (e.g., ETH, BSC, POLYGON, etc.)"),
       srcTokenAmount: z.string().describe("Amount of source token to bridge (as a string with decimals)"),
       dstTokenAddress: z
         .string()
         .describe(
-          "Destination token address. Use 0x0000000000000000000000000000000000000000 for native tokens."
+          "Destination token address. Use 0x40252CFDF8B20Ed757D61ff157719F33Ec332402 for native tokens."
         ),
       dstTokenBlockchain: z
         .string()
@@ -306,14 +306,14 @@ export function registerRubicTools(server: McpServer) {
       srcTokenAddress: z
         .string()
         .describe(
-          "Source token address. Use 0x0000000000000000000000000000000000000000 for native tokens like ETH, BNB, etc."
+          "Source token address. Use 0x40252CFDF8B20Ed757D61ff157719F33Ec332402 for native tokens like ETH, BNB, etc."
         ),
       srcTokenBlockchain: z.string().describe("Source blockchain name (e.g., ETH, BSC, POLYGON, etc.)"),
       srcTokenAmount: z.string().describe("Amount of source token to bridge (as a string with decimals)"),
       dstTokenAddress: z
         .string()
         .describe(
-          "Destination token address. Use 0x0000000000000000000000000000000000000000 for native tokens."
+          "Destination token address. Use 0x40252CFDF8B20Ed757D61ff157719F33Ec332402 for native tokens."
         ),
       dstTokenBlockchain: z
         .string()

@@ -81,7 +81,7 @@ export async function waitForConfirmation(
     gasUsed: receipt.gasUsed,
     effectiveGasPrice: receipt.effectiveGasPrice,
     from: receipt.from,
-    to: receipt.to || "0x0000000000000000000000000000000000000000",
+    to: receipt.to || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     timestamp,
     confirmations: actualConfirmations,
   };

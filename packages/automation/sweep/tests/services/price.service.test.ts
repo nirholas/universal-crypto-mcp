@@ -72,7 +72,7 @@ describe("Price Service", () => {
       });
       
       const result = await fetchCoinGeckoPrice(
-        "0x0000000000000000000000000000000000000000",
+        "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         "ethereum"
       );
       

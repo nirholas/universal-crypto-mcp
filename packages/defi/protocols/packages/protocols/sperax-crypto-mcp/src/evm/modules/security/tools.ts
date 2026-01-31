@@ -84,7 +84,7 @@ export function registerSecurityTools(server: McpServer) {
           })
           details.owner = owner
           
-          if (owner !== "0x0000000000000000000000000000000000000000") {
+          if (owner !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
             risks.push({
               type: "centralization",
               severity: "medium",

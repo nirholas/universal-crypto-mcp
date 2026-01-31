@@ -32,7 +32,7 @@ import type { Address } from 'viem';
  * IMPORTANT: Set this to your actual wallet address in production!
  */
 export const payToAddress: Address = (process.env.X402_PAY_TO_ADDRESS ||
-  '0x0000000000000000000000000000000000000000') as Address;
+  '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') as Address;
 
 /**
  * Facilitator URL for payment verification and settlement
@@ -433,7 +433,7 @@ export function getNetworkName(network: string): string {
 export function validateConfig(): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  if (payToAddress === '0x0000000000000000000000000000000000000000') {
+  if (payToAddress === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402') {
     errors.push('X402_PAY_TO_ADDRESS is not set. Payments will fail in production.');
   }
 

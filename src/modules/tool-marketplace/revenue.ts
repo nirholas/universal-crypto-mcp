@@ -67,7 +67,7 @@ export class RevenueSplitterService {
     minPayoutAmount?: string
     payoutToken?: "USDs" | "USDC"
   }) {
-    this.platformAddress = options?.platformAddress || "0x0000000000000000000000000000000000000000" as Address
+    this.platformAddress = options?.platformAddress || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address
     this.minPayoutAmount = options?.minPayoutAmount || "1.00"
     this.payoutToken = options?.payoutToken || "USDs"
   }

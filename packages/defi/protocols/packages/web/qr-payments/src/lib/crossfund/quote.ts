@@ -698,7 +698,7 @@ export class QuoteService {
       toChainId: request.outputToken.chainId.toString(),
       toTokenAddress: request.outputToken.address,
       fromAmount: request.amount,
-      userAddress: request.userAddress || '0x0000000000000000000000000000000000000000',
+      userAddress: request.userAddress || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
       uniqueRoutesPerBridge: 'true',
       sort: 'output',
     });
@@ -742,7 +742,7 @@ export class QuoteService {
       fromToken: request.inputToken.address,
       toToken: request.outputToken.address,
       fromAmount: request.amount,
-      fromAddress: request.userAddress || '0x0000000000000000000000000000000000000000',
+      fromAddress: request.userAddress || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
     });
 
     const response = await fetch(`${baseUrl}?${params}`, { headers });

@@ -81,7 +81,7 @@ export interface IDexAggregator {
 
 // Native token addresses (special handling needed)
 export const NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-export const NATIVE_TOKEN_ADDRESS_ALT = "0x0000000000000000000000000000000000000000";
+export const NATIVE_TOKEN_ADDRESS_ALT = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402";
 
 // WETH addresses per chain
 export const WRAPPED_NATIVE_TOKEN: Record<string, string> = {

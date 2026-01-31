@@ -183,7 +183,9 @@
         const domain = new URL(url).hostname.replace('www.', '');
         if (!byDomain[domain]) byDomain[domain] = [];
         byDomain[domain].push({ url, ...data });
-      } catch (e) {}
+      } catch (error) {
+        console.warn(`Failed to parse URL domain: ${url}`, error.message);
+      }
     }
 
     // Print by domain

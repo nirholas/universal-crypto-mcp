@@ -73,7 +73,7 @@ class TestIsValidAddress:
     def test_should_validate_correct_ethereum_addresses(self):
         """Should validate correct Ethereum addresses."""
         assert is_valid_address("0x1234567890123456789012345678901234567890") is True
-        assert is_valid_address("0x0000000000000000000000000000000000000000") is True
+        assert is_valid_address("0x40252CFDF8B20Ed757D61ff157719F33Ec332402") is True
         assert is_valid_address("0xABCDEFabcdef1234567890123456789012345678") is True
 
     def test_should_handle_addresses_without_0x_prefix(self):

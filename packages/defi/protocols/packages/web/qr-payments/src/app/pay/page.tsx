@@ -137,7 +137,7 @@ export default function PayPage() {
               balance={balance ? formatEther(balance.value) : '0'}
               selected={selectedToken?.symbol === 'ETH'}
               onClick={() => setSelectedToken({
-                address: '0x0000000000000000000000000000000000000000',
+                address: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
                 symbol: 'ETH',
                 decimals: 18,
                 chainId: paymentData.chainId,

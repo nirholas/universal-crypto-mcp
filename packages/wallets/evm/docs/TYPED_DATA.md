@@ -254,7 +254,7 @@ Off-chain limit orders for decentralized exchanges:
   },
   "message": {
     "maker": "0xYourAddress",
-    "taker": "0x0000000000000000000000000000000000000000",
+    "taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "makerToken": "0xWETH",
     "takerToken": "0xUSDC",
     "makerAmount": "1000000000000000000",

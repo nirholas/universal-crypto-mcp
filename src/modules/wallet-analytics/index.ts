@@ -8,6 +8,8 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
+import { createPublicClient, http, formatUnits, parseAbi } from "viem"
+import { mainnet, arbitrum, polygon, optimism } from "viem/chains"
 
 // Known whale wallets (partial list for demo)
 const knownWhales: Record<string, { label: string; type: string }> = {
@@ -131,52 +133,102 @@ export function registerWalletAnalytics(server: McpServer) {
       minBalance: z.number().default(1000000).describe("Minimum balance in USD"),
     },
     async ({ tokenAddress, chain, minBalance }) => {
-      // Mock whale data - in production, query actual holders
-      const whales = [
-        {
-          address: "0x28C6c06298d514Db089934071355E5743bf21d60",
-          label: "Binance Hot Wallet",
-          type: "exchange",
-          balance: 2500000000,
-          percentageSupply: 4.2,
-          lastActivity: "2024-01-20",
-        },
-        {
-          address: "0xF977814e90dA44bFA03b6295A0616a897441aceC",
-          label: "Binance Cold Wallet",
-          type: "exchange",
-          balance: 1800000000,
-          percentageSupply: 3.1,
-          lastActivity: "2024-01-15",
-        },
-        {
-          address: "0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503",
-          label: "Unknown Whale",
-          type: "whale",
-          balance: 950000000,
-          percentageSupply: 1.6,
-          lastActivity: "2024-01-18",
-        },
-      ].filter((w) => w.balance >= minBalance)
+      try {
+        // Get chain config
+        const chainConfig = chain === "ethereum" ? mainnet : chain === "polygon" ? polygon : arbitrum
+        const client = createPublicClient({
+          chain: chainConfig,
+          transport: http(),
+        })
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                tokenAddress,
-                chain,
-                minBalanceFilter: minBalance,
-                whaleCount: whales.length,
-                totalWhaleHoldings: whales.reduce((sum, w) => sum + w.balance, 0),
-                whales,
-              },
-              null,
-              2
-            ),
-          },
-        ],
+        // Query top token holders from Transfer events
+        // Note: This is a simplified approach - production should use indexed data like Alchemy/Moralis
+        const erc20Abi = parseAbi([
+          'function balanceOf(address owner) view returns (uint256)',
+          'function totalSupply() view returns (uint256)',
+          'function decimals() view returns (uint8)',
+          'event Transfer(address indexed from, address indexed to, uint256 value)'
+        ])
+
+        // Get token info
+        const [totalSupply, decimals] = await Promise.all([
+          client.readContract({
+            address: tokenAddress as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'totalSupply',
+          }),
+          client.readContract({
+            address: tokenAddress as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'decimals',
+          }),
+        ])
+
+        // Get known whale balances
+        const whaleAddresses = Object.keys(knownWhales)
+        const balances = await Promise.all(
+          whaleAddresses.slice(0, 10).map(async (address) => {
+            try {
+              const balance = await client.readContract({
+                address: tokenAddress as `0x${string}`,
+                abi: erc20Abi,
+                functionName: 'balanceOf',
+                args: [address as `0x${string}`],
+              })
+              return { address, balance }
+            } catch {
+              return { address, balance: 0n }
+            }
+          })
+        )
+
+        // Filter and format whales
+        const whales = balances
+          .filter((w) => w.balance > 0n)
+          .map((w) => {
+            const balanceFormatted = Number(formatUnits(w.balance, decimals))
+            const percentageSupply = (Number(w.balance) / Number(totalSupply)) * 100
+            const whaleInfo = knownWhales[w.address]
+            
+            return {
+              address: w.address,
+              label: whaleInfo?.label || "Unknown Whale",
+              type: whaleInfo?.type || "whale",
+              balance: balanceFormatted,
+              percentageSupply: Number(percentageSupply.toFixed(4)),
+              lastActivity: new Date().toISOString().split('T')[0], // Real impl would query last tx
+            }
+          })
+          .filter((w) => w.balance * 1 >= minBalance) // Simplified USD conversion
+          .sort((a, b) => b.balance - a.balance)
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  tokenAddress,
+                  chain,
+                  totalWhales: whales.length,
+                  whales,
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        }
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ error: "Failed to detect whales", message: String(error) }, null, 2),
+            },
+          ],
+          isError: true,
+        }
       }
     }
   )

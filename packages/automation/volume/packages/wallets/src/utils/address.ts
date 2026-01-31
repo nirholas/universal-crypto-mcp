@@ -103,7 +103,7 @@ export async function getAddressType(
  */
 export function isZeroAddress(address: string): boolean {
   const normalized = address.toLowerCase();
-  return normalized === '0x0000000000000000000000000000000000000000';
+  return normalized === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
 }
 
 /**

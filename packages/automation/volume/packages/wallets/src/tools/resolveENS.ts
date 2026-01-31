@@ -59,7 +59,7 @@ const ENS_REGISTRY = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 
 // Namehash implementation for ENS
 function namehash(name: string): string {
-  let node = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  let node = '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000';
   
   if (name) {
     const labels = name.split('.');
@@ -124,7 +124,7 @@ async function getResolver(name: string): Promise<string | null> {
       'latest',
     ]);
     
-    if (result === '0x' || result === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+    if (result === '0x' || result === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000') {
       return null;
     }
     
@@ -150,7 +150,7 @@ async function resolveNameToAddress(name: string): Promise<string | null> {
       'latest',
     ]);
     
-    if (result === '0x' || result === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+    if (result === '0x' || result === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000') {
       return null;
     }
     

@@ -122,7 +122,12 @@ const CONFIG = {
       JSON.parse(saved).forEach(id => commentedTweets.add(id));
       console.log(`📚 Loaded ${commentedTweets.size} previously commented tweets`);
     }
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load commented tweets history:', {
+      error: error.message,
+      targetUser
+    });
+  }
   
   let totalCommented = 0;
   

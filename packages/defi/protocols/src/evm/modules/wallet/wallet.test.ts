@@ -252,7 +252,7 @@ describe("Wallet Module", () => {
     it("should derive different addresses for different indices", () => {
       vi.mocked(mnemonicToAccount)
         .mockReturnValueOnce({
-          address: "0x0000000000000000000000000000000000000000" as Address,
+          address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as Address,
           publicKey: "0x04..." as Hex
         })
         .mockReturnValueOnce({

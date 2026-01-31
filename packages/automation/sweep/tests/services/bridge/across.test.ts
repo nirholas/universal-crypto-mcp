@@ -69,7 +69,7 @@ describe("AcrossBridgeProvider", () => {
         timestamp: "1700000000",
         isAmountTooLow: false,
         quoteBlock: "18000000",
-        exclusiveRelayer: "0x0000000000000000000000000000000000000000",
+        exclusiveRelayer: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         exclusivityDeadline: "0",
         spokePoolAddress: "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5",
         expectedFillTime: 300,

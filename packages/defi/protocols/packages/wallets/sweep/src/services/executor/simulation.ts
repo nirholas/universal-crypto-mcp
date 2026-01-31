@@ -362,7 +362,7 @@ export class SimulationService {
   private parseBalanceChanges(diffs: any[]): BalanceChange[] {
     return diffs.map((diff) => ({
       address: diff.address,
-      token: diff.token?.address || "0x0000000000000000000000000000000000000000",
+      token: diff.token?.address || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
       before: BigInt(diff.original || 0),
       after: BigInt(diff.dirty || 0),
       delta: BigInt(diff.dirty || 0) - BigInt(diff.original || 0),

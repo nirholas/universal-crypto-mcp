@@ -63,7 +63,7 @@ describe("Block Module", () => {
       difficulty: BigInt(0),
       gasLimit: BigInt(30000000),
       gasUsed: BigInt(15000000),
-      miner: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+      miner: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as `0x${string}`,
       extraData: "0x" as `0x${string}`,
       baseFeePerGas: BigInt(20000000000),
       logsBloom: "0x" as `0x${string}`,
@@ -101,7 +101,7 @@ describe("Block Module", () => {
 
     it("should handle non-existent block hash", async () => {
       const invalidHash =
-        "0x0000000000000000000000000000000000000000000000000000000000000000" as Hash
+        "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000" as Hash
       vi.mocked(services.getBlockByHash).mockRejectedValue(
         new Error("Block not found")
       )
@@ -158,7 +158,7 @@ describe("Block Module", () => {
       const genesisBlock = createMockBlock({
         number: BigInt(0),
         parentHash:
-          "0x0000000000000000000000000000000000000000000000000000000000000000" as Hash
+          "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000" as Hash
       })
       vi.mocked(services.getBlockByNumber).mockResolvedValue(genesisBlock)
 

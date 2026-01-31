@@ -456,7 +456,7 @@ export function registerDomainsTools(server: McpServer) {
             resolver,
             avatar
           },
-          isRegistered: !!owner && owner !== "0x0000000000000000000000000000000000000000"
+          isRegistered: !!owner && owner !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
         })
       } catch (error) {
         return mcpToolRes.error(error, "getting ENS name details")
@@ -573,7 +573,7 @@ export function registerDomainsTools(server: McpServer) {
             owner,
             BigInt(duration),
             secret,
-            ensContracts.publicResolver || "0x0000000000000000000000000000000000000000",
+            ensContracts.publicResolver || "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
             [],
             setReverseRecord,
             0
@@ -664,7 +664,7 @@ export function registerDomainsTools(server: McpServer) {
           args: [node]
         }) as Address
 
-        if (!resolverAddress || resolverAddress === "0x0000000000000000000000000000000000000000") {
+        if (!resolverAddress || resolverAddress === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
           return mcpToolRes.error(
             new Error("No resolver set for this name. Set a resolver first."),
             "setting ENS records"

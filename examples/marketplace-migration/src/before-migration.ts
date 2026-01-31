@@ -18,7 +18,7 @@ app.use(express.json());
 
 const config = {
   port: 3001,
-  walletAddress: "0xB1314Ed50b273A9c1dA9a43860d853F179868296" as `0x${string}`,
+  walletAddress: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as `0x${string}`,
   pricing: {
     "GET /api/weather": "$0.001",
     "GET /api/forecast": "$0.005",

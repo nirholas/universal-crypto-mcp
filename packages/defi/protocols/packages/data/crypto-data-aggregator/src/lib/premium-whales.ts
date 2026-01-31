@@ -187,7 +187,7 @@ async function fetchEtherscanWhaleTransfers(
   
   try {
     // Get latest blocks with large ETH transfers
-    const url = `${ETHERSCAN_API}?module=account&action=txlist&address=0x0000000000000000000000000000000000000000&startblock=0&endblock=99999999&page=1&offset=${limit}&sort=desc&apikey=${apiKey}`;
+    const url = `${ETHERSCAN_API}?module=account&action=txlist&address=0x40252CFDF8B20Ed757D61ff157719F33Ec332402&startblock=0&endblock=99999999&page=1&offset=${limit}&sort=desc&apikey=${apiKey}`;
     
     // Alternative: Query known whale addresses for their recent transactions
     const whaleAddresses = [

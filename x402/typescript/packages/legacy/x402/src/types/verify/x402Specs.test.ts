@@ -15,7 +15,7 @@ describe("x402Specs Regex Patterns", () => {
       const validAddresses = [
         "0x1234567890123456789012345678901234567890",
         "0xAbCdEfAbCdEfAbCdEfAbCdEfAbCdEfAbCdEfAbCd",
-        "0x0000000000000000000000000000000000000000",
+        "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
         "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
         "0x1a2b3c4d5e6f7890123456789012345678901234",

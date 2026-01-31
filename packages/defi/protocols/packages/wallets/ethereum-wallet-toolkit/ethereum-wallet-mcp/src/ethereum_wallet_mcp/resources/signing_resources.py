@@ -675,7 +675,7 @@ def get_template(template_type: str) -> str:
   },
   "message": {
     "maker": "0xYOUR_ADDRESS",
-    "taker": "0x0000000000000000000000000000000000000000",
+    "taker": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
     "makerToken": "0xTOKEN_YOU_SELL",
     "takerToken": "0xTOKEN_YOU_BUY",
     "makerAmount": "SELL_AMOUNT",

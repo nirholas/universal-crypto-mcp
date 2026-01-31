@@ -142,7 +142,7 @@ describe("Transaction Module", () => {
 
     it("should handle non-existent transaction hash", async () => {
       const nonExistentHash =
-        "0x0000000000000000000000000000000000000000000000000000000000000000" as Hash
+        "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000" as Hash
       vi.mocked(services.getTransaction).mockRejectedValue(
         new Error("Transaction not found")
       )
@@ -288,7 +288,7 @@ describe("Transaction Module", () => {
             topics: [
               "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" as Hash
             ],
-            data: "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000" as Hex,
+            data: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000de0b6b3a7640000" as Hex,
             blockNumber: BigInt(18000000),
             transactionHash: mockTxHash,
             transactionIndex: 5,

@@ -327,7 +327,7 @@ export class HopBridgeProvider implements IBridgeProvider {
           quote.inputAmount,
           quote.minOutputAmount,
           BigInt(deadline),
-          "0x0000000000000000000000000000000000000000" as `0x${string}`, // No relayer
+          "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" as `0x${string}`, // No relayer
           0n, // No relayer fee
         ],
       });

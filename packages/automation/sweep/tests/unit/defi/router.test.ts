@@ -156,7 +156,7 @@ describe("DeFi Router", () => {
   describe("Native Token Staking Routing", () => {
     it("should route ETH to Lido on Ethereum", async () => {
       const isNativeToken = (address: string) =>
-        address === "0x0000000000000000000000000000000000000000" ||
+        address === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402" ||
         address.toLowerCase() === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
       const getNativeStakingProtocol = (chain: string) => {

@@ -395,7 +395,7 @@ export class YieldTracker {
       
       if (event.type === 'in') {
         // Check if this is from null address (rebase/mint)
-        const isRebase = event.from === '0x0000000000000000000000000000000000000000';
+        const isRebase = event.from === '0x40252CFDF8B20Ed757D61ff157719F33Ec332402';
         
         if (isRebase) {
           // This is yield earned from rebase

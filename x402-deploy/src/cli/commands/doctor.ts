@@ -73,7 +73,7 @@ export async function doctorCommand(options: DoctorOptions): Promise<void> {
   // 2. Check wallet address
   if (config.payment?.wallet) {
     if (/^0x[a-fA-F0-9]{40}$/.test(config.payment.wallet)) {
-      if (config.payment.wallet === "0x0000000000000000000000000000000000000000") {
+      if (config.payment.wallet === "0x40252CFDF8B20Ed757D61ff157719F33Ec332402") {
         results.push({
           name: "Wallet Address",
           status: "warn",

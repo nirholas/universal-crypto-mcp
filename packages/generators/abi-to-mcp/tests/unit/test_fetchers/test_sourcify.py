@@ -132,7 +132,7 @@ async def test_fetch_not_found():
         
         with pytest.raises(ABINotFoundError):
             await fetcher.fetch(
-                "0x0000000000000000000000000000000000000000",
+                "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                 chain_id=1
             )
 

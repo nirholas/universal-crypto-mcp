@@ -278,7 +278,7 @@ describe("EVM Tool Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       expect(result).toBeDefined()
@@ -296,7 +296,7 @@ describe("EVM Tool Integration Tests", () => {
         tokenAddress: TEST_ADDRESSES.ETH_MAINNET.USDC,
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       expect(result).toBeDefined()
@@ -313,7 +313,7 @@ describe("EVM Tool Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text
@@ -404,7 +404,7 @@ describe("EVM Tool Integration Tests", () => {
       )
 
       const result = await mockServer.executeTool("get_erc20_token_info", {
-        tokenAddress: "0x0000000000000000000000000000000000000000",
+        tokenAddress: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         network: "ethereum"
       })
 
@@ -534,7 +534,7 @@ describe("EVM Tool Integration Tests", () => {
       const result = await mockServer.executeTool("get_native_balance", {
         address: TEST_ADDRESSES.ETH_MAINNET.VITALIK,
         network: "ethereum",
-        privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        privateKey: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
       })
 
       const text = (result as any).content[0].text

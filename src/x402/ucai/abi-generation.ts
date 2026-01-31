@@ -604,7 +604,7 @@ export class ABIGenerationService {
         slot: IMPLEMENTATION_SLOT as Hex,
       })
 
-      if (slot && slot !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
+      if (slot && slot !== "0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000") {
         return true
       }
     } catch {

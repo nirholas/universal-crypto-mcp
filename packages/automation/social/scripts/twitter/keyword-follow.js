@@ -117,7 +117,12 @@ const CONFIG = {
     
     const tracking = localStorage.getItem(TRACKING_KEY);
     if (tracking) trackingData = JSON.parse(tracking);
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load followed users data:', {
+      error: error.message,
+      storageKey: STORAGE_KEY
+    });
+  }
   
   let totalFollowed = 0;
   let scrolls = 0;

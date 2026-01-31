@@ -180,7 +180,12 @@ const CONFIG = {
       data.followers.forEach(u => myFollowers.add(u));
       console.log(`📚 Loaded ${myFollowers.size} followers from Phase 1`);
     }
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load followers data from Phase 1:', {
+      error: error.message,
+      key: FOLLOWERS_KEY
+    });
+  }
   
   if (myFollowers.size === 0) {
     console.warn('⚠️ No followers data found!');
@@ -194,7 +199,12 @@ const CONFIG = {
     const saved = localStorage.getItem(TRACKING_KEY);
     if (saved) trackingData = JSON.parse(saved);
     console.log(`📚 Loaded ${Object.keys(trackingData).length} tracked follows`);
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load follow tracking data:', {
+      error: error.message,
+      key: TRACKING_KEY
+    });
+  }
   
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - CONFIG.daysToWait);

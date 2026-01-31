@@ -223,7 +223,7 @@ export class VenusClient {
         
         if (isListed) {
           // Get underlying asset address (vBNB doesn't have underlying)
-          let underlyingAddress = "0x0000000000000000000000000000000000000000";
+          let underlyingAddress = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402";
           try {
             underlyingAddress = await this.publicClient.readContract({
               address: vTokenAddress,

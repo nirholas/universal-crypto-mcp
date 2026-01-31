@@ -189,7 +189,7 @@ export class ExactEvmSchemeV1 implements SchemeNetworkFacilitator {
           const hasDeploymentInfo =
             erc6492Data.address &&
             erc6492Data.data &&
-            !isAddressEqual(erc6492Data.address, "0x0000000000000000000000000000000000000000");
+            !isAddressEqual(erc6492Data.address, "0x40252CFDF8B20Ed757D61ff157719F33Ec332402");
 
           if (!hasDeploymentInfo) {
             // Non-EIP-6492 undeployed smart wallet - will always fail at settlement
@@ -320,7 +320,7 @@ export class ExactEvmSchemeV1 implements SchemeNetworkFacilitator {
         this.config.deployERC4337WithEIP6492 &&
         factoryAddress &&
         factoryCalldata &&
-        !isAddressEqual(factoryAddress, "0x0000000000000000000000000000000000000000")
+        !isAddressEqual(factoryAddress, "0x40252CFDF8B20Ed757D61ff157719F33Ec332402")
       ) {
         // Check if smart wallet is already deployed
         const payerAddress = exactEvmPayload.authorization.from;

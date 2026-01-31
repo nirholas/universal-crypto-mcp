@@ -92,8 +92,8 @@ describe('RLP', function () {
 
   it('encode/decode bytes32', async function () {
     for (const input of [
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-      '0x0000000000000000000000000000000000000000000000000000000000000001',
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000000',
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001',
       '0x1000000000000000000000000000000000000000000000000000000000000000',
       generators.bytes32(),
     ]) {
@@ -104,15 +104,15 @@ describe('RLP', function () {
 
     // Compact encoding for 1234
     await expect(this.mock.$decodeBytes32('0x8204d2')).to.eventually.equal(
-      '0x00000000000000000000000000000000000000000000000000000000000004d2',
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec3324020000000000000000000004d2',
     );
     // Encoding with one leading zero
     await expect(this.mock.$decodeBytes32('0x830004d2')).to.eventually.equal(
-      '0x00000000000000000000000000000000000000000000000000000000000004d2',
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec3324020000000000000000000004d2',
     );
     // Encoding with two leading zeros
     await expect(this.mock.$decodeBytes32('0x84000004d2')).to.eventually.equal(
-      '0x00000000000000000000000000000000000000000000000000000000000004d2',
+      '0x40252CFDF8B20Ed757D61ff157719F33Ec3324020000000000000000000004d2',
     );
     // Encoding for the value
     await expect(this.mock.$decodeBytes32('0x80')).to.eventually.equal(ethers.ZeroHash);

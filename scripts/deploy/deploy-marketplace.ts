@@ -122,30 +122,74 @@ async function main() {
     // Step 1: Deploy Test USDs Token (testnet only)
     if (CONFIG.deployMockUsds) {
       console.log('1️⃣  Deploying Test USDs Token...');
-      // TODO: Implement actual ERC20 contract deployment
-      // This will be replaced with proper contract deployment once Foundry/Hardhat compilation is set up
-      throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
+      
+      // Deploy mock ERC20 token for testing
+      const usdsAddress = await deployMockERC20(
+        walletClient,
+        publicClient,
+        'Stable Dollar',
+        'USDs',
+        6 // 6 decimals for stablecoin
+      );
+      
+      deployments.usdsToken = usdsAddress;
+      console.log(`   ✅ USDs deployed at: ${usdsAddress}`);
+      console.log('');
+    } else {
+      // Use existing USDs token address on mainnet
+      deployments.usdsToken = '0x820C137fa70C8691f0e44Dc420a5e53c168921Dc' as Address; // Example mainnet address
+      console.log(`   ℹ️  Using existing USDs at: ${deployments.usdsToken}`);
+      console.log('');
     }
 
     // Step 2: Deploy ToolStaking
     console.log('2️⃣  Deploying ToolStaking...');
-    // TODO: Implement actual contract deployment
-    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
+    const stakingAddress = await deployToolStaking(
+      walletClient,
+      publicClient,
+      deployments.usdsToken!,
+      CONFIG.minimumStake,
+      CONFIG.minimumPayout
+    );
+    
+    deployments.toolStaking = stakingAddress;
+    console.log(`   ✅ ToolStaking deployed at: ${stakingAddress}`);
+    console.log('');
 
     // Step 3: Deploy ToolRegistry
     console.log('3️⃣  Deploying ToolRegistry...');
-    // TODO: Implement with initialize()
-    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
+    const registryAddress = await deployToolRegistry(
+      walletClient,
+      publicClient,
+      stakingAddress,
+      CONFIG.minimumStake
+    );
+    
+    deployments.toolRegistry = registryAddress;
+    console.log(`   ✅ ToolRegistry deployed at: ${registryAddress}`);
+    console.log('');
 
     // Step 4: Deploy RevenueRouter
     console.log('4️⃣  Deploying RevenueRouter...');
-    // TODO: Implement with initialize()
-    throw new Error('Contract deployment not yet implemented - requires compiled bytecode');
+    const revenueRouterAddress = await deployRevenueRouter(
+      walletClient,
+      publicClient,
+      registryAddress,
+      deployments.usdsToken!,
+      CONFIG.platformFeeBps
+    );
+    
+    deployments.revenueRouter = revenueRouterAddress;
+    console.log(`   ✅ RevenueRouter deployed at: ${revenueRouterAddress}`);
+    console.log('');
 
     // Step 5: Grant roles
     console.log('5️⃣  Configuring roles...');
-    console.log('   • Granting REVENUE_ROUTER_ROLE to RevenueRouter');
-    console.log('   • Setting staking contract in Registry');
+    await grantRevenueRouterRole(walletClient, publicClient, registryAddress, revenueRouterAddress);
+    console.log('   • Granted REVENUE_ROUTER_ROLE to RevenueRouter');
+    
+    await setStakingContract(walletClient, publicClient, registryAddress, stakingAddress);
+    console.log('   • Set staking contract in Registry');
     console.log('   ✅ Roles configured');
 
     // Get deployment block

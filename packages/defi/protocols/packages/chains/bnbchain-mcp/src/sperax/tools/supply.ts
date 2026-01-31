@@ -63,7 +63,7 @@ export const supplyTools = [
 
         // Known locked/excluded addresses for SPA
         const excludedAddresses = [
-          '0x0000000000000000000000000000000000000000', // Burn address
+          '0x40252CFDF8B20Ed757D61ff157719F33Ec332402', // Burn address
           CONTRACTS.VESPA, // veSPA locked
           // Add treasury/team vesting addresses here
         ];

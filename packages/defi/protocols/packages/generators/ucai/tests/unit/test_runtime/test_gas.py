@@ -361,7 +361,7 @@ class TestRuntimeSignerEdgeCases:
         # Test with a dummy private key
         try:
             signer = TransactionSigner(
-                private_key="0x0000000000000000000000000000000000000000000000000000000000000001"
+                private_key="0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000000000000000001"
             )
             assert signer is not None
         except Exception:

@@ -121,7 +121,7 @@ export const TOKENS: Record<X402Chain, Partial<Record<X402Token, TokenConfig>>> 
       supportsEIP3009: false,
     },
     ETH: {
-      address: '0x0000000000000000000000000000000000000000' as Address,
+      address: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402' as Address,
       decimals: 18,
       name: 'Ether',
       symbol: 'ETH',
@@ -130,14 +130,14 @@ export const TOKENS: Record<X402Chain, Partial<Record<X402Token, TokenConfig>>> 
   },
   'arbitrum-sepolia': {
     USDs: {
-      address: '0x0000000000000000000000000000000000000000' as Address, // Deploy for testnet
+      address: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402' as Address, // Deploy for testnet
       decimals: 18,
       name: 'Test Sperax USD',
       symbol: 'USDs',
       supportsEIP3009: true,
     },
     USDC: {
-      address: '0x0000000000000000000000000000000000000000' as Address, // Deploy for testnet
+      address: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402' as Address, // Deploy for testnet
       decimals: 6,
       name: 'Test USD Coin',
       symbol: 'USDC',

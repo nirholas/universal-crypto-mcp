@@ -300,7 +300,7 @@ export function createMockProvider() {
       logs: [],
     }),
     
-    call: vi.fn().mockResolvedValue("0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"),
+    call: vi.fn().mockResolvedValue("0x40252CFDF8B20Ed757D61ff157719F33Ec332402000000000de0b6b3a7640000"),
     
     estimateGas: vi.fn().mockResolvedValue(21000),
   }

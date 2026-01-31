@@ -119,7 +119,12 @@ const CONFIG = {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) previous = JSON.parse(saved);
-  } catch (e) {}
+  } catch (error) {
+    console.error('Failed to load previous follower snapshot:', {
+      error: error.message,
+      storageKey: STORAGE_KEY
+    });
+  }
   
   const timestamp = new Date().toISOString();
   
@@ -244,7 +249,9 @@ const CONFIG = {
     try {
       await navigator.clipboard.writeText(messages);
       console.log('📋 Welcome messages copied to clipboard!');
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to copy welcome messages to clipboard:', error.message);
+    }
   }
   
   const result = { timestamp, newFollowers, unfollowers };

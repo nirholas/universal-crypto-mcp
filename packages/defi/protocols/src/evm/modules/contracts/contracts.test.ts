@@ -512,7 +512,7 @@ describe("Contracts Module Tools", () => {
 
       const tool = registeredTools.get("is_contract")
       const result = await tool!.handler({
-        address: "0x0000000000000000000000000000000000000000",
+        address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
         network: "ethereum"
       })
       const data = JSON.parse(result.content[0].text)

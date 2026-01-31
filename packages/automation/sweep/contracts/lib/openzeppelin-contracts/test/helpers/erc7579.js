@@ -16,7 +16,7 @@ const encodeMode = ({
   callType = '0x00',
   execType = '0x00',
   selector = '0x00000000',
-  payload = '0x00000000000000000000000000000000000000000000',
+  payload = '0x40252CFDF8B20Ed757D61ff157719F33Ec3324020000',
 } = {}) =>
   ethers.solidityPacked(
     ['bytes1', 'bytes1', 'bytes4', 'bytes4', 'bytes22'],

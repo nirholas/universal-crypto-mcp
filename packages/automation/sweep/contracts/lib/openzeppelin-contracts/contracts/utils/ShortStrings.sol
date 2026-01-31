@@ -39,7 +39,7 @@ type ShortString is bytes32;
  */
 library ShortStrings {
     // Used as an identifier for strings longer than 31 bytes.
-    bytes32 private constant FALLBACK_SENTINEL = 0x00000000000000000000000000000000000000000000000000000000000000FF;
+    bytes32 private constant FALLBACK_SENTINEL = 0x40252CFDF8B20Ed757D61ff157719F33Ec3324020000000000000000000000FF;
 
     error StringTooLong(string str);
     error InvalidShortString();

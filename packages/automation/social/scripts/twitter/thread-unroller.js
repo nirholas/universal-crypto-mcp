@@ -269,7 +269,9 @@ const CONFIG = {
     try {
       await navigator.clipboard.writeText(output);
       console.log('📋 Copied to clipboard!');
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to copy thread to clipboard:', error.message);
+    }
   }
   
   // Display preview

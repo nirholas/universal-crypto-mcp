@@ -280,7 +280,7 @@ describe("Wallet Utilities", () => {
   it("should validate Ethereum addresses", () => {
     const validAddresses = [
       "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1",
-      "0x0000000000000000000000000000000000000000",
+      "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
       "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
     ];
 

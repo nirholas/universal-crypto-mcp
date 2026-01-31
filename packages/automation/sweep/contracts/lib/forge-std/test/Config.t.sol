@@ -31,7 +31,7 @@ contract ConfigTest is Test, Config {
         // Read and assert address values
         assertEq(config.get(1, "weth").toAddress(), 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
         address[] memory address_array = config.get(1, "deps").toAddressArray();
-        assertEq(address_array[0], 0x0000000000000000000000000000000000000000);
+        assertEq(address_array[0], 0x40252CFDF8B20Ed757D61ff157719F33Ec332402);
         assertEq(address_array[1], 0x1111111111111111111111111111111111111111);
 
         // Read and assert bytes32 values

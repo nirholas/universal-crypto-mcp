@@ -103,7 +103,9 @@ const CONFIG = {
     try {
       const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleVUYKm2i4LuUZz8WHVmIpbGniFo5S3+FdWVxdZGdnIVcNjtjlbzOtINGGSl5q9rSmFkkBEKY2OmpaC0UQoHPtHtGFRxii8DDoJxZKS9VhKSahpBdM0FYanRoZmNnc3F3d3V1c3ZzdnFyb2xnaGlubnFwbm1xdXh9g4SFgoKAf4B/e3Z1dHR0dHRyc3N0dHV2d3l7fHx8fH1+f4CBgoKCgYGBgYGAf39+fX18fHt7enp5eXl5eXl5');
       audio.play().catch(() => {});
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to play notification sound:', error.message);
+    }
   }
   
   /**
@@ -176,7 +178,12 @@ const CONFIG = {
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) previous = JSON.parse(saved);
-    } catch (e) {}
+    } catch (error) {
+      console.error('Failed to load previous monitoring snapshot:', {
+        error: error.message,
+        storageKey
+      });
+    }
     
     // Save current
     const snapshot = {

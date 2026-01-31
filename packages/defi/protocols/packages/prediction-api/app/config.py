@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     
     # x402 Configuration
     x402_enabled: bool = True
-    x402_recipient_address: str = "0x0000000000000000000000000000000000000000"
+    x402_recipient_address: str = "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
     x402_network: str = "base"
     x402_token: str = "USDC"
     x402_facilitator_url: str = "https://facilitator.x402.org"

@@ -57,7 +57,7 @@ function loadConfig(): DevConfig {
     const config = JSON.parse(content);
     return {
       name: config.name || 'x402-api',
-      wallet: config.payment?.wallet || '0x0000000000000000000000000000000000000000',
+      wallet: config.payment?.wallet || '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
       facilitator: config.payment?.facilitator || 'https://facilitator.x402.org',
       network: config.payment?.network || 'eip155:8453',
       routes: config.pricing?.routes || {
@@ -71,7 +71,7 @@ function loadConfig(): DevConfig {
   // Return defaults
   return {
     name: 'x402-api',
-    wallet: '0x0000000000000000000000000000000000000000',
+    wallet: '0x40252CFDF8B20Ed757D61ff157719F33Ec332402',
     facilitator: 'https://facilitator.x402.org',
     network: 'eip155:8453',
     routes: {

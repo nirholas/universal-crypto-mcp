@@ -127,7 +127,7 @@ describe("Error Recovery E2E Tests", () => {
           name: "get_native_balance",
           arguments: {
             network: "sepolia",
-            address: "0x0000000000000000000000000000000000000000"
+            address: "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
           }
         })
 

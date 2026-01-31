@@ -167,7 +167,9 @@ const CONFIG = {
     try {
       await navigator.clipboard.writeText(selectedVideo.url);
       console.log('📋 Video URL copied to clipboard!');
-    } catch (e) {}
+    } catch (error) {
+      console.warn('Failed to copy video URL to clipboard:', error.message);
+    }
     
     // Auto-download
     if (CONFIG.autoDownload) {
