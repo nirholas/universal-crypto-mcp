@@ -878,3 +878,4 @@ useEffect(() => {
 - [1.2 Transaction Clarity](../guidelines/perceivable/1.2-transaction-clarity.md)
 - [2.3 Time-Sensitive Operations](../guidelines/operable/2.3-time-sensitive-operations.md)
 - [3.1 Readable Transactions](../guidelines/understandable/3.1-readable-transactions.md)
+
