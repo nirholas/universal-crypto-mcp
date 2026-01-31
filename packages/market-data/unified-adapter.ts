@@ -9,8 +9,8 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerCryptoIndicators } from "../crypto-indicators/src/index.js";
-import { registerCoinGeckoTools } from "../coingecko/src/index.js";
-import { registerDexPaprikaTools } from "../dexpaprika/src/index.js";
+import { registerCoinGeckoTools } from "../price-feeds/src/index.js";
+import { registerDexPaprikaTools } from "../dex-aggregator/src/index.js";
 import { registerCoinStatsTools } from "./coinstats/src/index.js";
 import { registerHiveTools } from "./hive/src/index.js";
 

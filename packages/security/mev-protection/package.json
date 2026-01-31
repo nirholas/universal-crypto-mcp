@@ -1,0 +1,60 @@
+{
+  "name": "@nirholas/mev-protection",
+  "version": "1.0.0",
+  "description": "MEV protection and monitoring - Real-time mempool monitoring and frontrunning protection by nirholas",
+  "author": "nirholas (Nich) <https://x.com/nichxbt>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "mev-protection": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mev",
+    "mev-protection",
+    "sandwich-attack",
+    "frontrunning",
+    "flashbots",
+    "ethereum",
+    "defi",
+    "security",
+    "nirholas"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/security/mev-protection-mcp"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/security/mev-protection-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@flashbots/ethers-provider-bundle": "^1.0.0",
+    "ethers": "^6.13.4",
+    "axios": "^1.7.9",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

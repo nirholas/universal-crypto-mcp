@@ -236,7 +236,7 @@ export class CreditService {
     }
 
     // Attach payment method if provided
-    if (config.paymentMethodId) {
+    if (config.paymentMethodId && customerId) {
       await this.stripe.attachPaymentMethod(customerId, config.paymentMethodId);
     }
 
@@ -356,6 +356,10 @@ export class CreditService {
       const customer = await this.stripe.getOrCreateCustomer(userId);
       customerId = customer.id;
       await this.customerStorage.setStripeCustomerId(userId, customerId);
+    }
+
+    if (!customerId) {
+      throw new Error('Failed to get Stripe customer ID');
     }
 
     const setupIntent = await this.stripe.createSetupIntent(customerId);

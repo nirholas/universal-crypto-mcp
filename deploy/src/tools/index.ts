@@ -8,7 +8,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { z } from "zod";
 import { createPublicClient, http, formatUnits, type Address } from "viem";
 import { base, arbitrum, optimism, polygon, mainnet } from "viem/chains";
-import Logger from "./gateway/logger.js";
+import { logger as Logger } from "../gateway/logger.js";
 
 // Import tool registrations from packages (these would be actual imports in production)
 // For now, we'll create a unified registration system

@@ -103,10 +103,10 @@ function loadConfig(): Config {
         description: "Per API request",
       },
       tiers: JSON.parse(process.env.PRICING_TIERS || "[]").length > 0 
-        ? JSON.parse(process.env.PRICING_TIERS)
+        ? JSON.parse(process.env.PRICING_TIERS || "[]")
         : undefined,
       subscriptions: JSON.parse(process.env.SUBSCRIPTIONS || "[]").length > 0
-        ? JSON.parse(process.env.SUBSCRIPTIONS)
+        ? JSON.parse(process.env.SUBSCRIPTIONS || "[]")
         : undefined,
     },
     rateLimit: {

@@ -8,9 +8,9 @@
     "news",
     "analytics",
     "predictions",
-    "dune-analytics-mcp",
-    "defillama-mcp",
-    "coingecko-pro-mcp"
+    "blockchain-analytics",
+    "defi-metrics",
+    "price-feeds-pro"
   ],
   "scripts": {
     "build": "pnpm -r build",

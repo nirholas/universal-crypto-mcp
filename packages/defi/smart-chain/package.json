@@ -1,0 +1,45 @@
+{
+  "name": "@universal-crypto-mcp/defi-smart-chain",
+  "version": "1.0.0",
+  "description": "Smart chain DeFi integrations for MCP (BNB Chain)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./pancakeswap": "./dist/pancakeswap.js",
+    "./venus": "./dist/venus.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nirholas/crypto-mcp-core": "workspace:*",
+    "@universal-crypto-mcp/defi-shared": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "viem": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/bnb-chain"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "bnb",
+    "bsc",
+    "pancakeswap",
+    "venus",
+    "defi"
+  ]
+}

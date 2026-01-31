@@ -14,9 +14,10 @@ import compression from "compression";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { config } from "./config.js";
-import { x402Middleware, X402Config, RateLimiter, MemoryRateLimitStore } from "./gateway/index.js";
+import { x402Gateway } from "./gateway/index.js";
 import { prometheusMetrics, healthCheck } from "./monitoring/index.js";
 import { registerAllTools } from "./tools/index.js";
+import { logger as Logger } from "./gateway/logger.js";
 
 // Types
 interface SessionInfo {
@@ -28,17 +29,6 @@ interface SessionInfo {
 
 // Session management
 const sessions = new Map<string, SessionInfo>();
-
-// Initialize rate limiter
-const rateLimiter = new RateLimiter(
-  {
-    enabled: true,
-    maxRequests: config.rateLimit.maxRequests,
-    windowSeconds: config.rateLimit.windowSeconds,
-    perPayer: true,
-  },
-  new MemoryRateLimitStore()
-);
 
 // Create MCP Server
 function createMcpServer(): Server {
@@ -102,12 +92,12 @@ function createApp(): express.Application {
   });
 
   // OpenAPI spec (free)
-  app.get("/openapi.json", (req, res) => {
+  app.get("/openapi.json", (_req, res) => {
     res.json(generateOpenApiSpec());
   });
 
   // Pricing info (free)
-  app.get("/pricing", (req, res) => {
+  app.get("/pricing", (_req, res) => {
     res.json(config.pricing);
   });
 
@@ -181,10 +171,10 @@ function createX402Middleware() {
   return x402Middleware({
     config: x402Config,
     testMode: config.server.testMode,
-    onPaymentVerified: (payment) => {
+    onPaymentVerified: (payment: any) => {
       console.log(`[x402] Payment verified: ${payment.payer} paid ${payment.amount}`);
     },
-    onPaymentFailed: (error, req) => {
+    onPaymentFailed: (error: any, _req: any) => {
       console.error(`[x402] Payment failed: ${error.message}`);
     },
   });

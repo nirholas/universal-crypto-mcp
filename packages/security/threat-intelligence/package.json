@@ -1,0 +1,58 @@
+{
+  "name": "@nirholas/threat-intelligence",
+  "version": "1.0.0",
+  "description": "Blockchain threat intelligence - Wallet behavior prediction, fraud detection, and rug pull prediction (powered by ChainAware)",
+  "author": {
+    "name": "Nich",
+    "email": "nich@nichxbt.com",
+    "url": "https://x.com/nichxbt"
+  },
+  "contributors": [
+    {
+      "name": "ChainAware",
+      "url": "https://github.com/ChainAware",
+      "note": "Original behavioral-prediction-mcp implementation"
+    }
+  ],
+  "license": "MIT AND Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/security/chainaware"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/security/chainaware",
+  "bugs": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "security",
+    "fraud-detection",
+    "rug-pull",
+    "wallet-analysis",
+    "crypto"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

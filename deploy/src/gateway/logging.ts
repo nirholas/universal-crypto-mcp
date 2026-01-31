@@ -13,46 +13,55 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
   (req as any).requestId = requestId;
   
   // Log request
-  Logger.info({
-    type: 'request',
-    requestId,
-    method: req.method,
-    path: req.path,
-    query: req.query,
-    ip: req.ip,
-    userAgent: req.headers['user-agent'],
-  });
+  Logger.info(
+    `Request: ${req.method} ${req.path}`,
+    {
+      type: 'request',
+      requestId,
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+    }
+  );
 
   // Log response on finish
   res.on('finish', () => {
     const duration = Date.now() - startTime;
-    Logger.info({
-      type: 'response',
-      requestId,
-      method: req.method,
-      path: req.path,
-      statusCode: res.statusCode,
-      duration,
-    });
+    Logger.info(
+      `Response: ${req.method} ${req.path} ${res.statusCode} (${duration}ms)`,
+      {
+        type: 'response',
+        requestId,
+        method: req.method,
+        path: req.path,
+        statusCode: res.statusCode,
+        duration,
+      }
+    );
   });
 
   next();
 }
 
-export function errorLogger(err: Error, req: Request, res: Response, next: NextFunction): void {
+export function errorLogger(err: Error, req: Request, _res: Response, next: NextFunction): void {
   const requestId = (req as any).requestId || 'unknown';
   
-  Logger.error({
-    type: 'error',
-    requestId,
-    method: req.method,
-    path: req.path,
-    error: {
-      message: err.message,
-      name: err.name,
-      stack: err.stack,
-    },
-  });
+  Logger.error(
+    `Error: ${err.name} - ${err.message}`,
+    {
+      type: 'error',
+      requestId,
+      method: req.method,
+      path: req.path,
+      error: {
+        message: err.message,
+        name: err.name,
+        stack: err.stack,
+      },
+    }
+  );
 
   next(err);
 }

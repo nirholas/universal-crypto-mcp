@@ -1,0 +1,34 @@
+{
+  "name": "@nirholas/wallet-protocol",
+  "version": "1.0.0",
+  "description": "Wallet connection protocol - Session management and dApp connectivity (powered by WalletConnect) by nirholas",
+  "author": "nirholas (Nich) <https://x.com/nichxbt>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": { "wallet-protocol": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest"
+  },
+  "keywords": ["mcp", "wallet-protocol", "walletconnect", "dapp", "web3", "nirholas"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/wallets/wallet-protocol"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": { "node": ">=18.0.0" }
+}
