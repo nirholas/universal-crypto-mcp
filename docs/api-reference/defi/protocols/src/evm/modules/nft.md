@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/nft/index.ts:11](https://github.com/
 #### Returns
 
 `void`
+
