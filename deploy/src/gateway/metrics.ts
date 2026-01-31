@@ -339,3 +339,4 @@ export function metricsEndpoint(_req: Request, res: Response): void {
 }
 
 export default metrics;
+
