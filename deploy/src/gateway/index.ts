@@ -469,7 +469,8 @@ process.on('SIGINT', async () => {
 
 // Export types and classes for external use
 export { x402Gateway } from './x402-gateway.js';
-export { RateLimiter, MemoryRateLimitStore } from './rate-limiter.js';
+export { RateLimiter } from './rate-limiter.js';
+export { default as MemoryRateLimitStore } from './rate-limiter.js';
 export type { X402Config } from './config.js';
 
 export { default as x402Middleware } from './x402-gateway.js';

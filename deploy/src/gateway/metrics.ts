@@ -11,12 +11,6 @@ import { Request, Response, NextFunction } from 'express';
 // Metrics Collection
 // ============================================================================
 
-interface MetricValue {
-  value: number;
-  labels: Record<string, string>;
-  timestamp: number;
-}
-
 class Counter {
   private name: string;
   private help: string;

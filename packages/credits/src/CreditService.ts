@@ -355,11 +355,10 @@ export class CreditService {
     if (!customerId) {
       const customer = await this.stripe.getOrCreateCustomer(userId);
       customerId = customer.id;
+      if (!customerId) {
+        throw new Error('Failed to get Stripe customer ID');
+      }
       await this.customerStorage.setStripeCustomerId(userId, customerId);
-    }
-
-    if (!customerId) {
-      throw new Error('Failed to get Stripe customer ID');
     }
 
     const setupIntent = await this.stripe.createSetupIntent(customerId);
