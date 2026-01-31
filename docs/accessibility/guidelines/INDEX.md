@@ -125,3 +125,4 @@ Web3 applications must work reliably with assistive technologies and alternative
 - [React + wagmi Guide](../guides/react-wagmi.md)
 - [Testing Checklist](../TESTING_CHECKLIST.md)
 - [Quick Start Guide](../QUICK_START.md)
+
