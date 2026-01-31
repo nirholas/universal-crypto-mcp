@@ -254,3 +254,4 @@ case $MODE in
 esac
 
 verify_certificate
+
