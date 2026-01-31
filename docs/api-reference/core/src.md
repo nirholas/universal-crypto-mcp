@@ -371,3 +371,4 @@ Re-exports [X402Payment](/docs/api/core/src/types.md#x402payment)
 ### X402PaymentSchema
 
 Re-exports [X402PaymentSchema](/docs/api/core/src/types.md#x402paymentschema)
+
