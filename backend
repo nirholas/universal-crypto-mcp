@@ -8,3 +8,4 @@ BACKEND_SCRIPTS="$SCRIPT_DIR/scripts/backend"
 
 # Forward all commands to the main automation script
 exec "$BACKEND_SCRIPTS/backend-automation.sh" "$@"
+
