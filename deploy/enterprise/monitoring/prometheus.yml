@@ -1,0 +1,85 @@
+# Universal Crypto MCP - Prometheus Configuration
+# Production monitoring with x402 payment metrics
+#
+# @author nirholas
+# @license Apache-2.0
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'ucm-production'
+
+# Alert rules
+rule_files:
+  - /etc/prometheus/alerts/*.yml
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # ═══════════════════════════════════════════════════════════════
+  # Self-monitoring
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ═══════════════════════════════════════════════════════════════
+  # UCM Gateway
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'ucm-gateway'
+    static_configs:
+      - targets: ['gateway:3002']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'ucm_.*'
+        action: keep
+
+  # ═══════════════════════════════════════════════════════════════
+  # MCP Server Instances
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'mcp-servers'
+    static_configs:
+      - targets:
+        - mcp-server-1:4000
+        - mcp-server-2:4000
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # ═══════════════════════════════════════════════════════════════
+  # Redis
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # ═══════════════════════════════════════════════════════════════
+  # PostgreSQL
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # ═══════════════════════════════════════════════════════════════
+  # Nginx
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    scrape_interval: 30s

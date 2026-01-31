@@ -1,0 +1,91 @@
+{
+  "name": "@universal-crypto-mcp/shared-utils",
+  "version": "1.0.0",
+  "description": "Shared utilities for Universal Crypto MCP - rate limiting, retry logic, error handling, observability",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./rate-limiter": {
+      "types": "./dist/rate-limiter/index.d.ts",
+      "import": "./dist/rate-limiter/index.js"
+    },
+    "./retry": {
+      "types": "./dist/retry/index.d.ts",
+      "import": "./dist/retry/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "import": "./dist/logger/index.js"
+    },
+    "./secrets": {
+      "types": "./dist/secrets/index.d.ts",
+      "import": "./dist/secrets/index.js"
+    },
+    "./timeout": {
+      "types": "./dist/timeout/index.d.ts",
+      "import": "./dist/timeout/index.js"
+    },
+    "./http": {
+      "types": "./dist/http/index.d.ts",
+      "import": "./dist/http/index.js"
+    },
+    "./metrics": {
+      "types": "./dist/metrics/index.d.ts",
+      "import": "./dist/metrics/index.js"
+    },
+    "./feature-flags": {
+      "types": "./dist/feature-flags/index.d.ts",
+      "import": "./dist/feature-flags/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "crypto",
+    "mcp",
+    "utilities",
+    "rate-limiter",
+    "retry",
+    "circuit-breaker",
+    "logging"
+  ],
+  "author": "nich <nich@nichxbt.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/shared/utils"
+  }
+}

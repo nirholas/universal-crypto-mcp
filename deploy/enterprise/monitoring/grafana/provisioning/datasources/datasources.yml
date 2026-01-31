@@ -1,0 +1,100 @@
+# Grafana Datasources Provisioning
+# Automatically configure data sources on startup
+#
+# @author nirholas
+# @license Apache-2.0
+
+apiVersion: 1
+
+datasources:
+  # ═══════════════════════════════════════════════════════════════
+  # Prometheus - Metrics
+  # ═══════════════════════════════════════════════════════════════
+  
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+      httpMethod: POST
+      prometheusType: Prometheus
+      prometheusVersion: 2.47.0
+
+  # ═══════════════════════════════════════════════════════════════
+  # Loki - Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: Loki
+    type: loki
+    access: proxy
+    orgId: 1
+    url: http://loki:3100
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: prometheus
+          matcherRegex: "payment_id=([a-f0-9-]+)"
+          name: payment_id
+          url: "$${__value.raw}"
+
+  # ═══════════════════════════════════════════════════════════════
+  # PostgreSQL - Payment Data
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    orgId: 1
+    url: postgres:5432
+    database: ucm_payments
+    user: ${POSTGRES_USER}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 5
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: false
+    version: 1
+    editable: false
+
+  # ═══════════════════════════════════════════════════════════════
+  # Redis - Cache Stats
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: Redis
+    type: redis-datasource
+    access: proxy
+    orgId: 1
+    url: redis:6379
+    jsonData:
+      client: standalone
+      poolSize: 5
+    version: 1
+    editable: false
+
+  # ═══════════════════════════════════════════════════════════════
+  # AlertManager - Alerts
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: AlertManager
+    type: alertmanager
+    access: proxy
+    orgId: 1
+    url: http://alertmanager:9093
+    jsonData:
+      implementation: prometheus
+    version: 1
+    editable: false

@@ -11,6 +11,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerCryptoIndicators } from "../crypto-indicators/src/index.js";
 import { registerCoinGeckoTools } from "../coingecko/src/index.js";
 import { registerDexPaprikaTools } from "../dexpaprika/src/index.js";
+import { registerCoinStatsTools } from "./coinstats/src/index.js";
+import { registerHiveTools } from "./hive/src/index.js";
 
 /**
  * Unified Market Data Server
@@ -35,6 +37,12 @@ export class UnifiedMarketData {
     
     // DexPaprika (CoinPaprika)
     registerDexPaprikaTools(this.server);
+    
+    // CoinStats (Official) - Wave 3
+    registerCoinStatsTools(this.server);
+    
+    // Hive Intel (AnonJon) - Wave 3
+    registerHiveTools(this.server);
 
     // Market Overview Tool - combines multiple sources
     this.server.registerTool(

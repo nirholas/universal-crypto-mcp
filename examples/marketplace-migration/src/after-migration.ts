@@ -29,7 +29,7 @@ app.use(express.json());
 const config = {
   port: 3002,
   chain: "arbitrum" as const,
-  walletAddress: "0x1234567890123456789012345678901234567890" as `0x${string}`,
+  walletAddress: "0xB1314Ed50b273A9c1dA9a43860d853F179868296" as `0x${string}`,
   privateKey: process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001",
   marketplaceContract: "0x0000000000000000000000000000000000000001" as `0x${string}`,
   pricing: {

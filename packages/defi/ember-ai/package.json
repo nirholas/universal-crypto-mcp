@@ -1,0 +1,48 @@
+{
+  "name": "@nirholas/ember-ai-mcp",
+  "version": "1.0.0",
+  "description": "Ember AI integration - Cross-chain DeFi strategy execution on Arbitrum VibeKit",
+  "author": {
+    "name": "Nich",
+    "email": "nich@nichxbt.com",
+    "url": "https://x.com/nichxbt"
+  },
+  "contributors": [
+    {
+      "name": "Ember AI",
+      "url": "https://docs.emberai.xyz",
+      "note": "Arbitrum VibeKit DeFi Integration"
+    }
+  ],
+  "license": "MIT AND Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "directory": "packages/defi/ember-ai"
+  },
+  "keywords": [
+    "mcp",
+    "defi",
+    "cross-chain",
+    "arbitrum",
+    "strategy",
+    "yield"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

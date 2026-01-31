@@ -1,0 +1,253 @@
+# Promtail Configuration
+# Log collection agent for Universal Crypto MCP
+#
+# @author nirholas
+# @license Apache-2.0
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: info
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    batchwait: 1s
+    batchsize: 1048576
+    timeout: 10s
+
+scrape_configs:
+  # ═══════════════════════════════════════════════════════════════
+  # Docker Container Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: containers
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: containerlogs
+          __path__: /var/lib/docker/containers/*/*log
+
+    pipeline_stages:
+      # Parse Docker JSON log format
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            timestamp: time
+      
+      # Extract timestamp
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      
+      # Set log line
+      - output:
+          source: output
+
+  # ═══════════════════════════════════════════════════════════════
+  # UCM Gateway Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: ucm-gateway
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.ucm.service=gateway"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_label_com_ucm_service']
+        target_label: 'service'
+
+    pipeline_stages:
+      # Parse JSON logs from Express
+      - json:
+          expressions:
+            level: level
+            message: message
+            route: route
+            method: method
+            status: status
+            duration: duration
+            payer: payer
+            payment_amount: amount
+            error: error
+      
+      # Add labels for better querying
+      - labels:
+          level:
+          route:
+          method:
+          status:
+      
+      # Parse payment events specially
+      - match:
+          selector: '{service="gateway"} |~ "payment"'
+          stages:
+            - json:
+                expressions:
+                  payment_id: payment_id
+                  amount: amount
+                  payer: payer
+                  network: network
+            - labels:
+                payer:
+                network:
+      
+      # Metrics from logs
+      - metrics:
+          log_lines_total:
+            type: Counter
+            description: "Total log lines"
+            source: message
+            config:
+              action: inc
+          
+          payment_logs:
+            type: Counter
+            description: "Payment log entries"
+            source: payment_id
+            config:
+              action: inc
+              match_all: true
+
+  # ═══════════════════════════════════════════════════════════════
+  # MCP Server Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: mcp-servers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.ucm.service=mcp-server"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_label_com_ucm_package']
+        target_label: 'package'
+      - source_labels: ['__meta_docker_container_label_com_ucm_tier']
+        target_label: 'tier'
+
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            message: message
+            tool: tool
+            duration: duration
+      - labels:
+          level:
+          tool:
+
+  # ═══════════════════════════════════════════════════════════════
+  # Nginx Access Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: nginx
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.ucm.service=nginx"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+
+    pipeline_stages:
+      # Parse nginx combined log format
+      - regex:
+          expression: '^(?P<remote_addr>[\w\.]+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) (?P<request>[^"]+)" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>[^"]*)" "(?P<http_user_agent>[^"]*)"'
+      
+      - labels:
+          method:
+          status:
+          remote_addr:
+      
+      # Drop health checks from logs
+      - match:
+          selector: '{job="nginx"} |= "/health"'
+          action: drop
+      
+      # Metrics from nginx logs
+      - metrics:
+          nginx_request_duration_seconds:
+            type: Histogram
+            description: "Request duration"
+            source: request_time
+            config:
+              buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+
+  # ═══════════════════════════════════════════════════════════════
+  # PostgreSQL Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: postgres
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.ucm.service=postgres"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+ \w+) \[(?P<pid>\d+)\] (?P<level>\w+):(?P<message>.*)$'
+      - labels:
+          level:
+      # Alert on slow queries
+      - match:
+          selector: '{job="postgres"} |~ "duration:"'
+          stages:
+            - regex:
+                expression: 'duration: (?P<duration>[\d.]+) ms'
+            - metrics:
+                postgres_slow_queries:
+                  type: Counter
+                  description: "Slow queries count"
+                  source: duration
+                  config:
+                    action: inc
+
+  # ═══════════════════════════════════════════════════════════════
+  # Redis Logs
+  # ═══════════════════════════════════════════════════════════════
+
+  - job_name: redis
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.ucm.service=redis"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<pid>\d+):(?P<role>[A-Z]) (?P<timestamp>\d+ \w+ \d{4} \d{2}:\d{2}:\d{2}\.\d+) (?P<level>[\*\#\-]) (?P<message>.*)$'
+      - labels:
+          level:
+          role:

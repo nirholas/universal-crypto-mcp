@@ -4,7 +4,7 @@
   "description": "Premium cryptocurrency data API with x402 payments",
   
   "payment": {
-    "wallet": "${X402_WALLET}",
+    "wallet": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
     "network": "eip155:42161",
     "assets": ["USDC", "USDs"]
   },

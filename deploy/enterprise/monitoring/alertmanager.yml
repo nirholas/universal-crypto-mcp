@@ -1,0 +1,168 @@
+# AlertManager Configuration
+# Enterprise-grade alerting for Universal Crypto MCP
+#
+# @author nirholas
+# @license Apache-2.0
+
+global:
+  # ResolveTimeout is the time after which an alert is declared resolved
+  # if it has not been updated.
+  resolve_timeout: 5m
+  
+  # SMTP settings for email notifications
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: 'alerts@${DOMAIN}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+  # Slack webhook URL
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+
+  # PagerDuty routing key
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+
+# The root route - all alerts enter here
+route:
+  # Default receiver
+  receiver: 'default-receiver'
+  
+  # Wait this long before sending first notification
+  group_wait: 30s
+  
+  # Wait this long before sending notification about new alerts in group
+  group_interval: 5m
+  
+  # Wait this long before sending notification about resolved alerts
+  repeat_interval: 4h
+  
+  # Group alerts by these labels
+  group_by: ['alertname', 'severity', 'job']
+  
+  # Child routes - processed in order, first match wins
+  routes:
+    # Critical alerts go to PagerDuty immediately
+    - receiver: 'pagerduty-critical'
+      match:
+        severity: critical
+      continue: true  # Also send to other matching receivers
+      repeat_interval: 15m
+    
+    # Warning alerts go to Slack
+    - receiver: 'slack-warnings'
+      match:
+        severity: warning
+      repeat_interval: 2h
+    
+    # Payment-related alerts go to dedicated channel
+    - receiver: 'slack-payments'
+      match_re:
+        alertname: 'Payment.*|Revenue.*|Subscription.*'
+    
+    # Info alerts (like revenue milestones)
+    - receiver: 'slack-info'
+      match:
+        severity: info
+      repeat_interval: 24h
+
+# Inhibition rules to prevent alert spam
+inhibit_rules:
+  # If gateway is down, don't alert about payment failures
+  - source_match:
+      alertname: 'PaymentProcessingDown'
+    target_match:
+      alertname: 'PaymentFailureRateHigh'
+    equal: ['job']
+  
+  # If Postgres is down, don't alert about high connections
+  - source_match:
+      alertname: 'PostgresDown'
+    target_match:
+      alertname: 'DatabaseConnectionsHigh'
+    equal: ['job']
+  
+  # If Redis is down, don't alert about memory
+  - source_match:
+      alertname: 'RedisDown'
+    target_match:
+      alertname: 'RedisMemoryHigh'
+    equal: ['job']
+
+# Receivers define how to send notifications
+receivers:
+  - name: 'default-receiver'
+    email_configs:
+      - to: '${ALERT_EMAIL}'
+        send_resolved: true
+        headers:
+          subject: '[UCM Alert] {{ .GroupLabels.alertname }}'
+        html: |
+          {{ range .Alerts }}
+          <h3>{{ .Labels.alertname }}</h3>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Summary:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ end }}
+
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - routing_key: '${PAGERDUTY_ROUTING_KEY}'
+        severity: critical
+        description: '{{ .CommonAnnotations.summary }}'
+        client: 'Universal Crypto MCP'
+        client_url: 'https://${DOMAIN}/dashboard'
+        details:
+          firing: '{{ template "pagerduty.default.instances" .Alerts.Firing }}'
+          resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
+
+  - name: 'slack-warnings'
+    slack_configs:
+      - channel: '#ucm-alerts'
+        username: 'UCM AlertBot'
+        icon_emoji: ':warning:'
+        send_resolved: true
+        title: '{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} {{ .CommonLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Summary:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Severity:* {{ .Labels.severity }}
+          {{ if eq .Status "firing" }}*Started:* {{ .StartsAt }}{{ else }}*Resolved:* {{ .EndsAt }}{{ end }}
+          {{ end }}
+        actions:
+          - type: button
+            text: 'View Dashboard 📊'
+            url: 'https://${DOMAIN}/dashboard'
+          - type: button
+            text: 'Runbook 📖'
+            url: 'https://${DOMAIN}/docs/runbook'
+
+  - name: 'slack-payments'
+    slack_configs:
+      - channel: '#ucm-payments'
+        username: 'UCM PaymentBot'
+        icon_emoji: ':moneybag:'
+        send_resolved: true
+        title: '{{ if eq .Status "firing" }}💰{{ else }}✅{{ end }} {{ .CommonLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Summary:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          {{ end }}
+
+  - name: 'slack-info'
+    slack_configs:
+      - channel: '#ucm-updates'
+        username: 'UCM InfoBot'
+        icon_emoji: ':information_source:'
+        send_resolved: false
+        title: 'ℹ️ {{ .CommonLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          {{ .Annotations.summary }}
+          {{ end }}
+
+# Templates can be used to customize notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'

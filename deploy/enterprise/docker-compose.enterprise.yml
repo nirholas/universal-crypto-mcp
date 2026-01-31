@@ -1,0 +1,381 @@
+# Enterprise Docker Compose for Universal Crypto MCP
+# Full x402 payment integration, rate limiting, monitoring, HA setup
+# 
+# @author nirholas
+# @license Apache-2.0
+#
+# Usage:
+#   docker compose -f deploy/enterprise/docker-compose.enterprise.yml up -d
+#
+# Required environment variables in .env.production:
+#   - WALLET_ADDRESS: Your wallet address to receive payments
+#   - PRIVATE_KEY: Server private key for signing
+#   - See .env.example for full list
+
+services:
+  # ═══════════════════════════════════════════════════════════════
+  # CORE SERVICES
+  # ═══════════════════════════════════════════════════════════════
+
+  # x402 Payment Gateway - Routes all requests, handles payments
+  gateway:
+    build:
+      context: ../..
+      dockerfile: deploy/enterprise/Dockerfile.gateway
+    container_name: ucm-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"     # Main API
+      - "3001:3001"     # SSE endpoint
+      - "3002:3002"     # Health/metrics
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SSE_PORT=3001
+      - METRICS_PORT=3002
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgres://ucm:${POSTGRES_PASSWORD}@postgres:5432/ucm
+      # x402 Payment Config
+      - X402_WALLET=${WALLET_ADDRESS}
+      - X402_NETWORK=${PAYMENT_NETWORK:-eip155:8453}
+      - X402_FACILITATOR=${FACILITATOR_URL:-https://facilitator.x402.org}
+      - X402_TOKEN=${PAYMENT_TOKEN:-USDC}
+      # Rate Limiting
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_FREE_REQUESTS=${FREE_REQUESTS:-10}
+      - RATE_LIMIT_WINDOW_SECONDS=3600
+      # API Keys for enhanced data
+      - COINGECKO_API_KEY=${COINGECKO_API_KEY:-}
+      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY:-}
+      - ALCHEMY_API_KEY=${ALCHEMY_API_KEY:-}
+      # Chain RPCs
+      - ETHEREUM_RPC_URL=${ETHEREUM_RPC_URL:-https://eth.llamarpc.com}
+      - BASE_RPC_URL=${BASE_RPC_URL:-https://mainnet.base.org}
+      - ARBITRUM_RPC_URL=${ARBITRUM_RPC_URL:-https://arb1.arbitrum.io/rpc}
+      - POLYGON_RPC_URL=${POLYGON_RPC_URL:-https://polygon-rpc.com}
+    volumes:
+      - gateway-data:/app/data
+      - ./config:/app/config:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - ucm-internal
+      - ucm-public
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # MCP Server Instance 1
+  mcp-server-1:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: ucm-mcp-1
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - INSTANCE_ID=mcp-1
+      - REDIS_URL=redis://redis:6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # MCP Server Instance 2 (for HA)
+  mcp-server-2:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: ucm-mcp-2
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - INSTANCE_ID=mcp-2
+      - REDIS_URL=redis://redis:6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # ═══════════════════════════════════════════════════════════════
+  # DATA STORES
+  # ═══════════════════════════════════════════════════════════════
+
+  # Redis - Rate limiting, caching, sessions
+  redis:
+    image: redis:7-alpine
+    container_name: ucm-redis
+    restart: unless-stopped
+    command: >
+      redis-server 
+      --appendonly yes 
+      --maxmemory 512mb 
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # PostgreSQL - Payment records, analytics, subscriptions
+  postgres:
+    image: postgres:16-alpine
+    container_name: ucm-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=ucm
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=ucm
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ucm -d ucm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # ═══════════════════════════════════════════════════════════════
+  # LOAD BALANCER / REVERSE PROXY
+  # ═══════════════════════════════════════════════════════════════
+
+  nginx:
+    image: nginx:alpine
+    container_name: ucm-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx-cache:/var/cache/nginx
+    depends_on:
+      - gateway
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ucm-public
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ═══════════════════════════════════════════════════════════════
+  # MONITORING & OBSERVABILITY
+  # ═══════════════════════════════════════════════════════════════
+
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ucm-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts:/etc/prometheus/alerts:ro
+      - prometheus-data:/prometheus
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Grafana - Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ucm-grafana
+    restart: unless-stopped
+    ports:
+      - "3030:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=${GRAFANA_URL:-http://localhost:3030}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: ucm-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Promtail - Log shipping
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: ucm-promtail
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - ucm-internal
+
+  # AlertManager - Alert routing
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: ucm-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+
+  # ═══════════════════════════════════════════════════════════════
+  # PAYMENT DASHBOARD
+  # ═══════════════════════════════════════════════════════════════
+
+  dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/enterprise/Dockerfile.dashboard
+    container_name: ucm-dashboard
+    restart: unless-stopped
+    ports:
+      - "3080:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://ucm:${POSTGRES_PASSWORD}@postgres:5432/ucm
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - NEXTAUTH_SECRET=${DASHBOARD_SECRET}
+      - NEXTAUTH_URL=${DASHBOARD_URL:-http://localhost:3080}
+      - WALLET_ADDRESS=${WALLET_ADDRESS}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ucm-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+# ═══════════════════════════════════════════════════════════════
+# VOLUMES
+# ═══════════════════════════════════════════════════════════════
+
+volumes:
+  gateway-data:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  alertmanager-data:
+  nginx-cache:
+
+# ═══════════════════════════════════════════════════════════════
+# NETWORKS
+# ═══════════════════════════════════════════════════════════════
+
+networks:
+  ucm-internal:
+    driver: bridge
+    internal: true
+  ucm-public:
+    driver: bridge

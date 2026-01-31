@@ -479,7 +479,8 @@
                 arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
                 polygon: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359'
             },
-            // Your wallet address (the payTo address in your x402 config)
+            // Default wallet (your x402 payTo address)
+            defaultWallet: '0xB1314Ed50b273A9c1dA9a43860d853F179868296',
             wallet: null,
             network: 'base'
         };
@@ -509,9 +510,9 @@
         document.addEventListener('DOMContentLoaded', init);
 
         async function init() {
-            // Get wallet from URL params
+            // Get wallet from URL params or use default
             const params = new URLSearchParams(window.location.search);
-            CONFIG.wallet = params.get('wallet') || params.get('w');
+            CONFIG.wallet = params.get('wallet') || params.get('w') || CONFIG.defaultWallet;
             CONFIG.network = params.get('network') || params.get('n') || 'base';
 
             if (!CONFIG.wallet) {
@@ -737,6 +738,7 @@
             });
 
             updateStats();
+            updateBalancePanel();
         }
 
         function updateStats() {
@@ -749,14 +751,6 @@
             document.getElementById('week-calls').textContent = `${state.calls.week.toLocaleString()} payments`;
             document.getElementById('month-calls').textContent = `${state.calls.month.toLocaleString()} payments`;
             document.getElementById('total-calls').textContent = `${state.calls.total.toLocaleString()} payments`;
-            
-            // Update balance if available
-            if (state.balance !== undefined) {
-                const balanceEl = document.getElementById('total-earnings');
-                if (balanceEl) {
-                    balanceEl.title = `Current balance: ${formatUSD(state.balance)}`;
-                }
-            }
         }
 
         function updateTransactionFeed() {
@@ -785,32 +779,6 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function updateRoutes() {
-            const container = document.getElementById('routes-list');
-            const routes = Object.entries(state.routes);
-
-            if (routes.length === 0) {
-                container.innerHTML = '<div class="empty-state">No route data yet</div>';
-                return;
-            }
-
-            const maxRevenue = Math.max(...routes.map(([, r]) => r.revenue));
-
-            container.innerHTML = routes
-                .sort((a, b) => b[1].revenue - a[1].revenue)
-                .slice(0, 10)
-                .map(([path, data]) => `
-                    <div class="route-item">
-                        <div class="route-path">${path}</div>
-                        <div class="route-calls">${data.calls.toLocaleString()}</div>
-                        <div class="route-revenue">${formatUSD(data.revenue)}</div>
-                        <div class="route-bar">
-                            <div class="route-bar-fill" style="width: ${(data.revenue / maxRevenue * 100)}%"></div>
-                        </div>
-                    </div>
-                `).join('');
         }
 
         function updateChart() {
