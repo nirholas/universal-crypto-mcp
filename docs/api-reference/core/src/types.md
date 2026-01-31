@@ -462,3 +462,4 @@ const TransactionSchema: ZodObject<{
 Defined in: [core/src/types/index.ts:172](https://github.com/nirholas/universal-crypto-mcp/blob/2b24f56f5c1847dd14a50a618b98164e511a842f/packages/core/src/types/index.ts#L172)
 
 Zod schema for validating blockchain transactions.
+
