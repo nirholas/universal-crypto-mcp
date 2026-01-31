@@ -274,3 +274,4 @@ export function parsePrice(priceStr: string): number {
 export function usdToTokenUnits(usdAmount: number, decimals: number = 6): bigint {
   return BigInt(Math.round(usdAmount * Math.pow(10, decimals)));
 }
+
