@@ -1,0 +1,60 @@
+{
+  "name": "create-wagmi",
+  "description": "Create Wagmi apps with one command",
+  "version": "2.0.19",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wevm/wagmi.git",
+    "directory": "packages/create-wagmi"
+  },
+  "scripts": {
+    "build": "pnpm run build:esm+types",
+    "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "dev": "bun src/cli.ts",
+    "test:build": "publint --strict"
+  },
+  "files": [
+    "dist/**",
+    "!dist/**/*.tsbuildinfo",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-d.ts",
+    "templates/**"
+  ],
+  "bin": {
+    "wagmi": "./dist/esm/cli.js"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "cross-spawn": "^7.0.3",
+    "picocolors": "^1.0.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/node": "^24.5.1",
+    "@types/prompts": "^2.4.9"
+  },
+  "contributors": [
+    "awkweb.eth <t@wevm.dev>",
+    "jxom.eth <j@wevm.dev>"
+  ],
+  "funding": "https://github.com/sponsors/wevm",
+  "keywords": [
+    "wagmi",
+    "eth",
+    "ethereum",
+    "dapps",
+    "wallet",
+    "web3",
+    "cli"
+  ]
+}

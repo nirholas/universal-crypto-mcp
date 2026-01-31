@@ -1,0 +1,44 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+* text eol=lf
+
+# Don't do anything with binaries
+*.png binary
+*.jpg binary
+*.svg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.flv binary
+*.fla binary
+*.swf binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.eot binary
+*.woff binary
+*.pyc binary
+*.pdf binary
+*.ez binary
+*.bz2 binary
+*.swp binary
+*.webp binary
+
+# Make GitHub not index certain files in the languages overview
+# See https://github.com/github/linguist/blob/master/docs/overrides.md
+# generated files' diff will be minimized
+**/__fixtures__/**                        linguist-generated
+**/__mocks__/**                           linguist-generated
+examples/**                               linguist-generated
+.husky/**                                 linguist-vendored
+jest/**                                   linguist-vendored
+admin/**                                  linguist-documentation
+website/**                                linguist-documentation
+packages/create-docusaurus/templates/**   linguist-vendored
+.eslintrc.*                               linguist-vendored
+jest.config.*                             linguist-vendored
+.stylelintrc.*                            linguist-vendored

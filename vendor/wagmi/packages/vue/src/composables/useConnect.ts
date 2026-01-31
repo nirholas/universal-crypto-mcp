@@ -1,0 +1,76 @@
+import { useMutation } from '@tanstack/vue-query'
+import type {
+  Config,
+  ConnectErrorType,
+  GetConnectorsReturnType,
+  ResolvedRegister,
+} from '@wagmi/core'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
+import {
+  type ConnectData,
+  type ConnectMutate,
+  type ConnectMutateAsync,
+  type ConnectOptions,
+  type ConnectVariables,
+  connectMutationOptions,
+} from '@wagmi/core/query'
+import { onScopeDispose } from 'vue'
+import type { UseMutationReturnType } from '../utils/query.js'
+import { useConfig } from './useConfig.js'
+import { useConnectors } from './useConnectors.js'
+
+export type UseConnectParameters<
+  config extends Config = Config,
+  context = unknown,
+> = Compute<ConfigParameter<config> & ConnectOptions<config, context>>
+
+export type UseConnectReturnType<
+  config extends Config = Config,
+  context = unknown,
+> = Compute<
+  UseMutationReturnType<
+    ConnectData<config, config['connectors'][number], boolean>,
+    ConnectErrorType,
+    ConnectVariables<config, config['connectors'][number], boolean>,
+    context,
+    ConnectMutate<config, context>,
+    ConnectMutateAsync<config, context>
+  > & {
+    /** @deprecated use `mutate` instead */
+    connect: ConnectMutate<config, context>
+    /** @deprecated use `mutateAsync` instead */
+    connectAsync: ConnectMutateAsync<config, context>
+    /** @deprecated use `useConnectors` instead */
+    connectors: Compute<GetConnectorsReturnType> | config['connectors']
+  }
+>
+
+/** https://wagmi.sh/vue/api/composables/useConnect */
+export function useConnect<
+  config extends Config = ResolvedRegister['config'],
+  context = unknown,
+>(
+  parameters: UseConnectParameters<config, context> = {},
+): UseConnectReturnType<config, context> {
+  const config = useConfig(parameters)
+  const options = connectMutationOptions(config, parameters)
+  const mutation = useMutation(options)
+
+  // Reset mutation back to an idle state when the connector disconnects.
+  const unsubscribe = config.subscribe(
+    ({ status }) => status,
+    (status, previousStatus) => {
+      if (previousStatus === 'connected' && status === 'disconnected')
+        mutation.reset()
+    },
+  )
+  onScopeDispose(() => unsubscribe())
+
+  type Return = UseConnectReturnType<config, context>
+  return {
+    ...(mutation as Return),
+    connect: mutation.mutate as Return['mutate'],
+    connectAsync: mutation.mutateAsync as Return['mutateAsync'],
+    connectors: useConnectors({ config }).value,
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "name": "@wagmi/cli",
+  "description": "Manage and generate code from Ethereum ABIs",
+  "version": "2.9.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wevm/wagmi.git",
+    "directory": "packages/cli"
+  },
+  "scripts": {
+    "build": "pnpm run build:esm+types",
+    "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo config plugins",
+    "dev": "bun src/cli.ts",
+    "test:build": "publint --strict && attw --pack --ignore-rules cjs-resolves-to-esm"
+  },
+  "files": [
+    "dist/**",
+    "!dist/**/*.tsbuildinfo",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-d.ts",
+    "/config",
+    "/plugins"
+  ],
+  "bin": {
+    "wagmi": "./dist/esm/cli.js"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "main": "./dist/esm/exports/index.js",
+  "types": "./dist/types/exports/index.d.ts",
+  "typings": "./dist/types/exports/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/exports/index.d.ts",
+      "default": "./dist/esm/exports/index.js"
+    },
+    "./config": {
+      "types": "./dist/types/exports/config.d.ts",
+      "default": "./dist/esm/exports/config.js"
+    },
+    "./plugins": {
+      "types": "./dist/types/exports/plugins.d.ts",
+      "default": "./dist/esm/exports/plugins.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "config": [
+        "./dist/types/exports/config.d.ts"
+      ],
+      "plugins": [
+        "./dist/types/exports/plugins.d.ts"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "typescript": ">=5.7.3"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "abitype": "^1.1.1",
+    "bundle-require": "^5.1.0",
+    "cac": "^6.7.14",
+    "change-case": "^5.4.4",
+    "chokidar": "4.0.1",
+    "dedent": "^0.7.0",
+    "dotenv": "^16.3.1",
+    "dotenv-expand": "^10.0.0",
+    "esbuild": "~0.25.4",
+    "escalade": "3.2.0",
+    "fdir": "^6.1.1",
+    "nanospinner": "1.2.2",
+    "pathe": "^1.1.2",
+    "picocolors": "^1.0.0",
+    "picomatch": "^3.0.0",
+    "prettier": "^3.0.3",
+    "viem": "2.x",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/dedent": "^0.7.2",
+    "@types/node": "^24.5.1",
+    "fixturez": "^1.1.0",
+    "msw": "^2.4.9"
+  },
+  "contributors": [
+    "awkweb.eth <t@wevm.dev>",
+    "jxom.eth <j@wevm.dev>"
+  ],
+  "funding": "https://github.com/sponsors/wevm",
+  "keywords": [
+    "wagmi",
+    "eth",
+    "ethereum",
+    "dapps",
+    "wallet",
+    "web3",
+    "cli"
+  ]
+}

@@ -1,0 +1,3 @@
+[submodule "sockjs-client"]
+	path = src/runtimes/web/dom/sockjs
+	url = https://github.com/pusher/sockjs-client.git

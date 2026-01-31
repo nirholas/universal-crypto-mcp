@@ -1,0 +1,71 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Sector /> > Don't render any sector when props is invalid 1`] = `
+<div>
+  <svg
+    class="recharts-surface"
+    height="500"
+    viewBox="0 0 500 500"
+    width="500"
+  >
+    <title />
+    <desc />
+  </svg>
+</div>
+`;
+
+exports[`<Sector /> > Render 1 sector in simple Sector 1`] = `
+<div>
+  <svg
+    class="recharts-surface"
+    height="500"
+    viewBox="0 0 500 500"
+    width="500"
+  >
+    <title />
+    <desc />
+    <path
+      class="recharts-sector"
+      cx="200"
+      cy="300"
+      d="M 400,300
+    A 200,200,0,
+    0,0,
+    200,100
+  L 200,150
+            A 150,150,0,
+            0,1,
+            350,300 Z"
+      fill="#ff7902"
+    />
+  </svg>
+</div>
+`;
+
+exports[`<Sector /> > Render 1 sector when cornerRadius > 0 1`] = `
+<div>
+  <svg
+    class="recharts-surface"
+    height="500"
+    viewBox="0 0 500 500"
+    width="500"
+  >
+    <title />
+    <desc />
+    <path
+      class="recharts-sector"
+      cx="200"
+      cy="300"
+      d="M 389.7367,300
+    A10,10,0,0,0,399.7228,289.4737
+    A200,200,0,0,0,210.5263,100.2772
+    A10,10,0,0,0,200,110.2633
+  L200,140.3128
+      A10,10,0,0,0,209.375,150.2933
+      A150,150,0,0,1,349.7067,290.625
+      A10,10,0,0,0,359.6872,300Z"
+      fill="#ff7902"
+    />
+  </svg>
+</div>
+`;

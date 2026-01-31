@@ -1,0 +1,78 @@
+{
+    "files.associations": {
+        "tsdoc.json": "jsonc", // TSDoc allows comments.
+        "typedoc.json": "jsonc" // TypeDoc uses the JSONC parser for its configuration files.
+    },
+
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "dprint.path": "./node_modules/dprint/dprint",
+
+    // Automatically run the formatter when certain files are saved.
+    "[javascript]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[json]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[css]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+
+    "mochaExplorer.nodeArgv": ["--import=tsx", "--conditions=typedoc-ts"],
+
+    "eslint.workingDirectories": [".", "./example"],
+    "mochaExplorer.configFile": ".config/mocha.test-explorer.json",
+    "cSpell.ignoreRegExpList": [
+        // Ignore usernames in the Thanks sections of the changelog
+        "/^- +@[A-Z0-9_-]+/igm",
+        // Ignore combined hashes in JSON output for rendering testing
+        "/#[a-z0-9_]+\"/"
+    ],
+    "cSpell.words": [
+        "callouts",
+        "cname",
+        "Combinatorially",
+        "deconfliction",
+        "deserializers",
+        "dprint",
+        "frontmatter",
+        "githubprivate",
+        "hideconstructor",
+        "linkcode",
+        "linkify",
+        "linkplain",
+        "momento",
+        "Msys",
+        "nodoc",
+        "shiki",
+        "srcset",
+        "tsbuildinfo",
+        "tsdoc",
+        "typedoc",
+        "typeof",
+        "typestrong",
+        "uncategorized",
+        "WCAG"
+    ]
+}

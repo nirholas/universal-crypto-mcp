@@ -1,0 +1,95 @@
+---
+title: Select
+nav: 3.99
+keywords: select
+published: false
+---
+
+## selectAtom
+
+⚠️ Unlike its name, `selectAtom` is provided as an escape hatch. Using it means building not 100% pure atom model. Prefer using derived atoms and use `selectAtom` only when `equalityFn` or `prevSlice` is unavoidable.
+
+### Signatures
+
+```ts
+function selectAtom<Value, Slice>(
+  anAtom: Atom<Value>,
+  selector: (v: Value, prevSlice?: Slice) => Slice,
+  equalityFn: (a: Slice, b: Slice) => boolean = Object.is,
+): Atom<Slice>
+```
+
+This function creates a derived atom whose value is a function of the original atom's value,
+determined by `selector.`
+The selector function runs whenever the original atom changes; it updates the derived atom
+only if `equalityFn` reports that the derived value has changed.
+By default, `equalityFn` is reference equality, but you can supply your favorite deep-equals
+function to stabilize the derived value where necessary.
+
+### Examples
+
+```js
+const defaultPerson = {
+  name: {
+    first: 'Jane',
+    last: 'Doe',
+  },
+  birth: {
+    year: 2000,
+    month: 'Jan',
+    day: 1,
+    time: {
+      hour: 1,
+      minute: 1,
+    },
+  },
+}
+
+// Original atom.
+const personAtom = atom(defaultPerson)
+
+// Tracks person.name. Updated when person.name object changes, even
+// if neither name.first nor name.last actually change.
+const nameAtom = selectAtom(personAtom, (person) => person.name)
+
+// Tracks person.birth. Updated when year, month, day, hour, or minute changes.
+// Use of deepEquals means that this atom doesn't update if birth field is
+// replaced with a new object containing the same data. E.g., if person is re-read
+// from a database.
+const birthAtom = selectAtom(personAtom, (person) => person.birth, deepEquals)
+```
+
+### Hold stable references
+
+As always, to prevent an infinite loop when using `useAtom` in render cycle, you must provide `useAtom` a stable reference of your atoms.
+For `selectAtom`, we need **both** the base atom and the selector to be stable.
+
+```js
+const [value] = useAtom(selectAtom(atom(0), (val) => val)) // So this will cause an infinite loop
+```
+
+You have multiple options in order to satisfy these constraints:
+
+```js
+const baseAtom = atom(0) // Stable
+const baseSelector = (v) => v // Stable
+const Component = () => {
+  // Solution 1: Memoize the whole resulting atom with "useMemo"
+  const [value] = useAtom(useMemo(() => selectAtom(baseAtom, (v) => v), []))
+
+  // Solution 2: Memoize the inline callback with "useCallback"
+  const [value] = useAtom(
+    selectAtom(
+      baseAtom,
+      useCallback((v) => v, []),
+    ),
+  )
+
+  // Solution 3: All constraints are already satisfied
+  const [value] = useAtom(selectAtom(baseAtom, baseSelector))
+}
+```
+
+### Stackblitz
+
+<Stackblitz id="vitejs-vite-tgejq7" file="src%2FApp.tsx" />

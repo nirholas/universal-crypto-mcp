@@ -1,0 +1,258 @@
+---
+sidebarTitle: Layout
+---
+
+import { ToggleVisibilitySection } from 'components/toggle-visibility-section'
+
+export function PartialTSDoc({ flattened, props }) {
+  return (
+    <APIDocs
+      flattened={flattened}
+      code={`
+import { Layout } from 'nextra-theme-docs'
+type $ = Pick<React.ComponentProps<typeof Layout>, ${props.map(prop => JSON.stringify(prop)).join('|')}>
+export default $`}
+    />
+  )
+}
+
+# Layout Component
+
+The theme is configured with the `<Layout>` component. You should pass your
+config options as Layout's `props`, for example:
+
+```jsx filename="app/layout.jsx" {8-9}
+import { Layout } from 'nextra-theme-docs'
+
+export default function MyLayout({ children, ...props }) {
+  return (
+    <html lang="en">
+      <body>
+        <Layout
+          sidebar={{ autoCollapse: true }}
+          docsRepositoryBase="https://github.com/shuding/nextra/tree/main/docs"
+        >
+          {children}
+        </Layout>
+      </body>
+    </html>
+  )
+}
+```
+
+Detailed information for each option is listed below.
+
+## Props
+
+## Page Map
+
+<PartialTSDoc props={['pageMap']} />
+
+## Banner
+
+<PartialTSDoc props={['banner']} />
+
+## Navbar
+
+<PartialTSDoc props={['navbar']} />
+
+<ToggleVisibilitySection element="`<Navbar>`" property="navbar" />
+
+## Footer
+
+<PartialTSDoc props={['footer']} />
+
+<ToggleVisibilitySection element="`<Footer>`" property="footer" />
+
+## Search
+
+<PartialTSDoc props={['search']} />
+
+## Docs Repository
+
+Set the repository URL of the documentation. It's used to generate the
+"[Edit this page](#edit-link)" link, the "[Feedback](#feedback-link)" link and
+"[Report of broken link](./not-found)" on
+[not found page](https://nextjs.org/docs/app/api-reference/file-conventions/not-found).
+
+<PartialTSDoc props={['docsRepositoryBase']} />
+
+### Specify a Path
+
+If the documentation is inside a monorepo, a subfolder, or a different branch of
+the repository, you can simply set the `docsRepositoryBase` to the root path of
+the `app/` (App Router) folder of your docs. For example:
+
+```jsx filename="app/layout.jsx"
+<Layout docsRepositoryBase="https://github.com/shuding/nextra/tree/main/docs">
+  {children}
+</Layout>
+```
+
+Then Nextra will automatically generate the correct file path for all pages.
+
+## Dark Mode and Themes
+
+Customize the theme behavior of the website.
+
+<PartialTSDoc props={['darkMode', 'nextThemes']} />
+
+import Old from './old.mdx'
+
+{process.env.NODE_ENV !== 'production' && <Old />}
+
+## Edit Link
+
+Show an "Edit this page" link on the page that points to the file URL on GitHub
+(or other places).
+
+<PartialTSDoc props={['editLink']} />
+
+> [!TIP]
+>
+> To disable it, you can set `editLink` to `null`.
+
+## Feedback Link
+
+The built-in feedback link provides a way for users to submit feedback about the
+documentation.
+
+<PartialTSDoc props={['feedback']} flattened />
+
+> [!TIP]
+>
+> To disable it, you can set `feedback.content` to `null`.
+
+## I18n
+
+<PartialTSDoc props={['i18n']} />
+
+## Last Updated Date
+
+Show the last updated date of a page. It's useful for showing the freshness of
+the content.
+
+<PartialTSDoc props={['lastUpdated']} />
+
+<ToggleVisibilitySection element="last update date" property="timestamp" />
+
+## Navigation
+
+Show previous and next page links on the bottom of the content. It's useful for
+navigating between pages.
+
+<PartialTSDoc props={['navigation']} />
+
+![Navigation](/assets/docs/navigation.png)
+
+```jsx filename="app/layout.jsx"
+<Layout
+  navigation={{
+    prev: true,
+    next: true
+  }}
+>
+  {children}
+</Layout>
+```
+
+The above is also equivalent to `navigation: true{:js}`.
+
+<ToggleVisibilitySection element="navigation" property="pagination" />
+
+## Sidebar
+
+<PartialTSDoc props={['sidebar']} flattened />
+
+### Menu Collapse Level
+
+By default, the sidebar menu is collapsed at level `2`. You can change it by
+setting `sidebar.defaultMenuCollapseLevel` to a different number. For example,
+when set to `1`, every folder will be collapsed by default and when set to
+`Infinity`, all nested folders will be expanded by default.
+
+If `sidebar.autoCollapse` is set to `true`, then all folders that do not contain
+an active/focused route will automatically collapse up to the level set by
+`sidebar.defaultMenuCollapseLevel`. e.g. if `defaultMenuCollapseLevel` is `2`,
+then top-level folders will not auto-collapse.
+
+### Customize Sidebar Content
+
+Together with the [Separators](/docs/docs-theme/page-configuration#separators)
+item, you can customize how the sidebar content is rendered by using JSX
+elements:
+
+```jsx filename="_meta.jsx" {5-10}
+export default {
+  index: 'Intro',
+  '--': {
+    type: 'separator',
+    title: (
+      <div className="flex items-center gap-2">
+        <MyLogo />
+        {children}
+      </div>
+    )
+  },
+  frameworks: 'JS Frameworks & Libs',
+  about: 'About'
+}
+```
+
+![Customized Sidebar](/assets/docs/sidebar-customized.png)
+
+<ToggleVisibilitySection element="`<Sidebar>`" property="sidebar" />
+
+### Customize Sidebar with Front Matter
+
+In addition, you can customize the sidebar title using the `sidebarTitle`
+property in your front matter:
+
+```mdx filename="getting-started.mdx"
+---
+sidebarTitle: Getting Started 🚀
+---
+```
+
+The priority of the sidebar title is as follows:
+
+1. A non-empty title from the `_meta` file.
+1. `sidebarTitle` in the front matter.
+1. `title` in the front matter.
+1. The title derived from the first `h1` Markdown heading (e.g.
+   `# Dima Machina`).
+1. If none of the above are available, it falls back to the filename of the
+   page, formatted according to [The Chicago Manual of Style](https://title.sh).
+
+## Theme Switch
+
+<PartialTSDoc props={['themeSwitch']} />
+
+You are able to customize the option names for localization or other purposes:
+
+```jsx filename="app/layout.jsx"
+<Layout
+  themeSwitch={{
+    dark: 'Темный',
+    light: 'Светлый',
+    system: 'Системный'
+  }}
+>
+  {children}
+</Layout>
+```
+
+## Table of Contents (TOC)
+
+Show a table of contents on the right side of the page. It's useful for
+navigating between headings.
+
+<PartialTSDoc props={['toc']} flattened />
+
+### Floating TOC
+
+When enabled, the TOC will be displayed on the right side of the page, and it
+will be sticky when scrolling. If it's disabled, the TOC will be displayed
+directly on the page sidebar.
+
+<ToggleVisibilitySection element="`<TOC>`" property="toc" />

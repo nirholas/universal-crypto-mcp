@@ -1,0 +1,75 @@
+---
+title: เชน
+description: การปรับแต่งเชน
+---
+
+# เชน
+
+## การปรับแต่งเชน
+
+RainbowKit ถูกออกแบบมาให้รวมเข้ากับ[ออบเจกต์ `chain` ของ wagmi](https://wagmi.sh/react/chains) ตรวจสอบรายการเชนที่รองรับได้ [ที่นี่](https://wagmi.sh/react/chains#supported-chains)
+
+### การปรับแต่งเชนเริ่มต้น
+
+โดยค่าเริ่มต้น RainbowKit จะเชื่อมต่อกับเชนแรกที่จัดหาให้กับ Wagmi พฤติกรรมนี้สามารถปรับแต่งได้ผ่าน prop `initialChain`
+
+เชนเริ่มต้นสามารถกำหนดค่าได้โดยใช้ chain ID
+
+```tsx
+<RainbowKitProvider initialChain={1}>
+```
+
+เพื่อความสะดวก คุณยังสามารถส่งออบเจกต์เชนได้อีกด้วย
+
+```tsx
+<RainbowKitProvider initialChain={mainnet}>
+```
+
+### เมทาดาทาของเชนที่ปรับแต่งเอง
+
+ไอคอนและพื้นหลังเชนหลายตัวถูกจัดเตรียมไว้ให้โดยค่าเริ่มต้น แต่คุณสามารถปรับแต่งไอคอนและพื้นหลังสำหรับแต่ละเชนโดยใช้พารามิเตอร์ `iconUrl` และ `iconBackground`
+
+ตัวอย่างด้วย `getDefaultConfig`
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+
+const config = getDefaultConfig({
+  chains: [
+    {
+      ...mainnet,
+      iconBackground: '#000',
+      iconUrl: 'https://example.com/icons/ethereum.png',
+    },
+    {
+      ...optimism,
+      iconBackground: '#ff0000',
+      iconUrl: 'https://example.com/icons/optimism.png',
+    },
+  ],
+});
+```
+
+ตัวอย่างด้วย `createConfig`
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+import { Chain } from '@rainbow-me/rainbowkit';
+
+const chains: readonly [Chain, ...Chain[]] = [
+  {
+    ...mainnet,
+    iconBackground: '#000',
+    iconUrl: 'https://example.com/icons/ethereum.png',
+  },
+  {
+    ...optimism,
+    iconBackground: '#ff0000',
+    iconUrl: 'https://example.com/icons/optimism.png',
+  },
+];
+
+const config = createConfig({
+  chains,
+});
+```

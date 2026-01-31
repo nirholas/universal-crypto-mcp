@@ -1,0 +1,16 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["views"]
+}
+
+datasource db {
+    provider = "postgres"
+}
+
+view A {
+    id Int @id @map("foo")
+}
+
+view B {
+    id Int @id @map("bar")
+}

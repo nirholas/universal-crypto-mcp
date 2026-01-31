@@ -1,0 +1,385 @@
+---
+title: थीमिंग
+description: थीम्स का उपयोग करना और उन्हें अनुकूलित करना
+---
+
+# थीमिंग
+
+## थीम्स का उपयोग करना और उन्हें अनुकूलित करना
+
+आप अपने ब्रांडिंग के साथ मिलान करने के लिए RainbowKit UI को समायोजित कर सकते हैं। आप कुछ पहले से निर्धारित एक्सेंट रंगों और सीमा त्रिज्या कॉन्फ़िगरेशन में से चुन सकते हैं।
+
+तीन बिल्ट-इन थीम फंक्शन्स हैं:
+
+- `lightTheme` &nbsp; (डिफ़ॉल्ट)
+- `darkTheme`
+- `midnightTheme`
+
+एक थीम फ़ंक्शन एक थीम ऑब्जेक्ट लौटाता है। आप इस ऑब्जेक्ट को `RainbowKitProvider` के `theme` संपत्ति में दे सकते हैं।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+यदि आप चाहें, तो `accentColor`, `accentColorForeground`, `borderRadius`, `fontStack` और `overlayBlur` में पास कर सकते हैं।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider
+    theme={darkTheme({
+      __accentColor__: '#7b3fe4',
+      __accentColorForeground__: 'white',
+      __borderRadius__: 'small',
+      __fontStack__: 'system',
+      __overlayBlur__: 'small',
+    })}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### बिल्ट-इन थीम्स को कस्टमाइज़ करना
+
+बिल्ट-इन थीम फ़ंक्शंस एक विकल्प ऑब्जेक्ट को स्वीकार करते हैं, जो आपको कई विभिन्न दृश्य शैलियों में से चयन करने की अनुमति देता है।
+
+<PropsTable
+  data={[
+    {
+      name: 'accentColor',
+      required: false,
+      default: '"#0E76FD"',
+      type: 'string',
+      description:
+        'विभिन्न इंटरैक्टिव तत्वों का पृष्ठभूमि/पाठ रंग।',
+    },
+    {
+      name: 'accentColorForeground',
+      required: false,
+      default: '"white"',
+      type: 'string',
+      description:
+        'उन तत्वों के लिए रंग जो एक्सेंट रंग पर पेश किए गए हैं।',
+    },
+    {
+      name: 'borderRadius',
+      required: false,
+      default: 'large',
+      type: '"none" | "small" | "medium" | "large"',
+      typeSimple: 'enum',
+      description: 'पूरी सीमा त्रिज्या पैमाना का आकार।',
+    },
+    {
+      name: 'fontStack',
+      required: false,
+      default: 'rounded',
+      type: '"rounded" | "system"',
+      typeSimple: 'enum',
+      description:
+        "पूरे UI में प्रयुक्त फॉन्ट स्टैक। ध्यान दें कि `rounded` SF Pro Rounded का उपयोग करने का प्रयास करता है, जब सिस्टम फ़ॉन्ट उपलब्ध नहीं होते हैं तो।",
+    },
+    {
+      name: 'overlayBlur',
+      required: false,
+      default: 'none',
+      type: '"large" | "small" | "none"',
+      typeSimple: 'enum',
+      description: 'मॉडल का बैकड्रॉप ब्लर।',
+    },
+  ]}
+/>
+
+उदाहरण के लिए, गहरे विषय को एक बैंगनी एक्सेंट रंग और एक `मध्यम` सीमा त्रिज्या पैमाना के साथ अनुकूलित करने के लिए:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+हर थीम कई एक्सेंट रंग प्रीसेट्स (`नीला`, `हरा`, `नारंगी`, `गुलाबी`, `बैंगनी`, `लाल`) भी प्रदान करती है, जिन्हें विकल्प ऑब्जेक्ट में शामिल किया जा सकता है। उदाहरण के लिए, `गुलाबी` एक्सेंट रंग प्रीसेट का उपयोग करने के लिए:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.pink,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### उदाहरण
+
+#### थीम फ़ंक्शन
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनसे आप `theme` संपत्ति का उपयोग कर सकते हैं।
+
+`darkTheme` थीम का उपयोग करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+`midnightTheme` थीम का उपयोग करें।
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={midnightTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+#### एक्सेंट रंग
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनसे आप `accentColor` कॉन्फ़िग का उपयोग कर सकते हैं।
+
+एक्सेंट रंग को एक कस्टम बैंगनी मूल्य पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+एक्सेंट रंग को बिल्ट-इन `हरा` प्रीसेट पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.green,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### बॉर्डर रेडियस
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनसे आप `borderRadius` कॉन्फिग का उपयोग कर सकते हैं।
+
+बॉर्डर रेडियस को `मध्यम` पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+बॉर्डर रेडियस को `कोई नहीं` पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'none',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+> अनुस्मारक: उपलब्ध बॉर्डर रेडियस मान हैं: `बड़ा` (डिफ़ॉल्ट), `मध्यम`, `छोटा` और `कोई नहीं`।
+
+#### फॉन्ट स्टैक
+
+डिफ़ॉल्ट रूप से, `fontStack` को `rounded` पर सेट किया गया है। लेकिन यहाँ आप `fontStack` कॉन्फिग का उपयोग कैसे कर सकते हैं।
+
+फॉन्ट स्टैक को `सिस्टम` पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### ओवरले ब्लर
+
+डिफ़ॉल्ट रूप से, `overlayBlur` को `कोई नहीं` पर सेट किया गया है। लेकिन यहाँ आप `overlayBlur` कॉन्फिग का उपयोग कैसे कर सकते हैं।
+
+ओवरले ब्लर को `छोटा` पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        overlayBlur: 'small',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### मिक्स और मैच
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनसे आप विभिन्न थीम्स, साथ ही `accentColor`, `borderRadius` और `fontStack` प्रॉप्स का उपयोग कर सकते हैं।
+
+- `lightTheme` थीम का उपयोग करें।
+- एक्सेंट रंग को एक कस्टम बैंगनी मूल्य पर सेट करें।
+- बॉर्डर रेडियस को `मध्यम` पर सेट करें।
+- फॉन्ट स्टैक को `सिस्टम` पर सेट करें।
+
+```tsx
+import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={lightTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+- `midnightTheme` थीम का उपयोग करें।
+- एक्सेंट रंग को बिल्ट-इन `गुलाबी` प्रीसेट पर सेट करें।
+- बॉर्डर रेडियस को `छोटा` पर सेट करें।
+- फॉन्ट स्टैक को `सिस्टम` पर सेट करें।
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={midnightTheme({
+        ...midnightTheme.accentColors.pink,
+        borderRadius: 'small',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### डार्क मोड समर्थन
+
+यदि आपका ऐप लाइट और डार्क मोड्स के बीच स्विच करने के लिए `prefers-color-scheme: dark` मानक मीडिया क्वेरी का उपयोग करता है, तो आप वैकल्पिक रूप से एक डायनामिक थीम ऑब्जेक्ट प्रदान कर सकते हैं जिसमें `lightMode` और `darkMode` मान होते हैं।
+
+```tsx
+import {
+  RainbowKitProvider,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => (
+  <RainbowKitProvider
+    theme={{
+      lightMode: lightTheme(),
+      darkMode: darkTheme(),
+    }}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

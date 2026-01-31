@@ -1,0 +1,58 @@
+flavors:
+  - flavor: svg
+    path: /treemap/
+  - flavor: html
+    path: /treemap/html/
+  - flavor: canvas
+    path: /treemap/canvas/
+  - flavor: api
+    path: /treemap/api/
+
+TreeMap:
+  package: '@nivo/treemap'
+  tags:
+    - hierarchy
+  stories:
+    - label: Using custom tooltip
+      link: treemap--custom-tooltip
+    - label: Patterns & Gradients
+      link: treemap--patterns-and-gradients
+  description: |
+    A tree map component using
+    [d3-hierarchy.treemap](https://github.com/d3/d3-hierarchy#treemap),
+    see [this demo](https://observablehq.com/@d3/treemap).
+
+    You can fully customize it using `nodeComponent` property to define
+    your own node component, if you wish to do so you should have a look at
+    [native SVG node component](https://github.com/plouc/nivo/blob/master/src/components/charts/treemap/TreeMapNode.js)
+    for available properties.
+
+TreeMapHtml:
+  package: '@nivo/treemap'
+  tags:
+    - hierarchy
+    - html
+    - isomorphic
+  stories:
+    - label: Using custom tooltip
+      link: treemaphtml--custom-tooltip
+  description: |
+    A tree map component using
+    [d3-hierarchy.treemap](https://github.com/d3/d3-hierarchy#treemap),
+    see [this demo](https://observablehq.com/@d3/treemap).
+
+    You can fully customize it using `nodeComponent` property to define
+    your own node component, if you wish to do so you should have a look at
+    [native HTML node component](https://github.com/plouc/nivo/blob/master/src/components/charts/treemap/TreeMapHtmlNode.js)
+    for available properties.
+
+TreeMapCanvas:
+  package: '@nivo/treemap'
+  tags:
+    - hierarchy
+    - canvas
+  stories: []
+  description: |
+    A variation around the [TreeMap](self:/treemap) component.
+    Well suited for large data sets as it does not impact DOM tree depth,
+    however you'll lose the isomorphic ability and transitions.

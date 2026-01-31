@@ -1,0 +1,694 @@
+/**
+ * @fileOverview Auto-generates API documentation files from TypeScript source code
+ *
+ * This tool generates API documentation in the www/src/docs/api folder
+ * by reading TypeScript comments and type definitions from the source code.
+ *
+ * Usage:
+ *   npm run omnidoc
+ *
+ * The generated files will always overwrite existing files - no merging is attempted.
+ * Only en-US descriptions are generated from the TypeScript documentation.
+ */
+import * as path from 'path';
+import * as prettier from 'prettier';
+import { marked } from 'marked';
+import { getAllTagTexts, getTagText, JSDocMeta, ProjectDocReader } from './readProject';
+import { ExampleReader, ExampleResult } from './readExamples';
+import { ApiDoc, ApiProps, PropExample } from '../www/src/docs/api/types';
+import { writeFormattedFile } from './writerUtils';
+
+const OUTPUT_DIR = path.join(__dirname, '../www/src/docs/api');
+const PRETTIER_CONFIG_PATH = path.join(__dirname, '../.prettierrc');
+
+/**
+ * Converts a TypeScript type to a simplified string representation for API docs
+ */
+export function simplifyOneType(originalText: string, isInline: boolean = false): string {
+  let simplifiedText: string = originalText;
+  // Remove import paths - extract just the type name
+  simplifiedText = simplifiedText.replace(/import\([^)]+\)\.(\w+)/g, '$1');
+
+  // Remove readonly modifier
+  simplifiedText = simplifiedText.replace(/^readonly\s+/, '');
+
+  // Remove outer parentheses if they wrap the whole type
+  if (simplifiedText.startsWith('(') && simplifiedText.endsWith(')')) {
+    let depth = 0;
+    let wrapsWhole = true;
+    for (let i = 0; i < simplifiedText.length; i++) {
+      if (simplifiedText[i] === '(') depth++;
+      else if (simplifiedText[i] === ')') depth--;
+
+      if (depth === 0 && i < simplifiedText.length - 1) {
+        wrapsWhole = false;
+        break;
+      }
+    }
+    if (wrapsWhole && depth === 0) {
+      return simplifyOneType(simplifiedText.slice(1, -1), isInline);
+    }
+  }
+
+  // Array types
+  if (simplifiedText.endsWith('[]')) {
+    const elementType = simplifyOneType(simplifiedText.slice(0, -2), isInline);
+    return `Array<${elementType}>`;
+  }
+  if (simplifiedText.startsWith('Array<') || simplifiedText.startsWith('ReadonlyArray<')) {
+    if (isInline) {
+      return simplifiedText; // Or try to simplify inner type? For now preserve.
+    }
+    return 'Array';
+  }
+
+  // Function types
+  if (simplifiedText.includes('=>')) {
+    return 'Function';
+  }
+
+  // React types
+  if (
+    simplifiedText.includes('ReactNode') ||
+    simplifiedText.includes('ReactElement') ||
+    simplifiedText.includes('JSX.Element')
+  ) {
+    return 'ReactNode';
+  }
+
+  // Object types
+  if (simplifiedText.startsWith('{') || simplifiedText === 'object') {
+    if (isInline && simplifiedText.startsWith('{')) {
+      return simplifiedText;
+    }
+    return 'Object';
+  }
+
+  // Return as-is if it's a simple type name (could be a custom type)
+  return simplifiedText;
+}
+
+export function processType(typeNames: string[], isInline: boolean, keepUndefined: boolean = false): string {
+  const simplifiedParts = typeNames
+    .map(p => p.trim())
+    .filter(p => keepUndefined || p !== 'undefined')
+    .map(p => simplifyOneType(p, isInline));
+
+  const uniqueParts = Array.from(new Set(simplifiedParts));
+
+  // If it's a simple union, join with |
+  if (isInline || uniqueParts.length <= 4) {
+    if (uniqueParts.length === 0) {
+      return 'undefined';
+    }
+    // sort alphabetically for consistency
+    return uniqueParts.sort().join(' | ');
+  }
+  // For complex unions, just return a generic type
+  return `(union of ${uniqueParts.length} variants)`;
+}
+
+/**
+ * Builds a map of contexts to their providers and consumers
+ */
+export function buildContextMap(
+  componentNames: ReadonlyArray<string>,
+  projectReader: ProjectDocReader,
+): Map<string, { providers: string[]; consumers: string[] }> {
+  const contextMap = new Map<string, { providers: string[]; consumers: string[] }>();
+
+  for (const componentName of componentNames) {
+    const jsDoc = projectReader.getComponentJsDocMeta(componentName);
+    if (!jsDoc) continue;
+
+    // Check for @provides tags (can be multiple)
+    const providesTags = getAllTagTexts(jsDoc, 'provides');
+    for (const contextName of providesTags) {
+      if (!contextMap.has(contextName)) {
+        contextMap.set(contextName, { providers: [], consumers: [] });
+      }
+      contextMap.get(contextName)!.providers.push(componentName);
+    }
+
+    // Check for @consumes tags (can be multiple)
+    const consumesTags = getAllTagTexts(jsDoc, 'consumes');
+    for (const contextName of consumesTags) {
+      if (!contextMap.has(contextName)) {
+        contextMap.set(contextName, { providers: [], consumers: [] });
+      }
+      contextMap.get(contextName)!.consumers.push(componentName);
+    }
+  }
+
+  return contextMap;
+}
+
+/**
+ * Processes inline {@link} tags in JSDoc text and converts them to HTML anchor tags or React Router Link components.
+ * Handles both {@link url} and {@link url text} formats.
+ * If the link is a single word that matches a Recharts component name, it creates a React Router Link for SPA navigation.
+ */
+export function processInlineLinks(text: string, componentNames?: ReadonlyArray<string>): string {
+  // Match {@link url} or {@link url text} or {@ link url text} (with space after @)
+  // The regex captures: url and optional text
+  return text.replace(/\{@\s*link\s+([^\s}]+)(?:\s+([^}]+))?\}/g, (match, url, t) => {
+    const displayText = t?.trim() || url;
+
+    // Check if the URL is a single word (no protocol, no slashes) and matches a component name
+    if (componentNames && !url.includes('://') && !url.includes('/') && componentNames.includes(url)) {
+      // It's a Recharts component reference - create a React Router Link for SPA navigation
+      return `<Link to="/api/${url}/">${displayText}</Link>`;
+    }
+
+    // Otherwise, use the URL as-is for external links
+    return `<a href="${url}">${displayText}</a>`;
+  });
+}
+
+async function generateComponentDescription(
+  componentName: string,
+  projectReader: ProjectDocReader,
+): Promise<{ [locale: string]: string } | undefined> {
+  const componentJsDoc = projectReader.getComponentJsDocMeta(componentName);
+  if (componentJsDoc) {
+    const desc: { [locale: string]: string } = {};
+    if (componentJsDoc.text) {
+      // Get all component names to resolve internal component references
+      const componentNames = projectReader.getAllRuntimeExportedNames();
+      // Process inline {@link} tags before passing to marked
+      const textWithLinks = processInlineLinks(componentJsDoc.text, componentNames);
+      desc['en-US'] = await marked.parse(textWithLinks);
+    }
+    // Check for @since tag
+    const sinceTag = getTagText(componentJsDoc, 'since');
+    if (sinceTag?.text) {
+      desc['en-US'] = `${desc['en-US'] ?? ''}<p>Available since Recharts ${sinceTag.text}</p>`;
+    }
+    return desc;
+  }
+  return undefined;
+}
+
+/**
+ * Parses JSDoc tag text (from @see or @link) and extracts URL and display name.
+ * Handles formats like:
+ * - `{@link url}`
+ * - `{@link url text}`
+ * - `url text`
+ * - `url|text`
+ * - @see url
+ */
+export function parseJSDocLinkTag(tag: string): PropExample {
+  let url: string, name: string;
+
+  let cleanTag = tag.trim();
+
+  // Check for {@link ...} wrapper and strip it
+  const linkWrapperMatch = cleanTag.match(/^{@link\s+(.+)}$/);
+  if (linkWrapperMatch) {
+    cleanTag = linkWrapperMatch[1]?.trim() ?? '';
+  }
+
+  // Parse "url|text" or "url text"
+  // Match first sequence of non-whitespace/non-pipe characters as URL
+  const parts = cleanTag.match(/^([^\s|]+)(?:[\s|]+(.+))?$/);
+  if (parts) {
+    url = parts[1]?.trim() ?? '';
+    name = parts[2]?.trim() ?? url;
+  } else {
+    // Fallback for weird cases
+    url = cleanTag;
+    name = cleanTag;
+  }
+
+  // Strip specific prefix
+  const prefix = 'https://recharts.github.io/en-US';
+  if (url.startsWith(prefix)) {
+    url = url.slice(prefix.length);
+  }
+
+  const isExternal = url.startsWith('http');
+
+  if (!isExternal && !url.startsWith('/')) {
+    // Assume it's a Recharts component reference
+    url = `/api/${url}`;
+  }
+
+  return {
+    name,
+    url,
+    isExternal,
+  };
+}
+
+function getAllLinksFromJsDoc(jsDocMeta: JSDocMeta | undefined): ReadonlyArray<PropExample> {
+  if (!jsDocMeta) return [];
+
+  const examples: PropExample[] = [];
+  const seeTags = getAllTagTexts(jsDocMeta, 'see');
+  const linkTags = getAllTagTexts(jsDocMeta, 'link');
+
+  [...seeTags, ...linkTags].forEach(tag => {
+    examples.push(parseJSDocLinkTag(tag));
+  });
+
+  return examples;
+}
+
+function deduplicatePropExamples(examples: ReadonlyArray<PropExample>): ReadonlyArray<PropExample> {
+  return examples.filter((ex, index, self) => index === self.findIndex(t => t.url === ex.url));
+}
+
+function makePropExample(example: ExampleResult): PropExample {
+  const { url, name } = example;
+  const isExternal = url.startsWith('http');
+  return {
+    name,
+    url,
+    isExternal,
+  };
+}
+
+export function getLinksFromProp(
+  componentName: string,
+  propName: string,
+  projectReader: ProjectDocReader,
+  exampleReader: ExampleReader,
+): ReadonlyArray<PropExample> {
+  const meta = projectReader.getPropMeta(componentName, propName);
+  // getPropMeta returns an array, but standard props usually map to one definition.
+  // In case of multiple (overloading), we merge tags.
+  const allExamples = meta.map(propMeta => propMeta.jsDoc).flatMap(getAllLinksFromJsDoc);
+
+  const scannedExamples = exampleReader
+    .getExamples(componentName, propName)
+    .filter(ex => ex.url !== `/api/${componentName}/`)
+    .map(makePropExample);
+
+  // Some components and props have dozens of examples, so let's show the top 10 only
+  const scannedLimitedExamples = scannedExamples.slice(0, 10);
+
+  return deduplicatePropExamples([...allExamples, ...scannedLimitedExamples]);
+}
+
+/**
+ * Get links from component-level JSDoc (@see and @link tags)
+ */
+function getLinksFromComponent(
+  componentName: string,
+  projectReader: ProjectDocReader,
+  exampleReader: ExampleReader,
+): ReadonlyArray<PropExample> {
+  const componentJsDoc = projectReader.getComponentJsDocMeta(componentName);
+  const jsDocExamples = componentJsDoc ? getAllLinksFromJsDoc(componentJsDoc) : [];
+
+  const scannedExamples = exampleReader
+    .getExamples(componentName)
+    .filter(ex => ex.url !== `/api/${componentName}/`)
+    .map(makePropExample);
+
+  // Some components and props have dozens of examples, so let's show the top 10 only
+  const scannedLimitedExamples = scannedExamples.slice(0, 10);
+
+  return deduplicatePropExamples([...jsDocExamples, ...scannedLimitedExamples]);
+}
+
+/**
+ * Generates API documentation for a single component
+ */
+async function generateApiDoc(
+  componentName: string,
+  projectReader: ProjectDocReader,
+  exampleReader: ExampleReader,
+  contextMap: Map<string, { providers: string[]; consumers: string[] }>,
+): Promise<ApiDoc> {
+  const props: ApiProps[] = [];
+  const rechartsPropNames = projectReader.getRechartsPropsOf(componentName);
+  const componentNames = projectReader.getPublicComponentNames();
+  const allExports = projectReader.getAllRuntimeExportedNames();
+
+  for (const propName of rechartsPropNames) {
+    const comment = projectReader.getCommentOf(componentName, propName);
+    const defaultValue = projectReader.getDefaultValueOf(componentName, propName);
+
+    // Extract type information
+    const typeInfo = projectReader.getTypeOf(componentName, propName);
+    const typeString = typeInfo ? processType(typeInfo.names, typeInfo.isInline) : 'Any';
+
+    // Determine if optional
+    const isOptional = projectReader.isOptionalProp(componentName, propName);
+
+    const propMetaList = projectReader.getPropMeta(componentName, propName);
+    let deprecated: string | boolean | undefined;
+
+    // Prefer recharts origin
+    const rechartsProp = propMetaList.find(p => p.origin === 'recharts');
+    if (rechartsProp && rechartsProp.jsDoc) {
+      const tag = getTagText(rechartsProp.jsDoc, 'deprecated');
+      if (tag) {
+        deprecated = tag.text || true;
+      }
+    }
+
+    // Fallback
+    if (deprecated === undefined) {
+      for (const p of propMetaList) {
+        if (p.jsDoc) {
+          const tag = getTagText(p.jsDoc, 'deprecated');
+          if (tag) {
+            deprecated = tag.text || true;
+            break;
+          }
+        }
+      }
+    }
+
+    const prop: ApiProps = {
+      name: propName,
+      type: typeString,
+      isOptional,
+      deprecated,
+    };
+
+    // Add description if available
+    if (comment) {
+      const textWithLinks = processInlineLinks(comment, allExports);
+      prop.desc = {
+        'en-US': await marked.parse(textWithLinks),
+      };
+    }
+
+    // Add default value if available
+    if (defaultValue.type === 'known') {
+      prop.defaultVal = defaultValue.value as
+        | string
+        | number
+        | boolean
+        | Array<unknown>
+        | Record<string, unknown>
+        | null;
+    }
+
+    // Add examples if available
+    const formatExamples = projectReader.getExamplesOf(componentName, propName);
+    if (formatExamples.length > 0) {
+      prop.format = formatExamples;
+    }
+
+    // Add links/see tags as examples
+    const links = getLinksFromProp(componentName, propName, projectReader, exampleReader);
+    if (links.length > 0) {
+      prop.examples = links;
+    }
+
+    props.push(prop);
+  }
+
+  // Sort props based on user criteria
+  props.sort((a, b) => {
+    // 1. Required props first
+    if (a.isOptional !== b.isOptional) {
+      return a.isOptional ? 1 : -1;
+    }
+
+    const getOrigin = (pName: string) => {
+      const meta = projectReader.getPropMeta(componentName, pName);
+      // If any definition is from 'recharts', treat as 'recharts'
+      return meta.some(m => m.origin === 'recharts') ? 'recharts' : 'dom';
+    };
+
+    const originA = getOrigin(a.name);
+    const originB = getOrigin(b.name);
+
+    const isEventA = a.name.startsWith('on');
+    const isEventB = b.name.startsWith('on');
+
+    const getCategory = (origin: string, isEvent: boolean) => {
+      if (origin === 'recharts') {
+        return isEvent ? 3 : 2; // Recharts props (2), Recharts events (3)
+      }
+      return isEvent ? 5 : 4; // Other props (4), Other events (5)
+    };
+
+    const categoryA = getCategory(originA, isEventA);
+    const categoryB = getCategory(originB, isEventB);
+
+    if (categoryA !== categoryB) {
+      return categoryA - categoryB;
+    }
+
+    // 6. Alphabetical sort within category
+    return a.name.localeCompare(b.name);
+  });
+
+  const apiDoc: ApiDoc = {
+    name: componentName,
+    props,
+  };
+
+  if (!componentNames.includes(componentName)) {
+    const returnTypeInfo = projectReader.getReturnTypeOf(componentName);
+    if (returnTypeInfo) {
+      apiDoc.returnValue = processType(returnTypeInfo.names, returnTypeInfo.isInline, true);
+    }
+  }
+
+  // Get component-level JSDoc metadata
+  const componentJsDoc = projectReader.getComponentJsDocMeta(componentName);
+  if (componentJsDoc) {
+    apiDoc.desc = await generateComponentDescription(componentName, projectReader);
+
+    const returnTag = getTagText(componentJsDoc, 'returns') || getTagText(componentJsDoc, 'return');
+    if (returnTag?.text) {
+      const textWithLinks = processInlineLinks(returnTag.text, allExports);
+      apiDoc.returnDesc = {
+        'en-US': await marked.parse(textWithLinks),
+      };
+    }
+
+    const deprecatedTag = getTagText(componentJsDoc, 'deprecated');
+    if (deprecatedTag) {
+      apiDoc.deprecated = deprecatedTag.text || true;
+    }
+
+    // Get links from component JSDoc
+    const links = getLinksFromComponent(componentName, projectReader, exampleReader);
+    if (links.length > 0) {
+      apiDoc.links = links;
+    }
+
+    // Check for @provides tags - this component provides context to children
+    const providesTags = getAllTagTexts(componentJsDoc, 'provides');
+    if (providesTags.length > 0) {
+      const allChildren = new Set<string>();
+      for (const contextName of providesTags) {
+        const contextInfo = contextMap.get(contextName);
+        if (contextInfo) {
+          contextInfo.consumers.forEach(consumer => allChildren.add(consumer));
+        }
+      }
+      if (allChildren.size > 0) {
+        apiDoc.childrenComponents = Array.from(allChildren).sort();
+      }
+    }
+
+    // Check for @consumes tags - this component consumes context from parents
+    const consumesTags = getAllTagTexts(componentJsDoc, 'consumes');
+    if (consumesTags.length > 0) {
+      const allParents = new Set<string>();
+      for (const contextName of consumesTags) {
+        const contextInfo = contextMap.get(contextName);
+        if (contextInfo) {
+          contextInfo.providers.forEach(provider => allParents.add(provider));
+        }
+      }
+      if (allParents.size > 0) {
+        apiDoc.parentComponents = Array.from(allParents).sort();
+      }
+    }
+  }
+
+  return apiDoc;
+}
+
+/**
+ * Custom stringify that converts HTML strings to JSX.
+ *
+ * This function is intentionally not adding new lines or indentation
+ * because we assume that prettier runs immediately after this generation step.
+ */
+function stringifyApiDoc(apiDoc: ApiDoc): string {
+  let result = `{"name": "${apiDoc.name}","props": [`;
+
+  apiDoc.props.forEach(prop => {
+    result += `{`;
+    result += `"name": "${prop.name}",`;
+    result += `"type": ${JSON.stringify(prop.type)},`;
+    result += `"isOptional": ${prop.isOptional},`;
+
+    if (prop.desc) {
+      result += `"desc": {`;
+      for (const [locale, html] of Object.entries(prop.desc)) {
+        // Write HTML as JSX without quotes. Wrap in <section> to ensure valid JSX.
+        result += `"${locale}": (<section>${html}</section>),`;
+      }
+      result += `},`;
+    }
+
+    if (prop.defaultVal !== undefined) {
+      result += `"defaultVal": ${JSON.stringify(prop.defaultVal)},`;
+    }
+
+    if (prop.format !== undefined) {
+      result += `"format": ${JSON.stringify(prop.format)},`;
+    }
+
+    if (prop.examples !== undefined) {
+      result += `"examples": ${JSON.stringify(prop.examples)},`;
+    }
+
+    if (prop.deprecated !== undefined) {
+      result += `"deprecated": ${JSON.stringify(prop.deprecated)},`;
+    }
+
+    result += `},`;
+  });
+  result += `],`;
+  // Add component-level description if at least one language is available                                                                                                                                  │
+  if (apiDoc.desc && Object.values(apiDoc.desc).some(Boolean)) {
+    result += `"desc": {`;
+    for (const [locale, html] of Object.entries(apiDoc.desc)) {
+      if (!html) continue;
+      // Write HTML as JSX without quotes. Wrap in <section> to ensure valid JSX.
+      result += `"${locale}": (<section>${html}</section>),`;
+    }
+    result += `},`;
+  }
+  // Add links if available
+  if (apiDoc.links && apiDoc.links.length > 0) {
+    result += `"links": ${JSON.stringify(apiDoc.links)},`;
+  }
+  // Add parent components if available
+  if (apiDoc.parentComponents && apiDoc.parentComponents.length > 0) {
+    result += `"parentComponents": ${JSON.stringify(apiDoc.parentComponents)},`;
+  }
+  // Add children components if available
+  if (apiDoc.childrenComponents && apiDoc.childrenComponents.length > 0) {
+    result += `"childrenComponents": ${JSON.stringify(apiDoc.childrenComponents)},`;
+  }
+  if (apiDoc.deprecated !== undefined) {
+    result += `"deprecated": ${JSON.stringify(apiDoc.deprecated)},`;
+  }
+  if (apiDoc.returnValue) {
+    result += `"returnValue": ${JSON.stringify(apiDoc.returnValue)},`;
+  }
+  if (apiDoc.returnDesc && Object.values(apiDoc.returnDesc).some(Boolean)) {
+    result += `"returnDesc": {`;
+    for (const [locale, html] of Object.entries(apiDoc.returnDesc)) {
+      if (!html) continue;
+      // Write HTML as JSX without quotes. Wrap in <section> to ensure valid JSX.
+      result += `"${locale}": (<section>${html}</section>),`;
+    }
+    result += `},`;
+  }
+  result += `}`;
+  return result;
+}
+
+/**
+ * Writes the API doc to a TypeScript file
+ */
+async function writeApiDocFile(
+  apiDoc: ApiDoc,
+  outputPath: string,
+  prettierConfig: prettier.Options | null,
+): Promise<void> {
+  const varName = `${apiDoc.name}API`;
+
+  // Check if the description contains Link components (for internal links)
+  const hasLinkInDesc =
+    apiDoc.desc && Object.values(apiDoc.desc).some(desc => typeof desc === 'string' && desc.includes('<Link to='));
+
+  // Check if any prop description contains Link components
+  const hasLinkInProps = apiDoc.props.some(
+    prop => prop.desc && Object.values(prop.desc).some(desc => typeof desc === 'string' && desc.includes('<Link to=')),
+  );
+
+  const hasLinkComponents = hasLinkInDesc || hasLinkInProps;
+
+  // Add Link import if needed
+  const imports = hasLinkComponents
+    ? `import { Link } from 'react-router';\nimport { ApiDoc } from './types';`
+    : `import { ApiDoc } from './types';`;
+
+  const fileContent = `${imports}
+
+export const ${varName}: ApiDoc = ${stringifyApiDoc(apiDoc)};
+`;
+
+  await writeFormattedFile(outputPath, fileContent, prettierConfig);
+}
+
+/**
+ * Generates the index.ts file that exports all API docs
+ */
+async function generateIndexFile(componentNames: string[], prettierConfig: prettier.Options | null): Promise<void> {
+  const sortedNames = [...componentNames].sort();
+
+  const imports = sortedNames.map(name => `import { ${name}API } from './${name}API';`).join('\n');
+  const exports = sortedNames.map(name => `  ${name}: ${name}API,`).join('\n');
+
+  const content = `import { ApiDoc } from './types';
+
+${imports}
+
+export const allApiDocs: Record<string, ApiDoc> = {
+${exports}
+};
+`;
+
+  const outputPath = path.join(OUTPUT_DIR, 'index.ts');
+  await writeFormattedFile(outputPath, content, prettierConfig);
+}
+
+/**
+ * Main function
+ */
+async function main() {
+  const projectReader = new ProjectDocReader();
+  const exampleReader = new ExampleReader();
+
+  const componentsToGenerate = projectReader.getAllRuntimeExportedNames();
+
+  // Build context map from all public components, not just the ones we're generating
+  // This ensures we can find all providers and consumers even if they're not being generated
+  const allComponentNames = projectReader.getAllRuntimeExportedNames();
+  const contextMap = buildContextMap(allComponentNames, projectReader);
+
+  const prettierConfig = await prettier.resolveConfig(PRETTIER_CONFIG_PATH);
+
+  console.log('Generating API documentation for:', componentsToGenerate);
+
+  const generatedComponents: string[] = [];
+
+  for (const componentName of componentsToGenerate) {
+    try {
+      const apiDoc = await generateApiDoc(componentName, projectReader, exampleReader, contextMap);
+      const outputPath = path.join(OUTPUT_DIR, `${componentName}API.tsx`);
+      await writeApiDocFile(apiDoc, outputPath, prettierConfig);
+      generatedComponents.push(componentName);
+    } catch (error) {
+      console.error(`✗ Failed to generate documentation for ${componentName}:`, error);
+    }
+  }
+
+  await generateIndexFile(generatedComponents, prettierConfig);
+
+  console.log('\nDone! Remember to review the generated files.');
+}
+
+if (require.main === module) {
+  main();
+}
+
+export { generateApiDoc, writeApiDocFile };

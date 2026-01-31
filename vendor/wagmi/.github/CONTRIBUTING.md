@@ -1,0 +1,1 @@
+[View Contributing Guide on wagmi.sh](https://wagmi.sh/dev/contributing)

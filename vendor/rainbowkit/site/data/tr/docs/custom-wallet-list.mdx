@@ -1,0 +1,567 @@
+---
+title: Özel Cüzdan Listesi
+description: Cüzdan listesini özelleştirme
+---
+
+# Özel Cüzdan Listesi
+
+## Cüzdan listesini özelleştirme
+
+Kendi cüzdan listenizi oluşturmak için `'@rainbow-me/rainbowkit/wallets'`'den bireysel cüzdanları ve gerekli bağlayıcıları olan `connectorsForWallets` fonksiyonunu içe aktarabilirsiniz. Bu şekilde hangi cüzdanların görüntüleneceği ve hangi sırayla gösterileceği üzerinde tam kontrol sahibi olursunuz.
+
+Örneğin, sadece Rainbow ve jenerik yedek cüzdanları göstermeyi tercih edebilirsiniz.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [rainbowWallet, walletConnectWallet],
+    },
+  ],
+  {
+    appName: 'My RainbowKit App',
+    projectId: 'YOUR_PROJECT_ID',
+  }
+);
+```
+
+Daha sonra bağlayıcılarınızı Wagmi'nin `createConfig`'ine geçirebilirsiniz.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { createConfig } from 'wagmi';
+
+const connectors = connectorsForWallets(/* ... */);
+
+const config = createConfig({
+  connectors,
+  {/* Wagmi config */}
+});
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={queryClient}>
+      <RainbowKitProvider {...etc}>
+        {/* Your App */}
+      </RainbowKitProvider>
+    </QueryClientProvider>
+  </WagmiProvider>
+);
+```
+
+### Dahili cüzdanlar
+
+Aşağıdaki cüzdanlar `wallet` objesi aracılığıyla sağlanır.
+
+#### Jenerik Cüzdanlar
+
+Aşağıdaki cüzdanlar belirli uygulamalar yerine jenerik bağlantı yöntemlerine odaklanmıştır. Sonuç olarak, bu cüzdanların her zaman dahil edilmesi önerilir.
+
+##### WalletConnect
+
+Bu, listede başka bir cüzdan tarafından sağlanmamış WalletConnect tabanlı cüzdanlar için tasarlanmış bir yedek cüzdan seçeneğidir.
+
+**WalletConnect tabanlı tüm cüzdanların desteklenmesini sağlamak için bu cüzdanın listeye her zaman dahil edilmesi önerilir.**
+
+```tsx
+import { walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+##### Enjekte Edilen Cüzdan
+
+Bu, `window.ethereum` durumunun mevcut olduğu ancak listenin başka bir cüzdan tarafından sağlanmadığı senaryolar için tasarlanmış bir yedek cüzdan seçeneğidir. Yedek gerekli olmadığında veya enjekte edilmiş bir cüzdan bulunmadığında bu cüzdan otomatik olarak listeden gizlenecektir.
+
+**Enjekte edilmiş tüm cüzdanların desteklenmesi için bu cüzdanın her zaman listeye dahil edilmesi önerilir.**
+
+```tsx
+import { injectedWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+##### Güvenli Cüzdan
+
+Kullanıcıların Güvenli kasaları veya çoklu imzaları ile kolayca bağlantı kurmalarına izin vermek için Safe Apps'i destekleyen dApp'ler için, otomatik bağlantılar için `safeWallet` seçeneğini ekleyin. Güvenli seçeneği yalnızca Güvenli Cüzdan tarayıcı ortamında görünecektir.
+
+```tsx
+import { safeWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+### Özel Cüzdanlar
+
+Aşağıdaki cüzdanlar alfabetik sırayla `wallet` objesi aracılığıyla sağlanır.
+
+#### 1inch Cüzdan
+
+```tsx
+import { oneInchWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Backpack
+
+```tsx
+import { backpackWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Base Hesap (önceki adıyla Coinbase Cüzdan)
+
+Bu cüzdan konektörü Base Hesap'ı destekler, Coinbase Akıllı Cüzdan'ın evrimidir. Alt hesaplar ve harcama izinleri gibi sorunsuz kimlik doğrulama ve geliştirilmiş özellikler sağlar.
+
+Yapılandırma seçenekleri [Base Hesap SDK referansı](https://docs.base.org/base-account/reference/core/createBaseAccount) ile uyumludur.
+
+```tsx
+import { baseAccount } from '@rainbow-me/rainbowkit/wallets';
+
+// Configure attribution (choose one approach)
+baseAccount.preference = {
+  attribution: { auto: true }, // Smart Wallet generates origin-based identifier
+};
+
+// Or use custom attribution
+baseAccount.preference = {
+  attribution: { dataSuffix: '0x1234567890abcdef' }, // 16-byte hex identifier
+};
+
+// Configure sub-accounts
+baseAccount.subAccounts = {
+  creation: 'on-connect', // or 'manual'
+  defaultAccount: 'sub', // or 'universal'
+  funding: 'spend-permissions', // or 'manual'
+};
+
+// Configure paymaster URLs for gasless transactions
+baseAccount.paymasterUrls = {
+  [base.id]: 'https://api.developer.coinbase.com/rpc/v1/base/...',
+};
+```
+
+#### BeraSig
+
+```tsx
+import { berasigWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### En İyi Cüzdan
+
+```tsx
+import { bestWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bifrost Cüzdan
+
+```tsx
+import { bifrostWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Binance Web3 Cüzdan
+
+```tsx
+import { binanceWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitget
+
+```tsx
+import { bitgetWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitski
+
+```tsx
+import { bitskiWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitverse
+
+```tsx
+import { bitverseWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bloom Cüzdan
+
+```tsx
+import { bloomWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Brave Cüzdan
+
+```tsx
+import { braveWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bybit Cüzdan
+
+```tsx
+import { bybitWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Coin98 Cüzdan
+
+```tsx
+import { coin98Wallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Compass Cüzdan
+
+```tsx
+import { compassWallet } from '@rainbow-me/rainbowkit/compassWallet';
+```
+
+#### Temel
+
+```tsx
+import { coreWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### CTRL Cüzdan
+
+```tsx
+import { ctrlWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Dawn Cüzdan
+
+```tsx
+import { dawnWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Enkrypt Cüzdan
+
+```tsx
+import { enkryptWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### FoxWallet
+
+```tsx
+import { foxWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Frame Cüzdan
+
+```tsx
+import { frameWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Frontier Cüzdan
+
+```tsx
+import { frontierWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Gate Cüzdan
+
+```tsx
+import { gateWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Gemini Cüzdanı
+
+Bu akıllı cüzdan bağlayıcı, keys.gemini.com adresindeki erişim anahtarlarıyla sorunsuz kimlik doğrulama sağlar - hiçbir indirme, eklenti veya API anahtarına gerek yoktur. Kutu içeriği olarak çalışır.
+
+dApp'inizi tanımlamak için `appName` parametresi gereklidir, `appIcon` ise bağlantı deneyimlerinizi özelleştirmek için isteğe bağlıdır.
+
+```tsx
+import { geminiWallet } from '@rainbow-me/rainbowkit/wallets';
+
+const gemini = geminiWallet({
+  appName: 'My App',
+  appIcon: 'https://my-app.com/logo.png', // Optional
+});
+```
+
+#### imToken
+
+```tsx
+import { imTokenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ioPay Cüzdan
+
+```tsx
+import { iopayWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kaia Cüzdan
+
+```tsx
+import { kaiaWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kaikas
+
+```tsx
+import { kaikasWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kraken Cüzdan
+
+```tsx
+import { krakenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kresus Cüzdan
+
+```tsx
+import { kresusWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ledger Live
+
+```tsx
+import { ledgerWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Magic Eden Cüzdan
+
+```tsx
+import { magicEdenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### MetaMask
+
+```tsx
+import { metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### MEW Cüzdanı
+
+```tsx
+import { mewWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Nova Cüzdan
+
+```tsx
+import { novaWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### OKX Cüzdan
+
+```tsx
+import { okxWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Omni
+
+```tsx
+import { omniWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### OneKey
+
+```tsx
+import { oneKeyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ParaSwap
+
+```tsx
+import { paraSwapWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Phantom
+
+```tsx
+import { phantomWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Porto
+
+```tsx
+import { portoWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Rabby Cüzdan
+
+```tsx
+import { rabbyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Rainbow
+
+```tsx
+import { rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ramper Cüzdan
+
+```tsx
+import { ramperWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Hazır
+
+```tsx
+import { readyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ronin Cüzdanı
+
+```tsx
+import { roninWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Safeheron
+
+```tsx
+import { safeheronWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Taho
+
+```tsx
+import { tahoWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Talisman
+
+```tsx
+import { talismanWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Tokenary
+
+```tsx
+import { tokenaryWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### TokenPocket
+
+```tsx
+import { tokenPocketWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Trust Cüzdan
+
+```tsx
+import { trustWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Uniswap Cüzdanı
+
+```tsx
+import { uniswapWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Valora
+
+```tsx
+import { valoraWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Wigwam
+
+```tsx
+import { wigwamWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### xPortal
+
+```tsx
+import { xPortalWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Zerion
+
+```tsx
+import { zerionWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ZilPay
+
+```tsx
+import { zilPayWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+### Örnekler
+
+#### Sıralama
+
+Burada farklı cüzdanların farklı sıralarda gösterildiği birkaç örnek bulunmaktadır.
+
+MetaMask'i jenerik yedek cüzdanlarla birlikte gösterin.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  metaMaskWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [metaMaskWallet, walletConnectWallet],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```
+
+Rainbow, MetaMask ve Base Hesabını genel yedek cüzdanlarla birlikte gösterin.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  baseAccount,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Suggested',
+      wallets: [
+        rainbowWallet,
+        metaMaskWallet,
+        baseAccount,
+        walletConnectWallet,
+      ],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```
+
+> Hatırlatma: `wallets` dizisinin sırası, cüzdanların kullanıcı arayüzünde gösterileceği sırayı belirler.
+
+#### Birden fazla grup
+
+Kullanıcılara önerdiğiniz cüzdanları ve diğer olası cüzdanları iletmek istiyorsanız `groupName` anahtarını farklı cüzdan gruplarını adlandırmak için kullanabilirsiniz.
+
+Rainbow ve MetaMask'i önerin, ancak Base Hesabını da genel yedek cüzdanlarla birlikte sunun.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  baseAccount,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [rainbowWallet, metaMaskWallet],
+    },
+    {
+      groupName: 'Others',
+      wallets: [baseAccount, walletConnectWallet],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```

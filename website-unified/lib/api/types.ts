@@ -241,7 +241,19 @@ export type ServiceCategory =
   | 'defi'
   | 'nft'
   | 'trading'
-  | 'other';
+  | 'other'
+  | 'ai-models'
+  | 'data-apis'
+  | 'trading-signals'
+  | 'machine-learning'
+  | 'nlp'
+  | 'computer-vision'
+  | 'speech'
+  | 'translation'
+  | 'blockchain-data'
+  | 'market-data'
+  | 'geolocation'
+  | 'sentiment';
 
 export interface SearchFacets {
   categories: Array<{ name: ServiceCategory; count: number }>;

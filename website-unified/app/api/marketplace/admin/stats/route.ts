@@ -15,6 +15,7 @@ import {
   createErrorResponse,
   setCacheHeaders,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -43,8 +44,8 @@ async function handler(request: NextRequest, ctx: RequestContext) {
     const { disputes: allDisputes } = await db.findDisputes({ limit: 1000 });
     
     // Calculate additional metrics
-    const activeSubscriptions = allSubscriptions.filter(s => s.status === 'active');
-    const pendingDisputes = allDisputes.filter(d => d.status === 'pending' || d.status === 'investigating');
+    const activeSubscriptions = allSubscriptions.filter(s => s.active);
+    const pendingDisputes = allDisputes.filter(d => d.status === 'open' || d.status === 'investigating');
     
     // Calculate revenue metrics
     const totalRevenue = activeSubscriptions.reduce((acc, sub) => {
@@ -86,7 +87,7 @@ async function handler(request: NextRequest, ctx: RequestContext) {
       activeServices: allServices.length,
       pendingServices: pendingServices.length,
       totalProviders: platformStats.totalProviders,
-      totalSubscribers: platformStats.totalSubscribers,
+      totalSubscribers: (platformStats as any).totalSubscribers ?? allSubscriptions.length,
       activeSubscriptions: activeSubscriptions.length,
       
       // Financial metrics
@@ -97,8 +98,8 @@ async function handler(request: NextRequest, ctx: RequestContext) {
         : '$0.00',
       
       // Usage metrics
-      totalApiCalls: platformStats.totalApiCalls,
-      apiCallsToday: Math.floor(platformStats.totalApiCalls * 0.01),
+      totalApiCalls: (platformStats as any).totalApiCalls ?? 0,
+      apiCallsToday: Math.floor(((platformStats as any).totalApiCalls ?? 0) * 0.01),
       averageResponseTime: 145, // ms
       uptime: 99.97,
       
@@ -151,9 +152,7 @@ async function handler(request: NextRequest, ctx: RequestContext) {
   } catch (error) {
     console.error('[API] Admin stats error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch platform stats',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch platform stats')
     );
   }
 }

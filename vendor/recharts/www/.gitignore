@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+*.log
+node_modules
+build/
+public/examples
+/docs/
+/.idea/
+/coverage
+
+*.local

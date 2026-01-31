@@ -1,0 +1,5 @@
+// the schema has a `datasource db` block with a defined - but invalid - env url
+
+datasource db {
+  provider = "postgresql"
+}

@@ -1,0 +1,33 @@
+flavors:
+  - flavor: svg
+    path: /sunburst/
+  - flavor: api
+    path: /sunburst/api/
+
+Sunburst:
+  package: '@nivo/sunburst'
+  tags:
+    - hierarchy
+    - radial
+  stories:
+    - label: with child color modifier
+      link: sunburst--with-child-color-modifier
+    - label: with child color independent of parent
+      link: sunburst--with-child-colors-independent-of-parent
+    - label: with custom colors
+      link: sunburst--with-custom-colors
+    - label: with formatted tooltip value
+      link: sunburst--with-formatted-tooltip-value
+    - label: with custom tooltip
+      link: sunburst--custom-tooltip
+    - label: with enter and leave actions
+      link: sunburst--enter-leave-check-actions
+    - label: with patterns and gradients
+      link: sunburst--patterns-gradients
+    - label: drill down to children
+      link: sunburst--children-drill-down
+    - label: adding a metric in the center using a custom layer
+      link: sunburst--adding-a-metric-in-the-center-using-a-custom-layer
+  description: |
+    Sunburst is a radial treemap visualization that displays hierarchical data in a circular layout.
+

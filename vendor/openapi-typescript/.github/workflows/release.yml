@@ -1,0 +1,45 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.OPENAPI_TS_BOT_GITHUB_TOKEN }}
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'openapi-ts' }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Git setup
+        uses: actions/checkout@v5
+
+      - name: Node setup
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: pnpm setup
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      # Do not remove! This ensures a build happens every time
+      - name: Build all packages
+        run: pnpm run build
+
+      - name: Changesets version and/or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version
+          publish: pnpm exec changeset publish
+          commit: "[ci] release"
+          title: "[ci] release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENAPI_TS_BOT_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

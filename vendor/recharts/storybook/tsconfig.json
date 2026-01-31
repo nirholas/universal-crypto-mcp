@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "target": "es2023",
+    /* Disable noUncheckedIndexedAccess in storybook - fixing all array access would be a large undertaking */
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["./**/*", "../types.d.ts"]
+}

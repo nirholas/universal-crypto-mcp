@@ -1,0 +1,149 @@
+---
+title: BağlanButonu
+description: Bağlan Butonunu Kullanma ve Özelleştirme
+---
+
+# BağlanButonu
+
+## Bağlan Butonunu Kullanma ve Özelleştirme
+
+Bu, ana bileşendir. Bağlan/ayır butonunu ve zincir değiştirme arayüzünü render etmekten sorumludur.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> Not: Uygulamanızın gerekli sağlayıcılar ile sarıldığından emin olun. [Daha fazlasını okuyun](/docs/installation#wrap-providers).
+
+### Özellikler
+
+`ConnectButton` bileşeni, görünümünü özelleştirmek için çeşitli özellikleri açığa çıkarır; farklı öğelerin görünürlüğünü değiştirmek dahil.
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'Cüzdanı Bağla',
+      type: 'string',
+      description: 'Bağlan butonunda görünen metin etiketi',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "Aktif hesabın avatarı ve/veya adresi gösterilsin mi?",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "Mevcut zincirin simgesinin ve/veya isminin görüntülenip görüntülenmeyeceği ya da tamamen gizli tutulup tutulmayacağı",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'Hesap isminin yanında bakiyenin görünür olması',
+    },
+  ]}
+/>
+
+> Not: Dahili `büyükEkran` kırılma noktası `768px`.
+
+### Örnekler
+
+#### Etiket
+
+`etiket` özelliğini kullanarak özel bir `ConnectButton` metni ayarlayın.
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### Hesap durumu
+
+`hesapDurumu` özelliğini kullanmanın birkaç farklı yolu burada.
+
+Sadece hesabın avatarını göster.
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+Sadece hesabın adresini göster.
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### Zincir durumu
+
+`zincirDurumu` özelliğini kullanmanın birkaç farklı yolu burada.
+
+Sadece mevcut zincirin simgesini göster.
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+Sadece mevcut zincirin ismini göster.
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+Zincir arayüzünü tamamen gizle.
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### Bakiye göster
+
+Bakiye gizleyip/göstermek için `bakiyeGöster` özelliğini kullanın.
+
+Bakiyeyi gizle.
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### Duyarlı
+
+Bu özellikler duyarlı bir formatta da tanımlanabilir.
+
+Küçük ekranlarda sadece hesap simgesini gösterin. Ancak büyük ekranlarda simge ve adresi gösterin.
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+Küçük ekranlarda bakiyeyi gizleyin. Ancak büyük ekranlarda gösterin.
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

@@ -1,0 +1,64 @@
+---
+title: Modal-Hooks
+description: Modale programmatisch über Hooks öffnen
+---
+
+# Modal-Hooks
+
+## Modale programmatisch über Hooks öffnen
+
+Die folgenden Hooks werden bereitgestellt, um das programmatische Öffnen von Modalen an beliebiger Stelle in Ihrer Anwendung zu ermöglichen.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+Jeder dieser Hooks gibt ein Objekt mit einer Funktion zum Öffnen des jeweiligen Modals zurück. Beachten Sie, dass die zurückgegebenen Funktionen undefiniert sind, wenn sich Ihre Anwendung nicht im erforderlichen Zustand befindet, damit das Modal geöffnet werden kann.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+Jeder Hook gibt auch einen booleschen Wert für den Status des Modals zurück. Es wird in der Regel empfohlen, sich ausschließlich auf Wagmi-Hooks (z. B. `useAccount`) zu verlassen, um direkt auf den Wallet-Verbindungsstatus des Nutzers zu reagieren, anstatt sich auf den Zustand des Connect Modals zu verlassen.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit ist so konzipiert, dass es nicht störend und reaktionsfähig ist, sodass dApps sowohl für Benutzer eine Oberfläche anzeigen sollten, unabhängig davon, ob sie ihre Wallet verbunden haben oder nicht. Ein Benutzer könnte seine Wallet direkt über MetaMask verbinden oder trennen, daher muss die dApp direkt auf den zugrunde liegenden Verbindungsstatus reagieren.
+
+dApps, die sich bei der Benutzerüberprüfung auf Mechanismen wie Sign-in mit Ethereum verlassen, sollten stattdessen die [Authentifizierungs](/docs/authentication)-Funktion verwenden.

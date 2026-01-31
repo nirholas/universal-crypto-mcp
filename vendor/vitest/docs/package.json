@@ -1,0 +1,42 @@
+{
+  "name": "docs",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress --port 3333 --open",
+    "build": "nr cli-table && nr prefetch && vitepress build",
+    "cli-table": "tsx .vitepress/scripts/cli-generator.ts",
+    "build-no-prefetch": "vitepress build",
+    "serve": "vitepress serve",
+    "preview-https": "pnpm run build && serve .vitepress/dist",
+    "preview-https-no-prefetch": "pnpm run build-no-prefetch && serve .vitepress/dist",
+    "prefetch": "tsx .vitepress/scripts/fetch-avatars.ts",
+    "generate-pwa-icons": "pwa-assets-generator"
+  },
+  "dependencies": {
+    "@vueuse/core": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@iconify-json/carbon": "catalog:",
+    "@iconify-json/logos": "catalog:",
+    "@iconify/vue": "catalog:",
+    "@shikijs/transformers": "^3.21.0",
+    "@shikijs/vitepress-twoslash": "^3.21.0",
+    "@unocss/reset": "catalog:",
+    "@vite-pwa/assets-generator": "^1.0.2",
+    "@vite-pwa/vitepress": "^1.1.0",
+    "@vitejs/plugin-vue": "catalog:",
+    "@voidzero-dev/vitepress-theme": "^4.4.1",
+    "https-localhost": "^4.7.1",
+    "tinyglobby": "catalog:",
+    "unocss": "catalog:",
+    "vite": "^6.3.5",
+    "vite-plugin-pwa": "^1.2.0",
+    "vitepress": "2.0.0-alpha.15",
+    "vitepress-plugin-group-icons": "^1.7.1",
+    "vitepress-plugin-llms": "^1.10.0",
+    "vitepress-plugin-tabs": "^0.7.3",
+    "workbox-window": "^7.4.0"
+  }
+}

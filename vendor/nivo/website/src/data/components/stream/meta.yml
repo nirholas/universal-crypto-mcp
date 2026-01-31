@@ -1,0 +1,16 @@
+flavors:
+  - flavor: svg
+    path: /stream/
+
+Stream:
+  package: '@nivo/stream'
+  tags:
+    - stacked
+  stories:
+    - label: Use custom legend label
+      link: stream--custom-legend-label
+  description: |
+    Stream chart.
+
+    See the [dedicated guide](self:/guides/legends) on
+    how to setup legends for this component.

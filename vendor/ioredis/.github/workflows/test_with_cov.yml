@@ -1,0 +1,47 @@
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20.x, 22.x, 24.x]
+        redis: ["rs-7.4.0-v1", "8.2", "8.4.0"]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - run: npm run docker:setup
+        env:
+          REDIS_VERSION: ${{ matrix.redis }}
+
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test:tsd
+      - run: npm run test:cov || npm run test:cov || npm run test:cov
+      - run: npm run test:cluster
+      - name: Coveralls
+        if: matrix.node == '24.x'
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: node-${{matrix.node}}
+          parallel: true
+
+  code-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true

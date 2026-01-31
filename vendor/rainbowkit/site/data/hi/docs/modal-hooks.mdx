@@ -1,0 +1,64 @@
+---
+title: मोडल हुक्स
+description: प्रोग्रामेटिक रूप से हुक्स के माध्यम से मोडल्स खोलें
+---
+
+# मोडल हुक्स
+
+## प्रोग्रामेटिक रूप से हुक्स के माध्यम से मोडल्स खोलें
+
+निम्नलिखित हुक्स आपके आवेदन के किसी भी हिस्से में प्रोग्रामेटिक रूप से मोडल्स खोलने के लिए प्रदान की गई हैं।
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+इनमें से प्रत्येक हुक अपने संबंधित मोडल को खोलने के लिए एक फंक्शन के साथ एक ऑब्जेक्ट को रिटर्न करता है। ध्यान दें कि यदि आपका ऐप आवश्यक स्थिति में नहीं है जिसमें मोडल खुल सकता है, तो लौटाए गए फंक्शन अनिर्धारित होंगे।
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+प्रत्येक हुक मोडल की स्थिति के लिए एक बूलियन भी रिटर्न करता है। आमतौर पर सिफारिश की जाती है कि आप सीधे उपयोगकर्ता की वॉलेट कनेक्शन स्थिति पर प्रतिक्रिया देने के लिए केवल Wagmi हुक्स (जैसे `useAccount`) पर निर्भर रहें, बजाय कनेक्ट मोडल की स्थिति पर।
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit को गैर-बाधक और उत्तरदायी बनाने के लिए डिज़ाइन किया गया है, इसलिए dApps को हमेशा उस स्थिति में भी उपयोगकर्ताओं के लिए एक इंटरफ़ेस रेंडर करना चाहिए जब उन्होंने अपना वॉलेट कनेक्ट नहीं किया हो। उपयोगकर्ता सीधे MetaMask से अपना वॉलेट कनेक्ट या डिस्कनेक्ट कर सकता है, इसलिए dApp को सीधे अंडरलाइंग कनेक्शन स्थिति के लिए उत्तरदायी होना चाहिए।
+
+उपयोगकर्ता सत्यापन के लिए Ethereum के साथ साइन-इन जैसी प्रणालियों पर निर्भर dApps को [Authentication](/docs/authentication) सुविधा पर निर्भर रहना चाहिए।

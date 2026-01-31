@@ -534,7 +534,7 @@ export function SigningModal({ isOpen, onClose, onConfirm, isLoading, transactio
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center">
-                  {activeWallet?.walletId === 'ledger' || activeWallet?.walletId === 'trezor' ? (
+                  {activeWallet?.provider === 'ledger' || activeWallet?.provider === 'trezor' ? (
                     <Cpu className="w-5 h-5 text-blue-500" />
                   ) : (
                     <Shield className="w-5 h-5 text-blue-500" />
@@ -615,7 +615,7 @@ export function SigningModal({ isOpen, onClose, onConfirm, isLoading, transactio
               )}
 
               {/* Hardware Wallet Notice */}
-              {(activeWallet?.walletId === 'ledger' || activeWallet?.walletId === 'trezor') && (
+              {(activeWallet?.provider === 'ledger' || activeWallet?.provider === 'trezor') && (
                 <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-start gap-3">
                   <Cpu className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                   <div>
@@ -623,7 +623,7 @@ export function SigningModal({ isOpen, onClose, onConfirm, isLoading, transactio
                       Hardware Wallet Required
                     </p>
                     <p className="text-sm text-blue-600 dark:text-blue-500">
-                      Please confirm this transaction on your {activeWallet.walletId === 'ledger' ? 'Ledger' : 'Trezor'} device.
+                      Please confirm this transaction on your {activeWallet.provider === 'ledger' ? 'Ledger' : 'Trezor'} device.
                     </p>
                   </div>
                 </div>

@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CheckboxesWidget inline 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="bg-transparent border-0 form-check form-check-inline"
+    >
+      <input
+        aria-describedby="_id__error _id__description _id__help"
+        class="form-check-input"
+        disabled=""
+        id="_id-0"
+        name="_id"
+        required=""
+        type="checkbox"
+      />
+      <label
+        class="form-check-label"
+        for="_id-0"
+        title=""
+      >
+        A
+      </label>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`CheckboxesWidget simple 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="bg-transparent border-0 form-check"
+    >
+      <input
+        aria-describedby="_id__error _id__description _id__help"
+        class="form-check-input"
+        disabled=""
+        id="_id-0"
+        name="_id"
+        required=""
+        type="checkbox"
+      />
+      <label
+        class="form-check-label"
+        for="_id-0"
+        title=""
+      >
+        A
+      </label>
+    </div>
+  </div>
+</DocumentFragment>
+`;

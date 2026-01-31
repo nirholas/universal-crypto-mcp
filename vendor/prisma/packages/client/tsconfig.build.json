@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.build.bundle.json",
+  "compilerOptions": {
+    "outDir": "declaration"
+  },
+  "include": ["src/runtime"]
+}

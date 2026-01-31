@@ -1,0 +1,338 @@
+---
+title: ปุ่มเชื่อมต่อแบบกำหนดเอง
+description: การสร้างปุ่มเชื่อมต่อแบบกำหนดเอง
+---
+
+# ปุ่มเชื่อมต่อแบบกำหนดเอง
+
+## การสร้างปุ่มเชื่อมต่อแบบกำหนดเอง
+
+คุณสามารถใช้ `ConnectButton.Custom` แบบระดับต่ำเพื่อสร้างปุ่มเชื่อมต่อส่วนตัวของคุณเอง ส่วนประกอบนี้จะแสดงฟังก์ชันซึ่งรวมทุกอย่างที่คุณต้องการในการสร้างปุ่มที่มีอยู่แล้วใหม่
+
+การสร้างปุ่มในตัวแบบมิเนิมัลจะมีลักษณะดังนี้:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+props ที่จะถูกส่งไปยังฟังก์ชันการแสดงผลของคุณมีดังต่อไปนี้
+
+### คุณสมบัติของบัญชี
+
+<PropsTable
+  data={[
+    {
+      name: 'account',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'วัตถุที่ประกอบไปด้วยรายละเอียดเกี่ยวกับบัญชีปัจจุบัน, อธิบายด้านล่าง',
+    },
+    {
+      name: 'account.address',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          ที่อยู่บัญชีเต็ม, เช่น
+          "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceDecimals',
+      required: false,
+      type: 'string | undefined	',
+      description: 'ยอดเงินในบัญชีแบบเลขทศนิยม',
+    },
+    {
+      name: 'account.balanceFormatted',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          ยอดเงินในบัญชีที่ถูกจัดรูปแบบเป็นสตริง, เช่น{' '}
+          <code>1.234567890123456789</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceSymbol',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          สัญลักษณ์สกุลเงินสำหรับยอดเงินในบัญชี, เช่น <code>ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayBalance',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          ยอดเงินที่จัดรูปแบบเพื่อแสดง 3 หลักสำคัญ, พร้อมทั้ง
+          สัญลักษณ์, เช่น <code>1.23 ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayName',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          ชื่อ ENS หรือเวอร์ชันที่ถูกตัดของที่อยู่, เช่น{' '}
+          <code>"rainbowwallet.eth"</code> หรือ <code>"0x7a…384f"</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.ensAvatar',
+      required: false,
+      type: 'string	| undefined',
+      description: 'URI ของอวาตาร์ ENS',
+    },
+    {
+      name: 'account.ensName',
+      required: false,
+      type: 'string	| undefined',
+      description: (
+        <>
+          ชื่อ ENS, เช่น <code>rainbowwallet.eth</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.hasPendingTransactions',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean ที่บ่งบอกว่าบัญชีมีธุรกรรมที่ยังไม่เสร็จสิ้นสำหรับ chain ปัจจุบันหรือไม่',
+    },
+  ]}
+/>
+
+### คุณสมบัติของ Chain
+
+<PropsTable
+  data={[
+    {
+      name: 'chain',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'วัตถุที่ประกอบไปด้วยรายละเอียดเกี่ยวกับ chain ปัจจุบัน, อธิบายด้านล่าง',
+    },
+    {
+      name: 'chain.hasIcon',
+      required: false,
+      type: 'boolean',
+      description: 'ในกรณีที่ chain มีสัญลักษณ์',
+    },
+    {
+      name: 'chain.iconUrl',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'URL ของสัญลักษณ์ chain (ซึ่งอาจจะไม่ถูกระบุในขณะที่กำลังดาวน์โหลด URL ข้อมูลแบบ Base64)',
+    },
+    {
+      name: 'chain.iconBackground',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'พื้นหลังสัญลักษณ์ chain ที่จะมองเห็นได้ในขณะที่กำลังโหลดภาพ',
+    },
+    {
+      name: 'chain.id',
+      required: false,
+      type: 'number',
+      description: (
+        <>
+          หมายเลข chain ID, เช่น <code>1</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.name',
+      required: false,
+      type: 'string | undefined',
+      description: (
+        <>
+          ชื่อ chain, เช่น <code>"Ethereum"</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.unsupported',
+      required: false,
+      type: 'boolean | undefined',
+      description:
+        'Boolean ที่บ่งบอกว่า chain ปัจจุบันไม่สามารถรองรับได้หรือไม่',
+    },
+  ]}
+/>
+
+### คุณสมบัติของสถานะ Modal
+
+<PropsTable
+  data={[
+    {
+      name: 'openAccountModal',
+      required: false,
+      type: '() => void',
+      description: 'ฟังก์ชันเพื่อเปิด modal ของบัญชี',
+    },
+    {
+      name: 'openChainModal',
+      required: false,
+      type: '() => void',
+      description: 'ฟังก์ชันเพื่อเปิด modal ของ chain',
+    },
+    {
+      name: 'openConnectModal',
+      required: false,
+      type: '() => void',
+      description: 'ฟังก์ชันเพื่อเปิด modal การเชื่อมต่อ',
+    },
+    {
+      name: 'accountModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean ที่บ่งบอกว่า modal ของบัญชีเปิดอยู่หรือไม่',
+    },
+    {
+      name: 'chainModalOpen',
+      required: false,
+      type: 'boolean',
+      description: 'Boolean ที่บ่งบอกว่า modal ของ chain เปิดอยู่หรือไม่',
+    },
+    {
+      name: 'connectModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean ที่บ่งบอกว่า modal การเชื่อมต่อเปิดอยู่หรือไม่',
+    },
+  ]}
+/>
+
+### คุณสมบัติของสถานะทั่วไป
+
+<PropsTable
+  data={[
+    {
+      name: 'mounted',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean ที่บ่งบอกว่าส่วนประกอบได้ถูกติดตั้งหรือไม่',
+    },
+    {
+      name: 'authenticationStatus',
+      required: false,
+      type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+      description:
+        'สถานะการตรวจสอบสิทธิ์ หรือ undefined หากการตรวจสอบสิทธิ์ยังไม่ได้ถูกกำหนด',
+    },
+  ]}
+/>

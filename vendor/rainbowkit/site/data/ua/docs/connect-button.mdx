@@ -1,0 +1,149 @@
+---
+title: Кнопка Підключення
+description: Використання та налаштування кнопки Підключення
+---
+
+# Кнопка Підключення
+
+## Використання та налаштування кнопки Підключення
+
+Цей компонент є основним. Він відповідає за рендеринг кнопок підключення/відключення, а також UI для змінення ланцюга.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> Примітка: Переконайтеся, що ваш додаток обгорнутий у потрібних провайдерів. [Детальніше](/docs/installation#wrap-providers).
+
+### Властивості
+
+Компонент `ConnectButton` надає кілька властивостей для налаштування його вигляду, включаючи перемикання видимості різних елементів.
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'Connect Wallet',
+      type: 'string',
+      description: 'Текстова мітка, відображена на кнопці Підключення',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        'Чи відображається аватар або адреса активного облікового запису',
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        'Чи відображається іконка або назва поточного ланцюга, чи вони цілком приховані',
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'Чи є баланс видимим поруч із ім\'ям облікового запису',
+    },
+  ]}
+/>
+
+> Примітка: вбудований `largeScreen` брейкпоінт становить `768px`.
+
+### Приклади
+
+#### Мітка
+
+Використайте властивість `label` для встановлення власного тексту кнопки `ConnectButton`.
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### Статус облікового запису
+
+Ось кілька різних способів використання властивості `accountStatus`.
+
+Відображати лише аватар облікового запису.
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+Відображати лише адресу облікового запису.
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### Статус ланцюга
+
+Ось кілька різних способів використання властивості `chainStatus`.
+
+Відображати лише іконку поточного ланцюга.
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+Відображати лише назву поточного ланцюга.
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+Приховати інтерфейс ланцюга повністю.
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### Показати баланс
+
+Використайте властивість `showBalance` для приховування/відображення балансу.
+
+Приховати баланс.
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### Адаптивність
+
+Ці властивості також можуть бути визначені в адаптивному форматі.
+
+На малих екранах відображати лише іконку облікового запису. Але на великих екранах відображати іконку та адресу.
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+На малих екранах приховати баланс. Але на великих екранах показати його.
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

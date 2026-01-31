@@ -1,0 +1,166 @@
+---
+title: Tema Tersuai
+description: Membuat tema tersuai
+---
+
+# Tema Tersuai
+
+## Membuat tema tersuai
+
+> Nota: API ini tidak stabil dan mungkin berubah
+> dalam masa terdekat. Kami mencadangkan anda kekal dengan [tema terbina dalam](/docs/theming) buat masa ini.
+
+Walaupun tema terbina dalam memberikan tahap penyesuaian, jenis `Theme` disediakan untuk membantu anda menentukan tema tersuai anda dengan akses aras rendah kepada pembolehubah tema asas.
+
+```tsx
+import { RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+
+const myCustomTheme: Theme = {
+  blurs: {
+    modalOverlay: '...',
+  },
+  colors: {
+    accentColor: '...',
+    accentColorForeground: '...',
+    actionButtonBorder: '...',
+    actionButtonBorderMobile: '...',
+    actionButtonSecondaryBackground: '...',
+    closeButton: '...',
+    closeButtonBackground: '...',
+    connectButtonBackground: '...',
+    connectButtonBackgroundError: '...',
+    connectButtonInnerBackground: '...',
+    connectButtonText: '...',
+    connectButtonTextError: '...',
+    connectionIndicator: '...',
+    downloadBottomCardBackground: '...',
+    downloadTopCardBackground: '...',
+    error: '...',
+    generalBorder: '...',
+    generalBorderDim: '...',
+    menuItemBackground: '...',
+    modalBackdrop: '...',
+    modalBackground: '...',
+    modalBorder: '...',
+    modalText: '...',
+    modalTextDim: '...',
+    modalTextSecondary: '...',
+    profileAction: '...',
+    profileActionHover: '...',
+    profileForeground: '...',
+    selectedOptionBorder: '...',
+    standby: '...',
+  },
+  fonts: {
+    body: '...',
+  },
+  radii: {
+    actionButton: '...',
+    connectButton: '...',
+    menuButton: '...',
+    modal: '...',
+    modalMobile: '...',
+  },
+  shadows: {
+    connectButton: '...',
+    dialog: '...',
+    profileDetailsAction: '...',
+    selectedOption: '...',
+    selectedWallet: '...',
+    walletLogo: '...',
+  },
+};
+
+const App = () => (
+  <RainbowKitProvider theme={myCustomTheme} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>;
+)
+```
+
+### Memperluaskan tema terbina dalam
+
+Anda boleh memperluaskan tema terbina dalam tanpa perlu menentukan semula keseluruhan tema. Ini berguna apabila anda hanya mahu membelakangkan token tema tertentu.
+
+Untuk melakukannya, pasang `lodash.merge` (atau setara):
+
+```bash
+npm install lodash.merge
+```
+
+Import ia, bersama dengan tema yang anda ingin perluaskan (contoh: `darkTheme`) dan jenis `Theme` TypeScript:
+
+```tsx
+import merge from 'lodash.merge';
+import {
+  RainbowKitProvider,
+  darkTheme,
+  Theme,
+} from '@rainbow-me/rainbowkit';
+```
+
+Kemudian, gabungkan tema terbina dalam tersebut dengan token tema yang ingin anda belakangkan. Dalam contoh ini, saya membelakangkan token `accentColor` untuk menyesuaikan warna aksen jenama saya.
+
+```tsx
+const myTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: '#07296d',
+  },
+} as Theme);
+```
+
+Akhir sekali, anda kini boleh menyerahkan tema tersuai anda kepada prop `theme` `RainbowKitProvider`.
+
+```tsx
+const App = () => {
+  return (
+    <RainbowKitProvider theme={myTheme} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### Membuat pemilih tema tersuai
+
+Jika aplikasi anda dirender pelayan/statik dan membenarkan pengguna beralih secara manual antara tema, sistem tema RainbowKit boleh disambungkan kepada pemilih CSS tersuai dengan fungsi berikut yang boleh digunakan dengan mana-mana sistem CSS-in-JS:
+
+- `cssStringFromTheme`
+- `cssObjectFromTheme`
+
+Fungsi-fungsi ini mengembalikan CSS yang menetapkan semua pembolehubah tema yang diperlukan. Oleh kerana kedua-dua rentetan dan objek disokong, ini boleh diintegrasikan dengan mana-mana sistem CSS-in-JS.
+
+Sebagai contoh asas, anda boleh merender elemen `style` anda sendiri dengan pemilih tersuai untuk setiap tema. Oleh kerana kita mengawal sepenuhnya merender CSS tema, kita menyerahkan `null` kepada prop `theme` supaya RainbowKitProvider tidak merender sebarang gaya untuk kita. Juga perhatikan penggunaan pilihan extends pada fungsi cssStringFromTheme yang mengabaikan sebarang pembolehubah tema yang sama dengan tema asas.
+
+```tsx
+import {
+  RainbowKitProvider,
+  cssStringFromTheme,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider theme={null} {...etc}>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            :root {
+              ${cssStringFromTheme(lightTheme)}
+            }
+
+            html[data-dark] {
+              ${cssStringFromTheme(darkTheme, {
+                extends: lightTheme,
+              })}
+            }
+          `,
+        }}
+      />
+
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```

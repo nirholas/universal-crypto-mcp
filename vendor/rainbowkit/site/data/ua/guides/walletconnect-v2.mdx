@@ -1,0 +1,72 @@
+---
+title: Оновлення вашого dApp до WalletConnect v2
+description: RainbowKit перейшов на v2, і ви можете підготувати свій dApp за 5 хвилин або менше
+image: guide-walletconnect-v2.png
+---
+
+# Міграція до WalletConnect v2
+
+## Підготувати ваш dApp до оновлення v2 за 5 хвилин або менше
+
+Протокол WalletConnect v1 буде відключено 28 червня 2023 року, і RainbowKit допоможе вам зробити перехід максимально простим.
+
+Підтримка WalletConnect v2 тепер стандартно вбудована в RainbowKit, без змін, що руйнують сумісність. Просто оновіть і зверніться до керівництва нижче для отримання додаткової інформації.
+
+#### Розуміння WalletConnect v2
+
+WalletConnect — це протокол, що дозволяє користувачам підключити свої мобільні гаманці до вашого dApp, і це важлива основа RainbowKit. Останній випуск WalletConnect v2 приносить ряд важливих оновлень, щоб зробити взаємодію гаманець-dApp ще кращою.
+
+З v2, ваші користувачі можуть одночасно підключатися до кількох ланцюжків, відповідно, можна забути про рукостискання з перемиканням ланцюжків. Це також розширює підтримку більшої кількості мереж і вносить поліпшення, що роблять Sign-in with Ethereum ще швидше.
+
+#### Оновлення вашого dApp
+
+Якщо ви вже слідували посібникам міграції для RainbowKit `0.12.x` і `1.0.x`, ви вже майже там! Просто оновіть до останньої версії та спробуйте.
+
+RainbowKit увімкнено WalletConnect v2 за замовчуванням з `0.12.15` і `1.0.2`. Ми продовжуємо підтримку `0.12.x`, якщо ваш dApp ще не оновлено до wagmi v1 і RainbowKit v1.
+
+**1. Оновлення залежностей**
+
+```bash
+npm i @rainbow-me/rainbowkit@^1.0.2 wagmi@^1.2
+```
+
+Якщо ви використовуєте версію RainbowKit до `0.12.x` або `1.0.x`, просто виконайте [Посібник з Міграції](/docs/migration-guide) для оновлення.
+
+Рекомендується, щоб dApps `0.12.x` почали оновлюватися до wagmi v1, оскільки поліпшення стабільності для WalletConnect v2 будуть включені тільки в майбутніх версіях wagmi.
+
+**2. Надання projectId**
+
+Кожний dApp, що використовує WalletConnect, тепер потребує отримання `projectId` з [WalletConnect Cloud](https://cloud.walletconnect.com/). Це абсолютно безкоштовно і займає лише кілька хвилин.
+
+Подайте ваш `projectId` до `getDefaultWallets` та індивідуальних конекторів гаманців RainbowKit наступним чином:
+
+```ts
+const projectId = 'YOUR_PROJECT_ID';
+const { wallets } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  projectId,
+  chains,
+});
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: 'Other',
+    wallets: [
+      readyWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      ledgerWallet({ projectId, chains }),
+    ],
+  },
+]);
+```
+
+RainbowKit є типо-безпечним і попередить вас, якщо `projectId` відсутній. Зверніться до наших прикладів, щоб побачити v2 у дії:
+
+- [Create React App](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-create-react-app)
+- [Next.js](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next)
+- [Next.js App Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next-app)
+- [Remix](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-remix)
+- [Vite](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-vite)
+- [React Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-react-router)
+
+Зверніться до [документації](https://www.rainbowkit.com/docs/custom-wallet-list#walletconnect) для додаткових підтримуваних опцій.

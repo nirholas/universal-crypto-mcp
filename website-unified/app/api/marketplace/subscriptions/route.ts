@@ -104,8 +104,9 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
     // Calculate summary
     const activeSubs = allSubscriptions.filter((s) => s.status === 'active');
     const monthlySpend = activeSubs.reduce((acc, s) => {
-      const price = parseFloat(s.price?.replace(/[^0-9.]/g, '') || '0');
-      return acc + (s.plan === 'monthly' ? price : price / 12);
+      const price = s.plan?.price || parseFloat((s.price || '0').replace(/[^0-9.]/g, ''));
+      const billingPeriod = s.plan?.billingPeriod || 'monthly';
+      return acc + (billingPeriod === 'monthly' ? price : price / 12);
     }, 0);
     
     return createResponse({
@@ -151,6 +152,15 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
       throw new BadRequestError('This service does not offer subscription pricing');
     }
     
+    // Get the subscription plan pricing
+    const selectedPlan = pricing.plans?.find(p => 
+      p.billingPeriod === body.plan || 
+      (body.plan === 'annually' && p.billingPeriod === 'yearly')
+    ) || pricing.plans?.[0];
+    
+    const planPrice = selectedPlan?.price || 0;
+    const planName = selectedPlan?.name || 'professional';
+    
     // For crypto payments, txHash is required
     if (body.paymentMethod === 'crypto' && !body.txHash) {
       throw new BadRequestError('Transaction hash is required for crypto payments');
@@ -159,9 +169,10 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     // Create subscription using SDK
     const params: CreateSubscriptionParams = {
       serviceId: body.serviceId,
-      plan: body.plan,
-      subscriberWallet: body.walletAddress as `0x${string}`,
-      txHash: (body.txHash || `0x${'0'.repeat(64)}`) as `0x${string}`,
+      planName: planName,
+      price: planPrice,
+      subscriberWallet: body.walletAddress,
+      txHash: body.txHash,
       autoRenew: body.autoRenew,
     };
     

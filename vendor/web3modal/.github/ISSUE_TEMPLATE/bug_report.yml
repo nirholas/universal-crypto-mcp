@@ -1,0 +1,54 @@
+name: "\U0001F41B Bug Report"
+description: 'Report a reproducible bug.'
+title: '[bug] '
+labels: ['bug external']
+body:
+  - type: input
+    attributes:
+      label: Link to minimal reproducible example
+      description: |
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
+        You should also test your issue against the latest NPM package version(s) to ensure that it hasn't already been resolved.
+        Sharing a link to a GitHub repository or preview deployment are best. Include any instructions to run the project in the README or the summary field below.
+
+        IF A REPRODUCIBLE DEMO OR A SCREEN RECORDING IS NOT PROVIDED, YOUR ISSUE WILL BE CLOSED.
+
+        [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
+        [Create a MRE from our examples using Stackblitz](https://github.com/reown-com/appkit-web-examples/).
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Please enter the steps to reproduce the issue/bug that you are facing. This field is mandatory. If you do not fill this out, your issue will be closed!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Summary
+      description: |
+        Clearly describe what the expected behavior is and what is actually happening. Be concise and precise in your description. Include any affected platforms, chains, rpc's, conenctors etc...
+
+        Ex: if you report that "X method isn't working", then you will need to continue debugging on your own to more precisely define your issue before proceeding.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: List of related npm package versions
+      description: Include all appkit, wagmi and other packages that can be related to the issue, including their versions.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Node.js Version
+      description: What version of Node.js are you using? Run `node --version` to check.
+      placeholder: 'e.g. v18.17.0'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Package Manager
+      description: Which package manager and version are you using? Run `npm --version` or `pnpm --version` etc.
+      placeholder: 'e.g. npm@9.6.7 or yarn@3.6.1 or pnpm@8.6.2'
+    validations:
+      required: true

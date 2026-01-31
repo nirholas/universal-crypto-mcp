@@ -1,0 +1,35 @@
+# reference: https://docs.npmjs.com/trusted-publishers#for-github-actions
+
+name: Publish
+
+on:
+  push:
+    tags:
+      # expected format: <package>@<version> (example: socket.io@1.2.3)
+      - '**@*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile each package
+        run: npm run compile --workspaces --if-present
+
+      - name: Publish package
+        run: npm publish --workspace=${GITHUB_REF_NAME%@*} --access public

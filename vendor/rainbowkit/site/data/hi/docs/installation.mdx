@@ -1,0 +1,176 @@
+---
+title: स्थापना
+description: रेनबोकिट के साथ आरंभ करें
+---
+
+# स्थापना
+
+## रेनबोकिट के साथ आरंभ करें
+
+### त्वरित आरंभ
+
+आप निम्नलिखित कमांड्स में से किसी एक का उपयोग करके एक नया रेनबोकिट + [Wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org) ऐप स्कैफोल्ड कर सकते हैं, अपने पैकेज प्रबंधक की पसंद का उपयोग करते हुए:
+
+```bash
+npm init @rainbow-me/rainbowkit@latest
+# or
+pnpm create @rainbow-me/rainbowkit@latest
+# or
+yarn create @rainbow-me/rainbowkit
+```
+
+यह आपको परियोजना नाम के लिए प्रांप्ट करेगा, एक नई निर्देशिका जनरेट करेगा जिसमें बोयलरप्लेट परियोजना शामिल होगी, और सभी आवश्यक निर्भरताएं स्थापित करेगा।
+
+वैकल्पिक रूप से, आप रेनबोकिट को अपने मौजूदा प्रोजेक्ट में मैन्युअल रूप से एकीकृत कर सकते हैं।
+
+### मैनुअल सेटअप
+
+रेनबोकिट और इसकी सहायक निर्भरताओं को स्थापित करें, [Wagmi](https://wagmi.sh/), [Viem](https://viem.sh), और [@tanstack/react-query](https://tanstack.com/query/v5)।
+
+```bash
+npm install @rainbow-me/rainbowkit wagmi viem@2.x @tanstack/react-query
+```
+
+> ध्यान दें: रेनबोकिट एक [React](https://reactjs.org/) लाइब्रेरी है।
+
+#### आयात
+
+रेनबोकिट, वाग्मी और टैनस्टैक क्वेरी को आयात करें।
+
+```tsx
+import '@rainbow-me/rainbowkit/styles.css';
+
+import {
+  getDefaultConfig,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import {
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+} from 'wagmi/chains';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+```
+
+#### विन्यास
+
+अपनी इच्छित चेन को कॉन्फ़िगर करें और आवश्यक कनेक्टर्स जनरेट करें। आपको एक `wagmi` कॉन्फ़िग भी सेटअप करना होगा। यदि आपका dApp सर्वर साइड रेंडरिंग (SSR) का उपयोग करता है, तो सुनिश्चित करें कि `ssr` को `true` पर सेट किया गया है।
+
+> ध्यान दें: अब हर dApp जो WalletConnect पर निर्भर करता है, उसे [WalletConnect क्लाउड](https://cloud.walletconnect.com/) से एक `projectId` प्राप्त करना होगा। यह बिल्कुल मुफ्त है और इसमें कुछ ही मिनट लगते हैं।
+
+```tsx line=4-99
+...
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+
+const config = getDefaultConfig({
+  appName: 'My RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [mainnet, polygon, optimism, arbitrum, base],
+  ssr: true, // If your dApp uses server side rendering (SSR)
+});
+```
+
+#### प्रोवाइडर लपेटें
+
+अपने एप्लिकेशन को `RainbowKitProvider`, [`WagmiProvider`](https://wagmi.sh/react/api/WagmiProvider#wagmiprovider), और [`QueryClientProvider`](https://tanstack.com/query/v4/docs/framework/react/reference/QueryClientProvider) के साथ लपेटें।
+
+```tsx
+const queryClient = new QueryClient();
+
+const App = () => {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          {/* Your App */}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+};
+```
+
+#### कनेक्ट बटन जोड़ें
+
+फिर, अपने ऐप में, `ConnectButton` घटक को आयात करें और रेंडर करें।
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+रेनबोकिट अब आपके उपयोगकर्ता के वॉलेट चयन को संभाल लेगा, वॉलेट/लेन-देन की जानकारी प्रदर्शित करेगा और नेटवर्क/वॉलेट स्विचिंग को संभाल लेगा।
+
+#### अतिरिक्त बिल्ड टूलिंग सेटअप
+
+कुछ बिल्ड उपकरणों के लिए अतिरिक्त सेटअप की आवश्यकता होगी।
+
+##### रीमिक्स
+
+[रीमिक्स](https://remix.run) का उपयोग करते वक्त, आपको `buffer`, `events` और `http` मॉड्यूल्स को पोलीफ़िल करना होगा। नीचे रीमिक्स कॉन्फ़िगरेशन का संदर्भ लें, या [हमारे नमूना रीमिक्स प्रोजेक्ट](https://github.com/rainbow-me/rainbowkit/blob/main/examples/with-remix) को देखें।
+
+```ts
+/** @type {import('@remix-run/dev').AppConfig} */
+export default {
+  ignoredRouteFiles: ["**/.*"],
+  browserNodeBuiltinsPolyfill: {
+    modules: { buffer: true, events: true, http: true },
+  },
+};
+```
+
+### परिनियोजन के लिए तैयारी
+
+डिफ़ॉल्ट रूप से, आपका dApp प्रत्येक चेन के लिए सार्वजनिक RPC प्रदाताओं का उपयोग बैलेंस, ENS नाम हल करने, और अधिक के लिए करता है। यह आपके उपयोगकर्ताओं के लिए विश्वसनीयता के मुद्दों का कारण बन सकता है क्योंकि सार्वजनिक नोड्स सीमित दर के तहत हैं। इसके बजाय, आपको [Alchemy](https://www.alchemy.com/) या [QuickNode](https://www.quicknode.com/) जैसे सेवाओं के ज़रिए RPC प्रदाता की पहुंच खरीदनी चाहिए, और अपने स्वयं के ट्रांसपोर्ट्स को वाग्मी में परिभाषित करना चाहिए। इसे `getDefaultConfig` में `transports` पैरामीटर जोड़कर या वाग्मी के `createConfig` के ज़रिए सीधे प्राप्त किया जा सकता है।
+
+एक ट्रांसपोर्ट वह नेटवर्किंग मध्य परत है जो JSON-RPC अनुरोधों को इथेरियम नोड प्रदाता (जैसे Alchemy, Infura, आदि) को भेजने का कार्य करती है।
+
+**एक `http` ट्रांसपोर्ट के साथ उदाहरण**
+
+```tsx
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { http } from 'wagmi';
+import { mainnet, sepolia } from 'wagmi/chains';
+
+const config = getDefaultConfig({
+  appName: 'My RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [mainnet, sepolia],
+  transports: {
+    [mainnet.id]: http('https://eth-mainnet.g.alchemy.com/v2/...'),
+    [sepolia.id]: http('https://eth-sepolia.g.alchemy.com/v2/...'),
+  },
+});
+```
+
+अधिक जानकारी के लिए, [Wagmi ट्रांसपोर्ट डॉक्स](https://wagmi.sh/core/api/transports#transports) देखें।
+
+### अपनी खुद की कार्यक्षमता जोड़ें
+
+अब आपके उपयोगकर्ता अपने वॉलेट को कनेक्ट कर सकते हैं, आप [वग्मी](https://wagmi.sh) का उपयोग करके अपने ऐप के शेष भाग को बनाना प्रारंभ कर सकते हैं।
+
+लेन-देन भेजें, अनुबंधों के साथ इंटरैक्ट करें, ENS विवरण हल करें और वग्मी के व्यापक React Hooks संग्रह के साथ और भी बहुत कुछ करें।
+
+अधिक जानकारी के लिए, [वग्मी दस्तावेज़](https://wagmi.sh) देखें।
+
+### आगे के उदाहरण
+
+परिणाम देखेने के लिए, या यहां तक कि उन्हें स्वचालित रूप से नया प्रोजेक्ट बनाने के लिए इस्तेमाल करें, [आधिकारिक उदाहरण](https://github.com/rainbow-me/rainbowkit/tree/main/examples) की जांच करें।
+
+रेनबोकिट को सीधे अपने ब्राउज़र में आजमाने के लिए, नीचे दिए गए कोड सैंडबॉक्स लिंक देखें:
+
+- [Create React App](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-create-react-app) के साथ
+- [Next.js](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next) के साथ
+- [Next.js एप राउटर](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next-app) के साथ
+- [Remix](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-remix) के साथ
+- [Vite](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-vite) के साथ
+- [React Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-react-router) के साथ

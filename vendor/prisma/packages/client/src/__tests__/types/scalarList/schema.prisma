@@ -1,0 +1,22 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Forest {
+  id           String   @id @default(uuid())
+  trees        Tree[]
+  names        String[]
+  randomInts   Int[]
+  randomFloats Float[]
+  jsonList     Json[]
+}
+
+enum Tree {
+  Oak
+  Pine
+  Ash
+}

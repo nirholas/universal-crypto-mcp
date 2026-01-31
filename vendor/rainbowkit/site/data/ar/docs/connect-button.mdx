@@ -1,0 +1,149 @@
+---
+title: زر الاتصال
+description: استخدام وتخصيص زر الاتصال
+---
+
+# زر الاتصال
+
+## استخدام وتخصيص زر الاتصال
+
+هذه هي المكوّن الرئيسي. فهو مسؤول عن عرض زر الاتصال/القطع، بالإضافة إلى واجهة تبديل السلاسل.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> ملاحظة: تأكد من أن تطبيقك مغلف في المُزودين الضروريين. [اقرأ المزيد](/docs/installation#wrap-providers).
+
+### الخصائص
+
+المكون `ConnectButton` يوفر عدة خصائص لتخصيص مظهره، بما في ذلك تغيير رؤية بعض العناصر.
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'اتصال محفظة',
+      type: 'string',
+      description: 'نص العلامة المعروض على الزر الاتصال',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "ما إذا كان يتم عرض الصورة الرمزية والعنوان للحساب النشط",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "ما إذا كانت أيقونة واسم السلسلة الحالية مرئيان، أم مخفيان تماماً",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'ما إذا كان الرصيد مرئيًا بجانب اسم الحساب',
+    },
+  ]}
+/>
+
+> ملاحظة: نقطة التوقف لشاشة كبيرة المُدمجة هي `768px`.
+
+### أمثلة
+
+#### العلامة
+
+استخدم الخاصية `label` لتعيين نص مخصص لزر `ConnectButton`.
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### حالة الحساب
+
+إليك بعض الطرق المختلفة التي يمكنك استخدام الخاصية `accountStatus` فيها.
+
+عرض صورة الحساب الرمزية فقط.
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+عرض عنوان الحساب فقط.
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### حالة السلسلة
+
+إليك بعض الطرق المختلفة التي يمكنك استخدام الخاصية `chainStatus` فيها.
+
+عرض أيقونة السلسلة الحالية فقط.
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+عرض اسم السلسلة الحالية فقط.
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+إخفاء واجهة السلسلة تمامًا.
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### عرض الرصيد
+
+استخدم الخاصية `showBalance` لإخفاء/عرض الرصيد.
+
+إخفاء الرصيد.
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### متجاوب
+
+يمكن أيضاً تعريف هذه الخصائص بتنسيق متجاوب.
+
+على الشاشات الصغيرة، عرض أيقونة الحساب فقط. ولكن على الشاشات الكبيرة، عرض الأيقونة والعنوان.
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+على الشاشات الصغيرة، إخفاء الرصيد. ولكن على الشاشات الكبيرة، عرضه.
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

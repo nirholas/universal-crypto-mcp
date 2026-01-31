@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "sourceMap": true,
+    "declarationMap": true,
+    "noEmitHelpers": false
+  },
+  "include": ["src"],
+  "exclude": ["**/__tests__/**"]
+}

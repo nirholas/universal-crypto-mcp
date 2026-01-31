@@ -1,0 +1,116 @@
+{
+  "extends": ["react-app", "plugin:jsdoc/recommended-typescript-error"],
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "plugins": ["import", "eslint-rules"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "ignorePatterns": ["docs-site/**"],
+  "rules": {
+    "import/extensions": ["error", "ignorePackages"],
+    "jsdoc/tag-lines": [
+      "error",
+      "any",
+      {
+        "startLines": 1
+      }
+    ],
+    "jsdoc/require-returns": [
+      "error",
+      {
+        "enableFixer": true
+      }
+    ],
+    "jsdoc/require-param": [
+      "error",
+      {
+        "enableFixer": true
+      }
+    ],
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/no-types": "off",
+    "jsdoc/require-jsdoc": "off",
+    "jsdoc/match-description": [
+      "error",
+      {
+        "matchDescription": "[A-Z].*",
+        "tags": {
+          "example": {
+            "message": "Example tags must provide a code block with a language identifier.",
+            "match": "```(js|javascript|ts|tsx)([\\s\\S]*)```"
+          }
+        }
+      }
+    ],
+    "eslint-rules/require-jsdoc-on-reexported-functions": [
+      "error",
+      {
+        "fixBatchSize": 0
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "site/snippets/**/*.ts",
+        "site/snippets/**/*.tsx",
+        "**/site/**/*.mdx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+        "import/extensions": ["off", "ignorePackages"],
+        "jsdoc/require-jsdoc": "off"
+      }
+    },
+    {
+      "files": ["**/*.mdx"],
+      "extends": ["plugin:mdx/recommended"],
+      "rules": {
+        "import/extensions": ["off", "ignorePackages"],
+        "react/jsx-no-undef": "off",
+        "jsx-a11y/anchor-has-content": "off",
+        "jsx-a11y/anchor-is-valid": "off"
+      }
+    },
+    {
+      "files": ["account-kit/wallet-client/**/*.ts"],
+      "excludedFiles": ["account-kit/wallet-client/dist/**"],
+      "rules": {
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "fixStyle": "inline-type-imports"
+          }
+        ],
+        "@typescript-eslint/no-import-type-side-effects": "error",
+        // Typebox imports break React Native bundling, so we restrict imports from wallet-api-types to type-only.
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@alchemy/wallet-api-types",
+                "message": "Only type imports are allowed from @alchemy/wallet-api-types to prevent React Native bundle issues. Use 'import type' instead.",
+                "allowTypeImports": true
+              },
+              {
+                "name": "@alchemy/wallet-api-types/rpc",
+                "message": "Only type imports are allowed from @alchemy/wallet-api-types/rpc to prevent React Native bundle issues. Use 'import type' instead.",
+                "allowTypeImports": true
+              },
+              {
+                "name": "@alchemy/wallet-api-types/capabilities",
+                "message": "Only type imports are allowed from @alchemy/wallet-api-types/capabilities to prevent React Native bundle issues. Use 'import type' instead.",
+                "allowTypeImports": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

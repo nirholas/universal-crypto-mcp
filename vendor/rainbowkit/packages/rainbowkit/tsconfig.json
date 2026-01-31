@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2019",
+    "preserveSymlinks": false,
+    "declaration": true,
+    "declarationDir": "dist",
+    "jsx": "react",
+    "outDir": "dist"
+  },
+  "exclude": ["node_modules", "src/**/*.test.tsx", "src/**/*.test.ts"],
+  "include": ["src", "assets.d.ts"]
+}

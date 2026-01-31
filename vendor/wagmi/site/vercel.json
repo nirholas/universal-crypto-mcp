@@ -1,0 +1,277 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/core/api/actions/sendTransactionSync",
+      "destination": "/core/api/actions/sendTransaction",
+      "permanent": true
+    },
+    {
+      "source": "/core/api/actions/sendCallsSync",
+      "destination": "/core/api/actions/sendCalls",
+      "permanent": true
+    },
+    {
+      "source": "/react/api/hooks/useSendTransactionSync",
+      "destination": "/react/api/hooks/useSendTransaction",
+      "permanent": true
+    },
+    {
+      "source": "/react/api/hooks/useSendCallsSync",
+      "destination": "/react/api/hooks/useSendCalls",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/actions/reward.start",
+      "destination": "/tempo/actions/reward.distribute",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/actions/reward.watchRewardScheduled",
+      "destination": "/tempo/actions/reward.watchRewardDistributed",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/actions/nonce.getNonceKeyCount",
+      "destination": "/tempo/actions/nonce",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/actions/nonce.watchActiveKeyCountChanged",
+      "destination": "/tempo/actions/nonce",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/actions/amm.watchFeeSwap",
+      "destination": "/tempo/actions/amm",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/hooks/reward.useStart",
+      "destination": "/tempo/hooks/reward.useDistribute",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/hooks/reward.useWatchRewardScheduled",
+      "destination": "/tempo/hooks/reward.useWatchRewardDistributed",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/hooks/nonce.useNonceKeyCount",
+      "destination": "/tempo/hooks/nonce",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/hooks/nonce.useWatchActiveKeyCountChanged",
+      "destination": "/tempo/hooks/nonce",
+      "permanent": true
+    },
+    {
+      "source": "/tempo/hooks/amm.useWatchFeeSwap",
+      "destination": "/tempo/hooks/amm",
+      "permanent": true
+    },
+
+    {
+      "source": "/cli",
+      "destination": "/cli/getting-started",
+      "permanent": true
+    },
+
+    {
+      "source": "/core",
+      "destination": "/core/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/core/migration-guide",
+      "destination": "/core/guides/migrate-from-v1-to-v2",
+      "permanent": true
+    },
+    {
+      "source": "/core/:name(faq)",
+      "destination": "/core/guides/:name",
+      "permanent": true
+    },
+    {
+      "source": "/core/ethers-adapters",
+      "destination": "/core/guides/ethers-web3",
+      "permanent": true
+    },
+    {
+      "source": "/core/:section(chains)",
+      "destination": "/core/api/:section",
+      "permanent": true
+    },
+    {
+      "source": "/core/:section(actions|connectors)/:name",
+      "destination": "/core/api/:section/:name",
+      "permanent": true
+    },
+    {
+      "source": "/core/config",
+      "destination": "/core/api/createConfig",
+      "permanent": true
+    },
+    {
+      "source": "/core/api/actions/getAccount",
+      "destination": "/core/api/actions/getConnection",
+      "permanent": true
+    },
+    {
+      "source": "/core/api/actions/switchAccount",
+      "destination": "/core/api/actions/switchConnection",
+      "permanent": true
+    },
+    {
+      "source": "/core/api/actions/watchAccount",
+      "destination": "/core/api/actions/watchConnection",
+      "permanent": true
+    },
+
+    {
+      "source": "/react",
+      "destination": "/react/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/react/comparison",
+      "destination": "/react/comparisons",
+      "permanent": true
+    },
+    {
+      "source": "/react/migration-guide",
+      "destination": "/react/guides/migrate-from-v1-to-v2",
+      "permanent": true
+    },
+    {
+      "source": "/react/:name(faq)",
+      "destination": "/react/guides/:name",
+      "permanent": true
+    },
+    {
+      "source": "/react/ethers-adapters",
+      "destination": "/react/guides/ethers",
+      "permanent": true
+    },
+    {
+      "source": "/react/:section(actions|chains)",
+      "destination": "/react/api/:section",
+      "permanent": true
+    },
+    {
+      "source": "/react/:section(connectors|hooks)/:name",
+      "destination": "/react/api/:section/:name",
+      "permanent": true
+    },
+    {
+      "source": "/react/config",
+      "destination": "/react/api/createConfig",
+      "permanent": true
+    },
+    {
+      "source": "/react/WagmiConfig",
+      "destination": "/react/api/WagmiProvider",
+      "permanent": true
+    },
+    {
+      "source": "/react/prepare-hooks/usePrepareContractWrite",
+      "destination": "/react/api/hooks/useSimulateContract",
+      "permanent": true
+    },
+    {
+      "source": "/react/prepare-hooks/usePrepareSendTransaction",
+      "destination": "/react/api/hooks/useEstimateFeesPerGas",
+      "permanent": true
+    },
+    {
+      "source": "/react/api/actions/useAccount",
+      "destination": "/react/api/actions/useConnection",
+      "permanent": true
+    },
+    {
+      "source": "/react/api/actions/useAccountEffect",
+      "destination": "/react/api/actions/useConnectionEffect",
+      "permanent": true
+    },
+    {
+      "source": "/react/api/actions/useSwitchAccount",
+      "destination": "/react/api/actions/useSwitchConnection",
+      "permanent": true
+    },
+
+    {
+      "source": "/core",
+      "destination": "/core/getting-started",
+      "permanent": true
+    },
+
+    {
+      "source": "/tempo",
+      "destination": "/tempo/getting-started",
+      "permanent": true
+    },
+
+    {
+      "source": "/vue/api/actions/useAccount",
+      "destination": "/vue/api/actions/useConnection",
+      "permanent": true
+    },
+    {
+      "source": "/vue/api/actions/useAccountEffect",
+      "destination": "/vue/api/actions/useConnectionEffect",
+      "permanent": true
+    },
+    {
+      "source": "/vue/api/actions/useSwitchAccount",
+      "destination": "/vue/api/actions/useSwitchConnection",
+      "permanent": true
+    },
+
+    {
+      "source": "/examples/connect-wallet",
+      "destination": "/react/guides/connect-wallet",
+      "permanent": true
+    },
+    {
+      "source": "/examples/send-transaction",
+      "destination": "/react/guides/send-transaction",
+      "permanent": true
+    },
+    {
+      "source": "/react/guides/sending-transactions",
+      "destination": "/react/guides/send-transaction",
+      "permanent": true
+    },
+    {
+      "source": "/react/guides/reading-contracts",
+      "destination": "/react/guides/read-from-contract",
+      "permanent": true
+    },
+    {
+      "source": "/examples/contract-write(-dynamic)?",
+      "destination": "/react/guides/write-to-contract",
+      "permanent": true
+    },
+    {
+      "source": "/react/guides/writing-to-contracts",
+      "destination": "/react/guides/write-to-contract",
+      "permanent": true
+    },
+    {
+      "source": "/examples/custom-connector",
+      "destination": "/dev/creating-connectors",
+      "permanent": true
+    },
+    {
+      "source": "/examples/sign-message",
+      "destination": "https://1.x.wagmi.sh/examples/sign-message",
+      "permanent": false
+    },
+    {
+      "source": "/examples/sign-in-with-ethereum",
+      "destination": "https://1.x.wagmi.sh/examples/sign-in-with-ethereum",
+      "permanent": false
+    }
+  ]
+}

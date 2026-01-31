@@ -1,0 +1,8 @@
+datasource my_db {
+    provider = "cockroachdb"
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output    = "@prisma/client"
+}

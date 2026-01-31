@@ -1,0 +1,23 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{ts}]
+charset = utf-8
+
+[Makefile]
+indent_style = tab
+
+[lib/**.ts]
+indent_style = space
+indent_size = 4
+max_line_length = 80
+quote_type = single
+
+[test/**.json]
+indent_style = space
+indent_size = 4
+max_line_length = 80
+quote_type = single

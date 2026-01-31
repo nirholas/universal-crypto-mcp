@@ -1,0 +1,41 @@
+.codemirror-wrapper {
+  .codemirror-toolbar {
+    background-color: var(--color-surface-sunken);
+    height: 40px;
+    padding: 0 10px 0 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+
+    .codemirror-toolbar-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 6px 12px;
+      height: 3.2rem;
+      background-color: transparent;
+      border: 1px solid var(--color-border-2);
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--color-text-2);
+      transition: all 0.2s;
+      line-height: 1;
+
+      &:hover {
+        background: var(--color-solid-brand-1);
+        border-color: var(--color-solid-brand-1);
+        color: white;
+      }
+
+      svg {
+        font-size: 14px;
+      }
+    }
+  }
+
+  #codemirror-container {
+    max-width: 120ex;
+  }
+}

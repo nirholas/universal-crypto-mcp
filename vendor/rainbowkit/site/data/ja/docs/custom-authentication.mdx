@@ -1,0 +1,102 @@
+---
+title: カスタム認証
+description: 独自の認証バックエンドに接続する
+---
+
+# カスタム認証
+
+## 独自の認証バックエンドに接続する
+
+RainbowKitは、[EthereumでサインインとNextAuthに対する第一級のサポートを提供しますが、](/docs/authentication#set-up-sign-in-with-ethereum-and-nextauth)独自のバックエンドやメッセージフォーマットと統合することもできます。
+
+### カスタムアダプタの作成
+
+まず、認証アダプターを作成します。これにより、RainbowKitはメッセージを作成/準備してバックエンドと通信できます。
+
+例として、カスタムAPIエンドポイントに対して[Sign-In with Ethereum](https://login.xyz)を使用できる認証アダプターを作成するとします。例えば[iron-session](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-siwe-iron-session)のように。
+
+```tsx
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
+
+const authenticationAdapter = createAuthenticationAdapter({
+  getNonce: async () => {
+    const response = await fetch('/api/nonce');
+    return await response.text();
+  },
+
+  createMessage: ({ nonce, address, chainId }) => {
+    return createSiweMessage({
+      domain: window.location.host,
+      address,
+      statement: 'Sign in with Ethereum to the app.',
+      uri: window.location.origin,
+      version: '1',
+      chainId,
+      nonce,
+    });
+  },
+
+  verify: async ({ message, signature }) => {
+    const verifyRes = await fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, signature }),
+    });
+
+    return Boolean(verifyRes.ok);
+  },
+
+  signOut: async () => {
+    await fetch('/api/logout');
+  },
+});
+```
+
+#### 認証状態の提供
+
+あなたのアプリケーションが既に認証ライフサイクルを何らかの形で管理している場合、`RainbowKitAuthenticationProvider`にカスタムアダプターを渡し、既存の`RainbowKitProvider`をラップして、現在の認証ステータスを渡すことができます。
+
+```tsx
+import {
+  createAuthenticationAdapter,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const authenticationAdapter = createAuthenticationAdapter({
+  /* See above... */
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }: AppProps) {
+  // You'll need to resolve AUTHENTICATION_STATUS here
+  // using your application's authentication system.
+  // It needs to be either 'loading' (during initial load),
+  // 'unauthenticated' or 'authenticated'.
+
+  return (
+    <WagmiProvider {...etc}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitAuthenticationProvider
+          adapter={authenticationAdapter}
+          status={AUTHENTICATION_STATUS}
+        >
+          <RainbowKitProvider {...etc}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+ここまで進み、既存のオープンソース認証ライブラリに対するアダプタを作成した場合、他の人が使用できるパッケージを作成することをご検討ください！

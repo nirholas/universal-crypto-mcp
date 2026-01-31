@@ -97,6 +97,9 @@ export class PredictionClient {
     predictionType: PredictionType,
     asset?: SupportedAsset
   ): Promise<PaymentReceipt | null> {
+    // Always track prediction count regardless of payment status
+    this.predictionCount++
+    
     if (!this.config.enablePayments) {
       Logger.debug(`Payment skipped (payments disabled): $${amount} for ${predictionType}`)
       return null
@@ -125,7 +128,6 @@ export class PredictionClient {
       }
       
       this.totalSpent += amount
-      this.predictionCount++
       
       return receipt
     } catch (error) {

@@ -1,0 +1,335 @@
+---
+title: Пользовательская кнопка подключения
+description: Создание пользовательской кнопки подключения
+---
+
+# Пользовательская кнопка подключения
+
+## Создание пользовательской кнопки подключения
+
+Вы можете использовать низкоуровневый `ConnectButton.Custom`, чтобы создать свою собственную кнопку подключения. Этот компонент рендерит функцию, которая включает всё необходимое для повторной реализации встроенных кнопок.
+
+Минимальная повторная реализация встроенных кнопок будет выглядеть примерно так:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+Следующие свойства передаются в вашу функцию отображения.
+
+### Свойства аккаунта
+
+<PropsTable
+ data={[
+ {
+ name: 'account',
+ required: false,
+ type: 'object | undefined',
+ description:
+ 'Объект, содержащий детали о текущем аккаунте, описанные ниже',
+ },
+ {
+ name: 'account.address',
+ required: false,
+ type: 'string',
+ description: (
+ <>
+ Полный адрес аккаунта, например
+ "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+ </>
+ ),
+ },
+ {
+ name: 'account.balanceDecimals',
+ required: false,
+ type: 'string | undefined ',
+ description: 'Баланс аккаунта в десятичных числах',
+ },
+ {
+ name: 'account.balanceFormatted',
+ required: false,
+ type: 'string | undefined ',
+ description: (
+ <>
+ Баланс аккаунта, отформатированный как строка, например{ } <code>1.234567890123456789</code>
+ </>
+ ),
+ },
+ {
+ name: 'account.balanceSymbol',
+ required: false,
+ type: 'string | undefined ',
+ description: (
+ <>
+ Символ валюты для баланса, например <code>ETH</code>
+ </>
+ ),
+ },
+ {
+ name: 'account.displayBalance',
+ required: false,
+ type: 'string | undefined ',
+ description: (
+ <>
+ Баланс, отформатированный до 3 значимых цифр, плюс символ, например <code>1.23 ETH</code>
+ </>
+ ),
+ },
+ {
+ name: 'account.displayName',
+ required: false,
+ type: 'string',
+ description: (
+ <>
+ Имя ENS или укороченная версия адреса, например{ } <code>"rainbowwallet.eth"</code> или <code>"0x7a…384f"</code>
+ </>
+ ),
+ },
+ {
+ name: 'account.ensAvatar',
+ required: false,
+ type: 'string	| undefined',
+ description: 'URI аватара ENS',
+ },
+ {
+ name: 'account.ensName',
+ required: false,
+ type: 'string	| undefined',
+ description: (
+ <>
+ Имя ENS, например <code>rainbowwallet.eth</code>
+ </>
+ ),
+ },
+ {
+ name: 'account.hasPendingTransactions',
+ required: false,
+ type: 'boolean',
+ description:
+ 'Логическое значение, указывающее, имеются ли у аккаунта ожидающие транзакции на текущей цепочке',
+ },
+ ]}
+/>
+
+### Свойства цепи
+
+<PropsTable
+ data={[
+ {
+ name: 'chain',
+ required: false,
+ type: 'object | undefined',
+ description:
+ 'Объект, содержащий детали о текущей цепи, описанные ниже',
+ },
+ {
+ name: 'chain.hasIcon',
+ required: false,
+ type: 'boolean',
+ description: 'Имеется ли у цепи заданная иконка',
+ },
+ {
+ name: 'chain.iconUrl',
+ required: false,
+ type: 'string | undefined',
+ description:
+ 'URL иконки цепи (которая может также быть undefined, пока загружаются Base64 данные URL)',
+ },
+ {
+ name: 'chain.iconBackground',
+ required: false,
+ type: 'string | undefined',
+ description:
+ 'Фон иконки цепи, который будет виден, пока загружаются изображения',
+ },
+ {
+ name: 'chain.id',
+ required: false,
+ type: 'number',
+ description: (
+ <>
+ ID цепи, например <code>1</code>
+ </>
+ ),
+ },
+ {
+ name: 'chain.name',
+ required: false,
+ type: 'string | undefined',
+ description: (
+ <>
+ Имя цепи, например <code>"Ethereum"</code>
+ </>
+ ),
+ },
+ {
+ name: 'chain.unsupported',
+ required: false,
+ type: 'boolean | undefined',
+ description:
+ 'Логическое значение, указывающее, является ли текущая цепь неподдерживаемой',
+ },
+ ]}
+/>
+
+### Состояние свойств модального окна
+
+<PropsTable
+ data={[
+ {
+ name: 'openAccountModal',
+ required: false,
+ type: '() => void',
+ description: 'Функция для открытия модального окна аккаунта',
+ },
+ {
+ name: 'openChainModal',
+ required: false,
+ type: '() => void',
+ description: 'Функция для открытия модального окна цепи',
+ },
+ {
+ name: 'openConnectModal',
+ required: false,
+ type: '() => void',
+ description: 'Функция для открытия модального окна подключения',
+ },
+ {
+ name: 'accountModalOpen',
+ required: false,
+ type: 'boolean',
+ description:
+ 'Логическое значение, указывающее, открыто ли модальное окно аккаунта',
+ },
+ {
+ name: 'chainModalOpen',
+ required: false,
+ type: 'boolean',
+ description: 'Логическое значение, указывающее, открыто ли модальное окно цепи',
+ },
+ {
+ name: 'connectModalOpen',
+ required: false,
+ type: 'boolean',
+ description:
+ 'Логическое значение, указывающее, открыто ли модальное окно подключения',
+ },
+ ]}
+/>
+
+### Общие свойства состояния
+
+<PropsTable
+ data={[
+ {
+ name: 'mounted',
+ required: false,
+ type: 'boolean',
+ description:
+ 'Логическое значение, указывающее, был ли компонент смонтирован',
+ },
+ {
+ name: 'authenticationStatus',
+ required: false,
+ type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+ description:
+ 'Статус аутентификации или undefined, если аутентификация не была настроена',
+ },
+ ]}
+/>

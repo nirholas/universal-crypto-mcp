@@ -1,0 +1,17 @@
+{
+  "name": "@vitest/test-workspaces",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "pnpm test:workspace && pnpm test:coverage",
+    "test:workspace": "vitest run",
+    "test:coverage": "vitest run --root coverage-report-tests"
+  },
+  "devDependencies": {
+    "@jridgewell/remapping": "catalog:",
+    "@types/istanbul-lib-coverage": "catalog:",
+    "istanbul-lib-coverage": "catalog:",
+    "jsdom": "latest",
+    "vitest": "workspace:*"
+  }
+}

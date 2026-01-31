@@ -1,0 +1,11 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model A {
+  id    String  @id @default(uuid())
+}

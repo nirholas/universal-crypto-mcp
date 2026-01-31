@@ -1,0 +1,55 @@
+{
+  "name": "@auth/mikro-orm-adapter",
+  "version": "2.11.0",
+  "description": "MikroORM adapter for Auth.js",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "Jonas Strassel <info@jonas-strassel.de>",
+  "contributors": [
+    "Balázs Orbán <info@balazsorban.com>"
+  ],
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "lib",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    }
+  },
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "oauth",
+    "mikro-orm"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "vitest -c ../utils/vitest.config.ts",
+    "build": "tsc",
+    "clean": "rm -rf *.js *.d.ts* lib"
+  },
+  "peerDependencies": {
+    "@mikro-orm/core": "^5"
+  },
+  "devDependencies": {
+    "@mikro-orm/core": "^5",
+    "@mikro-orm/sqlite": "^5"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  }
+}

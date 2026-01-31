@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/testing-kit" },
+    { "path": "packages/api-kit" },
+    { "path": "packages/protocol-kit" },
+    { "path": "packages/relay-kit" },
+    { "path": "packages/types-kit" },
+    { "path": "packages/sdk-starter-kit" }
+  ]
+}

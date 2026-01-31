@@ -1,0 +1,102 @@
+---
+title: Otentikasi Kustom
+description: Hubungkan ke backend otentikasi Anda sendiri
+---
+
+# Otentikasi Kustom
+
+## Hubungkan ke backend otentikasi Anda sendiri
+
+Sementara RainbowKit menyediakan [dukungan kelas satu untuk Sign-In dengan Ethereum dan NextAuth,](/docs/authentication#set-up-sign-in-with-ethereum-and-nextauth) Anda juga dapat mengintegrasikan dengan backend dan format pesan kustom.
+
+### Membuat adaptor kustom
+
+Pertama buat adaptor otentikasi. Ini memungkinkan RainbowKit untuk membuat/mempersiapkan pesan dan berkomunikasi dengan backend Anda.
+
+Sebagai contoh, kami dapat membuat adaptor otentikasi yang memungkinkan kami menggunakan [Sign-In dengan Ethereum](https://login.xyz) terhadap beberapa titik akhir API kustom, seperti [iron-session](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-siwe-iron-session).
+
+```tsx
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
+
+const authenticationAdapter = createAuthenticationAdapter({
+  getNonce: async () => {
+    const response = await fetch('/api/nonce');
+    return await response.text();
+  },
+
+  createMessage: ({ nonce, address, chainId }) => {
+    return createSiweMessage({
+      domain: window.location.host,
+      address,
+      statement: 'Sign in with Ethereum to the app.',
+      uri: window.location.origin,
+      version: '1',
+      chainId,
+      nonce,
+    });
+  },
+
+  verify: async ({ message, signature }) => {
+    const verifyRes = await fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, signature }),
+    });
+
+    return Boolean(verifyRes.ok);
+  },
+
+  signOut: async () => {
+    await fetch('/api/logout');
+  },
+});
+```
+
+#### Menyediakan status otentikasi
+
+Dengan asumsi aplikasi Anda sudah mengelola siklus hidup otentikasi dengan cara tertentu, Anda dapat mengoperkan status otentikasi saat ini bersamaan dengan adaptor kustom Anda ke `RainbowKitAuthenticationProvider`, mengemas `RainbowKitProvider` yang ada.
+
+```tsx
+import {
+  createAuthenticationAdapter,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const authenticationAdapter = createAuthenticationAdapter({
+  /* See above... */
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }: AppProps) {
+  // You'll need to resolve AUTHENTICATION_STATUS here
+  // using your application's authentication system.
+  // It needs to be either 'loading' (during initial load),
+  // 'unauthenticated' or 'authenticated'.
+
+  return (
+    <WagmiProvider {...etc}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitAuthenticationProvider
+          adapter={authenticationAdapter}
+          status={AUTHENTICATION_STATUS}
+        >
+          <RainbowKitProvider {...etc}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+Jika Anda telah mencapai tahap ini dan membuat adaptor untuk perpustakaan otentikasi sumber terbuka yang ada, mohon pertimbangkan untuk membuat paket untuk digunakan orang lain!

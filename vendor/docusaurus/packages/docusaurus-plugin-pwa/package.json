@@ -1,0 +1,54 @@
+{
+  "name": "@docusaurus/plugin-pwa",
+  "version": "3.9.2",
+  "description": "Docusaurus Plugin to add PWA support.",
+  "main": "lib/index.js",
+  "types": "src/plugin-pwa.d.ts",
+  "scripts": {
+    "build": "tsc --build && node ../../admin/scripts/copyUntypedFiles.js && prettier --config ../../.prettierrc --write \"lib/theme/**/*.js\"",
+    "watch": "run-p -c copy:watch build:watch",
+    "build:watch": "tsc --build --watch",
+    "copy:watch": "node ../../admin/scripts/copyUntypedFiles.js --watch"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/docusaurus.git",
+    "directory": "packages/docusaurus-plugin-pwa"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.25.9",
+    "@babel/preset-env": "^7.25.9",
+    "@docusaurus/bundler": "3.9.2",
+    "@docusaurus/core": "3.9.2",
+    "@docusaurus/logger": "3.9.2",
+    "@docusaurus/theme-common": "3.9.2",
+    "@docusaurus/theme-translations": "3.9.2",
+    "@docusaurus/types": "3.9.2",
+    "@docusaurus/utils": "3.9.2",
+    "@docusaurus/utils-validation": "3.9.2",
+    "babel-loader": "^9.2.1",
+    "clsx": "^2.0.0",
+    "core-js": "^3.31.1",
+    "tslib": "^2.6.0",
+    "webpack": "^5.95.0",
+    "webpack-merge": "^5.9.0",
+    "workbox-build": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-window": "^7.0.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.9.2",
+    "fs-extra": "^11.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "engines": {
+    "node": ">=20.0"
+  }
+}

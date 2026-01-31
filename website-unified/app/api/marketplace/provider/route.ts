@@ -126,12 +126,11 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
     // Get provider's services
     const services = await getProviderServices(walletAddress as `0x${string}`);
     
-    // Calculate analytics from services
-    
-    // Calculate aggregate stats
-    const totalRequests = services.reduce((sum, s) => sum + (s.stats?.totalRequests || 0), 0);
+    // Calculate aggregate stats from services
+    const totalRequests = services.reduce((sum, s) => sum + (s.stats?.totalRequests || s.usageCount || 0), 0);
     const totalRevenue = services.reduce((sum, s) => {
-      const revenue = parseFloat((s.stats?.totalRevenue || '$0').replace(/[^0-9.]/g, ''));
+      const revenueStr = s.stats?.totalRevenue || '$0';
+      const revenue = parseFloat(revenueStr.replace(/[^0-9.]/g, ''));
       return sum + revenue;
     }, 0);
     const avgRating = services.length > 0
@@ -140,16 +139,16 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
     
     const provider: Provider = {
       id: `prv-${walletAddress.slice(2, 10)}`,
-      name: services[0]?.providerName || 'Provider',
+      name: services[0]?.provider?.name || services[0]?.providerName || 'Provider',
       description: 'Marketplace service provider',
       walletAddress,
       categories: [...new Set(services.map(s => s.category))],
-      verified: services.some(s => s.reputation?.badges?.includes('verified')),
+      verified: services.some(s => s.provider?.verified || false),
       rating: avgRating,
       totalServices: services.length,
       totalRevenue: `$${totalRevenue.toFixed(2)}`,
       totalRequests,
-      joinedAt: services[0]?.registeredAt?.toISOString() || new Date().toISOString(),
+      joinedAt: services[0]?.createdAt?.toISOString() || new Date().toISOString(),
       status: 'active',
     };
     
@@ -159,7 +158,7 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
       name: s.name,
       category: s.category,
       status: s.status || 'active',
-      stats: s.stats,
+      stats: s.stats || { totalRequests: s.usageCount || 0, totalRevenue: '$0' },
       pricing: s.pricing,
     }));
     

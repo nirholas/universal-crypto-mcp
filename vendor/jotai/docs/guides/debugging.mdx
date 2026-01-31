@@ -1,0 +1,172 @@
+---
+title: Debugging
+nav: 8.07
+keywords: debug,labels,devtools,freeze
+---
+
+In basic apps, `console.log` can be our best friend for debugging atoms, but when applications get bigger and we have more atoms to use, logging would not be a good way of debugging atoms.
+Jotai provides two ways of debugging atoms, **React Dev Tools** and **Redux Dev tools**. For reading values and simple debugging, React Dev Tools might suit you, but for more complicated tasks like Time-travelling and setting values, Redux Dev Tools would be a better option.
+
+## Debug labels
+
+It is worth mentioning that we have a concept called **Debug labels** in Jotai which may help us with debugging.
+By default each Jotai state has the label like `1:<no debugLabel>` with number being internal `key` assigned to each atom automatically. But you can add labels to atoms to help you distinguish them more easily with `debugLabel`.
+
+```js
+const countAtom = atom(0)
+// countAtom's debugLabel by default is 'atom1'
+if (process.env.NODE_ENV !== 'production') {
+  countAtom.debugLabel = 'count'
+  // debugLabel is 'count' now
+}
+```
+
+Jotai provides both a Babel and a SWC plugin, that adds a debugLabel automatically to every atom, which makes things easier for us. For more info, check out [jotai/babel](https://github.com/pmndrs/jotai/blob/main/docs/tools/babel.mdx#plugin-debug-label) and [@swc-jotai/debug-label](https://github.com/pmndrs/jotai/blob/main/docs/tools/swc.mdx)
+
+## Using React Dev Tools
+
+You can use [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+to inspect Jotai state. To achieve that [useDebugValue](https://react.dev/reference/react/useDebugValue)
+is used inside custom hooks. Keep in mind that it only works in dev mode
+(such as `NODE_ENV === 'development'`).
+
+### useAtom
+
+`useAtom` calls `useDebugValue` for atom values, so if you select the component that consumes Jotai atoms in React Dev Tools, you would see "Atom" hooks for each atom that is used in the component along with the value it has right now.
+
+### useAtomsDebugValue
+
+`useAtomsDebugValue` catches all atoms in a component tree under Provider (or an entire tree for Provider-less mode), and `useDebugValue` for all atoms values.
+If you navigate to the component that has `useAtomsDebugValue` in the React Dev Tools, we can see a custom hook "AtomsDebugValue" which allows you to see all atom values and their dependents.
+
+One use case is to put the hook just under the `Provider` component:
+
+```jsx
+const DebugAtoms = () => {
+  useAtomsDebugValue()
+  return null
+}
+
+const Root = () => (
+  <Provider>
+    <DebugAtoms />
+    <App />
+  </Provider>
+)
+```
+
+## Using Redux DevTools
+
+You can also use [Redux DevTools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)
+to inspect atoms, with many features like Time-travelling and value dispatching.
+
+### [useAtomDevtools](https://jotai.org/docs/api/devtools#use-atom-devtools)
+
+> `useAtomDevtools` is a React hook that manages ReduxDevTools extension for a particular atom.
+
+If you have a specific atom in mind that you may want to debug, `useAtomDevtools` can be a good option.
+
+```js
+const countAtom = atom(0)
+// setting countAtom.debugLabel is recommended if we have more atoms
+
+function Counter() {
+  const [count, setCount] = useAtom(countAtom)
+  useAtomDevtools(countAtom)
+}
+```
+
+Now if we try `setCount`, we can see that the Redux Dev Tools logs those changes immediately.
+
+![](https://lh3.googleusercontent.com/pw/AP1GczMgeYQOyCAc69gJIAcRBtKO9BOUEE3SQB5Bl-7IScJfChWGnVb3B0OmlhrjK8caQVnj-HtyN1cpv1l1K9kE4pxwapUwu_2OB-dO_G18ZUC1NbDJFiXYRW9jX8OeDBJeWg1Qx9_IdkfoaoIin90A8gSE=w828-h268-s-no-gm)
+![]()
+
+#### Time travel
+
+Sometimes we need to switch to a specific value of our atoms' state, with Time travelling this is possible.
+You can hover on each action you see in the devtools and see the **Jump** option there, with clicking it you'd be able to switch to that specific value.
+
+#### Pause
+
+If we don't record changes on atoms, we can stop watching those using the **Pausing** feature.
+
+![](https://lh3.googleusercontent.com/pw/AP1GczP8hTBFtwlx0BJGGbbcXgfhMNG2Vz_uozdVnrTJHwMb1gKx55TP59WgvsMwgIyExwscgYZSpYDmxCJXjk_pKy6wP-K-0p287lkRXdTZEf074xUZr8fnIpkwg-zN14VXZ2STet1sVgTTawm49mc8Oygb=w395-h87-s-no-gm)
+
+#### Dispatch
+
+It's possible to set values on atoms with the **Dispatch** feature. You can do that by clicking on the **Show Dispatcher** button.
+![](https://lh3.googleusercontent.com/pw/AP1GczMNn6aXTA7K8ZFzUj17I40cm0o7joOG6E76Q6UVnXYJ3TO7ItRI6Jr1EIxogfY9P2xkiQfyYqB7_aU--R_vdSyNXAtTfPuxxLymApRoZov0-6ZHS7mmxxxD4Ku1JnqTRyPyZaQHyQPkq8j4CciQaISV=w832-h149-s-no-gm)
+This would set the `countAtoms`'s value to `5`.
+
+> We should note that the value will be parsed by JSON.parse, so pass supported values.
+
+### [useAtomsDevtools](../tools/devtools.mdx)
+
+> `useAtomsDevtools` is a catch-all version of `useAtomDevtools` where it shows all atoms in the store instead of showing a specific one.
+
+We'd recommend this hook if you want to keep track of all of your atoms in one place. It means every action on every atom that is placed in the bottom of this hook (in the React tree) will be caught by the Redux Dev Tools.
+
+Every feature of `useAtomDevtools` is supported in this hook, but there's an extra feature, which includes giving more information about atoms dependents like:
+
+```json
+{
+  "values": {
+    "atom1:count": 0,
+    "atom2:doubleCount": 0,
+    "atom3:half": 0,
+    "atom4:sum": 0
+  },
+  "dependents": {
+    "atom1:count": ["atom1:count", "atom2:doubleCount", "atom4:sum"],
+    "atom2:doubleCount": ["atom3:half", "atom4:sum"],
+    "atom3:half": ["atom4:sum"],
+    "atom4:sum": []
+  }
+}
+```
+
+## Frozen Atoms
+
+To find bugs where you accidentally tried to mutate objects stored in atoms you
+could use `freezeAtom` or `freezeAtomCreator`from `jotai/utils` bundle.
+Which returns atoms value that is deeply freezed with `Object.freeze`.
+
+### freezeAtom
+
+```ts
+freezeAtom(anAtom): AtomType
+```
+
+`freezeAtom` takes an existing atom and make it "frozen".
+It returns the same atom.
+The atom value will be deeply frozen by `Object.freeze`.
+It is useful to find bugs where you unintentionally tried
+to change objects (states) which can lead to unexpected behavior.
+You may use `freezeAtom` with all atoms to prevent this situation.
+
+#### Parameters
+
+**anAtom** (required): An atom you wish to freeze.
+
+#### Examples
+
+```js
+import { atom } from 'jotai'
+import { freezeAtom } from 'jotai/utils'
+
+const objAtom = freezeAtom(atom({ count: 0 }))
+```
+
+### freezeAtomCreator
+
+If you need, you can define a factory for `freezeAtom`.
+
+```ts
+import { freezeAtom } from 'jotai/utils'
+
+export function freezeAtomCreator<
+  CreateAtom extends (...args: unknown[]) => Atom<unknown>,
+>(createAtom: CreateAtom): CreateAtom {
+  return ((...args: unknown[]) => freezeAtom(createAtom(...args))) as never
+}
+```

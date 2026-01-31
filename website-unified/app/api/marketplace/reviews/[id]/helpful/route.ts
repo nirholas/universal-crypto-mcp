@@ -15,6 +15,7 @@ import {
   createErrorResponse,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -27,9 +28,10 @@ export const runtime = 'nodejs';
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 2]; // /reviews/[id]/helpful
   const db = getDatabase();
   
   await seedDatabase();
@@ -61,9 +63,7 @@ async function handler(
     }
     console.error('[API] Review helpful error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to mark review as helpful',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to mark review as helpful')
     );
   }
 }

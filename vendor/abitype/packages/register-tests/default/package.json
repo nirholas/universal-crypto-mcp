@@ -1,0 +1,11 @@
+{
+  "name": "default-register",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "abitype": "workspace:*"
+  }
+}

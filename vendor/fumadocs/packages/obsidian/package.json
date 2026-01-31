@@ -1,0 +1,85 @@
+{
+  "name": "fumadocs-obsidian",
+  "version": "0.0.10",
+  "description": "Obsidian Integration for Fumadocs",
+  "keywords": [
+    "Docs",
+    "NextJs",
+    "Obsidian",
+    "fumadocs"
+  ],
+  "homepage": "https://fumadocs.dev",
+  "license": "MIT",
+  "author": "Fuma Nama",
+  "repository": "github:fuma-nama/fumadocs",
+  "files": [
+    "dist/*"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js"
+    },
+    "./mdx": {
+      "types": "./dist/mdx/index.d.ts",
+      "import": "./dist/mdx/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch",
+    "lint": "eslint .",
+    "types:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "github-slugger": "^2.0.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.1",
+    "remark-math": "^6.0.0",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "tailwind-merge": "^3.4.0",
+    "tinyglobby": "^0.2.15",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0",
+    "vfile": "^6.0.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/estree": "^1.0.8",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "25.1.0",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "eslint-config-custom": "workspace:*",
+    "fumadocs-core": "workspace:*",
+    "mdast-util-mdx-jsx": "^3.2.0",
+    "tsconfig": "workspace:*",
+    "tsdown": "^0.19.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@types/react": "*",
+    "fumadocs-core": "^15.0.0 || ^16.0.0",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

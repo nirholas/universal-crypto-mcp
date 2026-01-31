@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id   Int @id
+  name String
+  orders Order[]
+}
+
+model Order {
+  id   Int @id
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}

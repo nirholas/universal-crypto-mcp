@@ -1,0 +1,276 @@
+import type { PrettyFormatOptions } from '@vitest/pretty-format'
+import {
+  createDOMElementFilter,
+  format as prettyFormat,
+  plugins as prettyFormatPlugins,
+} from '@vitest/pretty-format'
+import * as loupe from 'loupe'
+
+type Inspect = (value: unknown, options: Options) => string
+interface Options {
+  showHidden: boolean
+  depth: number
+  colors: boolean
+  customInspect: boolean
+  showProxy: boolean
+  maxArrayLength: number
+  breakLength: number
+  truncate: number
+  seen: unknown[]
+  inspect: Inspect
+  stylize: (value: string, styleType: string) => string
+}
+
+export type LoupeOptions = Partial<Options>
+
+const {
+  AsymmetricMatcher,
+  DOMCollection,
+  DOMElement,
+  Immutable,
+  ReactElement,
+  ReactTestComponent,
+} = prettyFormatPlugins
+
+const PLUGINS = [
+  ReactTestComponent,
+  ReactElement,
+  DOMElement,
+  DOMCollection,
+  Immutable,
+  AsymmetricMatcher,
+]
+
+export interface StringifyOptions extends PrettyFormatOptions {
+  maxLength?: number
+  filterNode?: string | ((node: any) => boolean)
+}
+
+export function stringify(
+  object: unknown,
+  maxDepth = 10,
+  { maxLength, filterNode, ...options }: StringifyOptions = {},
+): string {
+  const MAX_LENGTH = maxLength ?? 10000
+  let result
+
+  // Convert string selector to filter function
+  const filterFn = typeof filterNode === 'string'
+    ? createNodeFilterFromSelector(filterNode)
+    : filterNode
+
+  const plugins = filterFn
+    ? [
+        ReactTestComponent,
+        ReactElement,
+        createDOMElementFilter(filterFn),
+        DOMCollection,
+        Immutable,
+        AsymmetricMatcher,
+      ]
+    : PLUGINS
+
+  try {
+    result = prettyFormat(object, {
+      maxDepth,
+      escapeString: false,
+      // min: true,
+      plugins,
+      ...options,
+    })
+  }
+  catch {
+    result = prettyFormat(object, {
+      callToJSON: false,
+      maxDepth,
+      escapeString: false,
+      // min: true,
+      plugins,
+      ...options,
+    })
+  }
+
+  // Prevents infinite loop https://github.com/vitest-dev/vitest/issues/7249
+  return result.length >= MAX_LENGTH && maxDepth > 1
+    ? stringify(object, Math.floor(Math.min(maxDepth, Number.MAX_SAFE_INTEGER) / 2), { maxLength, filterNode, ...options })
+    : result
+}
+
+function createNodeFilterFromSelector(selector: string): (node: any) => boolean {
+  const ELEMENT_NODE = 1
+  const COMMENT_NODE = 8
+
+  return (node: any) => {
+    // Filter out comments
+    if (node.nodeType === COMMENT_NODE) {
+      return false
+    }
+
+    // Filter out elements matching the selector
+    if (node.nodeType === ELEMENT_NODE && node.matches) {
+      try {
+        return !node.matches(selector)
+      }
+      catch {
+        return true
+      }
+    }
+
+    return true
+  }
+}
+
+export const formatRegExp: RegExp = /%[sdjifoOc%]/g
+
+interface FormatOptions {
+  prettifyObject?: boolean
+}
+
+function baseFormat(args: unknown[], options: FormatOptions = {}): string {
+  const formatArg = (item: unknown, inspecOptions?: LoupeOptions) => {
+    if (options.prettifyObject) {
+      return stringify(item, undefined, {
+        printBasicPrototype: false,
+        escapeString: false,
+      })
+    }
+    return inspect(item, inspecOptions)
+  }
+
+  if (typeof args[0] !== 'string') {
+    const objects = []
+    for (let i = 0; i < args.length; i++) {
+      objects.push(formatArg(args[i], { depth: 0, colors: false }))
+    }
+    return objects.join(' ')
+  }
+
+  const len = args.length
+  let i = 1
+  const template = args[0]
+  let str = String(template).replace(formatRegExp, (x) => {
+    if (x === '%%') {
+      return '%'
+    }
+    if (i >= len) {
+      return x
+    }
+    switch (x) {
+      case '%s': {
+        const value = args[i++]
+        if (typeof value === 'bigint') {
+          return `${value.toString()}n`
+        }
+        if (typeof value === 'number' && value === 0 && 1 / value < 0) {
+          return '-0'
+        }
+        if (typeof value === 'object' && value !== null) {
+          if (typeof value.toString === 'function' && value.toString !== Object.prototype.toString) {
+            return value.toString()
+          }
+          return formatArg(value, { depth: 0, colors: false })
+        }
+        return String(value)
+      }
+      case '%d': {
+        const value = args[i++]
+        if (typeof value === 'bigint') {
+          return `${value.toString()}n`
+        }
+        return Number(value).toString()
+      }
+      case '%i': {
+        const value = args[i++]
+        if (typeof value === 'bigint') {
+          return `${value.toString()}n`
+        }
+        return Number.parseInt(String(value)).toString()
+      }
+      case '%f':
+        return Number.parseFloat(String(args[i++])).toString()
+      case '%o':
+        return formatArg(args[i++], { showHidden: true, showProxy: true })
+      case '%O':
+        return formatArg(args[i++])
+      case '%c': {
+        i++
+        return ''
+      }
+      case '%j':
+        try {
+          return JSON.stringify(args[i++])
+        }
+        catch (err: any) {
+          const m = err.message
+          if (
+            // chromium
+            m.includes('circular structure')
+            // safari
+            || m.includes('cyclic structures')
+            // firefox
+            || m.includes('cyclic object')
+          ) {
+            return '[Circular]'
+          }
+          throw err
+        }
+      default:
+        return x
+    }
+  })
+
+  for (let x = args[i]; i < len; x = args[++i]) {
+    if (x === null || typeof x !== 'object') {
+      str += ` ${x}`
+    }
+    else {
+      str += ` ${formatArg(x)}`
+    }
+  }
+  return str
+}
+
+export function format(...args: unknown[]): string {
+  return baseFormat(args)
+}
+
+export function browserFormat(...args: unknown[]): string {
+  return baseFormat(args, { prettifyObject: true })
+}
+
+export function inspect(obj: unknown, options: LoupeOptions = {}): string {
+  if (options.truncate === 0) {
+    options.truncate = Number.POSITIVE_INFINITY
+  }
+  return loupe.inspect(obj, options)
+}
+
+export function objDisplay(obj: unknown, options: LoupeOptions = {}): string {
+  if (typeof options.truncate === 'undefined') {
+    options.truncate = 40
+  }
+  const str = inspect(obj, options)
+  const type = Object.prototype.toString.call(obj)
+
+  if (options.truncate && str.length >= options.truncate) {
+    if (type === '[object Function]') {
+      const fn = obj as () => void
+      return !fn.name ? '[Function]' : `[Function: ${fn.name}]`
+    }
+    else if (type === '[object Array]') {
+      return `[ Array(${(obj as []).length}) ]`
+    }
+    else if (type === '[object Object]') {
+      const keys = Object.keys(obj as object)
+      const kstr
+        = keys.length > 2
+          ? `${keys.splice(0, 2).join(', ')}, ...`
+          : keys.join(', ')
+      return `{ Object (${kstr}) }`
+    }
+    else {
+      return str
+    }
+  }
+  return str
+}

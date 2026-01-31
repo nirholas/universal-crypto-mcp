@@ -1,0 +1,84 @@
+name: '🐛 Bug Report'
+description: Create a report to help us improve React Flow
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hello! :sparkles: You found the place to submit a bug or issue that you discovered in the xyflow library, thank you for helping us out!
+
+        Having trouble making something work in xyflow, but it’s not a bug with the library itself? You’ll get the fastest response by asking in [github discussions](https://github.com/xyflow/xyflow/discussions) or our [discord server](https://discord.gg/RVmnytFmGW).
+
+        **Search our [discussions](https://github.com/xyflow/xyflow/discussions?discussions_q=) and [issues](https://github.com/xyflow/xyflow/issues?q=)** to see if your problem has already been reported and you can add more context, or see if someone else has already solved your issue. And of course, check our [docs](https://reactflow.dev/learn) if you haven’t already.
+
+        **Issue with the xyflow Docs?** Submit an issue in our [web repo](https://github.com/xyflow/web/issues) instead.
+
+        With that out of the way, let’s get started :bug:
+  - type: textarea
+    id: platform
+    attributes:
+      label: What platform were you using when you found the bug?
+      description: We only address issues for the most recent xyflow major release or upcoming releases.
+      value: |
+        - React Flow / Svelte Flow version: 
+        - Browser and version: 
+        - OS and version:
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Live code example
+      description: |
+        This is the most important part of the bug report! 
+
+        React Flow codesandbox starters
+        - js: https://new.reactflow.dev/js
+        - ts: https://new.reactflow.dev/ts
+
+        Svelte Flow stackblitz starters
+        - js: https://new.svelteflow.dev/js
+        - ts: https://new.svelteflow.dev/ts 
+
+        Avoid dependencies in your example for easier debugging.
+      placeholder: https://stackblitz.com/edit/...  or Github Repo
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: What exactly is happening when you encounter the bug?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce the bug or issue
+      description: How can we see the reported behavior in the code example you provided? The more detail, the better!
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What would you expect to happen if there was no bug or issue?
+      placeholder: As a user, I expected ___ behavior, but instead I am seeing ___
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots_or_videos
+    attributes:
+      label: Screenshots or Videos
+      description: |
+        If applicable, add screenshots or a video to help explain your problem.
+        Supported image/file types and file size limits- https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/attaching-files
+      placeholder: Drag your video or image files inside of this editor
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context

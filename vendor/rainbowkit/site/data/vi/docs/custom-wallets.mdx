@@ -1,0 +1,281 @@
+---
+title: Ví tùy chỉnh
+description: Tạo một ví tùy chỉnh
+---
+
+# Ví tùy chỉnh
+
+## Tạo một ví tùy chỉnh
+
+> Chú ý: API này chưa ổn định và có thể thay đổi trong tương lai gần. Chúng tôi sẽ bổ sung thêm nhiều ví tích hợp sẵn theo thời gian. [Hãy cho chúng tôi biết](https://github.com/rainbow-me/rainbowkit/issues) nếu bạn quan tâm đến bất kỳ ví cụ thể nào.
+
+Kiểu hàm `Wallet` được cung cấp để giúp bạn định nghĩa các ví tùy chỉnh của riêng mình. Các thuộc tính sau có thể được cấu hình trên giá trị trả về của hàm `Wallet` của bạn:
+
+### Các thuộc tính của Ví
+
+<PropsTable
+ data={[
+ {
+ name: 'id',
+ required: true,
+ type: 'string',
+ description: 'ID độc nhất cho mỗi ví',
+ },
+ {
+ name: 'name',
+ required: true,
+ type: 'string',
+ description: 'Tên ví dễ đọc cho con người',
+ },
+ {
+ name: 'rdns',
+ required: false,
+ type: 'string',
+ description: 'RDNS cho ví hỗ trợ EIP6963',
+ },
+ {
+ name: 'shortName',
+ required: false,
+ type: 'string | undefined',
+ description: 'Tên ngắn tùy chọn cho sử dụng di động',
+ },
+ {
+ name: 'iconUrl',
+ required: true,
+ type: 'string | (() => Promise<string>)',
+ description:
+ 'URL cho biểu tượng ví, hoặc hứa hẹn sẽ trả về mã dữ liệu Base64',
+ },
+ {
+ name: 'iconAccent',
+ required: false,
+ type: 'string',
+ description:
+ 'Màu nhấn dùng trong luồng tải xuống cho các ví có cả tiện ích mở rộng trình duyệt và ứng dụng di động',
+ },
+ {
+ name: 'iconBackground',
+ required: true,
+ type: 'string',
+ description: 'Màu nền khi đang tải biểu tượng ví',
+ },
+ {
+ name: 'installed',
+ required: false,
+ type: 'boolean | undefined',
+ description: (
+ <>
+ Ví có được biết là đã cài đặt hay chưa, hoặc{' '}
+ <code>undefined</code> nếu không xác định
+ </>
+ ),
+ },
+ {
+ name: 'downloadUrls',
+ required: false,
+ type: '{ android?: string, ios?: string, mobile?: string, qrCode?: string, chrome?: string, firefox?: string, edge?: string, safari?: string, opera?: string, browserExtension?: string } | undefined',
+ typeSimple: 'DownloadUrls | undefined',
+ description: 'Đối tượng chứa các URL tải xuống',
+ },
+ {
+ name: 'hidden',
+ required: false,
+ type: '(args: { wallets: Array<{ id: string, connector: Connector, installed?: boolean }> }) => boolean',
+ typeSimple: '(args) => boolean | undefined',
+ description:
+ 'Hàm để tính toán liệu ví này có nên ẩn từ danh sách không. Điều này rất hữu ích để định nghĩa các ví dự phòng chung, ví dụ như tính năng "Ví tiêm sẵn" tích hợp sẵn sử dụng tính năng này',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: '() => RainbowKitConnector',
+ typeSimple: 'RainbowKitConnector',
+ description:
+ 'Hàm cung cấp trường hợp kết nối và cấu hình cho các phương pháp kết nối khác nhau, được mô tả dưới đây',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'object',
+ description:
+ 'Hàm để giải quyết URI kết nối ví di động',
+ },
+ {
+ name: 'desktop',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'object',
+ description: 'Hàm để giải quyết link sâu ứng dụng trên máy tính',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: "{ getUri: (uri: string) => string, instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'object',
+ description:
+ 'Đối tượng chứa hàm để giải quyết URI mã QR, cộng với các hướng dẫn cài đặt ví di động tùy chọn',
+ },
+ {
+ name: 'extension',
+ required: false,
+ type: "{ instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'object',
+ description:
+ 'Đối tượng chứa hướng dẫn cài đặt tiện ích mở rộng trình duyệt tùy chọn',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: "createConnector: (details: WalletDetailsParams) => CreateConnectorFn",
+ typeSimple: '(details: WalletDetailsParams) => CreateConnectorFn',
+ description: 'Hàm cung cấp trường hợp kết nối',
+ },
+ ]}
+/>
+
+### Các thuộc tính của DownloadUrls
+
+<PropsTable
+ data={[
+ {
+ name: 'android',
+ required: false,
+ type: 'string',
+ description: 'URL Google Play',
+ },
+ {
+ name: 'ios',
+ required: false,
+ type: 'string',
+ description: 'URL App Store của Apple',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: 'string',
+ description:
+ 'Trang đích cho người dùng di động khi `android` hoặc `ios` không khả dụng',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: 'string',
+ description:
+ 'Trang đích cho người dùng quét mã QR để tải về trên di động',
+ },
+ {
+ name: 'chrome',
+ required: false,
+ type: 'string',
+ description: 'URL của Chrome Web Store',
+ },
+ {
+ name: 'edge',
+ required: false,
+ type: 'string',
+ description: 'URL Add-ons của Microsoft Edge',
+ },
+ {
+ name: 'firefox',
+ required: false,
+ type: 'string',
+ description: 'URL Add-ons của Firefox Browser',
+ },
+ {
+ name: 'opera',
+ required: false,
+ type: 'string',
+ description: 'URL Add-ons của Opera',
+ },
+ {
+ name: 'safari',
+ required: false,
+ type: 'string',
+ description: 'URL Mac App Store',
+ },
+ {
+ name: 'browserExtension',
+ required: false,
+ type: 'string',
+ description:
+ 'Trang đích cho người dùng tiện ích mở rộng trên máy tính khi các URL tương thích trình duyệt không khả dụng',
+ },
+ ]}
+/>
+
+### Ví dụ
+
+Ví dụ, để tạo một ví tùy chỉnh bằng WalletConnect:
+
+```tsx
+import { Wallet, getWalletConnectConnector } from '@rainbow-me/rainbowkit';
+
+export interface MyWalletOptions {
+  projectId: string;
+}
+
+export const rainbow = ({ projectId }: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
+  downloadUrls: {
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
+  },
+  mobile: {
+    getUri: (uri: string) => uri,
+  },
+  qrCode: {
+    getUri: (uri: string) => uri,
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend putting My Wallet on your home screen for faster access to your wallet.',
+          step: 'install',
+          title: 'Open the My Wallet app',
+        },
+        {
+          description:
+            'After you scan, a connection prompt will appear for you to connect your wallet.',
+          step: 'scan',
+          title: 'Tap the scan button',
+        },
+      ],
+    },
+  },
+  extension: {
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend pinning My Wallet to your taskbar for quicker access to your wallet.',
+          step: 'install',
+          title: 'Install the My Wallet extension',
+        },
+        {
+          description:
+            'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+          step: 'create',
+          title: 'Create or Import a Wallet',
+        },
+        {
+          description:
+            'Once you set up your wallet, click below to refresh the browser and load up the extension.',
+          step: 'refresh',
+          title: 'Refresh your browser',
+        },
+      ],
+    },
+  },
+  createConnector: getWalletConnectConnector({ projectId }),
+});
+```
+
+Sau đó, bạn có thể thêm ví tùy chỉnh của mình vào [danh sách ví](/docs/custom-wallet-list).

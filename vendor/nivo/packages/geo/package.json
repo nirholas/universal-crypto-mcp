@@ -1,0 +1,55 @@
+{
+    "name": "@nivo/geo",
+    "version": "0.99.0",
+    "license": "MIT",
+    "author": {
+        "name": "Raphaël Benitte",
+        "url": "https://github.com/plouc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/plouc/nivo.git",
+        "directory": "packages/geo"
+    },
+    "keywords": [
+        "nivo",
+        "dataviz",
+        "react",
+        "d3",
+        "charts",
+        "geo",
+        "map"
+    ],
+    "main": "./dist/nivo-geo.cjs.js",
+    "module": "./dist/nivo-geo.mjs",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "import": "./dist/nivo-geo.mjs",
+            "require": "./dist/nivo-geo.cjs.js"
+        }
+    },
+    "files": [
+        "README.md",
+        "LICENSE.md",
+        "dist/",
+        "index.d.ts"
+    ],
+    "dependencies": {
+        "@nivo/colors": "workspace:*",
+        "@nivo/core": "workspace:*",
+        "@nivo/legends": "workspace:*",
+        "@nivo/theming": "workspace:*",
+        "@nivo/tooltip": "workspace:*",
+        "d3-format": "^1.4.4",
+        "d3-geo": "^1.11.3",
+        "lodash": "^4.17.21"
+    },
+    "peerDependencies": {
+        "react": "^16.14 || ^17.0 || ^18.0 || ^19.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

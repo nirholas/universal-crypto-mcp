@@ -16,9 +16,9 @@ import {
   NotFoundError,
   setCacheHeaders,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
-import type { Service, Review } from '@/lib/api';
-import { getService, getServiceReviews } from '@/lib/marketplace/sdk';
+import type { Service, Review, RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
 
 export const runtime = 'nodejs'; // Use Node.js runtime for SDK access
@@ -114,73 +114,22 @@ function transformReview(review: any): Review {
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  // Extract ID from URL path: /api/marketplace/services/[id]
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 1];
   const db = getDatabase();
   
   // Ensure database is seeded
   await seedDatabase();
   
   try {
-    // Try to get service from database first
+    // Get service from database
     const service = await db.findServiceById(id);
     
     if (!service) {
-      // Try SDK as fallback
-      const sdkService = await getService(id);
-      if (!sdkService) {
-        throw new NotFoundError('Service', id);
-      }
-      
-      // Get reviews from SDK
-      const sdkReviews = await getServiceReviews(id, { limit: 5 });
-      
-      // Transform SDK service to response format
-      const serviceDetail: ServiceDetail = {
-        id: sdkService.id,
-        name: sdkService.name,
-        description: sdkService.description,
-        category: sdkService.category,
-        provider: {
-          id: sdkService.walletAddress || 'unknown',
-          name: sdkService.providerName || 'Unknown Provider',
-          address: sdkService.walletAddress || '0x0000000000000000000000000000000000000000',
-          verified: sdkService.reputation?.badges?.includes('verified') || false,
-          rating: sdkService.reputation?.rating || 0,
-          totalServices: 1,
-        },
-        pricing: sdkService.pricing,
-        stats: sdkService.stats || {
-          totalRequests: 0,
-          totalRevenue: '$0',
-          activeSubscribers: 0,
-          averageResponseTime: 0,
-          uptime: 100,
-          last24hRequests: 0,
-        },
-        reputation: sdkService.reputation || {
-          rating: 0,
-          totalReviews: 0,
-          verifiedPayments: 0,
-          badges: [],
-          responseRate: 0,
-        },
-        tags: sdkService.tags || [],
-        featured: sdkService.reputation?.badges?.includes('featured') || false,
-        verified: sdkService.reputation?.badges?.includes('verified') || false,
-        createdAt: sdkService.registeredAt?.toISOString() || new Date().toISOString(),
-        updatedAt: sdkService.updatedAt?.toISOString() || new Date().toISOString(),
-        fullDescription: generateFullDescription(sdkService),
-        documentation: `https://docs.universal-crypto-mcp.dev/marketplace/services/${id}`,
-        endpoints: generateEndpoints(sdkService),
-        recentReviews: sdkReviews.map(transformReview),
-        relatedServices: [],
-      };
-      
-      const response = createResponse(serviceDetail);
-      setCacheHeaders(response, { maxAge: 300, staleWhileRevalidate: 600 });
-      return response;
+      throw new NotFoundError('Service', id);
     }
     
     // Get provider and stats from database
@@ -224,9 +173,7 @@ async function handler(
     }
     console.error('[API] Service details error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch service',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch service')
     );
   }
 }

@@ -16,6 +16,7 @@ import {
   NotFoundError,
   setCacheHeaders,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -28,9 +29,10 @@ export const runtime = 'nodejs';
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ address: string }> }
+  ctx: RequestContext
 ) {
-  const { address } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const address = pathParts[pathParts.length - 2]; // /providers/[address]/stats
   const db = getDatabase();
   
   // Ensure database is seeded
@@ -76,7 +78,7 @@ async function handler(
     
     // Calculate stats
     const activeServices = services.filter(s => s.status === 'active');
-    const activeSubscriptions = flatSubscriptions.filter(s => s.status === 'active');
+    const activeSubscriptions = flatSubscriptions.filter(s => s.active);
     
     // Calculate revenue
     const now = new Date();
@@ -109,7 +111,7 @@ async function handler(
     const stats = {
       totalServices: services.length,
       activeServices: activeServices.length,
-      totalSubscribers: new Set(flatSubscriptions.map(s => s.subscriberAddress)).size,
+      totalSubscribers: new Set(flatSubscriptions.map(s => s.subscriberWallet)).size,
       activeSubscriptions: activeSubscriptions.length,
       totalApiCalls,
       revenueThisMonth: monthlyRevenue,
@@ -153,9 +155,7 @@ async function handler(
     }
     console.error('[API] Provider stats error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch provider stats',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch provider stats')
     );
   }
 }

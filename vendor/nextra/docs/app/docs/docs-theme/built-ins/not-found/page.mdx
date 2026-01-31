@@ -1,0 +1,25 @@
+---
+sidebarTitle: NotFoundPage
+---
+
+# NotFoundPage Component
+
+Options to configure report of broken link on not found page.
+
+## Props
+
+<APIDocs componentName="NotFoundPage" packageName="nextra-theme-docs" />
+
+## Example
+
+```jsx filename="app/not-found.jsx"
+import { NotFoundPage } from 'nextra-theme-docs'
+
+export default function NotFound() {
+  return (
+    <NotFoundPage content="Submit an issue" labels="broken-link">
+      <h1>The page is not found</h1>
+    </NotFoundPage>
+  )
+}
+```

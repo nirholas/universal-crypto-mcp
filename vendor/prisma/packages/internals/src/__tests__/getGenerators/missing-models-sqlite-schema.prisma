@@ -1,0 +1,8 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator gen {
+  provider      = "predefined-generator"
+  binaryTargets = ["darwin", "darwin-arm64"]
+}

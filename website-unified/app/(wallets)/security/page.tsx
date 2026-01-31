@@ -128,45 +128,45 @@ function SecurityScoreCard({ score }: { score: SecurityScore }) {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600 dark:text-gray-400">Token Approvals</span>
-              <span className={cn('font-medium', getScoreColor(score.approvalScore))}>
-                {score.approvalScore}/100
+              <span className={cn('font-medium', getScoreColor(score.approvalScore ?? 0))}>
+                {score.approvalScore ?? 0}/100
               </span>
             </div>
             <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <motion.div
-                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.approvalScore))}
+                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.approvalScore ?? 0))}
                 initial={{ width: 0 }}
-                animate={{ width: `${score.approvalScore}%` }}
+                animate={{ width: `${score.approvalScore ?? 0}%` }}
               />
             </div>
           </div>
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600 dark:text-gray-400">Contract Risk</span>
-              <span className={cn('font-medium', getScoreColor(score.contractRiskScore))}>
-                {score.contractRiskScore}/100
+              <span className={cn('font-medium', getScoreColor(score.contractRiskScore ?? 0))}>
+                {score.contractRiskScore ?? 0}/100
               </span>
             </div>
             <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <motion.div
-                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.contractRiskScore))}
+                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.contractRiskScore ?? 0))}
                 initial={{ width: 0 }}
-                animate={{ width: `${score.contractRiskScore}%` }}
+                animate={{ width: `${score.contractRiskScore ?? 0}%` }}
               />
             </div>
           </div>
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600 dark:text-gray-400">Exposure</span>
-              <span className={cn('font-medium', getScoreColor(score.exposureScore))}>
-                {score.exposureScore}/100
+              <span className={cn('font-medium', getScoreColor(score.exposureScore ?? 0))}>
+                {score.exposureScore ?? 0}/100
               </span>
             </div>
             <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <motion.div
-                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.exposureScore))}
+                className={cn('h-full bg-gradient-to-r', getScoreGradient(score.exposureScore ?? 0))}
                 initial={{ width: 0 }}
-                animate={{ width: `${score.exposureScore}%` }}
+                animate={{ width: `${score.exposureScore ?? 0}%` }}
               />
             </div>
           </div>
@@ -296,11 +296,11 @@ function ApprovalCard({ approval, onRevoke, isRevoking }: ApprovalCardProps) {
           {/* Amount & Value */}
           <div className="text-right">
             <div className="font-medium text-gray-900 dark:text-white">
-              {approval.isUnlimited ? '∞' : formatBalance(approval.amount, approval.token.decimals, 4)}
+              {approval.isUnlimited ? '∞' : approval.allowanceFormatted}
             </div>
-            {approval.valueAtRisk > 0 && (
+            {(approval.valueAtRisk ?? 0) > 0 && (
               <div className="text-sm text-gray-500">
-                ${approval.valueAtRisk.toLocaleString()} at risk
+                ${(approval.valueAtRisk ?? 0).toLocaleString()} at risk
               </div>
             )}
           </div>
@@ -368,7 +368,7 @@ function ApprovalCard({ approval, onRevoke, isRevoking }: ApprovalCardProps) {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">Approved On</span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {formatDate(approval.approvedAt)}
+                    {approval.approvedAt ? formatDate(approval.approvedAt) : 'Unknown'}
                   </span>
                 </div>
                 {approval.lastUsedAt && (
@@ -441,7 +441,7 @@ export default function SecurityPage() {
     const total = approvals.length;
     const unlimited = approvals.filter(a => a.isUnlimited).length;
     const highRisk = approvals.filter(a => a.riskLevel === 'high').length;
-    const totalValueAtRisk = approvals.reduce((sum, a) => sum + a.valueAtRisk, 0);
+    const totalValueAtRisk = approvals.reduce((sum, a) => sum + (a.valueAtRisk ?? 0), 0);
     
     return { total, unlimited, highRisk, totalValueAtRisk };
   }, [approvals]);

@@ -1,0 +1,44 @@
+---
+sidebarTitle: Footer
+---
+
+import { ToggleVisibilitySection } from 'components/toggle-visibility-section'
+
+# Footer Component
+
+The footer area of the website. You can specify content for your default footer.
+
+## Props
+
+<APIDocs
+  componentName="Footer"
+  packageName="nextra-theme-docs"
+  groupKeys="ComponentProps<'footer'>"
+/>
+
+## Example
+
+You can add content, such as copyright information by passing it as `children`
+of the `Footer` component:
+
+```jsx filename="app/layout.jsx"
+import { Footer, Layout } from 'nextra-theme-docs'
+
+export default function MyLayout({ children, ...props }) {
+  return (
+    <Layout>
+      {children}
+      <Footer>
+        MIT {new Date().getFullYear()} ©{' '}
+        <a href="https://nextra.site" target="_blank">
+          Nextra
+        </a>
+        .
+      </Footer>
+      {children}
+    </Layout>
+  )
+}
+```
+
+<ToggleVisibilitySection element="`<Footer>`" property="footer" />

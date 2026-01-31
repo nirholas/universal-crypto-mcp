@@ -1,0 +1,50 @@
+{
+  "name": "nextra-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "build": "turbo run build --filter=./packages/\\*",
+    "build:all": "turbo run build",
+    "clean": "rm -rf .turbo && pnpm -r exec sh -c 'rm -rf dist .next .turbo'",
+    "dev": "turbo run dev --filter=./packages/\\*",
+    "dev:theme-blog": "turbo run dev --filter=example-blog... --filter=!docs",
+    "dev:theme-docs": "turbo run dev --filter=example-docs... --filter=!docs",
+    "dev:theme-i18n": "turbo run dev --filter=swr-site... --filter=!docs",
+    "dev:website": "turbo run dev --filter=docs...",
+    "format": "pnpm prettier --write",
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint --config packages/eslint-config/src/index.ts --cache --max-warnings 0 .",
+    "lint:prettier": "pnpm prettier --check",
+    "postinstall": "pnpm build",
+    "prettier": "prettier --config-path packages/prettier-config/src/index.js --cache --ignore-path .gitignore --ignore-path .prettierignore --experimental-cli .",
+    "release": "changeset publish",
+    "test": "turbo run test",
+    "types:check": "turbo run types:check",
+    "version": "changeset version"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.4",
+    "@rollup/plugin-alias": "5.1.1",
+    "eslint": "9.39.1",
+    "prettier": "3.7.4",
+    "rimraf": "6.0.1",
+    "tsup": "8.4.0",
+    "turbo": "2.6.2",
+    "typescript": "5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.6",
+      "lightningcss": "1.30.1",
+      "esbuild": "0.25.8",
+      "vite": "6.3.5",
+      "next": "16.0.10"
+    },
+    "patchedDependencies": {
+      "esbuild-plugin-svgr@3.1.1": "patches/esbuild-plugin-svgr.patch",
+      "@changesets/assemble-release-plan@6.0.8": "patches/@changesets__assemble-release-plan.patch",
+      "tsup": "patches/tsup.patch",
+      "next": "patches/next.patch",
+      "eslint-plugin-tailwindcss@3.17.3": "patches/eslint-plugin-tailwindcss.patch"
+    }
+  }
+}

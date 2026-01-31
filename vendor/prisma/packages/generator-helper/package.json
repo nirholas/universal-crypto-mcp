@@ -1,0 +1,41 @@
+{
+  "name": "@prisma/generator-helper",
+  "version": "0.0.0",
+  "description": "This package is intended for Prisma's internal use",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prisma/prisma.git",
+    "directory": "packages/generator-helper"
+  },
+  "author": "Tim Suchanek <suchanek@prisma.io>",
+  "homepage": "https://www.prisma.io",
+  "bugs": "https://github.com/prisma/prisma/issues",
+  "dependencies": {
+    "@prisma/debug": "workspace:*",
+    "@prisma/dmmf": "workspace:*",
+    "@prisma/generator": "workspace:*"
+  },
+  "scripts": {
+    "dev": "DEV=true tsx helpers/build.ts",
+    "build": "tsx helpers/build.ts",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "@swc-node/register": "1.10.9",
+    "@types/cross-spawn": "6.0.6",
+    "@types/node": "~20.19.24",
+    "cross-spawn": "7.0.6",
+    "kleur": "4.1.5",
+    "typescript": "5.4.5"
+  },
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "sideEffects": false
+}

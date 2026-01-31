@@ -307,8 +307,16 @@ function ContactModal({ isOpen, onClose, contact, onSave }: ContactModalProps) {
     onClose();
   };
 
-  // Validate addresses
-  const isValid = name && addresses.some(a => a.address && a.chainFamily && isValidAddress(a.address, a.chainFamily));
+  // Validate addresses - only validate evm and solana chains with isValidAddress
+  const isValid = name && addresses.some(a => {
+    if (!a.address) return false;
+    const family = a.chainFamily;
+    if (family === 'evm' || family === 'solana') {
+      return isValidAddress(a.address, family);
+    }
+    // For other chain families, just check address is not empty
+    return a.address.length > 0;
+  });
 
   return (
     <AnimatePresence>

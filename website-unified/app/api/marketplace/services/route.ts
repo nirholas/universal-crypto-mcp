@@ -112,9 +112,9 @@ async function handler(request: NextRequest, context: RequestContext) {
   const query = parseServicesParams(rawQuery);
   
   try {
-    // Build search parameters from query
+    // Build search parameters from query - use SDK's ServiceSearchParams type
     const searchParams: ServiceSearchParams = {
-      category: query.category as ServiceCategory | undefined,
+      category: query.category as any, // SDK uses marketplace types
       minRating: query.rating,
       search: query.search,
       tags: query.tag ? [query.tag] : undefined,
@@ -122,20 +122,21 @@ async function handler(request: NextRequest, context: RequestContext) {
       featured: query.featured,
       page: query.page,
       limit: query.limit,
-      sort: query.sort,
+      // Map 'price' to 'price-low' as the SDK uses more specific sort options
+      sort: query.sort === 'price' ? 'price-low' : query.sort === 'popularity' ? 'popularity' : query.sort === 'rating' ? 'rating' : query.sort === 'newest' ? 'newest' : 'popularity',
     };
     
-    // Map price range to maxPrice
+    // Map price range to maxPrice (numeric)
     if (query.priceRange) {
       switch (query.priceRange) {
         case 'free':
-          searchParams.maxPrice = '$0';
+          searchParams.maxPrice = 0;
           break;
         case 'low':
-          searchParams.maxPrice = '$0.01';
+          searchParams.maxPrice = 0.01;
           break;
         case 'medium':
-          searchParams.maxPrice = '$0.10';
+          searchParams.maxPrice = 0.10;
           break;
         case 'high':
           // No max price filter for high tier
@@ -149,25 +150,41 @@ async function handler(request: NextRequest, context: RequestContext) {
     // Transform services to API format
     const services = result.services.map(transformService);
     
-    // Build facets response
-    const facets: SearchFacets = {
-      categories: result.facets.categories,
-      priceRanges: result.facets.priceRanges,
-      ratings: result.facets.ratings,
-      tags: [], // Will be populated from services
-    };
-    
-    // Calculate tag facets from returned services
+    // Calculate facets from returned services
+    const categoryCounts = new Map<string, number>();
     const tagCounts = new Map<string, number>();
+    
     for (const service of services) {
+      // Count categories
+      const cat = service.category;
+      categoryCounts.set(cat, (categoryCounts.get(cat) || 0) + 1);
+      
+      // Count tags
       for (const tag of service.tags) {
         tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
       }
     }
-    facets.tags = Array.from(tagCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 20)
-      .map(([tag, count]) => ({ tag, count }));
+    
+    // Build facets response from service data
+    const facets: SearchFacets = {
+      categories: Array.from(categoryCounts.entries()).map(([category, count]) => ({
+        name: category as ServiceCategory,
+        count,
+      })),
+      priceRanges: [
+        { range: 'free', count: services.filter(s => !s.pricing || s.pricing.payPerUse === undefined).length },
+        { range: 'low', count: services.filter(s => s.pricing?.payPerUse !== undefined).length },
+      ],
+      ratings: [
+        { rating: 5, count: services.filter(s => s.reputation.rating >= 4.5).length },
+        { rating: 4, count: services.filter(s => s.reputation.rating >= 3.5 && s.reputation.rating < 4.5).length },
+        { rating: 3, count: services.filter(s => s.reputation.rating >= 2.5 && s.reputation.rating < 3.5).length },
+      ],
+      tags: Array.from(tagCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20)
+        .map(([tag, count]) => ({ tag, count })),
+    };
     
     const response = createResponse({
       services,

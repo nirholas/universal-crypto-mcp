@@ -1,0 +1,8 @@
+datasource my_db {
+  provider = "sqlite"
+}
+
+model Blog {
+  id        Int @id
+  viewCount Int
+}

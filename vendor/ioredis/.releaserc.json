@@ -1,0 +1,37 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "beta",
+      "channel": "beta",
+      "tag": "beta",
+      "prerelease": "beta"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular",
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES", "BREAKING"]
+        }
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
+    "@semantic-release/npm",
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "package.json",
+          "package-lock.json",
+          "CHANGELOG.md",
+          "docs/**/*"
+        ]
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

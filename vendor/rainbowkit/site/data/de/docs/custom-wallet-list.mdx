@@ -1,0 +1,567 @@
+---
+title: Benutzerdefinierte Wallet-Liste
+description: Anpassen der Wallet-Liste
+---
+
+# Benutzerdefinierte Wallet-Liste
+
+## Anpassen der Wallet-Liste
+
+Sie können einzelne Wallets aus `'@rainbow-me/rainbowkit/wallets'` importieren, zusammen mit der `connectorsForWallets`-Funktion, um Ihre eigene Liste von Wallets mit ihren notwendigen Connektoren zu erstellen. Auf diese Weise haben Sie die volle Kontrolle darüber, welche Wallets angezeigt werden und in welcher Reihenfolge.
+
+Sie können beispielsweise wählen, nur Rainbow zusammen mit generischen Fallback-Wallets anzuzeigen.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [rainbowWallet, walletConnectWallet],
+    },
+  ],
+  {
+    appName: 'My RainbowKit App',
+    projectId: 'YOUR_PROJECT_ID',
+  }
+);
+```
+
+Sie können dann Ihre Connektoren an Wagmies `createConfig` übergeben.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { createConfig } from 'wagmi';
+
+const connectors = connectorsForWallets(/* ... */);
+
+const config = createConfig({
+  connectors,
+  {/* Wagmi config */}
+});
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={queryClient}>
+      <RainbowKitProvider {...etc}>
+        {/* Your App */}
+      </RainbowKitProvider>
+    </QueryClientProvider>
+  </WagmiProvider>
+);
+```
+
+### Integrierte Wallets
+
+Die folgenden Wallets werden über das `wallet`-Objekt bereitgestellt.
+
+#### Generische Wallets
+
+Die folgenden Wallets sind eher auf generische Verbindungsmethoden als auf spezifische Apps ausgerichtet. Daher wird empfohlen, diese Wallets immer einzuschließen.
+
+##### WalletConnect
+
+Dies ist eine Fallback-Wallet-Option, die für WalletConnect-basierte Wallets entwickelt wurde, die nicht von einer anderen Wallet in der Liste bereitgestellt wurden.
+
+**Es wird empfohlen, diese Wallet immer in die Liste aufzunehmen, um sicherzustellen, dass alle WalletConnect-basierten Wallets unterstützt werden.**
+
+```tsx
+import { walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+##### Eingebettete Wallet
+
+Dies ist eine Fallback-Wallet-Option für Szenarien, in denen `window.ethereum` existiert, aber nicht von einer anderen Wallet in der Liste bereitgestellt wurde. Diese Wallet wird sich automatisch aus der Liste entfernen, wenn kein Fallback erforderlich ist oder wenn keine eingebaute Wallet verfügbar ist.
+
+**Es wird empfohlen, diese Wallet immer in die Liste aufzunehmen, um sicherzustellen, dass alle eingebetteten Wallets unterstützt werden.**
+
+```tsx
+import { injectedWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+##### Sicheres Wallet
+
+Für dApps, die Safe Apps unterstützen, um Nutzern zu ermöglichen, sich einfach mit ihrem Safe-Vault oder Multi-Sig zu verbinden, fügen Sie die Option `safeWallet` für automatische Verbindungen hinzu. Die Safe Option wird nur in der Safe Wallet-Browserumgebung angezeigt.
+
+```tsx
+import { safeWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+### Spezifische Wallets
+
+Die folgenden Wallets werden über das `wallet`-Objekt bereitgestellt (in alphabetischer Reihenfolge).
+
+#### 1inch Wallet
+
+```tsx
+import { oneInchWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Backpack
+
+```tsx
+import { backpackWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Basis Konto (ehemals Coinbase Wallet)
+
+Dieser Wallet-Connector unterstützt das Basis Konto, die Weiterentwicklung des Coinbase Smart Wallet. Es bietet nahtlose Authentifizierung und erweiterte Funktionen wie Unterkonten und Ausgabeberechtigungen.
+
+Konfigurationsoptionen entsprechen der [Basis Konto SDK-Referenz](https://docs.base.org/base-account/reference/core/createBaseAccount).
+
+```tsx
+import { baseAccount } from '@rainbow-me/rainbowkit/wallets';
+
+// Configure attribution (choose one approach)
+baseAccount.preference = {
+  attribution: { auto: true }, // Smart Wallet generates origin-based identifier
+};
+
+// Or use custom attribution
+baseAccount.preference = {
+  attribution: { dataSuffix: '0x1234567890abcdef' }, // 16-byte hex identifier
+};
+
+// Configure sub-accounts
+baseAccount.subAccounts = {
+  creation: 'on-connect', // or 'manual'
+  defaultAccount: 'sub', // or 'universal'
+  funding: 'spend-permissions', // or 'manual'
+};
+
+// Configure paymaster URLs for gasless transactions
+baseAccount.paymasterUrls = {
+  [base.id]: 'https://api.developer.coinbase.com/rpc/v1/base/...',
+};
+```
+
+#### BeraSig
+
+```tsx
+import { berasigWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Beste Wallet
+
+```tsx
+import { bestWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bifrost Wallet
+
+```tsx
+import { bifrostWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Binance Web3 Wallet
+
+```tsx
+import { binanceWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitget
+
+```tsx
+import { bitgetWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitski
+
+```tsx
+import { bitskiWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bitverse
+
+```tsx
+import { bitverseWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bloom Wallet
+
+```tsx
+import { bloomWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Brave Wallet
+
+```tsx
+import { braveWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bybit Wallet
+
+```tsx
+import { bybitWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Coin98 Wallet
+
+```tsx
+import { coin98Wallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kompass Wallet
+
+```tsx
+import { compassWallet } from '@rainbow-me/rainbowkit/compassWallet';
+```
+
+#### Core
+
+```tsx
+import { coreWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### CTRL Wallet
+
+```tsx
+import { ctrlWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Dämmerung Wallet
+
+```tsx
+import { dawnWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Enkrypt Wallet
+
+```tsx
+import { enkryptWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### FoxWallet
+
+```tsx
+import { foxWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Rahmen Wallet
+
+```tsx
+import { frameWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Frontier Wallet
+
+```tsx
+import { frontierWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Gate Wallet
+
+```tsx
+import { gateWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Gemini Geldbörse
+
+Dieser intelligente Wallet-Connector ermöglicht nahtlose Authentifizierung über Passwörter auf keys.gemini.com - keine Downloads, Erweiterungen oder API-Schlüssel erforderlich. Es funktioniert direkt ohne Anpassung.
+
+Der `appName` Parameter ist erforderlich, um Ihre dApp zu identifizieren, während `appIcon` optional für die Markenanpassung Ihrer Verbindungserfahrung ist.
+
+```tsx
+import { geminiWallet } from '@rainbow-me/rainbowkit/wallets';
+
+const gemini = geminiWallet({
+  appName: 'My App',
+  appIcon: 'https://my-app.com/logo.png', // Optional
+});
+```
+
+#### imToken
+
+```tsx
+import { imTokenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ioPay Wallet
+
+```tsx
+import { iopayWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kaia Wallet
+
+```tsx
+import { kaiaWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kaikas
+
+```tsx
+import { kaikasWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kraken Wallet
+
+```tsx
+import { krakenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Kresus Wallet
+
+```tsx
+import { kresusWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ledger Live
+
+```tsx
+import { ledgerWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Magic Eden Wallet
+
+```tsx
+import { magicEdenWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### MetaMask
+
+```tsx
+import { metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### MEW Wallet
+
+```tsx
+import { mewWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Nova Wallet
+
+```tsx
+import { novaWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### OKX Wallet
+
+```tsx
+import { okxWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Omni
+
+```tsx
+import { omniWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### OneKey
+
+```tsx
+import { oneKeyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ParaSwap
+
+```tsx
+import { paraSwapWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Phantom
+
+```tsx
+import { phantomWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Porto
+
+```tsx
+import { portoWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Rabby Wallet
+
+```tsx
+import { rabbyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Regenbogen
+
+```tsx
+import { rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ramper Wallet
+
+```tsx
+import { ramperWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Bereit
+
+```tsx
+import { readyWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Ronin Wallet
+
+```tsx
+import { roninWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Safeheron
+
+```tsx
+import { safeheronWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Taho
+
+```tsx
+import { tahoWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Talisman
+
+```tsx
+import { talismanWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Tokenary
+
+```tsx
+import { tokenaryWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### TokenPocket
+
+```tsx
+import { tokenPocketWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Trust Wallet
+
+```tsx
+import { trustWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Uniswap Wallet
+
+```tsx
+import { uniswapWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Valora
+
+```tsx
+import { valoraWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Wigwam
+
+```tsx
+import { wigwamWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### xPortal
+
+```tsx
+import { xPortalWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### Zerion
+
+```tsx
+import { zerionWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+#### ZilPay
+
+```tsx
+import { zilPayWallet } from '@rainbow-me/rainbowkit/wallets';
+```
+
+### Beispiele
+
+#### Bestellung
+
+Hier sind einige Beispiele für die Anzeige verschiedener Wallets in unterschiedlicher Reihenfolge.
+
+Zeigen Sie MetaMask zusammen mit generischen Fallback-Wallets.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  metaMaskWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [metaMaskWallet, walletConnectWallet],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```
+
+Zeigen Sie Rainbow, MetaMask und das Basis-Konto zusammen mit generischen Fallback-Wallets an.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  baseAccount,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Suggested',
+      wallets: [
+        rainbowWallet,
+        metaMaskWallet,
+        baseAccount,
+        walletConnectWallet,
+      ],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```
+
+> Erinnerung: Die Reihenfolge des `wallets`-Arrays definiert die Reihenfolge, in der die Wallets in der Benutzeroberfläche angezeigt werden.
+
+#### Mehrere Gruppen
+
+Sie können den `groupName`-Schlüssel verwenden, um verschiedene Wallet-Gruppen zu benennen. Dies ist nützlich, wenn Sie Ihren Benutzern mitteilen möchten, welche Wallets Sie empfehlen sowie andere mögliche Wallets.
+
+Empfehlen Sie Rainbow und MetaMask, aber bieten Sie auch das Basis-Konto zusammen mit generischen Fallback-Wallets an.
+
+```tsx
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  baseAccount,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [rainbowWallet, metaMaskWallet],
+    },
+    {
+      groupName: 'Others',
+      wallets: [baseAccount, walletConnectWallet],
+    },
+  ],
+  { appName: 'RainbowKit App', projectId: 'YOUR_PROJECT_ID' },
+);
+```

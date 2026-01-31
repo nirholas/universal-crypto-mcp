@@ -1,0 +1,36 @@
+// This is here so we can point to it with doc:c2 and avoid warnings caused by TypeDoc's actual configuration.
+{
+    "logLevel": "Verbose",
+    "outputs": [
+        {
+            "name": "html",
+            "path": "../../../docs"
+        },
+        {
+            "name": "json",
+            "path": "../../../docs/docs.json"
+        }
+    ],
+    "disableGit": true,
+    "sourceLinkTemplate": "{path}",
+    "excludeExternals": true,
+    "tsconfig": "tsconfig.json",
+    "validation": {
+        "invalidLink": true,
+        "notDocumented": false,
+        "notExported": true,
+        "rewrittenLink": true,
+        "unusedMergeModuleWith": true
+    },
+    "skipErrorChecking": true,
+    "externalSymbolLinkMappings": {
+        // used by {@link !Promise}
+        "global": {
+            "Promise": "#"
+        },
+        "@typedoc/gh3014": {
+            "GH3014Base": "typedoc://GH3014Base",
+            "GH3014Base.constructor": "typedoc://GH3014Base.constructor"
+        }
+    }
+}

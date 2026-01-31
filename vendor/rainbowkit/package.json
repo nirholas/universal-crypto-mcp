@@ -1,0 +1,111 @@
+{
+  "name": "rainbowkit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "prepare": "husky",
+    "dev": "pnpm --recursive --parallel --filter @rainbow-me/rainbow* --filter example dev",
+    "dev:lib": "pnpm --parallel --filter @rainbow-me/rainbow* dev",
+    "dev:example": "pnpm dev:lib & pnpm --filter example dev",
+    "dev:site": "pnpm dev:lib & pnpm --filter site dev",
+    "dev:cli": "pnpm --filter @rainbow-me/create-rainbowkit dev",
+    "dev:template:next-app": "pnpm --filter rainbowkit-next-app dev",
+    "build": "pnpm --recursive --parallel --filter=!rainbowkit-next-app build",
+    "start": "pnpm dev",
+    "lint": "biome lint . && pnpm format:check && pnpm --recursive typecheck",
+    "lint:fix": "biome lint . --write && pnpm format:fix",
+    "format:check": "biome check .",
+    "format:fix": "biome format . --write",
+    "link:cli": "cd packages/create-rainbowkit && pnpm link --global",
+    "fetch:wallets": "node ./scripts/walletRegistry.js",
+    "test": "pnpm test:unit",
+    "test:unit": "vitest",
+    "test:update": "vitest --update",
+    "test:watch": "vitest --watch",
+    "test:cli": "pnpm --filter @rainbow-me/create-rainbowkit test:build",
+    "test:cli:dev": "pnpm --filter @rainbow-me/create-rainbowkit test:dev",
+    "test:cli:clean": "rm -rf ./packages/create-rainbowkit/generated-test-app",
+    "changeset": "changeset",
+    "clean": "rm -rf ./packages/rainbowkit/dist && rm -rf ./packages/rainbowkit-siwe-next-auth/dist && rm -rf ./packages/rainbow-button/dist && rm -rf ./packages/create-rainbowkit/dist && rm -rf ./packages/rainbowkit/node_modules && pnpm install",
+    "clean:untracked": "git clean -fxd -e '.env.local' -e '.env' && pnpm install",
+    "release": "pnpm release:verify-git && pnpm release:build && changeset publish --tag latest",
+    "release:verify-git": "git diff --exit-code && git rev-parse --abbrev-ref HEAD | grep \"main\"",
+    "release:build": "pnpm clean && pnpm lint && pnpm test && MINIFY_CSS=true pnpm --recursive --parallel --filter=!rainbowkit-next-app build && cp README.md packages/rainbowkit/README.md",
+    "release:test": "pnpm release:build && pnpm --filter example dev",
+    "ci:example": "pnpm --filter @rainbow-me/rainbow* prepare && pnpm --filter example build",
+    "ci:site": "pnpm --filter @rainbow-me/rainbow* prepare && pnpm --filter site build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rainbow-me/rainbowkit.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "@changesets/cli": "2.29.4",
+    "@commitlint/cli": "^19.4.1",
+    "@commitlint/config-conventional": "^19.4.1",
+    "@tanstack/react-query": "^5.55.3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.19.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vanilla-extract/esbuild-plugin": "^2.3.21",
+    "@vanilla-extract/vite-plugin": "^5.1.4",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.25.5",
+    "esbuild-plugin-replace": "^1.4.0",
+    "husky": "^9.1.5",
+    "jsdom": "^25.0.0",
+    "next": "^16.1.0",
+    "next-auth": "4.24.11",
+    "postcss": "^8.5.5",
+    "postcss-prefix-selector": "^2.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "recursive-readdir-files": "^2.3.1",
+    "typescript": "5.5.4",
+    "viem": "2.38.0",
+    "vite": "^7.3.0",
+    "vitest": "2.1.9",
+    "wagmi": "^2.19.3"
+  },
+  "resolutions": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "elliptic": "6.6.1"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@biomejs/biome",
+      "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "bufferutil",
+      "contentlayer2",
+      "core-js",
+      "core-js-pure",
+      "keccak",
+      "msw",
+      "protobufjs",
+      "sharp",
+      "utf-8-validate"
+    ],
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "overrides": {
+      "@remix-run/dev>esbuild": "0.25.5"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

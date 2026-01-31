@@ -1,0 +1,127 @@
+{
+  "name": "@wagmi/core",
+  "description": "VanillaJS library for Ethereum",
+  "version": "3.3.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wevm/wagmi.git",
+    "directory": "packages/core"
+  },
+  "scripts": {
+    "build": "pnpm run build:esm+types",
+    "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo actions chains codegen internal query tempo",
+    "test:build": "publint --strict && attw --pack --ignore-rules cjs-resolves-to-esm"
+  },
+  "files": [
+    "dist/**",
+    "!dist/**/*.tsbuildinfo",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-d.ts",
+    "/actions",
+    "/chains",
+    "/internal",
+    "/query",
+    "/tempo"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "main": "./dist/esm/exports/index.js",
+  "types": "./dist/types/exports/index.d.ts",
+  "typings": "./dist/types/exports/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/exports/index.d.ts",
+      "default": "./dist/esm/exports/index.js"
+    },
+    "./actions": {
+      "types": "./dist/types/exports/actions.d.ts",
+      "default": "./dist/esm/exports/actions.js"
+    },
+    "./chains": {
+      "types": "./dist/types/exports/chains.d.ts",
+      "default": "./dist/esm/exports/chains.js"
+    },
+    "./codegen": {
+      "types": "./dist/types/exports/codegen.d.ts",
+      "default": "./dist/esm/exports/codegen.js"
+    },
+    "./internal": {
+      "types": "./dist/types/exports/internal.d.ts",
+      "default": "./dist/esm/exports/internal.js"
+    },
+    "./query": {
+      "types": "./dist/types/exports/query.d.ts",
+      "default": "./dist/esm/exports/query.js"
+    },
+    "./tempo": {
+      "types": "./dist/types/exports/tempo.d.ts",
+      "default": "./dist/esm/exports/tempo.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "actions": [
+        "./dist/types/exports/actions.d.ts"
+      ],
+      "chains": [
+        "./dist/types/exports/chains.d.ts"
+      ],
+      "codegen": [
+        "./dist/types/exports/codegen.d.ts"
+      ],
+      "internal": [
+        "./dist/types/exports/internal.d.ts"
+      ],
+      "query": [
+        "./dist/types/exports/query.d.ts"
+      ],
+      "tempo": [
+        "./dist/types/exports/tempo.d.ts"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@tanstack/query-core": ">=5.0.0",
+    "ox": ">=0.11.1",
+    "typescript": ">=5.7.3",
+    "viem": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/query-core": {
+      "optional": true
+    },
+    "ox": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "eventemitter3": "5.0.1",
+    "mipd": "0.0.7",
+    "zustand": "5.0.0"
+  },
+  "devDependencies": {
+    "@tanstack/query-core": "catalog:",
+    "ox": "catalog:"
+  },
+  "contributors": [
+    "awkweb.eth <t@wevm.dev>",
+    "jxom.eth <j@wevm.dev>"
+  ],
+  "funding": "https://github.com/sponsors/wevm",
+  "keywords": [
+    "wagmi",
+    "eth",
+    "ethereum",
+    "dapps",
+    "wallet",
+    "web3"
+  ]
+}

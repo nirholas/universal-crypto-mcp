@@ -18,6 +18,7 @@ import {
   parseBody,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -30,9 +31,10 @@ export const runtime = 'nodejs';
 
 async function approveHandler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 2]; // -2 because path ends with /approve
   const db = getDatabase();
   
   // Ensure database is seeded
@@ -66,9 +68,7 @@ async function approveHandler(
     }
     console.error('[API] Admin service approval error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to approve service',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to approve service')
     );
   }
 }

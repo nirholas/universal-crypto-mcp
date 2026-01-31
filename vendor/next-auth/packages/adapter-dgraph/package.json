@@ -1,0 +1,51 @@
+{
+  "name": "@auth/dgraph-adapter",
+  "version": "2.11.0",
+  "description": "Dgraph adapter for Auth.js",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "Arnaud Derbey <arnaud@derbey.dev>",
+  "contributors": [
+    "Balázs Orbán <info@balazsorban.com>"
+  ],
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "lib",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "dgraph",
+    "graphql"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "./test/test.sh",
+    "clean": "rm -rf *.js *.d.ts* lib"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.5"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*",
+    "jsonwebtoken": "^9.0.0"
+  }
+}

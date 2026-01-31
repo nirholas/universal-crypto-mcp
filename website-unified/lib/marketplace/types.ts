@@ -17,6 +17,11 @@ export type ServiceCategory =
   | 'weather'
   | 'geolocation'
   | 'sentiment'
+  | 'ai'
+  | 'data'
+  | 'nft'
+  | 'trading'
+  | 'defi'
   | 'other';
 
 export type ServiceStatus = 'active' | 'paused' | 'pending' | 'suspended' | 'archived';
@@ -64,6 +69,8 @@ export interface ServiceReputation {
   uptime: number; // percentage
   responseTime: number; // ms average
   successRate: number; // percentage
+  badges?: string[];
+  responseRate?: number;
 }
 
 export interface ServiceBadge {
@@ -92,6 +99,10 @@ export interface MarketplaceService {
   updatedAt: Date;
   isOnline: boolean;
   featured: boolean;
+  walletAddress?: string;
+  providerName?: string;
+  registeredAt?: Date;
+  stats?: { totalRequests: number; totalRevenue: string; };
 }
 
 export interface ServiceReview {
@@ -128,6 +139,7 @@ export interface Subscription {
   usageThisMonth: number;
   apiKey: string;
   txHash?: string;
+  price?: string;
 }
 
 export interface DiscoveryFilters {
@@ -165,6 +177,7 @@ export interface ProviderStats {
     revenue: number;
     subscribers: number;
     apiCalls: number;
+    uptime?: number;
   }>;
 }
 
@@ -185,7 +198,7 @@ export interface Dispute {
   reason: string;
   description: string;
   evidence: string[];
-  status: 'open' | 'in-review' | 'resolved' | 'escalated';
+  status: 'open' | 'in-review' | 'resolved' | 'escalated' | 'investigating' | 'mediation' | 'rejected';
   resolution?: string;
   mediatorWallet?: string;
   createdAt: Date;

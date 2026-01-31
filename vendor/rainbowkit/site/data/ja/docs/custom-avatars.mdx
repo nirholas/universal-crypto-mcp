@@ -1,0 +1,51 @@
+---
+title: カスタムアバター
+description: アプリのユーザーアバターのカスタマイズ
+---
+
+# カスタムアバター
+
+## アプリのユーザーアバターのカスタマイズ
+
+デフォルトでは、ENS画像が設定されていない場合にユーザーのためにアバターを提供しますが、独自のアバターコンポーネントを提供することでこれをカスタマイズできます。TypeScriptを使用する場合は、`AvatarComponent`タイプをインポートすることができます：
+
+```tsx
+import {
+  RainbowKitProvider,
+  AvatarComponent,
+} from '@rainbow-me/rainbowkit';
+import { generateColorFromAddress } from './utils';
+
+const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
+  const color = generateColorFromAddress(address);
+  return ensImage ? (
+    <img
+      src={ensImage}
+      width={size}
+      height={size}
+      style={{ borderRadius: 999 }}
+    />
+  ) : (
+    <div
+      style={{
+        backgroundColor: color,
+        borderRadius: 999,
+        height: size,
+        width: size,
+      }}
+    >
+      :^)
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <RainbowKitProvider avatar={CustomAvatar} {...etc}>
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+`AvatarComponent` が `avatar` プロップに渡された場合のプロップタイプは、次のようになります： `<{ address: string; ensImage?: string | null; size: number;}>`

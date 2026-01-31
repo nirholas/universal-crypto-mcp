@@ -1,0 +1,338 @@
+---
+title: Botón de Conexión Personalizado
+description: Crear un botón de conexión personalizado
+---
+
+# Botón de Conexión Personalizado
+
+## Crear un botón de conexión personalizado
+
+Puede usar el `ConnectButton.Custom` de bajo nivel para crear su propio botón de conexión personalizado. Este componente renderiza una función, que incluye todo lo necesario para reimplementar los botones incorporados.
+
+Una reimplementación mínima de los botones integrados se vería algo así:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+Las siguientes propiedades se pasan a su función de renderizado.
+
+### Propiedades de la cuenta
+
+<PropsTable
+  data={[
+    {
+      name: 'account',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Objeto que contiene detalles sobre la cuenta actual, descrito a continuación',
+    },
+    {
+      name: 'account.address',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          La dirección completa de la cuenta, por ejemplo
+          "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceDecimals',
+      required: false,
+      type: 'string | undefined	',
+      description: 'El saldo de la cuenta en decimales',
+    },
+    {
+      name: 'account.balanceFormatted',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          El saldo de la cuenta formateado como una cadena, por ejemplo{' '}
+          <code>1.234567890123456789</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceSymbol',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          El símbolo de la moneda para el saldo, por ejemplo <code>ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayBalance',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          El saldo formateado a 3 dígitos significativos, más el
+          símbolo, por ejemplo <code>1.23 ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayName',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          El nombre ENS, o una versión truncada de la dirección, por ejemplo{' '}
+          <code>"rainbowwallet.eth"</code> o <code>"0x7a…384f"</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.ensAvatar',
+      required: false,
+      type: 'string	| undefined',
+      description: 'El URI del avatar ENS',
+    },
+    {
+      name: 'account.ensName',
+      required: false,
+      type: 'string	| undefined',
+      description: (
+        <>
+          El nombre ENS, por ejemplo <code>rainbowwallet.eth</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.hasPendingTransactions',
+      required: false,
+      type: 'boolean',
+      description:
+        'Booleano que indica si la cuenta tiene transacciones pendientes para la cadena actual',
+    },
+  ]}
+/>
+
+### Propiedades de la cadena
+
+<PropsTable
+  data={[
+    {
+      name: 'chain',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Objeto que contiene detalles sobre la cadena actual, descrito a continuación',
+    },
+    {
+      name: 'chain.hasIcon',
+      required: false,
+      type: 'boolean',
+      description: 'Si la cadena tiene un icono especificado',
+    },
+    {
+      name: 'chain.iconUrl',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'La URL del icono de la cadena (que también puede ser indefinida mientras se descargan las URLs de datos Base64)',
+    },
+    {
+      name: 'chain.iconBackground',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'El fondo del icono de la cadena, que será visible mientras se cargan las imágenes',
+    },
+    {
+      name: 'chain.id',
+      required: false,
+      type: 'number',
+      description: (
+        <>
+          El ID de la cadena, por ejemplo <code>1</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.name',
+      required: false,
+      type: 'string | undefined',
+      description: (
+        <>
+          El nombre de la cadena, por ejemplo <code>"Ethereum"</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.unsupported',
+      required: false,
+      type: 'boolean | undefined',
+      description:
+        'Booleano que indica si la cadena actual no es compatible',
+    },
+  ]}
+/>
+
+### Propiedades del estado del modal
+
+<PropsTable
+  data={[
+    {
+      name: 'openAccountModal',
+      required: false,
+      type: '() => void',
+      description: 'Función para abrir el modal de cuenta',
+    },
+    {
+      name: 'openChainModal',
+      required: false,
+      type: '() => void',
+      description: 'Función para abrir el modal de cadena',
+    },
+    {
+      name: 'openConnectModal',
+      required: false,
+      type: '() => void',
+      description: 'Función para abrir el modal de conexión',
+    },
+    {
+      name: 'accountModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Booleano que indica si el modal de cuenta está abierto',
+    },
+    {
+      name: 'chainModalOpen',
+      required: false,
+      type: 'boolean',
+      description: 'Booleano que indica si el modal de cadena está abierto',
+    },
+    {
+      name: 'connectModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Booleano que indica si el modal de conexión está abierto',
+    },
+  ]}
+/>
+
+### Propiedades de estado general
+
+<PropsTable
+  data={[
+    {
+      name: 'mounted',
+      required: false,
+      type: 'boolean',
+      description:
+        'Booleano que indica si el componente ha sido montado',
+    },
+    {
+      name: 'authenticationStatus',
+      required: false,
+      type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+      description:
+        'El estado de autenticación, o indefinido si la autenticación no ha sido configurada',
+    },
+  ]}
+/>

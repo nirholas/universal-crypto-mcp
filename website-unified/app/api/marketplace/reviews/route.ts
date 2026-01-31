@@ -17,6 +17,7 @@ import {
   parseBody,
   parseQuery,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext, Review } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -31,7 +32,7 @@ export const runtime = 'nodejs'; // Use Node.js runtime for database access
 const ListReviewsQuerySchema = z.object({
   serviceId: z.string().optional(),
   rating: z.coerce.number().int().min(1).max(5).optional(),
-  verified: z.enum(['true', 'false']).optional().transform((v) => v === 'true'),
+  verified: z.coerce.boolean().default(false),
   sort: z.enum(['newest', 'oldest', 'rating', 'helpful']).default('newest'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
@@ -58,7 +59,7 @@ function transformReview(review: any): Review {
     id: review.id,
     serviceId: review.serviceId,
     reviewer: {
-      address: review.reviewerAddress,
+      address: review.reviewerWallet,
       ens: review.reviewerEns,
     },
     rating: review.rating,
@@ -77,6 +78,10 @@ function transformReview(review: any): Review {
 
 async function listHandler(request: NextRequest, ctx: RequestContext) {
   const query = parseQuery(request, ListReviewsQuerySchema);
+  const page = query.page ?? 1;
+  const limit = query.limit ?? 20;
+  const verified = Boolean(query.verified);
+  const sort = query.sort ?? 'newest';
   const db = getDatabase();
   
   // Ensure database is seeded
@@ -87,11 +92,10 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
     const filters: Parameters<typeof db.findReviews>[0] = {
       serviceId: query.serviceId,
       minRating: query.rating,
-      maxRating: query.rating,
-      verifiedOnly: query.verified,
-      sort: query.sort,
-      page: query.page,
-      limit: query.limit,
+      verified,
+      sort,
+      page,
+      limit,
     };
     
     const { reviews, total } = await db.findReviews(filters);
@@ -122,27 +126,25 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
       verified: allReviews.filter((r) => r.verifiedPayment).length,
     };
     
-    const totalPages = Math.ceil(total / query.limit);
+    const totalPages = Math.ceil(total / limit);
     
     return createResponse({
       reviews: transformedReviews,
       stats,
     }, {
       meta: {
-        page: query.page,
-        limit: query.limit,
+        page,
+        limit,
         total,
         totalPages,
-        hasNext: query.page < totalPages,
-        hasPrevious: query.page > 1,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
       },
     });
   } catch (error) {
     console.error('[API] Reviews list error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch reviews',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch reviews')
     );
   }
 }
@@ -163,9 +165,7 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     const service = await db.findServiceById(body.serviceId);
     if (!service) {
       return createErrorResponse(
-        ErrorCodes.NOT_FOUND,
-        `Service not found: ${body.serviceId}`,
-        404
+        new APIException(ErrorCodes.NOT_FOUND, `Service not found: ${body.serviceId}`)
       );
     }
     
@@ -176,14 +176,12 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     });
     
     const hasExistingReview = existingReviews.some(
-      (r) => r.reviewerAddress.toLowerCase() === body.walletAddress.toLowerCase()
+      (r) => r.reviewerWallet.toLowerCase() === body.walletAddress.toLowerCase()
     );
     
     if (hasExistingReview) {
       return createErrorResponse(
-        ErrorCodes.VALIDATION_ERROR,
-        'You have already reviewed this service',
-        400
+        new APIException(ErrorCodes.VALIDATION_ERROR, 'You have already reviewed this service')
       );
     }
     
@@ -197,12 +195,12 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     // Create review in database
     const review = await db.createReview({
       serviceId: body.serviceId,
-      reviewerAddress: body.walletAddress,
+      reviewerWallet: body.walletAddress,
       rating: body.rating,
       title: body.title,
       comment: body.comment,
       verifiedPayment,
-      txHash: body.txHash,
+      helpful: 0,
     });
     
     // Also submit to SDK for reputation tracking
@@ -213,7 +211,6 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
         rating: body.rating,
         title: body.title,
         comment: body.comment,
-        txHash: body.txHash as `0x${string}` | undefined,
       });
     } catch (sdkError) {
       // Log but don't fail - database record is primary
@@ -230,9 +227,7 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
   } catch (error) {
     console.error('[API] Review creation error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to create review',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to create review')
     );
   }
 }

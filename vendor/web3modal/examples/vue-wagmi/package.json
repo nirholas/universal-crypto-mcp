@@ -1,0 +1,26 @@
+{
+  "name": "@examples/vue-wagmi",
+  "private": true,
+  "version": "1.2.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@reown/appkit": "workspace:*",
+    "@reown/appkit-adapter-wagmi": "workspace:*",
+    "@tanstack/vue-query": "5.75.5",
+    "@wagmi/connectors": "5.11.2",
+    "@wagmi/core": "2.22.1",
+    "@wagmi/vue": "0.4.11",
+    "viem": "2.44.2",
+    "vue": "3.4.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.1.4",
+    "typescript": "5.9.2",
+    "vite": "5.4.20",
+    "vue-tsc": "2.1.8"
+  }
+}

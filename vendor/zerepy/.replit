@@ -1,0 +1,27 @@
+modules = ["python-3.12"]
+run = """
+poetry install
+poetry run python main.py
+"""
+
+[nix]
+channel = "stable-24_05"
+
+[env]
+PYTHONUNBUFFERED = "1"
+POETRY_VIRTUALENVS_CREATE = "true"
+POETRY_VIRTUALENVS_IN_PROJECT = "true"
+POETRY_HOME = "${HOME}/.local/share/pypoetry"
+PATH = "${HOME}/.local/share/pypoetry/bin:${PATH}"
+
+[deployment]
+run = ["sh", "-c", "poetry install && poetry run python main.py"]
+deploymentTarget = "gce"
+ignorePorts = true
+
+[languages.python]
+pattern = "**/*.py"
+syntax = "python"
+
+[languages.python.languageServer]
+start = ["pylsp"]

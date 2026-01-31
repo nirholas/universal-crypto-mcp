@@ -1,0 +1,64 @@
+---
+title: Móc Câu Modal
+description: Mở modal thông qua Móc Câu một cách chương trình
+---
+
+# Móc Câu Modal
+
+## Mở modal thông qua Móc Câu một cách chương trình
+
+Các Móc Câu sau đây được cung cấp để cho phép mở các modal chương trình ở bất kỳ đâu trong ứng dụng của bạn.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+Mỗi một trong các Móc Câu này trả về một đối tượng với một hàm để mở modal tương ứng. Lưu ý rằng các hàm được trả về sẽ không được định nghĩa nếu ứng dụng của bạn không ở trạng thái cần thiết để mở modal.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+Mỗi móc câu cũng trả về một giá trị boolean cho trạng thái của modal. Thông thường, chúng tôi khuyến nghị bạn chỉ dựa vào các móc câu Wagmi (tức là `useAccount`) để phản ứng trực tiếp với trạng thái kết nối ví của người dùng, thay vì dựa vào trạng thái của Connect Modal.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit được thiết kế để không gây gián đoạn và đáp ứng được, nên dApp luôn phải hiển thị giao diện cho người dùng bất kể họ có kết nối ví hay không. Người dùng có thể kết nối hoặc ngắt kết nối ví của họ trực tiếp từ MetaMask, vì vậy dApp phải phản ứng trực tiếp với trạng thái kết nối nền tảng.
+
+dApps dựa vào các cơ chế như Đăng nhập với Ethereum để xác minh người dùng nên dựa vào tính năng [Xác Thực](/docs/authentication).

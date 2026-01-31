@@ -1,0 +1,13 @@
+node_modules
+*.cpuprofile
+/test.*
+/.idea
+built
+
+.nyc_output
+coverage
+
+.vscode
+benchmarks/fixtures/*.txt
+
+*.rdb

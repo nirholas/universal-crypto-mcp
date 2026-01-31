@@ -1,0 +1,125 @@
+# Misc
+.DS_Store
+.eslintcache
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+packages/*/.npmrc
+
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log
+ui-debug.log
+.pnpm-debug.log
+.husky
+tmp
+
+# Dependencies
+node_modules
+
+# Build dirs
+.next
+build
+dist
+
+# Generated files
+.cache-loader
+packages/next-auth/providers
+# copied from @auth/core
+packages/frameworks-*/**/providers
+packages/*/*.js
+!packages/*/typedoc.config.js
+packages/*/*.d.ts
+packages/*/*.d.ts.map
+packages/*/lib
+packages/**/generated
+.xata*
+
+# Qwik needs to use .mjs. REVIEW: Check back, can we just use .js?
+packages/*/*.mjs
+
+# Development app
+apps/dev/src/css
+apps/dev/prisma/migrations
+apps/dev/typeorm
+apps/dev/nextjs-2
+
+# VS
+/.vs/slnx.sqlite-journal
+/.vs/slnx.sqlite
+/.vs
+.vscode/generated*
+
+# Jetbrains
+.idea
+
+# GitHub Actions runner
+/actions-runner
+/_work
+
+# DB
+dev.db*
+packages/adapter-prisma/prisma/dev.db
+packages/adapter-prisma/prisma/migrations
+db.sqlite
+packages/adapter-supabase/supabase/.branches
+packages/adapter-drizzle/.drizzle
+
+# Tests
+coverage
+dynamodblocal-bin
+firestore-debug.log
+test.schema.gql
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+
+# Turborepo
+.turbo
+
+# Docs
+docs/.next
+docs/manifest.mjs
+
+# Core
+packages/core/src/providers/provider-types.ts
+packages/core/lib
+packages/core/providers
+packages/core/src/lib/pages/styles.ts
+docs/docs/reference/core
+
+# Next.js
+packages/next-auth/lib
+packages/next-auth/providers
+# copied from @auth/core
+packages/next-auth/src/providers
+docs/docs/reference/nextjs
+
+# SvelteKit
+packages/frameworks-sveltekit/index.*
+packages/frameworks-sveltekit/client.*
+packages/frameworks-sveltekit/.svelte-kit
+packages/frameworks-sveltekit/package
+packages/frameworks-sveltekit/vite.config.js.timestamp-*
+packages/frameworks-sveltekit/vite.config.ts.timestamp-*
+docs/docs/reference/sveltekit
+
+# SolidStart
+docs/docs/reference/solidstart
+
+
+# Express
+docs/docs/reference/express
+
+
+# Adapters
+docs/docs/reference/adapter
+
+## Drizzle migration folder
+.drizzle

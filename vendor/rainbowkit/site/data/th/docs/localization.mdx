@@ -1,0 +1,95 @@
+---
+title: การแปลเป็นภาษาไทย
+description: ปรับแต่งภาษาของ dApp ของคุณด้วยการแปลในตัว
+---
+
+# การแปลเป็นภาษาไทย
+
+## ปรับแต่งภาษาของ dApp ของคุณด้วยการแปลในตัว
+
+ตามค่าเริ่มต้น RainbowKit รองรับ `en-US` สำหรับผู้ใช้ที่ใช้ภาษาอังกฤษ
+
+หากมี RainbowKit จะตรวจหาภาษา [ที่ผู้ใช้ต้องการ](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language) และเลือกการแปลที่เหมาะสม นักพัฒนาสามารถแทนที่ภาษาเริ่มต้นได้เสมอ
+
+ในการระบุภาษาสำหรับผู้ใช้ของคุณ เพียงเพิ่ม `locale="zh-CN"` เป็น prop ใน `RainbowKitProvider` ของคุณ
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider locale="zh-CN" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### การใช้งานร่วมกับ Next.js
+
+การสนับสนุนการแปลของ RainbowKit ทำงานได้ดีขึ้นกับ [Sub-path Routing](https://nextjs.org/docs/pages/building-your-application/routing/internationalization#sub-path-routing)
+
+กำหนดค่าโปรเจ็กต์ Next.js ของคุณตามตัวอย่างด้านล่างเพื่อเพิ่มเส้นทางย่อย `/locale/` แบบเลือกได้ให้กับเส้นทางของคุณ ซึ่งจะช่วยให้เครื่องมือค้นหาและผู้ใช้ค้นพบการสนับสนุนหลายภาษาของคุณได้ดียิ่งขึ้น
+
+```json
+// next.config.js
+{
+  i18n: {
+    locales: ['default', 'en', 'zh-CN'],
+    defaultLocale: 'default',
+  },
+}
+```
+
+จากนั้นส่ง `locale` ที่จัดหาโดย Pages Router ไปยัง `RainbowKitProvider`
+
+```tsx
+import { RainbowKitProvider, Locale } from '@rainbow-me/rainbowkit';
+
+export const App = () => {
+  const { locale } = useRouter() as { locale: Locale };
+  return (
+    <RainbowKitProvider locale={locale} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  )
+};
+```
+
+คุณสามารถดูตัวอย่างของ Pages Router ได้ [ที่นี่](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next)
+
+App Router ยังไม่รองรับ i18n อ้างอิงตัวอย่างแยกต่างหากจากเรา [ที่นี่](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-app-i18n) สำหรับแนวทางการใช้งานที่ดีที่สุดด้วยตัวกลาง [`next-intl`](https://github.com/amannn/next-intl)
+
+เราแนะนำให้คุณใช้เทคนิคเดียวกันเพื่อแปลเนื้อหาของ dApp ของคุณสำหรับการสนับสนุนการแปลที่สมบูรณ์ ไลบรารีการแปลเช่น [`i18n-js`](https://github.com/fnando/i18n) และ [`next-intl`](https://github.com/amannn/next-intl) และเครื่องมือจัดการอย่าง Crowdin จะทำให้กระบวนการนี้ง่ายขึ้น
+
+### ภาษาที่สนับสนุน
+
+เราให้การสนับสนุนเต็มรูปแบบสำหรับภูมิภาค `locale` ต่อไปนี้:
+
+<Table
+  header={[
+    'ภาษา', 'ภูมิภาค', 'Locale', 'Shortform'
+  ]}
+  dataTypes={['string', 'string', 'code', 'code']}
+  data={[
+    ['English', 'สหรัฐอเมริกา 🇺🇸', 'en-US', 'en'],
+    ['中文', 'จีนแผ่นดินใหญ่ 🇨🇳', 'zh-CN', 'zh-Hans', 'zh'],
+    ['繁體中文', 'ฮ่องกง 🇭🇰', 'zh-HK'],
+    ['繁體中文', 'ไต้หวัน 🇹🇼', 'zh-TW', 'zh-Hant'],
+    ['हिंदी', 'อินเดีย 🇮🇳', 'hi-IN', 'hi'],
+    ['Español', 'ละตินอเมริกา 🌎', 'es-419', 'es'],
+    ['Français', 'ฝรั่งเศส 🇫🇷', 'fr-FR', 'fr'],
+    ['العربية', 'ตะวันออกกลาง 🌍', 'ar-AR', 'ar'],
+    ['Português', 'บราซิล 🇧🇷', 'pt-BR', 'pt'],
+    ['Русский', 'รัสเซีย 🇷🇺', 'ru-RU', 'ru'],
+    ['Bahasa Indonesia', 'อินโดนีเซีย 🇮🇩', 'id-ID', 'id'],
+    ['日本語', 'ญี่ปุ่น 🇯🇵', 'ja-JP', 'ja'],
+    ['Türkçe', 'ตุรกี 🇹🇷', 'tr-TR', 'tr'],
+    ['한국어', 'เกาหลีใต้ 🇰🇷', 'ko-KR', 'ko'],
+    ['ภาษาไทย', 'ประเทศไทย 🇹🇭', 'th-TH', 'th'],
+    ['українська', 'ยูเครน 🇺🇦', 'uk-UA', 'ua'],
+    ['Tiếng Việt', 'เวียดนาม 🇻🇳', 'vi-VN', 'vi'],
+    ['Deutsch', 'เยอรมนี 🇩🇪', 'de-DE', 'de'],
+    ['Bahasa Melayu', 'มาเลเซีย 🇲🇾', 'ms-MY', 'ms']
+  ]}
+/>
+
+หากคุณต้องการเห็นความสนับสนุนสำหรับภาษาเพิ่มเติม โปรดเปิด [การสนทนา GitHub](https://github.com/rainbow-me/rainbowkit/discussions/new?category=ideas) และเราจะทำงานเพื่อสนับสนุนทันทีที่เป็นไปได้

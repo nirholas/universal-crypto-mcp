@@ -1,0 +1,24 @@
+.nextra-cards {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(max(250px, calc((100% - 1rem * 2) / var(--rows))), 1fr)
+  );
+}
+
+.nextra-card {
+  img {
+    @apply x:select-none;
+  }
+
+  & > span > svg {
+    @apply x:w-6 x:h-auto x:transition x:text-black/50 x:dark:text-white/50 x:shrink-0;
+  }
+
+  &:hover > span > svg {
+    @apply x:text-current!;
+  }
+
+  p {
+    @apply x:mt-2;
+  }
+}

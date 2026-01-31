@@ -1,0 +1,49 @@
+{
+  "name": "@auth/sequelize-adapter",
+  "version": "2.11.0",
+  "description": "Sequelize adapter for Auth.js",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "github.com/luke-j",
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "oauth",
+    "sequelize"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "vitest -c ../utils/vitest.config.ts",
+    "build": "tsc",
+    "clean": "rm -rf *.js *.d.ts*"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "sequelize": "^6.6.5"
+  }
+}

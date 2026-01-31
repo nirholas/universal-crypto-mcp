@@ -13,7 +13,7 @@ import {
   aroon,
   balanceOfPower,
   chandeForecastOscillator,
-  commodityChannelIndex,
+  cci,
   doubleExponentialMovingAverage,
   exponentialMovingAverage,
   massIndex,
@@ -134,7 +134,7 @@ export function registerTrendIndicators(server: McpServer): void {
     async ({ symbol, timeframe, period, limit }) => {
       try {
         const asset = await fetchOhlcvData(symbol, timeframe, limit);
-        const result = commodityChannelIndex(asset.highs, asset.lows, asset.closings, { period });
+        const result = cci(asset.highs, asset.lows, asset.closings, { period });
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } catch (error) {
         return { content: [{ type: "text", text: `Error: ${(error as Error).message}` }] };

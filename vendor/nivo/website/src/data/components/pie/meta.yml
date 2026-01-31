@@ -1,0 +1,54 @@
+flavors:
+  - flavor: svg
+    path: /pie/
+  - flavor: canvas
+    path: /pie/canvas/
+  - flavor: api
+    path: /pie/api/
+
+Pie:
+  package: '@nivo/pie'
+  tags: 
+    - radial
+  stories:
+    - label: Using colors from data
+      link: pie--using-colors-from-data
+    - label: Adding a metric in the center using a custom layer
+      link: pie--adding-a-metric-in-the-center-using-a-custom-layer
+    - label: Custom arc label component
+      link: pie--custom-arc-label-component
+    - label: Sync activeId between two pies
+      link: pie--controlled-active-id
+    - label: Implementing a custom legend
+      link: pie--custom-legend
+  description: |
+    Generates a pie chart from an array of data, each datum must have an
+    id and a value property.
+    Note that margin object does not take radial labels into account,
+    so you should adjust it to leave enough room for it.
+
+    You can also see more example usages in
+    [the storybook](storybook:pie--default).
+
+    See the [dedicated guide](self:/guides/legends) on how to setup
+    legends for this component.
+
+PieCanvas:
+  package: '@nivo/pie'
+  tags:
+    - radial
+    - canvas
+  stories:
+    - label: Using colors from data
+      link: piecanvas--using-colors-from-data
+    - label: Sync activeId between two pies
+      link: piecanvas--controlled-active-id
+    - label: Implementing a custom legend
+      link: piecanvas--custom-legend
+  description: |
+    A variation around the [Pie](self:/pie) component. Well suited for
+    large data sets as it does not impact DOM tree depth, however you'll
+    lose the isomorphic ability and transitions.
+
+    See the [dedicated guide](self:/guides/legends) on how to setup
+    legends for this component.

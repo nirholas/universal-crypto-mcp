@@ -1,0 +1,47 @@
+import * as React from 'react';
+import { ReactNode, CSSProperties, SVGProps, forwardRef } from 'react';
+import { clsx } from 'clsx';
+import { svgPropertiesAndEvents } from '../util/svgPropertiesAndEvents';
+import { CartesianViewBox } from '../util/types';
+
+interface SurfaceProps {
+  width: number | string;
+  height: number | string;
+  viewBox?: CartesianViewBox;
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
+  title?: string;
+  desc?: string;
+}
+
+export type Props = Omit<SVGProps<SVGSVGElement>, 'viewBox'> & SurfaceProps;
+
+/**
+ * Renders an SVG element.
+ *
+ * All charts already include a Surface component, so you would not normally use this directly.
+ *
+ * @link https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
+ */
+export const Surface = forwardRef<SVGSVGElement, Props>((props: Props, ref) => {
+  const { children, width, height, viewBox, className, style, title, desc, ...others } = props;
+  const svgView = viewBox || { width, height, x: 0, y: 0 };
+  const layerClass = clsx('recharts-surface', className);
+
+  return (
+    <svg
+      {...svgPropertiesAndEvents(others)}
+      className={layerClass}
+      width={width}
+      height={height}
+      style={style}
+      viewBox={`${svgView.x} ${svgView.y} ${svgView.width} ${svgView.height}`}
+      ref={ref}
+    >
+      <title>{title}</title>
+      <desc>{desc}</desc>
+      {children}
+    </svg>
+  );
+});

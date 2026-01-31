@@ -90,6 +90,7 @@ export interface WalletProvider {
 export interface ConnectedWallet {
   id: string;
   provider: WalletProviderType;
+  walletId?: string;
   address: string;
   chainId: number | string;
   chainFamily: ChainFamily;

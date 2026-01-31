@@ -1,0 +1,590 @@
+---
+title: 마이그레이션 가이드
+---
+
+# 마이그레이션 가이드
+
+## RainbowKit 마이그레이션
+
+### 2.x.x 주요 변경사항
+
+[wagmi](https://wagmi.sh) 및 [viem](https://viem.sh) 피어 의존성이 `2.x.x`로 버전이 올라갔으며 호환되지 않는 변경이 있습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+**1. RainbowKit, `wagmi`, 및 `viem`을 최신 버전으로 업그레이드하세요**
+
+```bash
+npm i @rainbow-me/rainbowkit@2 wagmi@2 viem@2.x
+```
+
+**2. `@tanstack/react-query` 피어 의존성을 설치하세요**
+
+Wagmi v2와 함께, 이제 [TanStack Query](https://tanstack.com/query/v5/docs/react/overview)가 필수 피어 의존성입니다.
+
+다음 명령어로 설치하세요:
+
+```bash
+npm i @tanstack/react-query
+```
+
+**3. RainbowKit과 Wagmi 구성 업그레이드**
+
+```diff
+  import '@rainbow-me/rainbowkit/styles.css'
+
++ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+- import { createPublicClient, http } from 'viem'
+- import { WagmiConfig } from 'wagmi'
++ import { WagmiProvider, http } from 'wagmi'
+- import { configureChains, createConfig } from 'wagmi'
+  import { mainnet } from 'wagmi/chains'
+  import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+- import { getDefaultWallets, connectorsForWallets } from '@rainbow-me/rainbowkit'
++ import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+
+  /* getDefaultWallets is now optional */
+- const { wallets } = getDefaultWallets({
+-   appName: 'RainbowKit demo',
+-   projectId: 'YOUR_PROJECT_ID',
+-   chains,
+- })
+
+  /* connectorsForWallets is now optional */
+- const connectors = connectorsForWallets([...wallets])
+
+- const { chains, publicClient } = configureChains( 
+-   [mainnet, sepolia], 
+-   [publicProvider(), publicProvider()],
+- )
+
+- const config = createConfig({
+-   autoConnect: true,
+-   publicClient,
+- })
+
+  /* New API that includes Wagmi's createConfig and replaces getDefaultWallets and connectorsForWallets */
++ const config = getDefaultConfig({
++   appName: 'RainbowKit demo',
++   projectId: 'YOUR_PROJECT_ID',
++   chains: [mainnet],
++   transports: {
++     [mainnet.id]: http(),
++   },
++ })
+
++ const queryClient = new QueryClient()
+
+  const App = () => {
+    return (
+-     <WagmiConfig config={config}>
++     <WagmiProvider config={config}>
++       <QueryClientProvider client={queryClient}>
+-         <RainbowKitProvider chains={chains}>
++         <RainbowKitProvider>
+            {/* Your App */}
+          </RainbowKitProvider>
++       </QueryClientProvider>
+-     </WagmiConfig>
++     </WagmiProvider>
+    )
+  }
+```
+
+**4. `wagmi` 및 `viem`의 주요 변경사항 확인**
+
+당신의 dApp에서 `wagmi` 후크와 `viem` 작업을 사용하는 경우, v2 마이그레이션 가이드를 따라야 합니다:
+
+- [Wagmi v2 마이그레이션 가이드](https://wagmi.sh/react/guides/migrate-from-v1-to-v2)
+- [Viem v2 주요 변경 사항](https://viem.sh/docs/migration-guide#2xx-breaking-changes)
+
+#### RainbowKit 변경사항
+
+**1. EIP-6963 지갑의 개선된 동작**
+
+새로운 EIP-6963 연결 표준을 지원하는 지갑(Rainbow, MetaMask 등 포함)은 이제 지갑 연결 시 `설치됨` 섹션에 자동으로 표시되어 사용자들이 좋아하는 지갑을 쉽게 찾고 dApp에 충돌 없이 연결할 수 있습니다.
+
+개발자는 사용자에게 최적의 지갑을 강조하기 위해 사용자 지정 지갑 목록에 대한 완전한 통제권을 유지합니다. 모든 플랫폼을 지원하기 위해 `injectedWallet` 및 `walletConnectWallet`을 계속 목록에 포함하는 것이 좋습니다.
+
+**2. getDefaultConfig을 사용한 Wagmi 구성**
+
+이 새로운 API는 구성 경험을 간단하게 하고 Wagmi의 `createConfig`를 직접 사용할 필요를 대체합니다. 체인 구성은 `transports`에 대한 공용 제공자 추론을 포함하여 간소화됩니다.
+
+기본 월렛 목록이 자동으로 포함되어, `getDefaultWallets` 및 `connectorsForWallets`를 사용하는 필요가 없어졌습니다.
+
+`wallets`에 가져온 또는 사용자 정의 지갑 커넥터를 전달하여 사용자정의 지갑 목록을 만들 수 있습니다. 이제 `projectId`와 `체인`을 전달할 필요가 없습니다.
+
+```
+const config = getDefaultConfig({
+  appName: 'RainbowKit demo',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [mainnet],
+  wallets: [rainbowWallet], /* optional custom wallet list */
+  /* Wagmi createConfig options including `transports` are also accepted */
+})
+```
+
+**3. RainbowKitProvider**
+
+더 이상 `<RainbowKitProvider>`에 `chains`를 전달할 필요가 없습니다.
+
+```diff
+- <RainbowKitProvider chains={chains}>
++ <RainbowKitProvider>
+```
+
+**4. 사용자 정의 체인**
+
+`Chain` 타입은 Wagmi v2에 따라 변경되었고, RainbowKit의 `iconUrl` 및 `iconBackground` 메타데이터 지원을 계속합니다.
+
+```diff
++ import { Chain } from '@rainbow-me/rainbowkit'
+
+  const avalanche = {
+    id: 43_114,
+    name: 'Avalanche',
+    iconUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5805.png',
+    iconBackground: '#fff',
+    nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
+    rpcUrls: {
+      default: { http: ['https://api.avax.network/ext/bc/C/rpc'] },
+    },
+    blockExplorers: {
+      default: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 11_907_934,
+      },
+    },
+  } as const satisfies Chain
+```
+
+`getDefaultConfig` 예시:
+
+```diff
+const config = getDefaultConfig({
++ chains: [
++   avalanche, /* custom chain */
++   {
++     ...mainnet,
++     iconBackground: '#000',
++     iconUrl: 'https://example.com/icons/ethereum.png',
++   }, /* metadata overides */
++ ],
+});
+```
+
+`createConfig` 예시:
+
+```diff
++ import { Chain } from '@rainbow-me/rainbowkit'
++ const chains: readonly [Chain, ...Chain[]] = [
++   {
++     ...mainnet,
++     iconBackground: '#000',
++     iconUrl: 'https://example.com/icons/ethereum.png',
++   },
++ ];
+  const config = createConfig({
+    chains,
+    transports: {
+      [mainnet.id]: http(),
+    },
+  })
+```
+
+**5. 사용자 정의 지갑**
+
+RainbowKit 지갑 커넥터는 Wagmi v2를 지원하기 위해 상당한 변경이 있었습니다. dApp의 사용자 정의 지갑 커넥터를 업그레이드하려면 [업데이트된 문서](https://www.rainbowkit.com/docs/custom-wallets)와 [예제 커넥터](https://github.com/rainbow-me/rainbowkit/blob/main/packages/rainbowkit/src/wallets/walletConnectors/rainbowWallet/rainbowWallet.ts)를 참조하세요.
+
+지갑 커넥터는 이제 `rdns` 속성을 사용하여 EIP-6963 표준을 지원합니다. 이 속성을 채워야 지갑 목록에 EIP-6963 지원 지갑의 중복 참조를 방지할 수 있습니다.
+
+### 1.x.x 주요 변경사항
+
+#### wagmi를 v1로 업데이트
+
+[wagmi](https://wagmi.sh) 피어 의존성이 `1.x.x`로 업데이트되었습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+**1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요**
+
+```bash
+npm i @rainbow-me/rainbowkit@^1 wagmi@^1
+```
+
+**2. `viem` 피어 의존성을 설치하세요**
+
+wagmi v1은 `viem` 피어 의존성을 요구합니다. 다음 명령으로 설치하세요:
+
+```bash
+npm i viem
+```
+
+**3. 번들러 및 폴리필 호환성 보장**
+
+프로젝트 구성 지침에 대한 [Next.js Webpack Config](https://github.com/rainbow-me/rainbowkit/blob/main/examples/with-next/next.config.js) 샘플을 참조하세요.
+
+Vite 및 Remix에 대한 추가 프레임워크 가이드는 [여기](https://www.rainbowkit.com/docs/installation#additional-build-tooling-setup)에서 사용할 수 있습니다.
+
+**4. `wagmi`의 주요 변경사항 확인**
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 v1 마이그레이션 가이드를 따라야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide).
+
+### 0.12.x 주요 변경사항
+
+wagmi 피어 의존성이 `0.12.x`로 업데이트되었습니다.
+
+RainbowKit은 WalletConnect v1 지원을 지속하기 위해 `wagmi`에서 `WalletConnectLegacyConnector` 커넥터를 채택했습니다. WalletConnect v2 및 `WalletConnectConnector`에 대한 지원은 곧 패치 릴리스로 제공되며 주요 변경 사항은 없습니다.
+
+지갑은 이후 릴리즈에서 자동으로 전환됩니다.
+
+모든 dApp은 이제 WalletConnect v2를 활성화하기 위해 [WalletConnect Cloud](https://cloud.walletconnect.com/) `projectId`를 제공해야 합니다. 이는 무료이며 몇 분 안에 완료할 수 있습니다. RainbowKit은 지정되지 않은 경우 모든 지갑에 대해 v1을 조용히 선호할 것입니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.12.0 wagmi@^0.12.0
+```
+
+#### 2. WalletConnect Cloud projectId 제공
+
+이제 WalletConnect에 의존하는 모든 dApp은 [WalletConnect Cloud](https://cloud.walletconnect.com/)에서 프로젝트 ID를 얻어야 합니다. 이는 완전 무료이며 몇 분밖에 걸리지 않습니다.
+
+`projectId`를 `getDefaultWallets` 및 개별 RainbowKit 지갑 커넥터에 제공하세요:
+
+```ts
+const projectId = 'YOUR_PROJECT_ID';
+
+const { wallets } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  projectId,
+  chains,
+});
+
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: 'Other',
+    wallets: [
+      readyWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      ledgerWallet({ projectId, chains }),
+    ],
+  },
+]);
+```
+
+### 0.11.x 주요 변경사항
+
+wagmi 피어 의존성이 `0.11.x`로 업데이트되었습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.11.0 wagmi@^0.11.0
+```
+
+#### 2. `wagmi`의 주요 변경사항 확인
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 주요 변경 사항에 대한 앱의 영향 여부를 확인해야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide#011x-breaking-changes).
+
+### 0.10.x 주요 변경사항
+
+wagmi 피어 의존성이 `0.10.x`로 업데이트되었습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.10.0 wagmi@^0.10.0
+```
+
+#### 2. `wagmi`의 주요 변경사항 확인
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 주요 변경 사항에 대한 앱의 영향 여부를 확인해야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide#010x-breaking-changes).
+
+### 0.9.x 주요 변경사항
+
+wagmi 피어 의존성이 `0.9.x`로 업데이트되었습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.9.0 wagmi@^0.9.0
+```
+
+#### 2. `wagmi`의 주요 변경사항 확인
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 주요 변경 사항에 대한 앱의 영향 여부를 확인해야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide#09x-breaking-changes).
+
+### 0.8.x 주요 변경사항
+
+wagmi 피어 의존성이 `0.8.x`로 업데이트되었습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. RainbowKit과 `wagmi`를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.8.0 wagmi@^0.8.0
+```
+
+#### 2. `wagmi`의 주요 변경사항 확인
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 주요 변경 사항에 대한 앱의 영향 여부를 확인해야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide#08x-breaking-changes).
+
+### 0.7.x 주요 변경사항
+
+사용자 정의 지갑 목록을 생성하는 경우 번들 크기를 줄이기 위해 이제 각 지갑을 개별적으로 가져와야 합니다. 지갑이 더 이상 `wallet` 객체를 통해 네임스페이스되지 않으므로 모든 지갑에는 `Wallet` 접미사가 있습니다.
+
+```diff
+-import { connectorsForWallets, wallet } from '@rainbow-me/rainbowkit';
++import { connectorsForWallets } from '@rainbow-me/rainbowkit';
++import {
++  injectedWallet,
++  rainbowWallet,
++  metaMaskWallet,
++  coinbaseWallet,
++  walletConnectWallet,
++} from '@rainbow-me/rainbowkit/wallets';
+
+const wallets = [
+-  wallet.injected({ chains }),
+-  wallet.rainbow({ chains }),
+-  wallet.metaMask({ chains }),
+-  wallet.coinbase({ chains, appName: 'My App' }),
+-  wallet.walletConnect({ chains }),
++  injectedWallet({ chains }),
++  rainbowWallet({ chains }),
++  metaMaskWallet({ chains }),
++  coinbaseWallet({ chains, appName: 'My App' }),
++  walletConnectWallet({ chains }),
+];
+```
+
+Steakwallet 역호환성 레이어가 제거되었습니다. Omni를 대신 사용해야 합니다.
+
+```diff
+-import { wallet } from '@rainbow-me/rainbowkit';
++import { omniWallet } from '@rainbow-me/rainbowkit/wallets';
+
+const wallets = [
+-  wallet.steak({ chains }),
++  omniWallet({ chains }),
+];
+```
+
+### 0.4.x 주요 변경사항
+
+RainbowKit은 `wagmi` 피어 의존성을 `0.5.x`로 업데이트했습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. 의존성 업그레이드
+
+RainbowKit 및 wagmi를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.4.0 wagmi@^0.5.0
+```
+
+#### 2. `wagmi`의 주요 변경사항 확인
+
+앱에서 `wagmi` 후크를 사용하는 경우 `wagmi`의 주요 변경 사항에 대한 앱의 영향 여부를 확인해야 합니다.
+
+[마이그레이션 가이드는 여기서 확인할 수 있습니다](https://wagmi.sh/react/migration-guide#05x-breaking-changes).
+
+### 0.3.x 주요 변경사항
+
+`Wallet` 유형의 `createConnector`에서 `chainId` 매개변수를 제거했습니다.
+
+**모든 내장 지갑이 새로운 API를 사용하고 있음을 유의하십시오. 대부분의 소비자는 영향받지 않습니다. 이 변경은 [사용자 정의 지갑](/docs/custom-wallets)를 만들거나 사용하는 소비자에게만 영향을 미칩니다.**
+
+이전에 `createConnector`의 `chainId`에서 RPC URL을 도출한 경우, `wagmi`가 이제 `configureChains`와 함께 사용할 때 RPC URL을 내부적으로 처리하므로 해당 논리를 제거할 수 있습니다.
+
+```diff
+import { connectorsForWallets, wallet, Chain, Wallet } from '@rainbow-me/rainbowkit';
+import { chain, configureChains } from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+
+export interface MyWalletOptions {
+  chains: Chain[];
+}
+
+-const chains = [chain.mainnet]
++const { chains } = configureChains(
++  [chain.mainnet],
++  [
++    alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }),
++    publicProvider(),
++  ]
++);
+
+export const rainbow = ({ chains }: MyWalletOptions): Wallet => ({
+  ...
+- createConnector: ({ chainId }) => {
++ createConnector: () => {
+-   const rpc = chains.reduce(
+-     (rpcUrlMap, chain) => ({
+-       ...rpcUrlMap,
+-       [chainId]: chain.rpcUrls.default,
+-     }),
+-     {}
+-   );
+    const connector = new WalletConnectConnector({
+      chains,
+      options: {
+        qrcode: false,
+-       rpc,
+      },
+    });
+  }
+  ...
+}
+
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      rainbow({ chains }),
+    ],
+  },
+]);
+```
+
+### 0.2.x 주요 변경사항
+
+RainbowKit은 `wagmi` 피어 의존성을 `^0.4`로 업데이트했습니다.
+
+아래의 단계들을 따라 마이그레이션하세요.
+
+#### 1. 의존성 업그레이드
+
+RainbowKit 및 wagmi를 최신 버전으로 업그레이드하세요
+
+```bash
+npm i @rainbow-me/rainbowkit@^0.2.0 wagmi@^0.4.2
+```
+
+#### 2. configureChains 가져오기 교체
+
+RainbowKit 대신 wagmi에서 `configureChains`를 가져옵니다:
+
+```diff
+- import { configureChains } from '@rainbow-me/rainbowkit';
++ import { configureChains } from 'wagmi';
+```
+
+#### 3. 제공자 마이그레이션
+
+RainbowKit은 더 이상 `apiProvider` API를 내보내지 않습니다. wagmi에서 원하는 제공자로 대체하십시오.
+
+```diff
+- import { apiProvider } from '@rainbow-me/rainbowkit';
+```
+
+#### Alchemy
+
+`wagmi/providers/alchemy`에서 `alchemyProvider`를 가져옵니다.
+
+```diff
++ import { alchemyProvider } from 'wagmi/providers/alchemy';
+
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+- [apiProvider.alchemy(process.env.ALCHEMY_ID)]
++ [alchemyProvider({ alchemyId: process.env.ALCHEMY_ID })]
+);
+```
+
+#### Infura
+
+`wagmi/providers/infura`에서 `infuraProvider`를 가져옵니다.
+
+```diff
++import { infuraProvider } from 'wagmi/providers/infura';
+
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+- [apiProvider.infura(process.env.INFURA_ID)]
++ [infuraProvider({ infuraId: process.env.INFURA_ID })]
+);
+```
+
+#### JSON RPC
+
+`wagmi/providers/jsonRpc`에서 `jsonRpcProvider`를 가져옵니다.
+
+```diff
++ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon],
+  [
+-   apiProvider.jsonRpc(chain => ({
+-     rpcUrl: `https://${chain.id}.example.com`,
+-   })),
++   jsonRpcProvider({
++     rpc: chain => ({
++       http: `https://${chain.id}.example.com`,
++     }),
++   }),
+  ]
+);
+```
+
+#### 공용 제공자
+
+`wagmi/providers/public`에서 `publicProvider`를 가져옵니다.
+
+```diff
++ import { publicProvider } from 'wagmi/providers/public';
+
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon],
+- [apiProvider.fallback()]
++ [publicProvider()]
+);
+```
+
+#### 4. wagmi의 제공자 이름 변경
+
+`WagmiProvider`를 `WagmiConfig`로 이름을 변경합니다.
+
+```diff
+import {
+- WagmiProvider
++ WagmiConfig
+} from 'wagmi'
+
+const App = () => {
+  return (
+-   <WagmiProvider client={wagmiClient}>...</WagmiProvider>
++   <WagmiConfig client={wagmiClient}>...</WagmiConfig>
+  );
+};
+```
+
+이게 다입니다! 🌈

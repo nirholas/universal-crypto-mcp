@@ -1,0 +1,7 @@
+datasource my_db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}

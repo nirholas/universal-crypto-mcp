@@ -1,0 +1,385 @@
+---
+title: Temas
+description: Usando e personalizando os temas
+---
+
+# Temas
+
+## Usando e personalizando os temas
+
+Você pode ajustar a interface do RainbowKit para se adequar à sua identidade de marca. Você pode escolher entre algumas cores e configurações de raio de borda predefinidas.
+
+Existem 3 funções de tema embutidas:
+
+- `lightTheme` &nbsp; (padrão)
+- `darkTheme`
+- `midnightTheme`
+
+Uma função de tema retorna um objeto tema. Você pode passar o objeto para a prop `theme` do `RainbowKitProvider`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+Se desejar, você pode passar `accentColor`, `accentColorForeground`, `borderRadius`, `fontStack` e `overlayBlur` para personalizá-los.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider
+    theme={darkTheme({
+      __accentColor__: '#7b3fe4',
+      __accentColorForeground__: 'white',
+      __borderRadius__: 'small',
+      __fontStack__: 'system',
+      __overlayBlur__: 'small',
+    })}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### Personalizando os temas embutidos
+
+As funções de tema embutidas também aceitam um objeto de opções, permitindo que você selecione entre diferentes estilos visuais.
+
+<PropsTable
+ data={[
+ {
+ name: 'accentColor',
+ required: false,
+ default: '"#0E76FD"',
+ type: 'string',
+ description:
+ 'A cor de fundo/texto de vários elementos interativos.',
+ },
+ {
+ name: 'accentColorForeground',
+ required: false,
+ default: '"white"',
+ type: 'string',
+ description:
+ 'A cor usada para elementos de primeiro plano renderizados sobre a cor de destaque.',
+ },
+ {
+ name: 'borderRadius',
+ required: false,
+ default: 'large',
+ type: '"none" | "small" | "medium" | "large"',
+ typeSimple: 'enum',
+ description: 'O tamanho de toda a escala do raio da borda.',
+ },
+ {
+ name: 'fontStack',
+ required: false,
+ default: 'rounded',
+ type: '"rounded" | "system"',
+ typeSimple: 'enum',
+ description:
+ "A pilha de fontes utilizada em toda a interface. Note que 'rounded' tenta usar SF Pro Rounded, antes de voltar para fontes do sistema quando não está disponível.",
+ },
+ {
+ name: 'overlayBlur',
+ required: false,
+ default: 'none',
+ type: '"large" | "small" | "none"',
+ typeSimple: 'enum',
+ description: 'O desfoque do fundo do modal.',
+ },
+ ]}
+/>
+
+Por exemplo, para personalizar o tema escuro com uma cor de destaque roxa e uma escala de raio de borda `medium`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Cada tema também oferece vários presets de cor de destaque (`blue`, `green`, `orange`, `pink`, `purple`, `red`) que podem ser incluídos no objeto de opções. Por exemplo, para usar o preset de cor de destaque `pink`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.pink,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### Exemplos
+
+#### Função de tema
+
+Aqui estão algumas maneiras diferentes de usar a prop `theme`.
+
+Use o tema `darkTheme`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+Use o tema `midnightTheme`.
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={midnightTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+#### Cor de destaque
+
+Aqui estão algumas maneiras diferentes de usar a configuração `accentColor`.
+
+Defina a cor de destaque para um valor roxo personalizado.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Defina a cor de destaque para o preset embutido `green`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.green,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Raio de borda
+
+Aqui estão algumas maneiras diferentes de usar a configuração `borderRadius`.
+
+Defina o raio de borda para `medium`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Defina o raio de borda para `none`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'none',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+> Lembrete: os valores de raio de borda disponíveis são: `large` (padrão), `medium`, `small` e `none`.
+
+#### Pilha de fontes
+
+Por padrão, a `fontStack` está definida para `rounded`. Mas aqui está como você pode usar a configuração `fontStack`.
+
+Defina a pilha de fontes para `system`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Desfoque de sobreposição
+
+Por padrão, o `overlayBlur` está definido para `none`. Mas aqui está como você pode usar a configuração `overlayBlur`.
+
+Defina o desfoque de sobreposição para `small`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        overlayBlur: 'small',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Misturar e combinar
+
+Aqui estão algumas maneiras diferentes de usar diferentes temas, com as props `accentColor`, `borderRadius` and `fontStack` juntas.
+
+- Use o tema `lightTheme`
+- Defina a cor de destaque para um valor roxo personalizado
+- Defina o raio de borda para `medium`
+- Defina a pilha de fontes para `system`
+
+```tsx
+import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={lightTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+- Use o tema `midnightTheme`
+- Defina a cor de destaque para o preset embutido `pink`.
+- Defina o raio de borda para `small`
+- Defina a pilha de fontes para `system`
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={midnightTheme({
+        ...midnightTheme.accentColors.pink,
+        borderRadius: 'small',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Suporte para modo escuro
+
+Se o seu aplicativo usa a media query padrão `prefers-color-scheme: dark` para alternar entre os modos claro e escuro, você pode opcionalmente fornecer um objeto de tema dinâmico contendo valores `lightMode` e `darkMode`.
+
+```tsx
+import {
+  RainbowKitProvider,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => (
+  <RainbowKitProvider
+    theme={{
+      lightMode: lightTheme(),
+      darkMode: darkTheme(),
+    }}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

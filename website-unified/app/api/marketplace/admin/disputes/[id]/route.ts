@@ -17,6 +17,7 @@ import {
   parseBody,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -38,9 +39,10 @@ const ResolveDisputeSchema = z.object({
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 1];
   const body = await parseBody(request, ResolveDisputeSchema);
   const db = getDatabase();
   
@@ -57,7 +59,7 @@ async function handler(
     }
     
     // Update dispute status
-    const newStatus = body.action === 'resolve' ? 'resolved' : 'dismissed';
+    const newStatus = body.action === 'resolve' ? 'resolved' : 'rejected';
     const updatedDispute = await db.updateDispute(id, {
       status: newStatus,
       resolution: body.resolution,
@@ -83,9 +85,7 @@ async function handler(
     }
     console.error('[API] Admin dispute resolution error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to resolve dispute',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to resolve dispute')
     );
   }
 }

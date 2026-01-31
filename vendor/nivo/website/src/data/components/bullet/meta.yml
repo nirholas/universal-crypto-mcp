@@ -1,0 +1,23 @@
+flavors:
+  - flavor: svg
+    path: /bullet/
+
+Bullet:
+  package: '@nivo/bullet'
+  tags: []
+  stories:
+    - label: custom range
+      link: bullet--custom-range
+    - label: custom measure
+      link: bullet--custom-measure
+    - label: custom marker
+      link: bullet--custom-marker
+    - label: custom title
+      link: bullet--custom-title
+    - label: support min/max value property
+      link: bullet--support-min-max-value-property
+  description: |
+    Bullet chart supporting multiple ranges/measures/markers.
+
+    You can fully customize this chart using custom components via
+    `rangeComponent`, `measureComponent` and `markerComponent` properties.

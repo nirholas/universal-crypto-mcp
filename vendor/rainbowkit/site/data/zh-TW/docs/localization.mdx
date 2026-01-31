@@ -1,0 +1,97 @@
+---
+title: 本地化
+description: 使用內建翻譯自定義您的 dApp 語言
+---
+
+# 本地化
+
+## 使用內建翻譯自定義您的 dApp 語言
+
+預設情況下，RainbowKit 為英語使用者支援 `en-US` 區域設置。
+
+如果可以，RainbowKit 會檢測用戶的[首選語言](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language)並選擇合適的翻譯。開發者可以隨時覆蓋默認語言。
+
+要為您的用戶指定語言，只需在 `RainbowKitProvider` 中添加 `locale="zh-CN"` 這個屬性。
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider locale="zh-CN" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### 與 Next.js 一起使用
+
+RainbowKit 的本地化支持在[子路徑路由](https://nextjs.org/docs/pages/building-your-application/routing/internationalization#sub-path-routing)下工作得更好。
+
+像下面的示例一樣配置您的 Next.js 項目，為您的路徑添加一個可選的 `/locale/` 子路徑，這將幫助搜索引擎和用戶更好地發現您的多語言支持。
+
+```json
+// next.config.js
+{
+  i18n: {
+    locales: ['default', 'en', 'zh-CN'],
+    defaultLocale: 'default',
+  },
+}
+```
+
+然後將 Pages Router 提供的 `locale` 傳遞給 `RainbowKitProvider`。
+
+```tsx
+import { RainbowKitProvider, Locale } from '@rainbow-me/rainbowkit';
+
+export const App = () => {
+  const { locale } = useRouter() as { locale: Locale };
+  return (
+    <RainbowKitProvider locale={locale} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  )
+};
+```
+
+您可以在[這裡](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next)參考 Pages Router 的示例。
+
+App Router 尚不支持 i18n。請參考我們的單獨示例[這裡](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-app-i18n)，以獲得 [`next-intl`](https://github.com/amannn/next-intl) 中間件的最佳實踐。
+
+建議您使用相同的技術來翻譯您的 dApp 的內容以獲得完整的本地化支援。本地化庫如 [`i18n-js`](https://github.com/fnando/i18n) 和 [`next-intl`](https://github.com/amannn/next-intl)，還有管理工具 Crowdin 將簡化此過程。
+
+### 支援的語言
+
+我們為以下 `locale` 地區提供全面支持：
+
+<Table
+  header={[
+    '語言', '地區', '區域', '縮寫形式'
+  ]}
+  dataTypes={[
+    'string', 'string', 'code', 'code'
+  ]}
+  data={[
+    ['英語', '美國 🇺🇸', 'en-US', 'en'],
+    ['中文', '中國大陸 🇨🇳', 'zh-CN', 'zh-Hans', 'zh'],
+    ['繁體中文', '香港 🇭🇰', 'zh-HK'],
+    ['繁體中文', '台灣 🇹🇼', 'zh-TW', 'zh-Hant'],
+    ['हिंदी', '印度 🇮🇳', 'hi-IN', 'hi'],
+    ['西班牙語', '拉丁美洲 🌎', 'es-419', 'es'],
+    ['法語', '法國 🇫🇷', 'fr-FR', 'fr'],
+    ['阿拉伯語', '中東 🌍', 'ar-AR', 'ar'],
+    ['葡萄牙語', '巴西 🇧🇷', 'pt-BR', 'pt'],
+    ['俄語', '俄羅斯 🇷🇺', 'ru-RU', 'ru'],
+    ['印尼語', '印尼 🇮🇩', 'id-ID', 'id'],
+    ['日語', '日本 🇯🇵', 'ja-JP', 'ja'],
+    ['土耳其語', '土耳其 🇹🇷', 'tr-TR', 'tr'],
+    ['韓語', '韓國 🇰🇷', 'ko-KR', 'ko'],
+    ['泰語', '泰國 🇹🇭', 'th-TH', 'th'],
+    ['烏克蘭語', '烏克蘭 🇺🇦', 'uk-UA', 'ua'],
+    ['越南語', '越南 🇻🇳', 'vi-VN', 'vi'],
+    ['德語', '德國 🇩🇪', 'de-DE', 'de'],
+    ['馬來語', '馬來西亞 🇲🇾', 'ms-MY', 'ms']
+  ]}
+/>
+
+如果您希望增加其他語言的支援，請在 [GitHub 討論](https://github.com/rainbow-me/rainbowkit/discussions/new?category=ideas) 中提出，我們將竭盡所能盡快提供支援。

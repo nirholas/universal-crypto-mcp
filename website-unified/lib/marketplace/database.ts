@@ -119,6 +119,13 @@ export type Subscription = z.infer<typeof SubscriptionSchema>;
 export type Review = z.infer<typeof ReviewSchema>;
 export type Dispute = z.infer<typeof DisputeSchema>;
 
+// Type aliases for SDK compatibility
+export type DatabaseService = Service;
+export type DatabaseProvider = Provider;
+export type DatabaseSubscription = Subscription;
+export type DatabaseReview = Review;
+export type DatabaseDispute = Dispute;
+
 // ============================================================================
 // Database Client Interface
 // ============================================================================
@@ -927,3 +934,21 @@ export async function seedDatabase(): Promise<void> {
 
   console.log('[Database] Seeded', serviceData.length, 'services,', reviewData.length, 'reviews,', subscriptionData.length, 'subscriptions');
 }
+
+// Export a convenience db instance
+export const db = {
+  getService: (id: string) => getDatabase().findServiceById(id),
+  getProvider: (wallet: string) => getDatabase().findProviderByWallet(wallet),
+  findServices: (filters: ServiceFilters) => getDatabase().findServices(filters),
+  findReviews: (filters: ReviewFilters) => getDatabase().findReviews(filters).then(r => r.reviews),
+  findSubscriptions: (filters: SubscriptionFilters) => getDatabase().findSubscriptions(filters).then(r => r.subscriptions),
+  getDisputes: () => getDatabase().findDisputes({}).then(r => r.disputes),
+  createDispute: (data: Omit<Dispute, 'id' | 'createdAt' | 'updatedAt'>) => getDatabase().createDispute(data),
+  // Additional methods for SDK
+  createService: (data: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>) => getDatabase().createService(data),
+  updateService: (id: string, data: Partial<Service>) => getDatabase().updateService(id, data),
+  createSubscription: (data: Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'>) => getDatabase().createSubscription(data),
+  updateSubscription: (id: string, data: Partial<Subscription>) => getDatabase().updateSubscription(id, data),
+  createReview: (data: Omit<Review, 'id' | 'createdAt' | 'updatedAt'>) => getDatabase().createReview(data),
+  findDisputes: (filters: DisputeFilters) => getDatabase().findDisputes(filters).then(r => r.disputes),
+};

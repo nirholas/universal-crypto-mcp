@@ -1,0 +1,54 @@
+#
+# This is the default config file. It allows all users to do anything,
+# so don't use it on production systems.
+#
+# Look here for more config file examples:
+# https://github.com/verdaccio/verdaccio/tree/master/conf
+#
+
+# File paths are relative to this configuration file.
+
+# Path to a directory with all packages
+# storage: ./tmp/verdaccio
+
+storage: ../storage
+
+# Verdaccio does not allow to publish packages when the client is offline, to avoid
+# errors on publish
+# https://verdaccio.org/docs/configuration#offline-publish
+publish:
+  allow_offline: false
+
+# A list of other known repositories we can talk to
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  # Forked packages need to be fetched from npm
+  '@docusaurus/react-loadable':
+    access: $all
+    publish: $all
+    proxy: npmjs
+  # Group and isolate all local packages, avoid being proxy from outside
+  '@docusaurus/*':
+    access: $all
+    publish: $all
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  '**':
+    # Allow all users (including non-authenticated users) to read and
+    # publish all packages
+    access: $all
+    publish: $all
+
+    # Download from npm if a package is not available in the local registry
+    proxy: npmjs
+
+# Log settings
+logs:
+  - {type: stdout, format: pretty, level: http}
+
+# Fix 413 errors in e2e CI
+max_body_size: 1000mb

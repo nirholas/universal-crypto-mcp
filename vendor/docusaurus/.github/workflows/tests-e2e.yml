@@ -1,0 +1,272 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+      - docusaurus-v**
+    paths:
+      - package.json
+      - yarn.lock
+      - jest.config.mjs
+      - jest/**
+      - packages/**
+      - tsconfig.*.json
+  pull_request:
+    branches:
+      - main
+      - docusaurus-v**
+    paths:
+      - package.json
+      - yarn.lock
+      - jest.config.mjs
+      - jest/**
+      - packages/**
+      - tsconfig.*.json
+      - admin/verdaccio.yaml
+      - .github/workflows/tests-e2e.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  yarn-v1:
+    name: E2E — Yarn v1
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['20.0', '20', '22', '24', '25.1']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: yarn
+      - name: Installation
+        run: yarn || yarn || yarn
+      - name: Generate test-website project against main branch
+        run: yarn test:build:website -s
+      - name: Install test-website project with Yarn v1
+        run: yarn || yarn || yarn
+        working-directory: ../test-website
+        env:
+          npm_config_registry: http://localhost:4873
+      - name: Start test-website project
+        run: yarn start --no-open
+        working-directory: ../test-website
+        env:
+          E2E_TEST: true
+      - name: Build test-website project
+        # We build 2 locales to ensure a localized site doesn't leak memory
+        # See https://github.com/facebook/docusaurus/pull/10599
+        run: yarn build --locale en --locale fr
+        env:
+          # Our website should build even with limited memory
+          # See https://github.com/facebook/docusaurus/pull/10590
+          NODE_OPTIONS: '--max-old-space-size=300'
+          DOCUSAURUS_PERF_LOGGER: 'true'
+        working-directory: ../test-website
+
+  yarn-v1-windows:
+    name: E2E — Yarn v1 Windows
+    timeout-minutes: 30
+    runs-on: windows-8-core
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Node.js LTS
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Installation
+        run: yarn || yarn || yarn
+      - name: Generate test-website project against main branch
+        # Not using test-release.sh => no verdaccio docker image on Windows
+        # run: bash ./admin/scripts/test-release.sh -s
+        run: yarn create-docusaurus test-website-in-workspace classic --typescript
+      - name: Install test-website project with Yarn v1
+        run: yarn || yarn || yarn
+        working-directory: test-website-in-workspace
+      - name: Start test-website project
+        run: yarn start --no-open
+        working-directory: test-website-in-workspace
+        env:
+          E2E_TEST: true
+      - name: Build test-website project
+        # We build 2 locales to ensure a localized site doesn't leak memory
+        # See https://github.com/facebook/docusaurus/pull/10599
+        run: yarn build --locale en --locale fr
+        env:
+          # Our website should build even with limited memory
+          # See https://github.com/facebook/docusaurus/pull/10590
+          NODE_OPTIONS: '--max-old-space-size=300'
+          DOCUSAURUS_PERF_LOGGER: 'true'
+        working-directory: test-website-in-workspace
+      - name: Upload Website artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: website-e2e-windows
+          path: test-website-in-workspace/build
+
+  yarn-berry:
+    name: E2E — Yarn Berry
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nodeLinker: [pnp, node-modules]
+        variant: [-s, -st]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Node.js LTS
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Installation
+        run: yarn || yarn || yarn
+      - name: Generate test-website project with ${{ matrix.variant }} against main branch
+        run: yarn test:build:website ${{ matrix.variant }}
+      - name: Install test-website project with Yarn Berry and nodeLinker = ${{ matrix.nodeLinker }}
+        run: |
+          yarn set version berry
+
+          yarn config set nodeLinker ${{ matrix.nodeLinker }}
+          yarn config set npmRegistryServer http://localhost:4873
+          yarn config set unsafeHttpWhitelist --json '["localhost"]'
+          yarn config set enableGlobalCache true
+
+          # Make PnP as strict as possible
+          # https://yarnpkg.com/features/pnp#fallback-mode
+          yarn config set pnpFallbackMode none
+
+          yarn || yarn || yarn
+        working-directory: ../test-website
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false # Yarn berry should create the lockfile, despite CI env
+      - name: Start test-website project
+        run: yarn start --no-open
+        working-directory: ../test-website
+        env:
+          E2E_TEST: true
+      - name: TypeCheck website
+        # TODO: there're some lingering issues with PnP + tsc. Enable tsc in PnP later.
+        if: matrix.variant == '-st' && matrix.nodeLinker != 'pnp'
+        working-directory: ../test-website
+        run: yarn typecheck
+      - name: TypeCheck website - min version - v5.1
+        # TODO: there're some lingering issues with PnP + tsc. Enable tsc in PnP later.
+        if: matrix.variant == '-st' && matrix.nodeLinker != 'pnp'
+        working-directory: ../test-website
+        run: |
+          yarn add typescript@5.1.6 --exact
+          yarn typecheck
+      - name: TypeCheck website - max version - Latest
+        # TODO: there're some lingering issues with PnP + tsc. Enable tsc in PnP later.
+        if: matrix.variant == '-st' && matrix.nodeLinker != 'pnp'
+        working-directory: ../test-website
+        run: |
+          yarn add typescript@latest --exact
+          yarn typecheck
+
+      - name: Build test-website project
+        # We build 2 locales to ensure a localized site doesn't leak memory
+        # See https://github.com/facebook/docusaurus/pull/10599
+        run: yarn build --locale en --locale fr
+        env:
+          # Our website should build even with limited memory
+          # See https://github.com/facebook/docusaurus/pull/10590
+          NODE_OPTIONS: '--max-old-space-size=300'
+          DOCUSAURUS_PERF_LOGGER: 'true'
+        working-directory: ../test-website
+
+  npm:
+    name: E2E — npm
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Node.js LTS
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Installation
+        run: yarn || yarn || yarn
+      - name: Generate test-website project against main branch
+        run: yarn test:build:website -st
+      - name: Install test-website project with npm
+        run: npm install
+        working-directory: ../test-website
+        env:
+          npm_config_registry: http://localhost:4873
+      - name: TypeCheck website
+        working-directory: ../test-website
+        run: yarn typecheck
+      - name: Start test-website project
+        run: npm run start -- --no-open
+        working-directory: ../test-website
+        env:
+          E2E_TEST: true
+      - name: Build test-website project
+        # We build 2 locales to ensure a localized site doesn't leak memory
+        # See https://github.com/facebook/docusaurus/pull/10599
+        run: npm run build -- --locale en --locale fr
+        env:
+          # Our website should build even with limited memory
+          # See https://github.com/facebook/docusaurus/pull/10590
+          NODE_OPTIONS: '--max-old-space-size=300'
+          DOCUSAURUS_PERF_LOGGER: 'true'
+        working-directory: ../test-website
+
+  pnpm:
+    name: E2E — pnpm
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Node.js LTS
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Installation
+        run: yarn || yarn || yarn
+      - name: Generate test-website project against main branch
+        run: yarn test:build:website -st
+      - name: Install test-website project with pnpm
+        run: |
+          npm install -g pnpm
+          pnpm install
+        working-directory: ../test-website
+        env:
+          npm_config_registry: http://localhost:4873
+      - name: TypeCheck website
+        working-directory: ../test-website
+        run: yarn typecheck
+      - name: Start test-website project
+        run: pnpm start --no-open
+        working-directory: ../test-website
+        env:
+          E2E_TEST: true
+      - name: Build test-website project
+        # We build 2 locales to ensure a localized site doesn't leak memory
+        # See https://github.com/facebook/docusaurus/pull/10599
+        run: pnpm run build --locale en --locale fr
+        env:
+          # Our website should build even with limited memory
+          # See https://github.com/facebook/docusaurus/pull/10590
+          NODE_OPTIONS: '--max-old-space-size=300'
+          DOCUSAURUS_PERF_LOGGER: 'true'
+        working-directory: ../test-website

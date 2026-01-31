@@ -1,0 +1,10 @@
+flavors:
+  - flavor: svg
+    path: /boxplot/
+
+BoxPlot:
+  package: '@nivo/boxplot'
+  tags: []
+  stories: []
+  description: |
+    BoxPlot.

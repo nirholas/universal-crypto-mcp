@@ -1,0 +1,14 @@
+.rvmrc
+.bundle
+*.DS_Store
+*.swp
+coverage
+node_modules
+lib/
+tmp/
+dist/*/lib/
+
+!/dist/*
+!/src/node_modules
+!spec/javascripts/node_modules
+.DS_Store

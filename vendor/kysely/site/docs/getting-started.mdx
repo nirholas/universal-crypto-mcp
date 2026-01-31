@@ -1,0 +1,51 @@
+---
+sidebar_position: 2
+title: 'Getting started'
+---
+
+import BrowserOnly from '@docusaurus/BrowserOnly'
+import Prerequisites from './getting-started/_prerequisites.mdx'
+import { Installation } from './getting-started/Installation'
+import Types from './getting-started/_types.mdx'
+import { Dialects } from './getting-started/Dialects'
+import { Instantiation } from './getting-started/Instantiation'
+import { Querying } from './getting-started/Querying'
+import { Summary } from './getting-started/Summary'
+
+# Getting started
+
+## Prerequisites
+
+<Prerequisites />
+
+## Installation
+
+<Installation />
+
+## Types
+
+<Types />
+
+## Dialects
+
+<Dialects
+  packageManagerSearchParam="package-manager"
+  packageManagerSelectionID="installation"
+/>
+
+## Instantiation
+
+<Instantiation
+  dialectSearchParam="dialect"
+  dialectSelectionID="dialects"
+  packageManagerSearchParam="package-manager"
+  packageManagerSelectionID="installation"
+/>
+
+## Querying
+
+<Querying dialectSearchParam="dialect" dialectSelectionID="dialects" />
+
+## Summary
+
+<Summary dialectSearchParam="dialect" dialectSelectionID="dialects" />

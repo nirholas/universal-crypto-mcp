@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "//#build": {
+      "outputs": [
+        "dist/**/*"
+      ],
+      "inputs": [
+        "version.txt"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "//#build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**"
+      ]
+    },
+    "start": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}

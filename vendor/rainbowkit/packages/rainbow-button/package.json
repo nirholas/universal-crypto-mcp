@@ -1,0 +1,53 @@
+{
+  "name": "@rainbow-me/rainbow-button",
+  "description": "Rainbow connector button",
+  "version": "0.2.27",
+  "files": [
+    "dist",
+    "styles.css"
+  ],
+  "keywords": [
+    "rainbow",
+    "wallet",
+    "ethereum",
+    "react",
+    "react-hook",
+    "hooks"
+  ],
+  "author": "Rainbow",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./styles.css": "./dist/index.css"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=12.4"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "build:watch": "node build.js --watch",
+    "dev": "pnpm build:watch & pnpm typegen:watch",
+    "prepare": "pnpm build",
+    "prebuild": "pnpm typegen",
+    "typecheck": "pnpm tsc --noEmit",
+    "typegen": "tsc --emitDeclarationOnly || true",
+    "typegen:watch": "tsc --emitDeclarationOnly --watch"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "viem": "2.x",
+    "wagmi": "^2.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rainbow-me/rainbowkit.git",
+    "directory": "packages/rainbow-button"
+  }
+}

@@ -16,6 +16,7 @@ import {
   createErrorResponse,
   parseQuery,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -27,7 +28,7 @@ export const runtime = 'nodejs';
 // ============================================================================
 
 const ListVerificationsQuerySchema = z.object({
-  status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+  status: z.enum(['pending', 'active', 'suspended', 'archived']).default('pending'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
 });
@@ -38,19 +39,21 @@ const ListVerificationsQuerySchema = z.object({
 
 async function handler(request: NextRequest, ctx: RequestContext) {
   const query = parseQuery(request, ListVerificationsQuerySchema);
+  const page = query.page ?? 1;
+  const limit = query.limit ?? 50;
   const db = getDatabase();
   
   // Ensure database is seeded
   await seedDatabase();
   
   try {
-    // Map verification status to service status
-    const serviceStatus = query.status === 'approved' ? 'active' : query.status;
+    // Use service status directly
+    const serviceStatus = query.status;
     
     const { services, total } = await db.findServices({
       status: serviceStatus,
-      page: query.page,
-      limit: query.limit,
+      page,
+      limit,
     });
     
     // Enrich services with provider info
@@ -91,27 +94,25 @@ async function handler(request: NextRequest, ctx: RequestContext) {
       })
     );
     
-    const totalPages = Math.ceil(total / query.limit);
+    const totalPages = Math.ceil(total / limit);
     
     return createResponse({
       services: enrichedServices,
       total,
     }, {
       meta: {
-        page: query.page,
-        limit: query.limit,
+        page,
+        limit,
         total,
         totalPages,
-        hasNext: query.page < totalPages,
-        hasPrevious: query.page > 1,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
       },
     });
   } catch (error) {
     console.error('[API] Admin verifications list error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch verifications',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch verifications')
     );
   }
 }

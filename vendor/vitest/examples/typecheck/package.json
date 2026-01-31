@@ -1,0 +1,22 @@
+{
+  "name": "@vitest/example-typecheck",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.9",
+    "@vitest/ui": "latest",
+    "typescript": "^5.9.3",
+    "vite": "latest",
+    "vitest": "latest"
+  },
+  "stackblitz": {
+    "startCommand": "npm run test:ui"
+  }
+}

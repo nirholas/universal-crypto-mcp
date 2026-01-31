@@ -1,0 +1,53 @@
+{
+  "name": "@auth/neo4j-adapter",
+  "version": "2.11.0",
+  "description": "neo4j adapter for Auth.js",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "Davey Brown",
+  "contributors": [
+    "Balázs Orbán <info@balazsorban.com>"
+  ],
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "oauth",
+    "neo4j"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "./test/test.sh",
+    "build": "tsc",
+    "clean": "rm -rf *.js *.d.ts*"
+  },
+  "peerDependencies": {
+    "neo4j-driver": "^4.0.0 || ^5.7.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.3",
+    "neo4j-driver": "^5.7.0"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  }
+}

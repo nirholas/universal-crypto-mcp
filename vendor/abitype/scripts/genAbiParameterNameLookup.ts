@@ -1,0 +1,188 @@
+import fs from 'node:fs/promises'
+
+// Generates ABI parameter name lookup from common names
+
+console.log('Generating ABI parameter name lookup.')
+const parameterNames = [...(await names())].sort()
+
+let content =
+  'export interface AbiParameterTupleNameLookup<type> extends Record<string, [type]> {\n'
+const denylist = [
+  'class',
+  'Ox2f0df76285492e10fd0dc81ae6a456072ab93c56936d7d7ed1840885344d427894f58667f41008d3fceb23655c9184ac1b53eae24145eb0a07ae0e37a8f446fb',
+]
+for (const name of parameterNames) {
+  if (!name) continue
+  if (denylist.includes(name)) continue
+  content += `  ${name}: [${name}: type]\n`
+}
+content += '}\n'
+
+const path = './packages/abitype/src/generated.ts'
+await fs.writeFile(path, content, 'utf8')
+
+console.log(`Done. Added ${parameterNames.length} names.`)
+
+async function names() {
+  // s/o @andrewhong5297
+  // https://dune.com/queries/6243195
+  const csv = await fs.readFile(
+    './scripts/most_common_abi_input_names.csv',
+    'utf-8',
+  )
+  const mostCommonNames = csv
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => line.split(','))
+    .filter(([, count]) => count && Number.parseInt(count) > 24)
+    .map((line) => line.at(0))
+  const customNames = [
+    '_data',
+    'a',
+    'account',
+    'accounts',
+    'address',
+    'addresses',
+    'admin',
+    'allowFailure',
+    'allowed',
+    'amount',
+    'approved',
+    'approver',
+    'ask',
+    'asset',
+    'assets',
+    'authority',
+    'available',
+    'b',
+    'balance',
+    'bid',
+    'buffer',
+    'c',
+    'call',
+    'callData',
+    'caller',
+    'calls',
+    'clone',
+    'coinType',
+    'count',
+    'currency',
+    'd',
+    'data',
+    'deadline',
+    'decimals',
+    'dest',
+    'divisor',
+    'dns',
+    'dst',
+    'e',
+    'endTime',
+    'ens',
+    'errorData',
+    'f',
+    'failures',
+    'from',
+    'funder',
+    'g',
+    'gateway',
+    'gateways',
+    'guy',
+    'h',
+    'hash',
+    'hashes',
+    'i',
+    'id',
+    'ids',
+    'idsLength',
+    'implementation',
+    'index',
+    'interfaceId',
+    'j',
+    'k',
+    'key',
+    'l',
+    'label',
+    'length',
+    'limit',
+    'm',
+    'market',
+    'memo',
+    'message',
+    'n',
+    'name',
+    'needed',
+    'new',
+    'next',
+    'nextOwner',
+    'node',
+    'nonce',
+    'nonceKey',
+    'numerator',
+    'o',
+    'offerer',
+    'old',
+    'operator',
+    'order',
+    'orders',
+    'owner',
+    'p',
+    'policyId',
+    'policyType',
+    'previous',
+    'previousOwner',
+    'price',
+    'primary',
+    'proposer',
+    'q',
+    'queries',
+    'quoteToken',
+    'r',
+    'receiver',
+    'recipient',
+    'refund',
+    'required',
+    'resolvedName',
+    'resolver',
+    'responses',
+    'restricted',
+    'returnData',
+    'reverseName',
+    'reverseResolver',
+    's',
+    'secs',
+    'selector',
+    'sender',
+    'shares',
+    'signature',
+    'signer',
+    'source',
+    'src',
+    'startTime',
+    'status',
+    'success',
+    'symbol',
+    't',
+    'target',
+    'timestamp',
+    'to',
+    'token',
+    'tokenId',
+    'ttl',
+    'u',
+    'updater',
+    'user',
+    'v',
+    'value',
+    'values',
+    'valuesLength',
+    'version',
+    'w',
+    'wad',
+    'weth',
+    'x',
+    'y',
+    'z',
+    'zone',
+  ]
+  return new Set([...customNames, ...mostCommonNames])
+}

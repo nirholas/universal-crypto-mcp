@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`curry - proxy > should check arguments 1`] = `[Error: [Immer] minified error nr: 6. Full error at: https://bit.ly/3cXEKWf]`;
+
+exports[`curry - proxy > should check arguments 2`] = `[Error: [Immer] minified error nr: 6. Full error at: https://bit.ly/3cXEKWf]`;
+
+exports[`curry - proxy > should check arguments 3`] = `[Error: [Immer] minified error nr: 6. Full error at: https://bit.ly/3cXEKWf]`;
+
+exports[`curry - proxy > should check arguments 4`] = `[Error: [Immer] minified error nr: 7. Full error at: https://bit.ly/3cXEKWf]`;

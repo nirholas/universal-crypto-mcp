@@ -149,7 +149,7 @@ function NFTCard({ nft, viewMode, onSelect }: NFTCardProps) {
               {nft.name || `#${nft.tokenId}`}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-              {nft.collection.name}
+              {nft.collection?.name || 'Unknown Collection'}
             </p>
           </div>
           {isListView && nft.rarity && (
@@ -161,12 +161,12 @@ function NFTCard({ nft, viewMode, onSelect }: NFTCardProps) {
         </div>
 
         {/* Floor Price */}
-        {nft.collection.floorPrice && !isListView && (
+        {nft.collection?.floorPrice && !isListView && (
           <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-500">Floor</span>
               <span className="font-medium text-gray-900 dark:text-white">
-                {nft.collection.floorPrice} {nft.collection.floorPriceCurrency || 'ETH'}
+                {nft.collection?.floorPrice} {nft.collection?.floorPriceCurrency || 'ETH'}
               </span>
             </div>
           </div>
@@ -175,9 +175,9 @@ function NFTCard({ nft, viewMode, onSelect }: NFTCardProps) {
         {/* List view extras */}
         {isListView && (
           <div className="flex items-center gap-4 mt-1">
-            {nft.collection.floorPrice && (
+            {nft.collection?.floorPrice && (
               <span className="text-sm text-gray-500">
-                Floor: {nft.collection.floorPrice} {nft.collection.floorPriceCurrency || 'ETH'}
+                Floor: {nft.collection?.floorPrice} {nft.collection?.floorPriceCurrency || 'ETH'}
               </span>
             )}
             {nft.traits && nft.traits.length > 0 && (
@@ -234,7 +234,7 @@ function NFTDetailModal({ nft, onClose }: NFTDetailModalProps) {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm text-blue-500 font-medium">
-                  {nft.collection.name}
+                  {nft.collection?.name || 'Unknown Collection'}
                 </p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {nft.name || `#${nft.tokenId}`}
@@ -339,11 +339,13 @@ export function NFTGallery({ className }: NFTGalleryProps) {
   const collections = useMemo(() => {
     const collectionMap = new Map<string, { name: string; count: number; imageUrl?: string }>();
     nfts.forEach(nft => {
-      const existing = collectionMap.get(nft.collection.slug || nft.collection.name);
+      if (!nft.collection) return;
+      const key = nft.collection.slug || nft.collection.name;
+      const existing = collectionMap.get(key);
       if (existing) {
         existing.count++;
       } else {
-        collectionMap.set(nft.collection.slug || nft.collection.name, {
+        collectionMap.set(key, {
           name: nft.collection.name,
           count: 1,
           imageUrl: nft.collection.imageUrl,
@@ -363,7 +365,7 @@ export function NFTGallery({ className }: NFTGalleryProps) {
       filtered = filtered.filter(
         nft =>
           nft.name?.toLowerCase().includes(query) ||
-          nft.collection.name.toLowerCase().includes(query) ||
+          nft.collection?.name?.toLowerCase().includes(query) ||
           nft.tokenId.includes(query)
       );
     }
@@ -371,7 +373,7 @@ export function NFTGallery({ className }: NFTGalleryProps) {
     // Collection filter
     if (selectedCollection) {
       filtered = filtered.filter(
-        nft => (nft.collection.slug || nft.collection.name) === selectedCollection
+        nft => nft.collection && (nft.collection.slug || nft.collection.name) === selectedCollection
       );
     }
 
@@ -384,7 +386,7 @@ export function NFTGallery({ className }: NFTGalleryProps) {
 
     const groups: Record<string, NFT[]> = {};
     filteredNFTs.forEach(nft => {
-      const key = nft.collection.slug || nft.collection.name;
+      const key = nft.collection?.slug || nft.collection?.name || 'unknown';
       if (!groups[key]) groups[key] = [];
       groups[key].push(nft);
     });

@@ -1,0 +1,124 @@
+---
+title: Split
+nav: 3.99
+keywords: select
+published: false
+---
+
+## splitAtom
+
+The `splitAtom` utility is designed for scenarios where you need to obtain an atom for each element in a list. It operates on read/write atoms containing a list, returning an atom that holds a list of atoms, each corresponding to an item in the original list.
+
+### Signature
+
+A simplified type signature for `splitAtom` would be:
+
+```ts
+type SplitAtom = <Item, Key>(
+  arrayAtom: PrimitiveAtom<Array<Item>>,
+  keyExtractor?: (item: Item) => Key
+): Atom<Array<PrimitiveAtom<Item>>>
+```
+
+### Key Features
+
+1. The returned atom contains a dispatch function in the `write` direction (since v1.6.4), providing a simple way to modify the original atom with actions like `remove`, `insert`, and `move`.
+
+2. An optional `keyExtractor` function can be provided as a second argument to enhance stability and performance.
+
+### Key Extractor
+
+The `splitAtom` utility supports a second argument which is a key extractor function:
+
+```ts
+export function splitAtom<Item, Key>(
+  arrAtom: WritableAtom<Item[], [Item[]], void> | Atom<Item[]>,
+  keyExtractor?: (item: Item) => Key,
+)
+```
+
+Important considerations for the `keyExtractor`:
+
+- If `splitAtom` is used within a React render loop, the `keyExtractor` must be a stable function that maintains object equality (shallow equality). This requirement doesn't apply outside of render loops.
+- Providing a `keyExtractor` enhances the stability of the atom output (which makes memoization hit cache more often). It prevents unnecessary subatom recreation due to index shifts in the source array.
+- `keyExtractor` is an optional optimization that should only be used if the extracted key is guaranteed unique for each item in the array.
+
+### Example Usage
+
+Here's an example demonstrating the use of `splitAtom`:
+
+<Stackblitz id="vitejs-vite-oavdw2" file="src%2FApp.tsx" />
+
+```tsx
+import { Provider, atom, useAtom, PrimitiveAtom } from 'jotai'
+import { splitAtom } from 'jotai/utils'
+import './styles.css'
+
+const initialState = [
+  {
+    task: 'help the town',
+    done: false,
+  },
+  {
+    task: 'feed the dragon',
+    done: false,
+  },
+]
+
+const todosAtom = atom(initialState)
+const todoAtomsAtom = splitAtom(todosAtom)
+
+type TodoType = (typeof initialState)[number]
+
+const TodoItem = ({
+  todoAtom,
+  remove,
+}: {
+  todoAtom: PrimitiveAtom<TodoType>
+  remove: () => void
+}) => {
+  const [todo, setTodo] = useAtom(todoAtom)
+  return (
+    <div>
+      <input
+        value={todo.task}
+        onChange={(e) => {
+          setTodo((oldValue) => ({ ...oldValue, task: e.target.value }))
+        }}
+      />
+      <input
+        type="checkbox"
+        checked={todo.done}
+        onChange={() => {
+          setTodo((oldValue) => ({ ...oldValue, done: !oldValue.done }))
+        }}
+      />
+      <button onClick={remove}>remove</button>
+    </div>
+  )
+}
+
+const TodoList = () => {
+  const [todoAtoms, dispatch] = useAtom(todoAtomsAtom)
+  return (
+    <ul>
+      {todoAtoms.map((todoAtom) => (
+        <TodoItem
+          todoAtom={todoAtom}
+          remove={() => dispatch({ type: 'remove', atom: todoAtom })}
+        />
+      ))}
+    </ul>
+  )
+}
+
+const App = () => (
+  <Provider>
+    <TodoList />
+  </Provider>
+)
+
+export default App
+```
+
+This example demonstrates how to use `splitAtom` to manage a list of todo items, allowing individual manipulation of each item while maintaining the overall list atom.

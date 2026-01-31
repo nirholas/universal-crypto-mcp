@@ -5,4 +5,15 @@
  */
 
 export * from './loader'
-export { default as apiLoader } from './loader'
+
+// Convenience re-exports for common functions
+export {
+  getAllApiDocs,
+  getApiDocBySlug,
+  getAllApiSymbols,
+  searchApiSymbols,
+  getApiPackagesByCategory,
+  getApiStats,
+  discoverPackages,
+  API_CATEGORIES,
+} from './loader'

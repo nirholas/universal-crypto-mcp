@@ -31,27 +31,54 @@ vi.mock('../sdk/client.js', () => ({
   X402Client: vi.fn().mockImplementation(() => createMockX402Client()),
 }));
 
-// Mock the config module
-vi.mock('../config.js', () => ({
-  loadX402Config: vi.fn(() => ({
-    privateKey: TEST_PRIVATE_KEY,
-    chain: 'arbitrum',
-    enableGasless: true,
-    maxPaymentPerRequest: '10.00',
-    debug: false,
-  })),
-  isX402Configured: vi.fn(() => true),
-  validateX402Config: vi.fn(() => ({ valid: true, errors: [] })),
-  SUPPORTED_CHAINS: {
-    arbitrum: { caip2: 'eip155:42161', name: 'Arbitrum One', testnet: false },
-    'arbitrum-sepolia': { caip2: 'eip155:421614', name: 'Arbitrum Sepolia', testnet: true },
-    base: { caip2: 'eip155:8453', name: 'Base', testnet: false },
-    ethereum: { caip2: 'eip155:1', name: 'Ethereum', testnet: false },
-    polygon: { caip2: 'eip155:137', name: 'Polygon', testnet: false },
-    optimism: { caip2: 'eip155:10', name: 'Optimism', testnet: false },
-    bsc: { caip2: 'eip155:56', name: 'BNB Chain', testnet: false },
-  },
+// Mock the SDK http handler
+vi.mock('../sdk/http/handler.js', () => ({
+  fetchWith402Handling: vi.fn().mockImplementation(async (url: string, options: any) => {
+    return {
+      status: 200,
+      headers: new Headers({ 'x-payment-proof': TEST_TX_HASHES.success }),
+      json: vi.fn().mockResolvedValue({ success: true, data: 'mock response' }),
+      text: vi.fn().mockResolvedValue('mock response'),
+    };
+  }),
+  HTTP402Handler: vi.fn(),
 }));
+
+// Mock the config module with importOriginal to preserve all exports
+vi.mock('../config.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../config.js')>();
+  return {
+    ...actual,
+    loadX402Config: vi.fn(() => ({
+      evmPrivateKey: TEST_PRIVATE_KEY as `0x${string}`,
+      svmPrivateKey: undefined,
+      defaultChain: 'arbitrum' as const,
+      enableGasless: true,
+      maxPaymentPerRequest: '10.00',
+      debug: false,
+      rpcUrls: {},
+      mainnetEnabled: false,
+      testnetOnly: true,
+      requireApprovalAbove: '0.50',
+      facilitatorUrl: undefined,
+    })),
+    loadLegacyX402Config: vi.fn(() => ({
+      privateKey: TEST_PRIVATE_KEY as `0x${string}`,
+      chain: 'arbitrum' as const,
+      rpcUrl: undefined,
+      enableGasless: true,
+      facilitatorUrl: undefined,
+      maxPaymentPerRequest: '10.00',
+      debug: false,
+      mainnetEnabled: false,
+      testnetOnly: true,
+    })),
+    isX402Configured: vi.fn(() => true),
+    isEvmConfigured: vi.fn(() => true),
+    isSvmConfigured: vi.fn(() => false),
+    validateX402Config: vi.fn(() => ({ valid: true, errors: [] })),
+  };
+});
 
 // Mock Logger
 vi.mock('@/utils/logger.js', () => ({
@@ -506,7 +533,7 @@ describe('x402 MCP Tools', () => {
       // Mock gasless disabled
       const { loadX402Config } = await import('../config.js');
       vi.mocked(loadX402Config).mockReturnValue({
-        privateKey: TEST_PRIVATE_KEY,
+        evmPrivateKey: TEST_PRIVATE_KEY,
         chain: 'arbitrum',
         enableGasless: false,
         maxPaymentPerRequest: '10.00',
@@ -674,18 +701,20 @@ describe('x402 MCP Tools', () => {
   // ============================================================================
 
   describe('tool registration', () => {
-    it('should register all 14 tools', async () => {
+    it('should register all x402 tools', async () => {
       const { registerX402Tools } = await import('../tools.js');
       registerX402Tools(mockServer as any);
 
-      expect(mockServer.tool).toHaveBeenCalledTimes(14);
+      // x402 registers 36 tools (14 core + 22 UCAI/additional tools)
+      expect(mockServer.tool).toHaveBeenCalledTimes(36);
     });
 
     it('should register tools with correct names', async () => {
       const { registerX402Tools } = await import('../tools.js');
       registerX402Tools(mockServer as any);
 
-      const expectedTools = [
+      // Verify core x402 tools are registered
+      const coreTools = [
         'x402_pay_request',
         'x402_balance',
         'x402_send',
@@ -702,9 +731,12 @@ describe('x402 MCP Tools', () => {
         'x402_config',
       ];
 
-      for (const toolName of expectedTools) {
-        expect(mockServer.registeredTools.has(toolName)).toBe(true);
+      for (const tool of coreTools) {
+        expect(mockServer.registeredTools.has(tool)).toBe(true);
       }
+      
+      // Total should be 36 tools
+      expect(mockServer.registeredTools.size).toBe(36);
     });
   });
 });

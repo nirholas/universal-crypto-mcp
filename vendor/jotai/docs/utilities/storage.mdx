@@ -1,0 +1,276 @@
+---
+title: Storage
+nav: 3.01
+keywords: storage,localstorage,sessionstorage,asyncstorage,persist,persistence
+---
+
+## atomWithStorage
+
+Ref: https://github.com/pmndrs/jotai/pull/394
+
+```jsx
+import { useAtom } from 'jotai'
+import { atomWithStorage } from 'jotai/utils'
+
+const darkModeAtom = atomWithStorage('darkMode', false)
+
+const Page = () => {
+  const [darkMode, setDarkMode] = useAtom(darkModeAtom)
+
+  return (
+    <>
+      <h1>Welcome to {darkMode ? 'dark' : 'light'} mode!</h1>
+      <button onClick={() => setDarkMode(!darkMode)}>toggle theme</button>
+    </>
+  )
+}
+```
+
+The `atomWithStorage` function creates an atom with a value persisted in `localStorage` or `sessionStorage` for React or `AsyncStorage` for React Native.
+
+### Parameters
+
+**key** (required): a unique string used as the key when syncing state with localStorage, sessionStorage, or AsyncStorage
+
+**initialValue** (required): the initial value of the atom
+
+**storage** (optional): an object with the following methods:
+
+- **getItem(key, initialValue)** (required): Reads an item from storage, or falls back to the `intialValue`
+- **setItem(key, value)** (required): Saves an item to storage
+- **removeItem(key)** (required): Deletes the item from storage
+- **subscribe(key, callback, initialValue)** (optional): A method which subscribes to external storage updates.
+
+**options** (optional): an object with the following properties:
+
+- **getOnInit** (optional, by default **false**): A boolean value indicating whether to get item from storage on initialization. Note that in an SPA with `getOnInit` either not set or `false` you will always get the initial value instead of the stored value on initialization. If the stored value is preferred set `getOnInit` to `true`.
+
+If not specified, the default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization, and subscribes to `storage` events for cross-tab synchronization.
+
+<Stackblitz id="vitejs-vite-xvlgfxrk" file="src%2FApp.tsx" />
+
+### `createJSONStorage` util
+
+To create a custom storage implementation with `JSON.stringify()`/`JSON.parse()` for the `storage` option, `createJSONStorage` util is provided.
+
+Usage:
+
+```js
+const storage = createJSONStorage(
+  // getStringStorage
+  () => localStorage, // or sessionStorage, asyncStorage or alike
+  // options (optional)
+  {
+    reviver, // optional reviver option for JSON.parse
+    replacer, // optional replacer option for JSON.stringify
+  },
+)
+```
+
+Note: `JSON.parse` is not type safe. If it can't accept any types, some kind of validation would be necessary for production apps.
+
+### Server-side rendering
+
+Any JSX markup that depends on the value of a stored atom (e.g., a `className` or `style` prop) will use the `initialValue` when rendered on the server (since `localStorage` and `sessionStorage` are not available on the server).
+
+This means that there will be a mismatch between what is originally served to the user's browser as HTML and what is expected by React during the rehydration process if the user has a `storedValue` that differs from the `initialValue`.
+
+The suggested workaround for this issue is to only render the content dependent on the `storedValue` client-side by wrapping it in a [custom `<ClientOnly>` wrapper](https://www.joshwcomeau.com/react/the-perils-of-rehydration/#abstractions), which only renders after rehydration. Alternative solutions are technically possible, but would require a brief "flicker" as the `initialValue` is swapped to the `storedValue`, which can result in an unpleasant user experience, so this solution is advised.
+
+### Deleting an item from storage
+
+For the case you want to delete an item from storage,
+the atom created with `atomWithStorage` accepts the `RESET` symbol on write.
+
+See the following example for the usage:
+
+```jsx
+import { useAtom } from 'jotai'
+import { atomWithStorage, RESET } from 'jotai/utils'
+
+const textAtom = atomWithStorage('text', 'hello')
+
+const TextBox = () => {
+  const [text, setText] = useAtom(textAtom)
+
+  return (
+    <>
+      <input value={text} onChange={(e) => setText(e.target.value)} />
+      <button onClick={() => setText(RESET)}>Reset (to 'hello')</button>
+    </>
+  )
+}
+```
+
+If needed, you can also do conditional resets based on previous value.
+
+This can be particularly useful if you wish to clear keys in localStorage if previous values meet a condition.
+
+Below exemplifies this usage that clears the `visible` key whenever the previous value is `true`.
+
+```jsx
+import { useAtom } from 'jotai'
+import { atomWithStorage, RESET } from 'jotai/utils'
+
+const isVisibleAtom = atomWithStorage('visible', false)
+
+const TextBox = () => {
+  const [isVisible, setIsVisible] = useAtom(isVisibleAtom)
+
+  return (
+    <>
+      { isVisible && <h1>Header is visible!</h1> }
+      <button onClick={() => setIsVisible((prev) => prev ? RESET : true))}>Toggle visible</button>
+    </>
+  )
+}
+```
+
+### React-Native implementation
+
+You can use any library that implements `getItem`, `setItem` & `removeItem`.
+Let's say you would use the standard AsyncStorage provided by the community.
+
+```js
+import { atomWithStorage, createJSONStorage } from 'jotai/utils'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+const storage = createJSONStorage(() => AsyncStorage)
+const content = {} // anything JSON serializable
+const storedAtom = atomWithStorage('stored-key', content, storage)
+```
+
+**Note** set `getOnInit` to `true` if you want the atom to return the stored value immediately on initialization instead of the default value.
+
+**getOnInit true vs. false example**
+
+<details>
+
+```jsx
+// Assume localStorage already contains: { "symbol": "BTC_USDC" }
+
+// Without getOnInit (default behavior)
+const symbolAtom = atomWithStorage('symbol', 'SOL_USDC')
+
+function App() {
+  const symbol = useAtomValue(symbolAtom)
+
+  useEffect(() => {
+    console.log('symbol', symbol)
+  }, [symbol])
+
+  return <div>{symbol}</div>
+}
+
+// Console output WITHOUT getOnInit:
+// LOG "symbol" SOL_USDC  (initial render)
+// LOG "symbol" BTC_USDC  (after storage loads)
+
+// With getOnInit set to true
+const symbolAtom = atomWithStorage('symbol', 'SOL_USDC', undefined, {
+  getOnInit: true,
+})
+
+function App() {
+  const symbol = useAtomValue(symbolAtom)
+
+  useEffect(() => {
+    console.log('symbol', symbol)
+  }, [symbol])
+
+  return <div>{symbol}</div>
+}
+
+// Console output WITH getOnInit:
+// LOG "symbol" BTC_USDC  (gets stored value immediately)
+```
+
+</details>
+
+#### Notes with AsyncStorage (since v2.2.0)
+
+With AsyncStorage (as with any asynchronous storage), the atom value becomes async.
+When updating the atom by referencing the current value, then you'll need to `await` it.
+
+```js
+const countAtom = atomWithStorage('count-key', 0, anyAsyncStorage)
+const Component = () => {
+  const [count, setCount] = useAtom(countAtom)
+  const increment = () => {
+    setCount(async (promiseOrValue) => (await promiseOrValue) + 1)
+  }
+  // ...
+}
+```
+
+### Validating stored values
+
+To add runtime validation to your storage atoms, you will need to create a custom implementation of storage.
+
+Below is an example that utilizes Zod to validate values stored in `localStorage` with cross-tab synchronization.
+
+```js
+import { atomWithStorage } from 'jotai/utils'
+import { z } from 'zod'
+
+const myNumberSchema = z.number().int().nonnegative()
+
+const storedNumberAtom = atomWithStorage('my-number', 0, {
+  getItem(key, initialValue) {
+    const storedValue = localStorage.getItem(key)
+    try {
+      return myNumberSchema.parse(JSON.parse(storedValue ?? ''))
+    } catch {
+      return initialValue
+    }
+  },
+  setItem(key, value) {
+    localStorage.setItem(key, JSON.stringify(value))
+  },
+  removeItem(key) {
+    localStorage.removeItem(key)
+  },
+  subscribe(key, callback, initialValue) {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.addEventListener === 'undefined'
+    ) {
+      return
+    }
+    const handler = (e) => {
+      if (e.storageArea === localStorage && e.key === key) {
+        let newValue
+        try {
+          newValue = myNumberSchema.parse(JSON.parse(e.newValue ?? ''))
+        } catch {
+          newValue = initialValue
+        }
+        callback(newValue)
+      }
+    }
+    window.addEventListener('storage', handler)
+    return () => window.removeEventListener('storage', handler)
+  },
+})
+```
+
+We also have a new util `unstable_withStorageValidator` to simplify some cases.
+The above case would become:
+
+```js
+import {
+  atomWithStorage,
+  createJSONStorage,
+  unstable_withStorageValidator as withStorageValidator,
+} from 'jotai/utils'
+import { z } from 'zod'
+
+const myNumberSchema = z.number().int().nonnegative()
+const isMyNumber = (v) => myNumberSchema.safeParse(v).success
+
+const storedNumberAtom = atomWithStorage(
+  'my-number',
+  0,
+  withStorageValidator(isMyNumber)(createJSONStorage()),
+)
+```

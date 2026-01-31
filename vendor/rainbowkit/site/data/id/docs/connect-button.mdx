@@ -1,0 +1,149 @@
+---
+title: TombolKoneksi
+description: Menggunakan dan menyesuaikan TombolKoneksi
+---
+
+# TombolKoneksi
+
+## Menggunakan dan menyesuaikan TombolKoneksi
+
+Ini adalah komponen utama. Ini bertanggung jawab untuk merender tombol sambung/pisah, serta UI untuk mengganti rantai.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> Catatan: Pastikan aplikasi Anda dibungkus oleh penyedia yang diperlukan. [Baca lebih lanjut](/docs/installation#wrap-providers).
+
+### Properti
+
+Komponen `TombolKoneksi` memiliki beberapa properti untuk menyesuaikan tampilannya, termasuk menyesuaikan visibilitas elemen yang berbeda.
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'Hubungkan Dompet',
+      type: 'string',
+      description: 'Teks label yang ditampilkan pada tombol Koneksi',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "Apakah avatar dan/atau alamat akun aktif ditampilkan",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "Apakah ikon dan/atau nama rantai saat ini ditampilkan, atau disembunyikan sepenuhnya",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'Apakah saldo terlihat di samping nama akun',
+    },
+  ]}
+/>
+
+> Catatan: breakpoint `largeScreen` bawaan adalah `768px`.
+
+### Contoh
+
+#### Label
+
+Gunakan properti `label` untuk mengatur teks `TombolKoneksi` kustom.
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### Status akun
+
+Berikut adalah beberapa cara berbeda Anda dapat menggunakan properti `accountStatus`.
+
+Hanya tampilkan avatar akun.
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+Hanya tampilkan alamat akun.
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### Status rantai
+
+Berikut adalah beberapa cara berbeda Anda dapat menggunakan properti `chainStatus`.
+
+Hanya tampilkan ikon rantai saat ini.
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+Hanya tampilkan nama rantai saat ini.
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+Sembunyikan UI rantai sepenuhnya.
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### Tampilkan saldo
+
+Gunakan properti `showBalance` untuk menyembunyikan/menampilkan saldo.
+
+Sembunyikan saldo.
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### Responsif
+
+Properti ini juga dapat didefinisikan dalam format responsif.
+
+Pada layar kecil, hanya tampilkan ikon akun. Namun di layar besar, tampilkan ikon dan alamat.
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+Pada layar kecil, sembunyikan saldo. Namun di layar besar, tampilkan.
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

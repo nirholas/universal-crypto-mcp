@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.settings.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@safe-global/protocol-kit/*": ["./src/*"]
+    },
+    "outDir": "dist"
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["dist"]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "disableSources": true,
+  "hideBreadcrumbs": true,
+  "entryPoints": [
+    "src/types.d.ts",
+    "src/jwe/**/*.ts",
+    "src/jwk/*.ts",
+    "src/jwks/*.ts",
+    "src/jws/**/*.ts",
+    "src/jwt/*.ts",
+    "src/key/*.ts",
+    "src/util/*.ts",
+  ],
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "gitRevision": "main",
+  "hideGenerator": true,
+  "out": "docs",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-mdn-links"],
+  "readme": "none",
+  "sort": ["kind", "static-first", "required-first", "alphabetical"],
+  "githubPages": false,
+  "parametersFormat": "table",
+  "pageTitleTemplates": {
+    "member": "{keyword} {kind}: {name}\n\n## [💗 Help the project](https://github.com/sponsors/panva)\n\nSupport from the community to continue maintaining and improving this module is welcome. If you find the module useful, please consider supporting the project by [becoming a sponsor](https://github.com/sponsors/panva)."
+  },
+  "hidePageHeader": true
+}

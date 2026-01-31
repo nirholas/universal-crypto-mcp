@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.0.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [["nextra", "nextra-theme-docs", "nextra-theme-blog"]],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  },
+  "ignore": [
+    "@nextra/tsdoc",
+    "example-blog",
+    "example-docs",
+    "swr-site",
+    "docs",
+    "@nextra/prettier-config",
+    "@nextra/eslint-config"
+  ]
+}

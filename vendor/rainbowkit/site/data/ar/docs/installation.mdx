@@ -1,0 +1,176 @@
+---
+title: التثبيت
+description: ابدأ بسرعة باستخدام RainbowKit
+---
+
+# التثبيت
+
+## ابدأ بسرعة باستخدام RainbowKit
+
+### البدء السريع
+
+يمكنك إعداد تطبيق RainbowKit جديد جنبًا إلى جنب مع Wagmi و Next.js باستخدام أحد الأوامر التالية، صِففة مع مدير الحزم الخاص بك:
+
+```bash
+npm init @rainbow-me/rainbowkit@latest
+# or
+pnpm create @rainbow-me/rainbowkit@latest
+# or
+yarn create @rainbow-me/rainbowkit
+```
+
+سيقوم هذا بسؤالك عن اسم المشروع، وإنشاء دليل جديد يحتوي على مشروع نموذجي، وتثبيت جميع التبعيات المطلوبة.
+
+بدلاً من ذلك، يمكنك دمج RainbowKit يدويًا في مشروعك الحالي.
+
+### الإعداد اليدوي
+
+قم بتثبيت RainbowKit وتبعياته المرافقة، بما في ذلك wagmi و viem و @tanstack/react-query.
+
+```bash
+npm install @rainbow-me/rainbowkit wagmi viem@2.x @tanstack/react-query
+```
+
+> ملاحظة: RainbowKit هي مكتبة [React](https://reactjs.org/).
+
+#### الاستيراد
+
+استيراد RainbowKit و Wagmi و TanStack Query.
+
+```tsx
+import '@rainbow-me/rainbowkit/styles.css';
+
+import {
+  getDefaultConfig,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import {
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+} from 'wagmi/chains';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+```
+
+#### التكوين
+
+كون السلاسل المرغوبة وقم بتوليد الموصلات المطلوبة. ستحتاج أيضًا إلى إعداد تكوين wagmi. إذا كان تطبيق dApp الخاص بك يستخدم التقديم من جانب الخادم (SSR)، تأكد من تعيين ssr على true.
+
+> ملاحظة: كل تطبيق dApp يعتمد على WalletConnect يحتاج الآن للحصول على projectId من [WalletConnect Cloud](https://cloud.walletconnect.com/). هذا مجاني تمامًا ولا يستغرق سوى بضع دقائق.
+
+```tsx line=4-99
+...
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+
+const config = getDefaultConfig({
+  appName: 'My RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [mainnet, polygon, optimism, arbitrum, base],
+  ssr: true, // If your dApp uses server side rendering (SSR)
+});
+```
+
+#### التفاف الموفرين
+
+لف تطبيقك بـ RainbowKitProvider و WagmiProvider و QueryClientProvider.
+
+```tsx
+const queryClient = new QueryClient();
+
+const App = () => {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          {/* Your App */}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+};
+```
+
+#### إضافة زر الاتصال
+
+ثم، في تطبيقك، قم باستيراد وعرض مكون ConnectButton.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+سيقوم RainbowKit الآن بتولي اختيار محفظة المستخدم الخاصة بك، عرض معلومات المحفظة/المعاملة وإدارة تبديل الشبكة/المحفظة.
+
+#### إعداد أدوات البناء الإضافية
+
+بعض أدوات البناء ستتطلب إعدادًا إضافيًا.
+
+##### Remix
+
+عند استخدام Remix، يجب عليك ملء وحدات buffer و events و http. قم بمراجعة تكوين Remix أدناه، أو [مشروع Remix النموذجي الخاص بنا](https://github.com/rainbow-me/rainbowkit/blob/main/examples/with-remix).
+
+```ts
+/** @type {import('@remix-run/dev').AppConfig} */
+export default {
+  ignoredRouteFiles: ["**/.*"],
+  browserNodeBuiltinsPolyfill: {
+    modules: { buffer: true, events: true, http: true },
+  },
+};
+```
+
+### الاستعداد للنشر
+
+افتراضيًا، يستخدم تطبيق dApp الخاص بك مزودي RPC العام لكل سلسلة لجلب الأرصدة، حل أسماء ENS، وأكثر من ذلك. يمكن أن يسبب هذا مشاكل في الموثوقية لمستخدميك حيث يتم تحديد استهلاك العقد العامة وفقًا لحصة محددة. بدلا من ذلك، يجب عليك شراء الوصول إلى مزود RPC عبر خدمات مثل Alchemy أو QuickNode، وتحديد وسائل النقل الخاصة بك في Wagmi. يمكن تحقيق ذلك عن طريق إضافة معلمة transports في getDefaultConfig أو عبر إعداد createConfig في Wagmi مباشرة.
+
+وسيلة النقل هي طبقة وسطى على شبكة الإنترنت تتولى إرسال طلبات JSON-RPC إلى موفر العقدة الخاصة بالإيثريوم (مثل Alchemy و Infura وما إلى ذلك).
+
+**مثال بوسيلة نقل http**
+
+```tsx
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { http } from 'wagmi';
+import { mainnet, sepolia } from 'wagmi/chains';
+
+const config = getDefaultConfig({
+  appName: 'My RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [mainnet, sepolia],
+  transports: {
+    [mainnet.id]: http('https://eth-mainnet.g.alchemy.com/v2/...'),
+    [sepolia.id]: http('https://eth-sepolia.g.alchemy.com/v2/...'),
+  },
+});
+```
+
+للمزيد من التفاصيل، يرجى الاطلاع على [وثائق نقل wagmi](https://wagmi.sh/core/api/transports#transports).
+
+### إضافة وظائفك الخاصة
+
+الآن يمكن لمستخدميك توصيل محافظهم، يمكنك البدء في بناء بقية تطبيقك باستخدام wagmi.
+
+إرسال المعاملات، التفاعل مع العقود، حل تفاصيل ENS وأكثر بكثير باستخدام مجموعة شاملة من React Hooks الخاصة بـ wagmi.
+
+للمزيد من التفاصيل، يرجى الاطلاع على [وثائق wagmi](https://wagmi.sh).
+
+### أمثلة أخرى
+
+لمشاهدة بعض الأمثلة القائمة على RainbowKit، أو حتى استخدامها لإقامة مشروع جديد بشكل تلقائي، راجع [الأمثلة الرسمية](https://github.com/rainbow-me/rainbowkit/tree/main/examples).
+
+لتجربة RainbowKit مباشرة في متصفحك، اطلع على روابط CodeSandbox أدناه:
+
+- مع [Create React App](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-create-react-app)
+- مع [Next.js](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next)
+- مع [Next.js App Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next-app)
+- مع [Remix](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-remix)
+- مع [Vite](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-vite)
+- مع [React Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-react-router)

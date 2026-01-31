@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "EditorConfig.editorconfig", // default
+    "dbaeumer.vscode-eslint", // linting
+    "esbenp.prettier-vscode" // formatting
+  ]
+}

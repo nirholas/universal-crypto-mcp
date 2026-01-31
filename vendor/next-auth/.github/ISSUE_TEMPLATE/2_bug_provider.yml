@@ -1,0 +1,147 @@
+name: Bug report (Provider)
+description: Create a provider-specific report
+labels: [triage, bug, providers]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **NOTE:** Issues that are potentially security related should be reported to us by following the [Security guidelines](https://next-auth.js.org/security) rather than on GitHub.
+        Thanks for taking the time to fill out this [Provider](https://next-auth.js.org/providers/overview) related issue!
+        Is this your first time contributing? Check out this video: https://www.youtube.com/watch?v=cuoNzXFLitc
+
+        ### Important :exclamation:
+
+        _Providing incorrect/insufficient information or skipping steps to reproduce the issue *will* result in closing the issue or converting to a discussion without further explanation._
+
+        If you have a generic question specific to your project, it is best asked in Discussions under the [Questions category](https://github.com/nextauthjs/next-auth/discussions/new?category=Questions)
+  - type: dropdown
+    attributes:
+      label: Provider type
+      description: Provider(s) this issue is related to
+      multiple: true
+      options:
+        - "Credentials"
+        - "Email"
+        - "Custom provider"
+        - "42 School"
+        - "Apple"
+        - "Asgardeo"
+        - "Atlassian"
+        - "Auth0"
+        - "Authentik"
+        - "Azure Active Directory"
+        - "Azure Active Directory B2C"
+        - "Azure DevOps"
+        - "Battlenet"
+        - "Beyond Identity"
+        - "Bitbucket"
+        - "Box"
+        - "Bungie"
+        - "ClickUp"
+        - "Cognito"
+        - "Concept2"
+        - "Coinbase"
+        - "Descope"
+        - "Discord"
+        - "Dribbble"
+        - "Dropbox"
+        - "Eventbrite"
+        - "EVE Online"
+        - "Facebook"
+        - "FACEIT"
+        - "Figma"
+        - "Foursquare"
+        - "Freshbooks"
+        - "FusionAuth"
+        - "GitHub"
+        - "GitLab"
+        - "Google"
+        - "Hugging Face"
+        - "Identity Server 4"
+        - "Instagram"
+        - "Kakao"
+        - "Frontegg"
+        - "Keycloak"
+        - "Kinde"
+        - "Line"
+        - "LinkedIn"
+        - "Logto"
+        - "Loops"
+        - "Mailchimp"
+        - "Mail.ru"
+        - "Mastodon"
+        - "Medium"
+        - "Microsoft Entra ID"
+        - "Naver"
+        - "Netlify"
+        - "NetSuite"
+        - "Nextcloud"
+        - "Notion"
+        - "Okta"
+        - "OneLogin"
+        - "Osso"
+        - "Osu"
+        - "Patreon"
+        - "Ping Identity"
+        - "Pipedrive"
+        - "Reddit"
+        - "Roblox"
+        - "Salesforce"
+        - "SimpleLogin"
+        - "Slack"
+        - "Spotify"
+        - "Strava"
+        - "Threads"
+        - "Tiktok"
+        - "Todoist"
+        - "Trakt"
+        - "Twitch"
+        - "Twitter"
+        - "Vk"
+        - "Webex"
+        - "Wordpress"
+        - "WorkOS"
+        - "Yandex"
+        - "Zoho"
+        - "Zoom"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Run this command in your project's root folder and paste the result:
+
+        `npx envinfo --system --binaries --browsers --npmPackages "{next,react,next-auth,@auth/*}"`
+
+        Alternatively, you can manually gather the version information from your package.json for these packages: "next", "react" and "next-auth". Please also mention your OS and Node.js version, as well as the browser you are using.
+      value: |
+        ```
+        Paste here
+        ```
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Reproduction URL
+      description: A URL to a public github.com repository outside the next-auth org that clearly reproduces your issue. You can use our [`next-auth-example`](https://github.com/nextauthjs/next-auth-example) template repository to get started more easily
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the issue
+      description: Describe us what the issue is and what have you tried so far to fix it. Add any extra useful information in this section. Feel free to use screenshots (but prefer [code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) over a picture of your code) or a video explanation.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How to reproduce
+      description: Explain with clear steps how to reproduce the issue
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: Explain what should have happened instead of what actually happened
+    validations:
+      required: true

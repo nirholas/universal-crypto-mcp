@@ -1,0 +1,64 @@
+---
+title: Hooks de Modal
+description: Abre modales programáticamente mediante Hooks
+---
+
+# Hooks de Modal
+
+## Abre modales programáticamente mediante Hooks
+
+Los siguientes Hooks se proporcionan para permitir la apertura programática de modales en cualquier parte de su aplicación.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+Cada uno de estos Hooks devuelve un objeto con una función para abrir su modal respectivo. Tenga en cuenta que las funciones devueltas serán indefinidas si su aplicación no está en el estado requerido para que el modal se abra.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+Cada hook también devuelve un booleano para el estado del modal. Generalmente se recomienda que confíe puramente en los hooks de Wagmi (es decir, `useAccount`) para reaccionar directamente al estado de conexión de la billetera de un usuario, en lugar de depender del estado del Connect Modal.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit está diseñado para ser no intrusivo y receptivo, por lo que las dApps siempre deberían renderizar una interfaz para los usuarios, ya sea que hayan conectado su billetera o no. Un usuario podría conectar o desconectar su billetera directamente desde MetaMask, por lo que la dApp debe ser sensible al estado de conexión subyacente directamente.
+
+Las dApps que dependen de mecanismos como Iniciar sesión con Ethereum para la verificación de usuarios deberían, en cambio, depender de la característica [Autenticación](/docs/authentication).

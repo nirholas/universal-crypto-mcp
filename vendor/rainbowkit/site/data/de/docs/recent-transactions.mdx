@@ -1,0 +1,75 @@
+---
+title: Neueste Transaktionen
+description: Zeigen Sie Ihre letzten Transaktionen an
+---
+
+# Neueste Transaktionen
+
+## Zeigen Sie Ihre letzten Transaktionen an
+
+Sie können sich dafür entscheiden, die letzten Transaktionen im Konto-Modul von RainbowKit anzuzeigen. Beachten Sie, dass alle Transaktionen im lokalen Speicher gespeichert werden und manuell bei RainbowKit registriert werden müssen, um angezeigt zu werden.
+
+Die Standardimplementierung des `ConnectButton` zeigt auch einen Ladeindikator um das Benutzer-Avatar an, wenn es ausstehende Transaktionen gibt. Benutzerdefinierte Implementierungen des `ConnectButton` können dieses Verhalten über die `account.hasPendingTransactions`-Eigenschaft, die an Ihre Renderfunktion übergeben wird, nachbilden.
+
+Um diese Funktion zu nutzen, aktivieren Sie zuerst die Option `showRecentTransactions` im `RainbowKitProvider`.
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider showRecentTransactions={true} {...etc}>
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Transaktionen können dann mit dem `useAddRecentTransaction`-Hook bei RainbowKit registriert werden.
+
+```tsx
+import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
+
+export default () => {
+  const addRecentTransaction = useAddRecentTransaction();
+
+  return (
+    <button
+      onClick={() => {
+        addRecentTransaction({
+          hash: '0x...',
+          description: '...',
+        });
+      }}
+    >
+      Add recent transaction
+    </button>
+  );
+};
+```
+
+Sobald eine Transaktion bei RainbowKit registriert wurde, wird ihr Status nach Abschluss aktualisiert.
+
+Standardmäßig wird die Transaktion als abgeschlossen betrachtet, sobald ein einzelner Block auf dem Block, in dem die Transaktion gemined wurde, abgebaut wurde, aber dies kann konfiguriert werden, indem ein benutzerdefinierter `confirmations`-Wert angegeben wird.
+
+```tsx
+import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
+
+export default () => {
+  const addRecentTransaction = useAddRecentTransaction();
+
+  return (
+    <button
+      onClick={() => {
+        addRecentTransaction({
+          hash: '0x...',
+          description: '...',
+          confirmations: 100,
+        });
+      }}
+    >
+      Add recent transaction
+    </button>
+  );
+};
+```

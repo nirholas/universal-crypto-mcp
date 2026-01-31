@@ -1,0 +1,145 @@
+---
+title: प्रमाणीकरण
+description: अपने उपयोगकर्ताओं का प्रमाणीकरण करना
+---
+
+# प्रमाणीकरण
+
+## अपने आवेदन के लिए प्रमाणित पहुंच प्रदान करना
+
+आप विकल्पतः यह सुनिश्चित कर सकते हैं कि उपयोगकर्ताएं संबंधन प्रक्रिया के दौरान अपने वॉलेट के साथ संदेश पर हस्ताक्षर करते हैं, जिससे साबित होता है कि वे संबद्ध खाते के मालिक हैं और आपको अपने आवेदन के लिए विशेषाधिकार सहित प्रमाणित उपयोगकर्ता सत्र बनाने की अनुमति देते हैं।
+
+जबकि [कस्टम बैक-एंड्स और मेसेज फॉर्मेट्स के साथ एकीकृत करने] की संभवना होती है, (/docs/custom-authentication) RainbowKit [Sign-In with Ethereum](https://login.xyz) और [NextAuth](https://next-auth.js.org) के लिए प्रथम वर्ग का समर्थन प्रदान करता है।
+
+### Sign-In with Ethereum और NextAuth सेटअप करें
+
+#### स्थापित करें
+
+`@rainbow-me/rainbowkit-siwe-next-auth` पैकेज को इनस्टॉल करें।
+
+```bash
+npm install @rainbow-me/rainbowkit-siwe-next-auth
+```
+
+#### प्रदाता सेट अप करें
+
+अपने `App` घटक में, `RainbowKitSiweNextAuthProvider` आयात करें।
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+```
+
+`RainbowKitSiweNextAuthProvider` के साथ `RainbowKitProvider` लपेटें, यह सुनिश्चित करते हुए कि यह NextAuth के `SessionProvider` के भीतर नेस्ट किया गया है ताकि इसे सत्र तक पहुँच प्राप्त हो।
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { SessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps<{
+  session: Session;
+}>) {
+  return (
+    <WagmiProvider {...etc}>
+      <SessionProvider refetchInterval={0} session={pageProps.session}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitSiweNextAuthProvider>
+            <RainbowKitProvider {...etc}>
+              <Component {...pageProps} />
+            </RainbowKitProvider>
+          </RainbowKitSiweNextAuthProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </WagmiProvider>;
+  );
+}
+```
+
+`RainbowKitSiweNextAuthProvider` के स्थान पर होने के साथ, आपके उपयोगकर्ताओं से अब एक संदेश को साइन करके प्रमाणित होने के लिए प्रेरित किया जाएगा, एक बार जब उन्होंने अपना वॉलेट कनेक्ट कर लिया।
+
+#### SIWE संदेश विकल्पों को अनुकूलित करें
+
+आप `RainbowKitSiweNextAuthProvider` पर `getSiweMessageOptions` प्रॉप के लिए एक फ़ंक्शन पास करके [SIWE संदेश विकल्पों](https://viem.sh/docs/siwe/utilities/createSiweMessage#parameters) को अनुकूलित कर सकते हैं।
+
+जब भी एक नया संदेश बनाया जाता है तो यह फ़ंक्शन कॉल किया जाएगा। इस फ़ंक्शन से लौटाए गए विकल्प डिफ़ॉल्ट के साथ विलय हो जाएंगे।
+
+```tsx
+import {
+  RainbowKitSiweNextAuthProvider,
+  GetSiweMessageOptions,
+} from '@rainbow-me/rainbowkit-siwe-next-auth';
+
+const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+  statement: 'Sign in to my RainbowKit app',
+});
+
+<RainbowKitSiweNextAuthProvider
+  getSiweMessageOptions={getSiweMessageOptions}
+>
+  ...
+</RainbowKitSiweNextAuthProvider>;
+```
+
+#### सत्र को सर्वर की ओर से एक्सेस करें
+
+आप `next-auth/jwt` से आयातित NextAuth के `getToken` फ़ंक्शन के साथ सत्र टोकन को एक्सेस कर सकते हैं। यदि उपयोगकर्ता ने सफलतापूर्वक प्रमाणित कर लिया है, तो सत्र टोकन की `sub` प्रॉपर्टी (टोकन का "विषय", यानी उपयोगकर्ता) उपयोगकर्ता का पता होगा।
+
+आप `getServerSideProps` के माध्यम से सर्वर से हल किया गया सत्र ऑब्जेक्ट भी पास कर सकते हैं ताकि NextAuth को इसे फिर से क्लाइंट पर हल करने की आवश्यकता न हो।
+
+उदाहरण के लिए:
+
+```tsx
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
+import React from 'react';
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const session = await getSession(context);
+  const token = await getToken({ req: context.req });
+
+  const address = token?.sub ?? null;
+  // If you have a value for "address" here, your
+  // server knows the user is authenticated.
+
+  // You can then pass any data you want
+  // to the page component here.
+  return {
+    props: {
+      address,
+      session,
+    },
+  };
+};
+
+type AuthenticatedPageProps = InferGetServerSidePropsType<
+  typeof getServerSideProps
+>;
+
+export default function AuthenticatedPage({
+  address,
+}: AuthenticatedPageProps) {
+  return address ? (
+    <h1>Authenticated as {address}</h1>
+  ) : (
+    <h1>Unauthenticated</h1>
+  );
+}
+```
+
+सत्र प्रबंधन के बारे में अधिक जानकारी के लिए, आप निम्नलिखित प्रलेखन का संदर्भ ले सकते हैं:
+
+- [Next.js प्रमाणीकरण गाइड](https://nextjs.org/docs/pages/guides/authentication)
+- [NextAuth प्रलेखन](https://next-auth.js.org)

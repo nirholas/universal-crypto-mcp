@@ -1,0 +1,15 @@
+{
+  "name": "@services/id-allocation-service",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "dependencies": {
+    "hono": "4.9.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20241011.0",
+    "wrangler": "3.81.0"
+  }
+}

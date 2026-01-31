@@ -1,0 +1,17 @@
+*.local
+.DS_Store
+.attest
+.env
+.env.*local
+.envrc
+.pnpm-debug.log*
+bench
+cache
+coverage
+dist
+node_modules
+packages/abitype/abis
+packages/abitype/jsr.json
+packages/abitype/zod
+playgrounds/performance/out
+tsconfig*.tsbuildinfo

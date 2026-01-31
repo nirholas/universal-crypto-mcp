@@ -1,0 +1,211 @@
+---
+id: typescript
+title: Using TypeScript or Flow
+sidebar_label: TypeScript / Flow
+---
+
+<center>
+	<div
+		data-ea-publisher="immerjs"
+		data-ea-type="image"
+		className="horizontal bordered"
+	></div>
+</center>
+<details>
+	<summary className="egghead-summary">
+		egghead.io lesson 12: Immer + TypeScript
+	</summary>
+	<br />
+	<div>
+		<iframe
+			width="760"
+			height="427"
+			scrolling="no"
+			src="https://egghead.io/lessons/react-type-immutable-immer-data-with-typescript/embed"
+		></iframe>
+	</div>
+	<a
+		className="egghead-link"
+		href="https://egghead.io/lessons/react-type-immutable-immer-data-with-typescript"
+	>
+		Hosted on egghead.io
+	</a>
+</details>
+
+The Immer package ships with type definitions inside the package, which should be picked up by TypeScript and Flow out of the box and without further configuration.
+
+The TypeScript typings automatically remove `readonly` modifiers from your draft types and return a value that matches your original type. See this practical example:
+
+```ts
+import {produce} from "immer"
+
+interface State {
+	readonly x: number
+}
+
+// `x` cannot be modified here
+const state: State = {
+	x: 0
+}
+
+const newState = produce(state, draft => {
+	// `x` can be modified here
+	draft.x++
+})
+
+// `newState.x` cannot be modified here
+```
+
+This ensures that the only place you can modify your state is in your produce callbacks. It even works recursively and with `ReadonlyArray`.
+
+## Best practices
+
+1. Always define your states as `readonly` as much as possible. This best reflects the mental model and reality, since Immer will freeze all its returned values.
+2. You can use the utility type `Immutable` to recursively make an entire type tree read-only, e.g.: `type ReadonlyState = Immutable<State>`.
+3. Immer won't automatically wrap all returned types in `Immutable` if the original type of the input state wasn't immutable. This is to make sure it doesn't break code bases that don't use immutable types.
+
+## Tips for curried producers
+
+We try to inference as much as possible. So if a curried producer is created and directly passed to another function, we can infer the type from there. This works well with for example React:
+
+```typescript
+import {Immutable, produce} from "immer"
+
+type Todo = Immutable<{
+	title: string
+	done: boolean
+}>
+
+// later...
+
+const [todo, setTodo] = useState<Todo>({
+	title: "test",
+	done: true
+})
+
+// later...
+
+setTodo(
+	produce(draft => {
+		// draft will be strongly typed and mutable!
+		draft.done = !draft.done
+	})
+)
+```
+
+When a curried producer isn't passed directly somewhere else, Immer can infer the state type from the draft argument. For example when doing the following:
+
+```typescript
+// See below for a better solution!
+
+const toggler = produce((draft: Draft<Todo>) => {
+	draft.done = !draft.done
+})
+
+// typeof toggler = (state: Immutable<Todo>) => Writable<Todo>
+```
+
+Note that we did wrap the `Todo` type of the `draft` argument with `Draft`, because `Todo` is a readonly type. For non-readonly types this isn't needed.
+
+For the returned curried function, `toggler`, We will _narrow_ the _input_ type to `Immutable<Todo>`, so that even though `Todo` is a mutable type, we will still accept an immutable todo as input argument to `toggler`.
+
+In contrast, Immer will _widen_ the _output_ type of the curried function to `Writable<Todo>`, to make sure it's output state is also assignable to variables that are not explicitly typed to be immutable.
+
+This type narrowing / widening behavior might be unwelcome, maybe even for the simple reason that it results in quite noisy types. So we recommend to specify the generic state type for curried producers instead, in cases where it cannot be inferred directly, like `toggler` above. By doing so the automatic output widening / input narrowing will be skipped. However, the `draft` argument itself will still be inferred to be a writable `Draft<Todo>`:
+
+```typescript
+const toggler = produce<Todo>(draft => {
+	draft.done = !draft.done
+})
+
+// typeof toggler = (state: Todo) => Todo
+```
+
+However, in case the curried producer is defined with an initial state, Immer can infer the state type from the initial state, so in that case the generic doesn't need to be specified either:
+
+```typescript
+const state0: Todo = {
+	title: "test",
+	done: false
+}
+
+// No type annotations needed, since we can infer from state0.
+const toggler = produce(draft => {
+	draft.done = !draft.done
+}, state0)
+
+// typeof toggler = (state: Todo) => Todo
+```
+
+In case the toggler has no initial state, and it has curried arguments, and you set the state generic explicitly, then type of any additional arguments should be defined explicitly as a tuple type as well:
+
+```typescript
+const toggler = produce<Todo, [boolean]>((draft, newState) => {
+	draft.done = newState
+})
+
+// typeof toggler = (state: Todo, newState: boolean) => Todo
+```
+
+## Cast utilities
+
+The types inside and outside a `produce` can be conceptually the same, but from a practical perspective different. For example, the `State` in the examples above should be considered immutable outside `produce`, but mutable inside `produce`.
+
+Sometimes this leads to practical conflicts. Take the following example:
+
+```typescript
+type Todo = {readonly done: boolean}
+
+type State = {
+	readonly finishedTodos: readonly Todo[]
+	readonly unfinishedTodos: readonly Todo[]
+}
+
+function markAllFinished(state: State) {
+	produce(state, draft => {
+		draft.finishedTodos = state.unfinishedTodos
+	})
+}
+```
+
+This will generate the error:
+
+```
+The type 'readonly Todo[]' is 'readonly' and cannot be assigned to the mutable type '{ done: boolean; }[]'
+```
+
+The reason for this error is that we assign our read only, immutable array to our draft, which expects a mutable type, with methods like `.push` etc etc. As far as TS is concerned, those are not exposed from our original `State`. To hint TypeScript that we want to upcast the collection here to a mutable array for draft purposes, we can use the utility `castDraft`:
+
+`draft.finishedTodos = castDraft(state.unfinishedTodos)` will make the error disappear.
+
+There is also the utility `castImmutable`, in case you ever need to achieve the opposite. Note that these utilities are for all practical purposes no-ops, they will just return their original value.
+
+Tip: You can combine `castImmutable` with `produce` to type the return type of `produce` as something immutable, even when the original state was mutable:
+
+```typescript
+// a mutable data structure
+const baseState = {
+	todos: [{
+		done: false
+	}]
+}
+
+const nextState = castImmutable(produce(baseState, _draft => {}))
+
+// inferred type of nextState is now:
+{
+	readonly todos: ReadonlyArray<{
+		readonly done: boolean
+	}>
+})
+```
+
+## Compatibility
+
+**Note:** Immer v5.3+ supports TypeScript v3.7+ only.
+
+**Note:** Immer v3.0+ supports TypeScript v3.4+ only.
+
+**Note:** Immer v1.9+ supports TypeScript v3.1+ only.
+
+**Note:** Flow support might be removed in future versions and we recommend TypeScript

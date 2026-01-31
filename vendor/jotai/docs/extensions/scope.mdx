@@ -1,0 +1,162 @@
+---
+title: Scope
+description: This doc describes scope extension.
+nav: 4.08
+keywords: scope
+---
+
+There are a few libraries to extend Jotai's usage in React.
+
+## `jotai-scope`
+
+While Jotai's Provider allows to scope Jotai's store under a subtree,
+we can't use the store above the tree within the subtree.
+
+A workaround is to use `store` option in useAtom and other hooks.
+
+Instead of specifying the `store` option,
+`<ScopeProvider>` lets you reuse the _same_ atoms in different parts
+of the React tree **without sharing state** while still being able to
+read other atoms from the parent store.
+
+### Install
+
+```
+npm install jotai-scope
+```
+
+### Counter Example
+
+```tsx
+import { atom, useAtom } from 'jotai'
+import { ScopeProvider } from 'jotai-scope'
+
+const countAtom = atom(0)
+
+function Counter() {
+  const [count, setCount] = useAtom(countAtom)
+  const [anotherCount, setAnotherCount] = useAtom(anotherCountAtom)
+  return (
+    <>
+      <div>
+        <span>count: {count}</span>
+        <button type="button" onClick={() => setCount((v) => v + 1)}>
+          increment
+        </button>
+      </div>
+      <div>
+        <span>another count: {anotherCount}</span>
+        <button type="button" onClick={() => setAnotherCount((v) => v + 1)}>
+          increment
+        </button>
+      </div>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <div>
+      <Counter />
+      <ScopeProvider atoms={[countAtom]}>
+        <Counter />
+      </ScopeProvider>
+    </div>
+  )
+}
+```
+
+<Stackblitz id="vitejs-vite-ctcuhj" file="src%2FApp.tsx" />
+
+## `createIsolation`
+
+Both Jotai's Provider and `jotai-scope`'s scoped provider
+are still using global contexts.
+
+If you are developing a library that depends on Jotai and
+the library user may use Jotai separately in their apps,
+they can share the same context. This can be troublesome
+because they point to unexpected Jotai stores.
+
+To avoid conflicting the contexts,
+a utility function called `createIsolation` is exported from `jotai-scope`.
+
+```tsx
+import { createIsolation } from 'jotai-scope'
+
+const { Provider, useStore, useAtom, useAtomValue, useSetAtom } =
+  createIsolation()
+
+function Library() {
+  return (
+    <Provider>
+      <LibraryComponent />
+    </Provider>
+  )
+}
+```
+
+## `bunshi` (formerly `jotai-molecules`)
+
+Jotai atoms provide a basic solution to optimize re-renders.
+Atoms defined globally can depend on other atoms,
+but they can't depend on props and state within a component tree.
+It's possible to define atoms within a component tree,
+but then you would need to pass those atoms in some ways
+(for example, [atoms-in-atom](../guides/atoms-in-atom.mdx).)
+
+[bunshi](https://github.com/saasquatch/bunshi) is
+a third-party library to help such use cases.
+
+See [Motivation](https://github.com/saasquatch/bunshi/tree/v1.1.1#motivation) for more details.
+
+### Install
+
+```
+npm install bunshi
+```
+
+### Counter Example
+
+```jsx
+import { atom, useAtom } from 'jotai'
+import { molecule, useMolecule, createScope, ScopeProvider } from 'bunshi/react'
+
+const InitialCountScope = createScope({ initialCount: 0 })
+const countMolecule = molecule((getMol, getScope) => {
+  const { initialCount } = getScope(InitialCountScope)
+  return atom(initialCount)
+})
+
+function Counter() {
+  const countAtom = useMolecule(countMolecule)
+  const [count, setCount] = useAtom(countAtom)
+  return (
+    <div>
+      {count} <button onClick={() => setCount((v) => v + 1)}>+1</button>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <div>
+      <h1>With initial value 1</h1>
+      <ScopeProvider scope={InitialCountScope} value={{ initialCount: 1 }}>
+        <Counter />
+        <Counter />
+      </ScopeProvider>
+      <h1>With initial value 2</h1>
+      <ScopeProvider scope={InitialCountScope} value={{ initialCount: 2 }}>
+        <Counter />
+        <Counter />
+      </ScopeProvider>
+      <h1>Default</h1>
+      <Counter />
+      <Counter />
+    </div>
+  )
+}
+```
+
+<Stackblitz id="vitejs-vite-8akpt6" file="src%2FApp.tsx" />

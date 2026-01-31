@@ -1,0 +1,16 @@
+{
+  "docs": [
+    {
+      "id": "hello-1",
+      "type": "doc",
+      "label": "Hello One"
+    },
+    {
+      "id": "hello-2",
+      "type": "doc",
+      "label": "Hello Two",
+      "className": "class-name-from-sidebars.json",
+      "customProps": {"test": "from sidebars.json"}
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+FROM node:22.22.0-bullseye
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+RUN apt update && apt install -y awscli jq
+
+WORKDIR /src
+
+COPY ../ ./
+RUN pnpm install
+RUN pnpm build
+
+WORKDIR ./apps/laboratory/
+
+RUN pnpm playwright:install
+
+ENV TIMING_LOGS=true
+ENV CI=true
+ENV SKIP_PLAYWRIGHT_WEBSERVER=true
+ENV BASE_URL=https://lab.reown.com/
+
+CMD ["timeout", "600", "./docker-canary.sh"]

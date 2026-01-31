@@ -46,7 +46,7 @@ describe('X402 Configuration', () => {
     it('should load default configuration', () => {
       const config = loadX402Config();
 
-      expect(config.chain).toBe('arbitrum');
+      expect(config.defaultChain).toBe('base-sepolia');
       expect(config.enableGasless).toBe(true);
       expect(config.maxPaymentPerRequest).toBe('1.00');
       expect(config.debug).toBe(false);
@@ -56,21 +56,22 @@ describe('X402 Configuration', () => {
       process.env.X402_PRIVATE_KEY = TEST_PRIVATE_KEY;
       const config = loadX402Config();
 
-      expect(config.privateKey).toBe(TEST_PRIVATE_KEY);
+      expect(config.evmPrivateKey).toBe(TEST_PRIVATE_KEY);
     });
 
     it('should load chain from environment', () => {
       process.env.X402_CHAIN = 'polygon';
       const config = loadX402Config();
 
-      expect(config.chain).toBe('polygon');
+      expect(config.defaultChain).toBe('polygon');
     });
 
     it('should load RPC URL from environment', () => {
       process.env.X402_RPC_URL = 'https://custom-rpc.example.com';
+      process.env.X402_CHAIN = 'polygon';
       const config = loadX402Config();
 
-      expect(config.rpcUrl).toBe('https://custom-rpc.example.com');
+      expect(config.rpcUrls['polygon']).toBe('https://custom-rpc.example.com');
     });
 
     it('should load gasless setting from environment', () => {
@@ -112,7 +113,7 @@ describe('X402 Configuration', () => {
       for (const chain of chains) {
         process.env.X402_CHAIN = chain;
         const config = loadX402Config();
-        expect(config.chain).toBe(chain);
+        expect(config.defaultChain).toBe(chain);
       }
     });
 
@@ -121,8 +122,8 @@ describe('X402 Configuration', () => {
       process.env.X402_PRIVATE_KEY = privateKey;
       const config = loadX402Config();
 
-      expect(config.privateKey).toBe(privateKey);
-      expect(config.privateKey?.startsWith('0x')).toBe(true);
+      expect(config.evmPrivateKey).toBe(privateKey);
+      expect(config.evmPrivateKey?.startsWith('0x')).toBe(true);
     });
   });
 
@@ -361,14 +362,14 @@ describe('X402 Configuration', () => {
       process.env.X402_CHAIN = '  arbitrum  ';
       const config = loadX402Config();
       // Config should trim or handle whitespace
-      expect(config.chain.trim()).toBe('arbitrum');
+      expect(config.defaultChain.trim()).toBe('arbitrum');
     });
 
     it('should handle case sensitivity in chain names', () => {
       process.env.X402_CHAIN = 'ARBITRUM';
       const config = loadX402Config();
       // Should handle case as-is (validation will catch invalid chains)
-      expect(config.chain).toBe('ARBITRUM');
+      expect(config.defaultChain).toBe('ARBITRUM');
     });
 
     it('should handle boolean-like strings for gasless', () => {
@@ -419,8 +420,8 @@ describe('X402 Configuration', () => {
       process.env.X402_CHAIN = 'polygon';
       const config2 = loadX402Config();
 
-      expect(config1.chain).toBe('arbitrum');
-      expect(config2.chain).toBe('polygon');
+      expect(config1.defaultChain).toBe('arbitrum');
+      expect(config2.defaultChain).toBe('polygon');
     });
   });
 });

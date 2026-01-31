@@ -1,0 +1,52 @@
+{
+  "name": "@auth/pouchdb-adapter",
+  "version": "2.11.0",
+  "description": "PouchDB adapter for next-auth.",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "jpbourgeon <jeanphilippe.bourgeon@gmail.com> (https://github.com/jpbourgeon)",
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "oauth",
+    "pouchdb"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "pnpm clean && tsc",
+    "clean": "rm -rf index.*",
+    "test": "vitest run -c ../utils/vitest.config.ts"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "src"
+  ],
+  "peerDependencies": {
+    "pouchdb": "^8.0.1",
+    "pouchdb-find": "^8.0.1"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pouchdb": "^6.4.0",
+    "pouchdb": "^8.0.1",
+    "pouchdb-adapter-memory": "^8.0.1",
+    "pouchdb-find": "^8.0.1"
+  }
+}

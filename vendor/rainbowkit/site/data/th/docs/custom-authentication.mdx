@@ -1,0 +1,102 @@
+---
+title: การยืนยันตัวตนที่กำหนดเอง
+description: เชื่อมต่อกับระบบการยืนยันตัวตนของคุณเอง
+---
+
+# การยืนยันตัวตนที่กำหนดเอง
+
+## เชื่อมต่อกับระบบการยืนยันตัวตนของคุณเอง
+
+ในขณะที่ RainbowKit มี [การสนับสนุนระบบยืนยันตัวตนด้วย Ethereum และ NextAuth อยู่แล้ว](/docs/authentication#set-up-sign-in-with-ethereum-and-nextauth) คุณยังสามารถรวมระบบยืนยันตัวตนกับ back-ends และรูปแบบข้อความที่กำหนดเองได้ก็ทำได้
+
+### การสร้างอะแดปเตอร์ที่กำหนดเอง
+
+เริ่มต้นด้วยการสร้างอะแดปเตอร์สำหรับการยืนยันตัวตน สิ่งนี้ช่วยให้ RainbowKit สามารถสร้าง/เตรียมข้อความและสื่อสารกับ back-end ของคุณได้
+
+ตัวอย่างเช่น เราสามารถสร้างอะแดปเตอร์สำหรับการยืนยันตัวตนที่ทำให้เราใช้ [Sign-In with Ethereum](https://login.xyz) กับ endpoints ของ API ที่กำหนดเองได้ เช่น [iron-session](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-siwe-iron-session)
+
+```tsx
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
+
+const authenticationAdapter = createAuthenticationAdapter({
+  getNonce: async () => {
+    const response = await fetch('/api/nonce');
+    return await response.text();
+  },
+
+  createMessage: ({ nonce, address, chainId }) => {
+    return createSiweMessage({
+      domain: window.location.host,
+      address,
+      statement: 'Sign in with Ethereum to the app.',
+      uri: window.location.origin,
+      version: '1',
+      chainId,
+      nonce,
+    });
+  },
+
+  verify: async ({ message, signature }) => {
+    const verifyRes = await fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, signature }),
+    });
+
+    return Boolean(verifyRes.ok);
+  },
+
+  signOut: async () => {
+    await fetch('/api/logout');
+  },
+});
+```
+
+#### การให้สถานะการยืนยันตัวตน
+
+หากว่าแอปพลิเคชันของคุณสามารถจัดการรอบการยืนยันตัวตนได้แล้ว คุณสามารถส่งสถานะการยืนยันปัจจุบันพร้อมกับอแดปเตอร์ไปยัง `RainbowKitAuthenticationProvider` เพื่อหุ้ม
+
+```tsx
+import {
+  createAuthenticationAdapter,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const authenticationAdapter = createAuthenticationAdapter({
+  /* See above... */
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }: AppProps) {
+  // You'll need to resolve AUTHENTICATION_STATUS here
+  // using your application's authentication system.
+  // It needs to be either 'loading' (during initial load),
+  // 'unauthenticated' or 'authenticated'.
+
+  return (
+    <WagmiProvider {...etc}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitAuthenticationProvider
+          adapter={authenticationAdapter}
+          status={AUTHENTICATION_STATUS}
+        >
+          <RainbowKitProvider {...etc}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+หากคุณทำได้จนถึงจุดนี้และสร้างอะแดปเตอร์สำหรับไลบรารีการยืนยันตัวตนแบบโอเพ่นซอร์สที่มีอยู่ โปรดพิจารณาสร้างแพ็กเกจให้คนอื่นได้ใช้ด้วย

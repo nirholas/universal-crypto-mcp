@@ -1,0 +1,64 @@
+{
+  "name": "create-fumadocs-app",
+  "version": "16.0.45",
+  "description": "Create a new documentation site with Fumadocs",
+  "keywords": [
+    "Docs",
+    "Fumadocs",
+    "react"
+  ],
+  "homepage": "https://fumadocs.dev",
+  "license": "MIT",
+  "author": "Fuma Nama",
+  "repository": "github:fuma-nama/fumadocs",
+  "bin": "./dist/bin.js",
+  "files": [
+    "dist/*",
+    "template/*"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugins/*": {
+      "types": "./dist/plugins/*.d.ts",
+      "import": "./dist/plugins/*.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "pnpm run sync && tsdown",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch",
+    "lint": "eslint .",
+    "postpublish": "echo \"Updating template repo\" && bash ./scripts/update-git-repo.sh",
+    "types:check": "tsc --noEmit",
+    "sync": "bun ./scripts/sync.ts"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.0.0",
+    "@commander-js/extra-typings": "^14.0.0",
+    "commander": "^14.0.2",
+    "picocolors": "^1.1.1",
+    "tinyexec": "^1.0.2",
+    "ts-morph": "^27.0.2"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/node": "25.1.0",
+    "eslint-config-custom": "workspace:*",
+    "tinyglobby": "^0.2.15",
+    "tsconfig": "workspace:*",
+    "tsdown": "^0.19.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

@@ -1,0 +1,58 @@
+---
+id: async
+title: createDraft / finishDraft
+sidebar_label: createDraft / finishDraft
+---
+
+<center>
+	<div
+		data-ea-publisher="immerjs"
+		data-ea-type="image"
+		className="horizontal bordered"
+	></div>
+</center> <details>
+	<summary className="egghead-summary">
+		egghead.io lesson 11: Creating <b>async</b> producers (and why you
+		shouldn’t)
+	</summary>
+	<br />
+	<div>
+		<iframe
+			width="760"
+			height="427"
+			scrolling="no"
+			src="https://egghead.io/lessons/react-write-asynchronous-producers-in-immer-and-why-you-shouldn-t/embed"
+		></iframe>
+	</div>
+	<a
+		className="egghead-link"
+		href="https://egghead.io/lessons/react-write-asynchronous-producers-in-immer-and-why-you-shouldn-t"
+	>
+		Hosted on egghead.io
+	</a>
+</details>
+
+## `createDraft` and `finishDraft`
+
+`createDraft` and `finishDraft` are two low-level functions that are mostly useful for libraries that build abstractions on top of immer. It avoids the need to always create a function in order to work with drafts. Instead, one can create a draft, modify it, and at some time in the future finish the draft, in which case the next immutable state will be produced.
+
+Beyond that, `createDraft` / `finishDraft` could be used to express async updates to drafts:
+
+```javascript
+import {createDraft, finishDraft} from "immer"
+
+const user = {
+	name: "michel",
+	todos: []
+}
+
+const draft = createDraft(user)
+draft.todos = await (await window.fetch("http://host/" + draft.name)).json()
+const loadedUser = finishDraft(draft)
+```
+
+Note: The above is an anti-pattern! First fetch data instead, then draft the `user`. Otherwise updates to user that happen during the async process, would be "missed" by the draft.
+
+Note: `finishDraft` takes a `patchListener` as second argument, which can be used to record the patches, similarly to `produce`.
+
+_Warning: in general, we recommend to use `produce` instead of the `createDraft` / `finishDraft` combo, `produce` is less error prone in usage, and more clearly separates the concepts of mutability and immutability in your code base._

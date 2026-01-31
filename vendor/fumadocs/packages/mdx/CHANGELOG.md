@@ -1,0 +1,1578 @@
+# next-docs-mdx
+
+## 14.2.6
+
+### Patch Changes
+
+- 339dedf: Add heading IDs into processed markdown by default
+
+## 14.2.5
+
+### Patch Changes
+
+- 0765817: improve `useContent()` for optional props on browser loader
+- Updated dependencies [5dec9d0]
+  - fumadocs-core@16.4.7
+
+## 14.2.4
+
+### Patch Changes
+
+- 689d31e: Improve error message
+- b16a32f: Switch to tsdown for bundling
+- Updated dependencies [590d36a]
+- Updated dependencies [98d38ff]
+- Updated dependencies [446631d]
+- Updated dependencies [b16a32f]
+  - fumadocs-core@16.4.2
+  - @fumadocs/mdx-remote@1.4.4
+
+## 14.2.3
+
+### Patch Changes
+
+- 3a8b9b0: support Vite 8 `moduleType` option
+  - fumadocs-core@16.4.1
+
+## 14.2.2
+
+### Patch Changes
+
+- 2de6151: add `@types/react` to peer dep
+  - fumadocs-core@16.3.2
+
+## 14.2.1
+
+### Patch Changes
+
+- 3a5b077: hotfix Vite bundling
+
+## 14.2.0
+
+### Minor Changes
+
+- 8ce2c70: Add VS Code-style #region / #endregion support to <include /> for code files
+
+## 14.1.1
+
+### Patch Changes
+
+- adaf9ae: hotfix Windows path escape
+
+## 14.1.0
+
+### Minor Changes
+
+- fc0e3db: Support Workspaces API [Experimental]
+
+### Patch Changes
+
+- Updated dependencies [ef8eb6c]
+- Updated dependencies [e0c4c3a]
+- Updated dependencies [4e2bca7]
+  - fumadocs-core@16.2.3
+
+## 14.0.4
+
+### Patch Changes
+
+- f59339b: Fix `last-modified` plugin date checking
+  - fumadocs-core@16.2.0
+
+## 14.0.3
+
+### Patch Changes
+
+- f362ea1: Fix Webpack warnings (they require absolute paths for dependencies)
+- Updated dependencies [fe380da]
+- Updated dependencies [ade44d0]
+  - fumadocs-core@16.0.15
+
+## 14.0.2
+
+### Patch Changes
+
+- 59743c0: Use `remarkStructure().exportAs` option to export `structuredData`
+- 59743c0: only provide CJS fallback for Next.js
+- Updated dependencies [c3b8474]
+  - fumadocs-core@16.0.14
+
+## 14.0.1
+
+### Patch Changes
+
+- 52dabc3: Support type-safe collection generation
+  - fumadocs-core@16.0.13
+
+## 14.0.0
+
+### Major Changes
+
+- 7b450d6: **Change `postInstall()` signature to `postInstall({ configPath, outDir, ... })`**
+
+  This allows more options for `postInstall` command.
+
+- a312d3a: **Replace `getDefaultMDXOptions()` with `applyMdxPreset()`**
+
+  This allows Fumadocs MDX to support more presets in the future, and adjust presets for dynamic mode.
+
+  ```ts
+  // source.config.ts
+  import { defineCollections, applyMdxPreset } from "fumadocs-mdx/config";
+  import { myPlugin } from "./remark-plugin";
+
+  export const blog = defineCollections({
+    type: "doc",
+    mdxOptions: applyMdxPreset({
+      remarkPlugins: [myPlugin],
+      // You can also pass a function to control the order of remark plugins.
+      remarkPlugins: (v) => [myPlugin, ...v],
+    }),
+  });
+  ```
+
+- bc93578: **Replace `lastModifiedTime` option with `lastModified` plugin.**
+
+  If you've `lastModifiedTime` option enabled before, migrate to the plugin instead.
+
+  ```ts
+  // source.config.ts
+  import { defineConfig } from "fumadocs-mdx/config";
+  import lastModified from "fumadocs-mdx/plugins/last-modified";
+
+  export default defineConfig({
+    plugins: [lastModified()],
+  });
+  ```
+
+- 2f7e4d8: **Drop support for multiple `dir` in same collection**
+
+  Consider using `files` instead for filtering files.
+
+  ```ts
+  // source.config.ts
+  import { defineDocs } from "fumadocs-mdx/config";
+
+  export const docs = defineDocs({
+    dir: "content/guides",
+    docs: {
+      files: ["./i-love-fumadocs/**/*.{md,mdx}"],
+    },
+  });
+  ```
+
+- a312d3a: **No longer generate `extractedReferences` by default**
+
+  You can enable it from `postprocess` option.
+
+  ```ts
+  // source.config.ts
+  import { defineDocs } from "fumadocs-mdx/config";
+
+  export const docs = defineDocs({
+    docs: {
+      postprocess: {
+        extractLinkReferences: true,
+      },
+    },
+  });
+  ```
+
+- b963021: **[Vite] rename `generateIndexFile` option to `index`**
+
+### Patch Changes
+
+- 97722c6: Fix meta file validation on Bun.
+- b963021: [Internal] Make `index-file` a plugin and optimize re-generations.
+- Updated dependencies [c5c00e9]
+  - fumadocs-core@16.0.12
+
+## 13.0.8
+
+### Patch Changes
+
+- 58bf979: [Bun Loader] Support dynamic require of meta files
+- Updated dependencies [ff68f69]
+- Updated dependencies [00058c8]
+  - fumadocs-core@16.0.11
+
+## 13.0.7
+
+### Patch Changes
+
+- 30b1b11: Temporary workaround for `vite:json` plugin conflicts
+- Updated dependencies [733b01e]
+  - fumadocs-core@16.0.10
+
+## 13.0.6
+
+### Patch Changes
+
+- 40176ce: Support `disableMetaFile` option in Bun plugin
+  - fumadocs-core@16.0.9
+
+## 13.0.5
+
+### Patch Changes
+
+- ad38466: add support next.config.mts for mdx
+
+## 13.0.4
+
+### Patch Changes
+
+- 27fc4ed: [Internal] improve mutability of `LoadedConfig` for plugins
+- f5bc4aa: Fix Bun missing query strings
+- 61b90c8: Always transform meta files in collection, this includes runtime loaders like Node.js and Bun.
+- d1e43f4: Support re-generating index file when using runtime: bun | node
+- Updated dependencies [f97cd1e]
+- Updated dependencies [f7e15e2]
+  - fumadocs-core@16.0.7
+
+## 13.0.3
+
+### Patch Changes
+
+- cd087d2: fix hot reload
+- 94d1ad5: Support generating extra index file for browser (workaround for Cloudflare Vite issues)
+- Updated dependencies [b95b0cf]
+  - fumadocs-core@16.0.6
+
+## 13.0.2
+
+### Patch Changes
+
+- ee4ad3d: Always format file paths into POSIX for Vite
+
+## 13.0.1
+
+### Patch Changes
+
+- 56332df: Support plugins in Webpack loader environment: now plugins can apply changes on MDX options too.
+- 91add4f: Plugin `json-schema`: support inserting `$schema` to JSON files
+- cffd4c2: Lazy update index files on Next.js
+  - fumadocs-core@16.0.3
+
+## 13.0.0
+
+### Major Changes
+
+- 8d0c164: **Move `createMDXSource` and `resolveFiles` from `fumadocs-mdx` to `fumadocs-mdx/runtime/next`**
+- 3caa5cd: **Vite: move `source.generated.ts` to `.source/index.ts`**
+
+  **Why:**
+  - with Fumadocs MDX Plugins, we want to unify the output directory across Vite & Next.js.
+  - `source.generated.ts` looks ugly compared by `.source`.
+
+  **Migrate:**
+  - run dev server/typegen to generate a `.source` folder.
+  - import it over the original `source.generated.ts`.
+  - note that both docs and `create-fumadocs-app` are updated to `.source` folder.
+
+### Minor Changes
+
+- 29ce826: Support JSON Schema plugin (`fumadocs-mdx/plugins/json-schema`)
+- 3caa5cd: **Support Plugins API**
+
+  Fumadocs MDX is mostly a bundler plugin meant to be used with tools like Vite and Turbopack.
+
+  With Fumadocs MDX Plugins, you can extend Fumadocs MDX without worrying the underlying bundler.
+  It is designed for:
+  - Generate files from config (e.g. types, index files, JSON schemas)
+  - Modify received config
+
+### Patch Changes
+
+- 81fa875: Fix `includeProcessedMarkdown` cannot stringify MDX nodes
+- 575cfb8: Include unravel plugin into `remark-include` parsing step, this ensures the parsed results are consistent with normal MDX.js processor output.
+- 1f1c787: Add `useContent` API to client loader for avoiding Lint errors
+- 9051574: Support `postprocess.includeMDAST` option
+- a5df956: Support `runtime: bun` and `runtime: node` in Vite index file generation
+- 5210f18: Support Fumadocs 16 in `peerDependencies`.
+- Updated dependencies [230c6bf]
+- Updated dependencies [851897c]
+- Updated dependencies [4049ccc]
+- Updated dependencies [429c41a]
+- Updated dependencies [5210f18]
+- Updated dependencies [cbc93e9]
+- Updated dependencies [42f09c3]
+- Updated dependencies [55afd8a]
+- Updated dependencies [5210f18]
+  - fumadocs-core@16.0.0
+  - @fumadocs/mdx-remote@1.4.3
+
+## 12.0.3
+
+### Patch Changes
+
+- a55177c: Remove `Override` type utility on output collection types
+- Updated dependencies [ce2be59]
+- Updated dependencies [31b9494]
+  - fumadocs-core@15.8.4
+
+## 12.0.2
+
+### Patch Changes
+
+- a3a14e7: Bump deps
+- Updated dependencies [a3a14e7]
+  - @fumadocs/mdx-remote@1.4.1
+  - fumadocs-core@15.8.3
+
+## 12.0.1
+
+### Patch Changes
+
+- af50bc8: Support customising index file output path in Vite
+- 5fc9ee4: Support `remark-directive` for Include API
+- 4b9871d: MDX Async mode: read file content on load
+- Updated dependencies [655bb46]
+- Updated dependencies [d1ae3e8]
+- Updated dependencies [6548a59]
+- Updated dependencies [51268ec]
+- Updated dependencies [51268ec]
+  - fumadocs-core@15.8.0
+
+## 12.0.0
+
+### Major Changes
+
+- f11f89d: **[Next.js] Rename APIS**
+
+  On page data:
+  - `_file` -> `info`.
+  - `_file.absolutePath` -> `info.fullPath`.
+
+- effe43d: **Drop support for Zod 3 schemas**
+
+  Zod 3 schemas are still allowed, but you cannot no longer extend on the Zod 4 schemas provided by Fumadocs.
+
+- 2862a10: **[Next.js] Removed `content` on page data in favour of `getText()`.**
+
+### Minor Changes
+
+- 22e0fec: **Support `getText()` & Postprocess API**
+- 2862a10: Unify doc collection entry for both Vite and Next.js integrations
+
+## 11.10.1
+
+### Patch Changes
+
+- da095ac: Refactor internal export paths
+- 854d4ef: Export `postInstall()` function from `fumadocs-mdx/vite`
+- Updated dependencies [982aed6]
+  - fumadocs-core@15.7.13
+
+## 11.10.0
+
+### Minor Changes
+
+- ea13374: Support runtime loaders: Node.js, Bun
+
+### Patch Changes
+
+- Updated dependencies [846b28a]
+- Updated dependencies [2b30315]
+  - fumadocs-core@15.7.12
+
+## 11.9.1
+
+### Patch Changes
+
+- 64d0169: hotfix node.js imports at global scope
+
+## 11.9.0
+
+### Minor Changes
+
+- d193152: Support `absolutePath` on Vite
+
+### Patch Changes
+
+- 2566eef: Support postinstall script on Vite
+- Updated dependencies [c948f59]
+  - fumadocs-core@15.7.10
+
+## 11.8.3
+
+### Patch Changes
+
+- 205d92d: Update dev server initialization for Next.js 15.5.1
+- e4c12a3: Add Vite config for Fumadocs Core & UI automatically
+- Updated dependencies [f65778d]
+- Updated dependencies [e4c12a3]
+  - fumadocs-core@15.7.8
+
+## 11.8.2
+
+### Patch Changes
+
+- 9a3c23b: support auto-generated title based on `h1` heading
+- 9cb829c: Support referencing heading in `<include>` without sections
+
+## 11.8.1
+
+### Patch Changes
+
+- 5f2ec6e: Fix `remark-mdx-exports` plugin fallback
+- Updated dependencies [6d97379]
+- Updated dependencies [e776ee5]
+  - fumadocs-core@15.7.3
+
+## 11.8.0
+
+### Minor Changes
+
+- cfe2a5c: Support Async Mode for Vite
+
+### Patch Changes
+
+- c8f49d8: Include frontmatter into `page.data.content` by default
+- Updated dependencies [514052e]
+- Updated dependencies [e254c65]
+- Updated dependencies [ec75601]
+- Updated dependencies [e785f98]
+- Updated dependencies [0531bf4]
+- Updated dependencies [50eb07f]
+- Updated dependencies [67df155]
+- Updated dependencies [b109d06]
+  - fumadocs-core@15.7.0
+
+## 11.7.5
+
+### Patch Changes
+
+- c17fa03: Support creating a separate processor when `<include />` points to different Markdown format
+- f43f714: Automatic fallback to Zod v3 when app has explicit v3 dependency
+- Updated dependencies [569bc26]
+- Updated dependencies [817c237]
+  - fumadocs-core@15.6.10
+
+## 11.7.4
+
+### Patch Changes
+
+- a0148f9: Remark Include: Support copying only a section
+
+## 11.7.3
+
+### Patch Changes
+
+- 4f8f1d6: Add `vite/client` types in generated file
+- 57224f4: Support last modified time for Vite
+
+## 11.7.2
+
+### Patch Changes
+
+- e75ec55: Support last modified time for Vite
+
+## 11.7.1
+
+### Patch Changes
+
+- f8000f4: Generate config based on Next.js version
+- f45a1b6: Support Tanstack Router/Start via `createClientLoader`
+- Updated dependencies [1b0e9d5]
+  - fumadocs-core@15.6.6
+
+## 11.7.0
+
+### Minor Changes
+
+- f8a58c6: Support `preset: minimal` to disable Fumadocs specific defaults
+- e5cfa27: Stabilize Vite plugin support
+
+### Patch Changes
+
+- Updated dependencies [658fa96]
+- Updated dependencies [f8a58c6]
+  - fumadocs-core@15.6.5
+  - @fumadocs/mdx-remote@1.4.0
+
+## 11.6.11
+
+### Patch Changes
+
+- 73e07a5: bump zod to v4
+
+## 11.6.10
+
+### Patch Changes
+
+- d0f8a15: Enable `remarkNpm` by default, replace `remarkInstall` with it.
+- Updated dependencies [d0f8a15]
+- Updated dependencies [84918b8]
+- Updated dependencies [f8d1709]
+  - fumadocs-core@15.6.0
+  - @fumadocs/mdx-remote@1.3.4
+
+## 11.6.9
+
+### Patch Changes
+
+- cd86f58: Hotfix Windows EOL being ignored
+- Updated dependencies [7d1ac21]
+  - fumadocs-core@15.5.3
+
+## 11.6.8
+
+### Patch Changes
+
+- 7a45921: Add `absolutePath` and `path` properties to pages, mark `file` as deprecated
+- 1b7bc4b: Add `@types/react` to optional peer dependency to avoid version conflict in monorepos
+- 14e267b: Use custom util to parse frontmatter
+- Updated dependencies [7a45921]
+- Updated dependencies [1b7bc4b]
+  - fumadocs-core@15.5.2
+  - @fumadocs/mdx-remote@1.3.3
+
+## 11.6.7
+
+### Patch Changes
+
+- a5c283f: Support `outDir` option on `createMDX()`
+- Updated dependencies [b4916d2]
+- Updated dependencies [8738b9c]
+- Updated dependencies [a66886b]
+  - fumadocs-core@15.5.1
+
+## 11.6.6
+
+### Patch Changes
+
+- cd42e78: Support last modified time on Async Mode
+- Updated dependencies [1b999eb]
+- Updated dependencies [961b67e]
+- Updated dependencies [7d78bc5]
+  - fumadocs-core@15.4.0
+
+## 11.6.5
+
+### Patch Changes
+
+- a6c909b: Removed unused devDependencies and migrated from `fast-glob` to `tinyglobby`
+- Updated dependencies [a6c909b]
+  - @fumadocs/mdx-remote@1.3.2
+  - fumadocs-core@15.3.4
+
+## 11.6.4
+
+### Patch Changes
+
+- 4ae7b4a: Support MDX in codeblock tab value
+- Updated dependencies [4ae7b4a]
+  - @fumadocs/mdx-remote@1.3.1
+  - fumadocs-core@15.3.3
+
+## 11.6.3
+
+### Patch Changes
+
+- 4de7fe7: Fix `meta.{locale}` file being excluded from `defineDocs`
+- Updated dependencies [c05dc03]
+  - fumadocs-core@15.3.0
+
+## 11.6.2
+
+### Patch Changes
+
+- 16c7566: Improve error handling logic on parsing meta entries
+- 7b89faa: Add `page.data.content` to sync mode
+  - fumadocs-core@15.2.13
+
+## 11.6.1
+
+### Patch Changes
+
+- 434ccb2: Improve performance
+  - fumadocs-core@15.2.9
+
+## 11.6.0
+
+### Minor Changes
+
+- 7fcf612: Require Next.js 15.3.0 or above
+
+### Patch Changes
+
+- Updated dependencies [ec85a6c]
+- Updated dependencies [e1a61bf]
+  - fumadocs-core@15.2.7
+
+## 11.5.8
+
+### Patch Changes
+
+- 6c5e47a: add default types for collection without schema
+- Updated dependencies [1057957]
+  - fumadocs-core@15.2.4
+
+## 11.5.7
+
+### Patch Changes
+
+- 5163e92: Support reusing codeblocks in `<include>`
+- Updated dependencies [c5add28]
+- Updated dependencies [6493817]
+- Updated dependencies [f3cde4f]
+- Updated dependencies [7c8a690]
+- Updated dependencies [b812457]
+  - fumadocs-core@15.1.1
+  - @fumadocs/mdx-remote@1.2.1
+
+## 11.5.6
+
+### Patch Changes
+
+- 927ee8b: Fix hot reload
+  - fumadocs-core@15.0.9
+
+## 11.5.5
+
+### Patch Changes
+
+- e6df8aa: Improve performance
+  - fumadocs-core@15.0.8
+
+## 11.5.4
+
+### Patch Changes
+
+- fc5d7c0: Compile Meta files into inline JSON objects
+- Updated dependencies [5deaf40]
+  - fumadocs-core@15.0.7
+
+## 11.5.3
+
+### Patch Changes
+
+- 65ae933: Fix dependencies
+
+## 11.5.2
+
+### Patch Changes
+
+- c571417: Improve performance
+- be3acf4: Improve types
+  - fumadocs-core@15.0.5
+
+## 11.5.1
+
+### Patch Changes
+
+- 3730739: Fix types errors
+
+## 11.5.0
+
+### Minor Changes
+
+- 233a2d1: Support Standard Schema for collection `schema`
+- 432c7bd: Support `defineDocs` without re-exporting `docs` and `meta` collections
+
+### Patch Changes
+
+- Updated dependencies [69f20cb]
+  - @fumadocs/mdx-remote@1.2.0
+  - fumadocs-core@15.0.3
+
+## 11.4.1
+
+### Patch Changes
+
+- a8e9e1f: Bump deps
+  - fumadocs-core@15.0.2
+
+## 11.4.0
+
+### Minor Changes
+
+- 421166a: Improve performance, remove unused imports
+
+### Patch Changes
+
+- 421166a: Fix Fumadocs 14 compatibility issues
+  - fumadocs-core@15.0.1
+
+## 11.3.2
+
+### Patch Changes
+
+- a89d6e0: Support Fumadocs v15
+- d6781cc: Fix incorrect line number with frontmatter on dev mode
+- Updated dependencies [5b8cca8]
+- Updated dependencies [a763058]
+- Updated dependencies [581f4a5]
+  - fumadocs-core@15.0.0
+
+## 11.3.1
+
+### Patch Changes
+
+- 69bd4fe: Fix nested references for `<include />`
+- Updated dependencies [bb73a72]
+- Updated dependencies [69bd4fe]
+  - fumadocs-core@14.7.4
+
+## 11.3.0
+
+### Minor Changes
+
+- a4eb326: Deprecate `generateManifest` option: use a route handler to export build time information
+
+### Patch Changes
+
+- 7cc9f1f: Support CommonJs usage temporarily
+
+## 11.2.3
+
+### Patch Changes
+
+- 0a5b08c: Fix alias imports
+- Updated dependencies [72dc093]
+  - fumadocs-core@14.7.1
+
+## 11.2.2
+
+### Patch Changes
+
+- 97ed36c: Improve default settings
+- Updated dependencies [97ed36c]
+  - fumadocs-core@14.7.0
+
+## 11.2.1
+
+### Patch Changes
+
+- 3445182: Fix `include` hot-reload issues
+- Updated dependencies [b71064a]
+  - fumadocs-core@14.6.4
+
+## 11.2.0
+
+### Minor Changes
+
+- bd0a140: Support reusing content with `include` tag
+
+### Patch Changes
+
+- fumadocs-core@14.6.3
+
+## 11.1.2
+
+### Patch Changes
+
+- fe36593: Fix global config types
+
+## 11.1.1
+
+### Patch Changes
+
+- 164b9e6: Fix non-absolute `dir` option
+- Updated dependencies [1573d63]
+  - fumadocs-core@14.1.1
+
+## 11.1.0
+
+### Minor Changes
+
+- 28a9c3c: Migrate loaders to ESM only
+
+## 11.0.0
+
+### Major Changes
+
+- e094284: **Require Fumadocs v14**
+
+### Patch Changes
+
+- fumadocs-core@14.0.1
+
+## 10.1.0
+
+### Minor Changes
+
+- 5cef1f1: Move `dir` option from `defineDocs`
+- e1ee822: Support hast nodes in `toc` variable
+- df9e0e1: Support `async` output mode
+
+### Patch Changes
+
+- 9a964ca: expose `start` function from loader
+- e612f2a: Make compatible with Next.js 15
+- be820c4: Bump deps
+- Updated dependencies [e45bc67]
+- Updated dependencies [d9e908e]
+- Updated dependencies [d9e908e]
+- Updated dependencies [f949520]
+- Updated dependencies [9a0b09f]
+- Updated dependencies [9a0b09f]
+- Updated dependencies [367f4c3]
+- Updated dependencies [e1ee822]
+- Updated dependencies [e612f2a]
+- Updated dependencies [9a0b09f]
+- Updated dependencies [d9e908e]
+- Updated dependencies [8ef00dc]
+- Updated dependencies [979e301]
+- Updated dependencies [d9e908e]
+- Updated dependencies [979e301]
+- Updated dependencies [15781f0]
+- Updated dependencies [be820c4]
+- Updated dependencies [d9e908e]
+  - fumadocs-core@14.0.0
+
+## 10.0.2
+
+### Patch Changes
+
+- f21c871: Change cache path of manifest files
+- Updated dependencies [78e59e7]
+  - fumadocs-core@13.4.8
+
+## 10.0.1
+
+### Patch Changes
+
+- 7e23388: Fix windows compatibility
+  - fumadocs-core@13.4.5
+
+## 10.0.0
+
+### Major Changes
+
+- ed83d01: **Support declarative collections**
+
+  **why:** This allows Fumadocs MDX to be more flexible.
+
+  **migrate:**
+
+  You don't need `exports` anymore, properties are merged into one object by default.
+
+  ```diff
+  - page.data.exports.toc
+  + page.data.toc
+
+  - page.data.exports.default
+  + page.data.body
+  ```
+
+  A `source.config.ts` is now required.
+
+  ```ts
+  import { defineDocs, defineConfig } from "fumadocs-mdx/config";
+
+  export const { docs, meta } = defineDocs();
+
+  export default defineConfig();
+  ```
+
+  The `mdx-components.tsx` file is no longer used, pass MDX components to body instead.
+
+  Search indexes API is now replaced by Manifest API.
+
+  Please refer to the docs for further details.
+
+### Patch Changes
+
+- 0c251e5: Bump deps
+- Updated dependencies [7dabbc1]
+- Updated dependencies [0c251e5]
+- Updated dependencies [3b56170]
+  - fumadocs-core@13.4.2
+
+## 9.0.4
+
+### Patch Changes
+
+- 95dbba1: Support passing remark structure options
+- Updated dependencies [95dbba1]
+  - fumadocs-core@13.4.1
+
+## 9.0.3
+
+### Patch Changes
+
+- c0d1faf: Store additional `_data` to search indexes
+  - fumadocs-core@13.4.0
+
+## 9.0.2
+
+### Patch Changes
+
+- 61b91fa: Improve Fumadocs OpenAPI support
+- Updated dependencies [36b771b]
+- Updated dependencies [61b91fa]
+  - fumadocs-core@13.2.2
+
+## 9.0.1
+
+### Patch Changes
+
+- c7aa090: Improve Fumadocs OpenAPI support
+- Updated dependencies [17fa173]
+  - fumadocs-core@13.2.1
+
+## 9.0.0
+
+### Major Changes
+
+- 1f1989e: Support Fumadocs v13
+
+### Patch Changes
+
+- fumadocs-core@13.0.1
+
+## 8.2.34
+
+### Patch Changes
+
+- c2d956b: Support mirror pages for symlinks of MDX file
+  - fumadocs-core@12.5.3
+
+## 8.2.33
+
+### Patch Changes
+
+- 78acd55: Use full mode on docs pages by default on OpenAPI generated pages
+  - fumadocs-core@12.2.1
+
+## 8.2.32
+
+### Patch Changes
+
+- 2eb68c8: Force a release of content sources
+  - fumadocs-core@12.0.7
+
+## 8.2.31
+
+### Patch Changes
+
+- 310e0ab: Move `fumadocs-core` to peer dependency
+- Updated dependencies [053609d]
+  - fumadocs-core@12.0.3
+
+## 8.2.30
+
+### Patch Changes
+
+- fumadocs-core@12.0.2
+
+## 8.2.29
+
+### Patch Changes
+
+- fumadocs-core@12.0.1
+
+## 8.2.28
+
+### Patch Changes
+
+- Updated dependencies [98430e9]
+- Updated dependencies [d88dfa6]
+- Updated dependencies [ba20694]
+- Updated dependencies [57eb762]
+  - fumadocs-core@12.0.0
+
+## 8.2.27
+
+### Patch Changes
+
+- Updated dependencies [1b8e12b]
+  - fumadocs-core@11.3.2
+
+## 8.2.26
+
+### Patch Changes
+
+- fumadocs-core@11.3.1
+
+## 8.2.25
+
+### Patch Changes
+
+- 17e162e: Add `mdx` to page extensions by default
+- Updated dependencies [917d87f]
+  - fumadocs-core@11.3.0
+
+## 8.2.24
+
+### Patch Changes
+
+- fumadocs-core@11.2.2
+
+## 8.2.23
+
+### Patch Changes
+
+- fumadocs-core@11.2.1
+
+## 8.2.22
+
+### Patch Changes
+
+- fumadocs-core@11.2.0
+
+## 8.2.21
+
+### Patch Changes
+
+- 66a100d: Improve error messages
+- Updated dependencies [88008b1]
+- Updated dependencies [944541a]
+- Updated dependencies [07a9312]
+  - fumadocs-core@11.1.3
+
+## 8.2.20
+
+### Patch Changes
+
+- fumadocs-core@11.1.2
+
+## 8.2.19
+
+### Patch Changes
+
+- 8ef2b68: Bump deps
+- Updated dependencies [8ef2b68]
+- Updated dependencies [26f464d]
+- Updated dependencies [26f464d]
+  - fumadocs-core@11.1.1
+
+## 8.2.18
+
+### Patch Changes
+
+- fumadocs-core@11.1.0
+
+## 8.2.17
+
+### Patch Changes
+
+- Updated dependencies [98258b5]
+  - fumadocs-core@11.0.8
+
+## 8.2.16
+
+### Patch Changes
+
+- Updated dependencies [f7c2c5c]
+  - fumadocs-core@11.0.7
+
+## 8.2.15
+
+### Patch Changes
+
+- 5653d5d: Support customising heading id in headings
+- 5653d5d: Support custom heading slugger
+- Updated dependencies [5653d5d]
+- Updated dependencies [5653d5d]
+  - fumadocs-core@11.0.6
+
+## 8.2.14
+
+### Patch Changes
+
+- fumadocs-core@11.0.5
+
+## 8.2.13
+
+### Patch Changes
+
+- 7b61b2f: Migrate `fumadocs-ui` to fully ESM, adding support for ESM `tailwind.config` file
+- Updated dependencies [7b61b2f]
+  - fumadocs-core@11.0.4
+
+## 8.2.12
+
+### Patch Changes
+
+- fumadocs-core@11.0.3
+
+## 8.2.11
+
+### Patch Changes
+
+- fumadocs-core@11.0.2
+
+## 8.2.10
+
+### Patch Changes
+
+- fumadocs-core@11.0.1
+
+## 8.2.9
+
+### Patch Changes
+
+- Updated dependencies [2d8df75]
+- Updated dependencies [92cb12f]
+- Updated dependencies [f75287d]
+- Updated dependencies [2d8df75]
+  - fumadocs-core@11.0.0
+
+## 8.2.8
+
+### Patch Changes
+
+- Updated dependencies [bbad52f]
+  - fumadocs-core@10.1.3
+
+## 8.2.7
+
+### Patch Changes
+
+- fumadocs-core@10.1.2
+
+## 8.2.6
+
+### Patch Changes
+
+- Updated dependencies [779c599]
+- Updated dependencies [0c01300]
+- Updated dependencies [779c599]
+  - fumadocs-core@10.1.1
+
+## 8.2.5
+
+### Patch Changes
+
+- fumadocs-core@10.1.0
+
+## 8.2.4
+
+### Patch Changes
+
+- e47c62f: Support customising included files in the map file
+- Updated dependencies [e47c62f]
+  - fumadocs-core@10.0.5
+
+## 8.2.3
+
+### Patch Changes
+
+- fumadocs-core@10.0.4
+
+## 8.2.2
+
+### Patch Changes
+
+- Updated dependencies [6f321e5]
+  - fumadocs-core@10.0.3
+
+## 8.2.1
+
+### Patch Changes
+
+- Updated dependencies [10e099a]
+  - fumadocs-core@10.0.2
+
+## 8.2.0
+
+### Minor Changes
+
+- 01155f5: Support generate search indexes in build time
+
+### Patch Changes
+
+- Updated dependencies [c9b7763]
+- Updated dependencies [0e78dc8]
+- Updated dependencies [d8483a8]
+  - fumadocs-core@10.0.1
+
+## 8.1.1
+
+### Patch Changes
+
+- Updated dependencies [b5d16938]
+- Updated dependencies [321d1e1f]
+  - fumadocs-core@10.0.0
+
+## 8.1.0
+
+### Minor Changes
+
+- 1c388ca5: Support `defaultOpen` for folder nodes
+
+### Patch Changes
+
+- Updated dependencies [909b0e35]
+- Updated dependencies [691f12aa]
+- Updated dependencies [1c388ca5]
+  - fumadocs-core@9.1.0
+
+## 8.0.5
+
+### Patch Changes
+
+- fumadocs-core@9.0.0
+
+## 8.0.4
+
+### Patch Changes
+
+- fumadocs-core@8.3.0
+
+## 8.0.3
+
+### Patch Changes
+
+- 9bf5adb: Replace await imports with normal imports
+- Updated dependencies [5c24659]
+  - fumadocs-core@8.2.0
+
+## 8.0.2
+
+### Patch Changes
+
+- fumadocs-core@8.1.1
+
+## 8.0.1
+
+### Patch Changes
+
+- 6c5a39a: Rename Git repository to `fumadocs`
+- Updated dependencies [6c5a39a]
+- Updated dependencies [eb028b4]
+- Updated dependencies [054ec60]
+  - fumadocs-core@8.1.0
+
+## 8.0.0
+
+### Major Changes
+
+- 1a346a1: **Enable `remark-image` plugin by default**
+
+  You can add image embeds easily. They will be converted to static image imports.
+
+  ```mdx
+  ![banner](/image.png)
+  ```
+
+  Become:
+
+  ```mdx
+  import img_banner from "../../public/image.png";
+
+  <img alt="banner" src={img_banner} />
+  ```
+
+- 2b11c20: **Rename to Fumadocs**
+
+  `next-docs-zeta` -> `fumadocs-core`
+
+  `next-docs-ui` -> `fumadocs-ui`
+
+  `next-docs-mdx` -> `fumadocs-mdx`
+
+  `@fuma-docs/openapi` -> `fumadocs-openapi`
+
+  `create-next-docs-app` -> `create-fumadocs-app`
+
+### Patch Changes
+
+- Updated dependencies [2ea9437]
+- Updated dependencies [cdff313]
+- Updated dependencies [1a346a1]
+- Updated dependencies [2b11c20]
+  - fumadocs-core@8.0.0
+
+## 7.1.2
+
+### Patch Changes
+
+- next-docs-zeta@7.1.2
+
+## 7.1.1
+
+### Patch Changes
+
+- next-docs-zeta@7.1.1
+
+## 7.1.0
+
+### Patch Changes
+
+- next-docs-zeta@7.1.0
+
+## 7.0.0
+
+### Major Changes
+
+- 9929c5b: **Prefer `.map.ts` instead of `_map.ts`**
+
+  Unless you have especially configured, now it uses `.map.ts` by default.
+
+  ```diff
+  - import map from "@/_map"
+  + import map from "@/.map"
+  ```
+
+- 9929c5b: **Migrate to Source API**
+
+  `fromMap` has been removed. Please use `createMDXSource` instead.
+
+  ```ts
+  import { map } from "@/.map";
+  import { createMDXSource } from "next-docs-mdx";
+  import { loader } from "next-docs-zeta/source";
+
+  export const { getPage, getPages, pageTree } = loader({
+    baseUrl: "/docs",
+    rootDir: "docs",
+    source: createMDXSource(map),
+  });
+  ```
+
+### Minor Changes
+
+- 8fd769f: **Support last modified timestamp for Git**
+
+  Enable this in `next.config.mjs`:
+
+  ```js
+  const withNextDocs = createNextDocs({
+    mdxOptions: {
+      lastModifiedTime: "git",
+    },
+  });
+  ```
+
+  Access it via `page.data.exports.lastModified`.
+
+### Patch Changes
+
+- Updated dependencies [9929c5b]
+- Updated dependencies [9929c5b]
+- Updated dependencies [49201be]
+- Updated dependencies [338ea98]
+- Updated dependencies [4c1334e]
+- Updated dependencies [9929c5b]
+  - next-docs-zeta@7.0.0
+
+## 6.1.0
+
+### Patch Changes
+
+- Updated dependencies [f39ae40]
+  - next-docs-zeta@6.1.0
+
+## 6.0.2
+
+### Patch Changes
+
+- 1845bf5: Fixes import path for next-docs-mdx/loader-mdx
+  - next-docs-zeta@6.0.2
+
+## 6.0.1
+
+### Patch Changes
+
+- next-docs-zeta@6.0.1
+
+## 6.0.0
+
+### Major Changes
+
+- 69f8abf: **Make file paths relative to `rootDir` when resolving files**
+
+  For a more simplified usage, the resolved file paths will be relative to `rootDir`.
+
+  You can now generate slugs automatically depending on the root directory you have configured.
+
+  ```ts
+  const utils = fromMap(map, {
+    rootDir: "ui",
+    schema: {
+      frontmatter: frontmatterSchema,
+    },
+  });
+  ```
+
+  The configuration above will generate `/hello` slugs for a file named `/content/ui/hello.mdx`, while the previous one generates `/ui/hello`.
+
+- 9ef047d: **Pre-bundle page urls into raw pages.**
+
+  This means you don't need `getPageUrl` anymore for built-in adapters, including `next-docs-mdx` and Contentlayer. It is now replaced by the `url` property from the pages array provided by your adapter.
+
+  Due to this change, your old configuration might not continues to work.
+
+  ```diff
+  import { fromMap } from 'next-docs-mdx/map'
+
+  fromMap({
+  -  slugs: ...
+  +  getSlugs: ...
+  })
+  ```
+
+  For Contentlayer, the `getUrl` option is now moved to `createConfig`.
+
+- 1c187b9: **Support intelligent schema types**
+
+  The `validate` options is now renamed to `schema`.
+
+  ```ts
+  import { defaultSchemas, fromMap } from "next-docs-mdx/map";
+
+  const utils = fromMap(map, {
+    rootDir: "docs/ui",
+    baseUrl: "/docs/ui",
+    schema: {
+      frontmatter: defaultSchemas.frontmatter.extend({
+        preview: z.string().optional(),
+      }),
+    },
+  });
+  ```
+
+  The `frontmatter` field on pages should be automatically inferred to your Zod schema type.
+
+- 52b24a6: **Remove `/docs` from default root content path**
+
+  Previously, the default root content path is `./content/docs`. All your documents must be placed under the root directory.
+
+  Since this update, it is now `./content` by default. To keep the old behaviours, you may manually specify `rootContentPath`.
+
+  ```js
+  const withNextDocs = createNextDocs({
+    rootContentPath: "./content/docs",
+  });
+  ```
+
+  **Notice that due to this change, your `baseUrl` property will be `/` by default**
+
+  ```diff
+  const withNextDocs = createNextDocs({
+  +  baseUrl: "/docs"
+  })
+  ```
+
+- 2ff7581: **Rename configuration options**
+
+  The options of `createNextDocs` is now renamed to be more flexible and straightforward.
+
+  | Old             | New                                |
+  | --------------- | ---------------------------------- |
+  | `dataExports`   | `mdxOptions.valueToExport`         |
+  | `pluginOptions` | `mdxOptions.rehypeNextDocsOptions` |
+
+  `rehypePlugins` and `remarkPlugins` can also be a function that accepts and returns plugins.
+
+### Minor Changes
+
+- 55a2321: **Use `@mdx-js/mdx` to process MDX/markdown files.**
+
+  You no longer need `@next/loader` and `@mdx-js/loader` to be installed on your project, `next-docs-mdx` will process files with `@mdx-js/mdx` directly.
+
+  _This change will not break most of the projects_
+
+### Patch Changes
+
+- Updated dependencies [9ef047d]
+  - next-docs-zeta@6.0.0
+
+## 5.0.0
+
+### Minor Changes
+
+- de44efe: Migrate to Shikiji
+- de44efe: Support code highlighting options
+
+### Patch Changes
+
+- Updated dependencies [de44efe]
+- Updated dependencies [de44efe]
+  - next-docs-zeta@5.0.0
+
+## 4.0.9
+
+### Patch Changes
+
+- Updated dependencies [a883009]
+  - next-docs-zeta@4.0.9
+
+## 4.0.8
+
+### Patch Changes
+
+- Updated dependencies [e0c5c96]
+  - next-docs-zeta@4.0.8
+
+## 4.0.7
+
+### Patch Changes
+
+- b9af5ed: Update tsup & dependencies
+- Updated dependencies [b9af5ed]
+  - next-docs-zeta@4.0.7
+
+## 4.0.6
+
+### Patch Changes
+
+- Updated dependencies [ff38f6e]
+  - next-docs-zeta@4.0.6
+
+## 4.0.5
+
+### Patch Changes
+
+- next-docs-zeta@4.0.5
+
+## 4.0.4
+
+### Patch Changes
+
+- next-docs-zeta@4.0.4
+
+## 4.0.3
+
+### Patch Changes
+
+- ba51a9f: Support custom slugs function
+- 0cc10cb: Support custom build page tree options
+- Updated dependencies [0cc10cb]
+  - next-docs-zeta@4.0.3
+
+## 4.0.2
+
+### Patch Changes
+
+- 347df32: Fix empty `baseUrl` unexpected behaviours
+- ad7b8a8: Fully support custom root content directory paths
+- 73f985a: Support `rootDir` API
+  - next-docs-zeta@4.0.2
+
+## 4.0.1
+
+### Patch Changes
+
+- 01b23e2: Support Next.js 14
+- Updated dependencies [2da93d8]
+- Updated dependencies [01b23e2]
+  - next-docs-zeta@4.0.1
+
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [6c4a782]
+- Updated dependencies [6c4a782]
+  - next-docs-zeta@4.0.0
+
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [678cd3d]
+- Updated dependencies [24245a3]
+  - next-docs-zeta@4.0.0
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [1043532]
+- Updated dependencies [7a0690b]
+- Updated dependencies [a4a8120]
+  - next-docs-zeta@3.0.0

@@ -1,0 +1,28 @@
+---
+title: Размеры модальных окон
+description: Широкий против компактного
+---
+
+# Размеры модальных окон
+
+## Размеры: широкий против компактного
+
+По умолчанию, размер модального окна в RainbowKit установлен на `wide` (и выглядит следующим образом):
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+Мы также предоставляем `compact` размер модального окна, который выглядит так:
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+Чтобы установить ваш модальный размер на `compact`, просто добавьте `modalSize="compact"` как пропс в ваш `RainbowKitProvider`:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

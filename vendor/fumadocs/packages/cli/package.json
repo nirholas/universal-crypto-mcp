@@ -1,0 +1,56 @@
+{
+  "name": "@fumadocs/cli",
+  "version": "1.2.3",
+  "description": "The CLI tool for Fumadocs",
+  "keywords": [
+    "Docs",
+    "Fumadocs"
+  ],
+  "homepage": "https://fumadocs.dev",
+  "license": "MIT",
+  "author": "Fuma Nama",
+  "repository": "github:fuma-nama/fumadocs",
+  "bin": {
+    "fumadocs": "./dist/index.js"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    "./build": {
+      "types": "./dist/build/index.d.ts",
+      "import": "./dist/build/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown --config-loader unrun",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch --config-loader unrun",
+    "lint": "eslint .",
+    "types:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.0.0",
+    "commander": "^14.0.2",
+    "magic-string": "^0.30.21",
+    "oxc-parser": "^0.111.0",
+    "oxc-resolver": "^11.17.0",
+    "package-manager-detector": "^1.6.0",
+    "picocolors": "^1.1.1",
+    "tinyexec": "^1.0.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@oxc-project/types": "^0.111.0",
+    "@types/node": "25.1.0",
+    "eslint-config-custom": "workspace:*",
+    "shadcn": "3.7.0",
+    "tsconfig": "workspace:*",
+    "tsdown": "^0.19.0"
+  }
+}

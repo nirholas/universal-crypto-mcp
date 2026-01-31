@@ -1,0 +1,63 @@
+{
+  "name": "@reown/appkit-cdn",
+  "version": "1.8.17",
+  "sideEffects": false,
+  "main": "dist/wagmi.js",
+  "type": "module",
+  "files": [
+    "dist",
+    "!tsconfig.tsbuildinfo",
+    "README.md"
+  ],
+  "scripts": {
+    "build:clean": "rm -rf dist",
+    "build": "tsc && vite build",
+    "watch": "tsc --watch",
+    "upload": "pnpm build && pnpm publish --public",
+    "serve": "http-server dist -p 8080 --cors"
+  },
+  "devDependencies": {
+    "http-server": "14.1.1",
+    "vite-plugin-node-polyfills": "0.23.0"
+  },
+  "peerDependencies": {
+    "typescript": "5.9.2"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@reown/appkit": "workspace:*",
+    "@reown/appkit-adapter-ethers": "workspace:*",
+    "@reown/appkit-adapter-ethers5": "workspace:*",
+    "@reown/appkit-adapter-solana": "workspace:*",
+    "@reown/appkit-adapter-wagmi": "workspace:*",
+    "@reown/appkit-polyfills": "workspace:*",
+    "@wagmi/connectors": "5.11.2",
+    "@wagmi/core": "2.22.1",
+    "viem": "2.44.2",
+    "vite": "5.4.20",
+    "wagmi": "2.19.5"
+  },
+  "keywords": [
+    "appkit",
+    "wallet",
+    "onboarding",
+    "reown",
+    "dapps",
+    "web3",
+    "wagmi",
+    "ethereum",
+    "solana",
+    "bitcoin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reown-com/appkit.git"
+  },
+  "publishConfig": {
+    "provenance": true
+  }
+}

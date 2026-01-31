@@ -1,0 +1,8 @@
+datasource my_db {
+  provider = "sqlserver"
+}
+
+model Blog {
+  id          Int @id
+  viewCount20 Int
+}

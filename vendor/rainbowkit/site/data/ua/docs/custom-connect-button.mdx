@@ -1,0 +1,338 @@
+---
+title: Користувацька кнопка підключення
+description: Створення користувацької кнопки підключення
+---
+
+# Користувацька кнопка підключення
+
+## Створення користувацької кнопки підключення
+
+Ви можете використовувати низькорівневий `ConnectButton.Custom` для створення вашої власної користувацької кнопки підключення. Цей компонент рендерить функцію, яка включає всі необхідні засоби для перевпровадження вбудованих кнопок.
+
+Мінімальне перевпровадження вбудованих кнопок виглядатиме наступним чином:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+Наступні props передаються вашій функції для рендеринга.
+
+### Атрибути акаунта
+
+<PropsTable
+  data={[
+    {
+      name: 'account',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Об\'єкт, що містить деталі про поточний акаунт, описані нижче',
+    },
+    {
+      name: 'account.address',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          Повна адреса акаунта, напр.
+          "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceDecimals',
+      required: false,
+      type: 'string | undefined\t',
+      description: 'Баланс акаунта у десятковому вигляді',
+    },
+    {
+      name: 'account.balanceFormatted',
+      required: false,
+      type: 'string | undefined\t',
+      description: (
+        <>
+          Баланс акаунта у форматі рядка, напр.{' '}
+          <code>1.234567890123456789</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceSymbol',
+      required: false,
+      type: 'string | undefined\t',
+      description: (
+        <>
+          Символ валюти для балансу, напр. <code>ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayBalance',
+      required: false,
+      type: 'string | undefined\t',
+      description: (
+        <>
+          Баланс, відформатований до 3 значущих цифр, з доданим
+          символом, напр. <code>1.23 ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayName',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          Ім\'я ENS або скорочена версія адреси, напр.{' '}
+          <code>\"rainbowwallet.eth\"</code> або <code>\"0x7a…384f\"</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.ensAvatar',
+      required: false,
+      type: 'string\t| undefined',
+      description: 'URI аватару ENS',
+    },
+    {
+      name: 'account.ensName',
+      required: false,
+      type: 'string\t| undefined',
+      description: (
+        <>
+          Ім\'я ENS, напр. <code>rainbowwallet.eth</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.hasPendingTransactions',
+      required: false,
+      type: 'boolean',
+      description:
+        'Булеве значення, що вказує, чи є у акаунта незавершені транзакції для поточного ланцюга',
+    },
+  ]}
+/>
+
+### Атрибути ланцюга
+
+<PropsTable
+  data={[
+    {
+      name: 'chain',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Об\'єкт, що містить деталі про поточний ланцюг, описані нижче',
+    },
+    {
+      name: 'chain.hasIcon',
+      required: false,
+      type: 'boolean',
+      description: 'Наявність піктограми для ланцюга',
+    },
+    {
+      name: 'chain.iconUrl',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'URL-адреса піктограми ланцюга (яка може не визначатися під час завантаження URL-адрес у форматі Base64)',
+    },
+    {
+      name: 'chain.iconBackground',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'Фон піктограми ланцюга, що буде видно під час завантаження зображень',
+    },
+    {
+      name: 'chain.id',
+      required: false,
+      type: 'number',
+      description: (
+        <>
+          Ідентифікатор ланцюга, напр. <code>1</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.name',
+      required: false,
+      type: 'string | undefined',
+      description: (
+        <>
+          Назва ланцюга, напр. <code>"Ethereum"</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.unsupported',
+      required: false,
+      type: 'boolean | undefined',
+      description:
+        'Булеве значення, що вказує, чи є поточний ланцюг непідтримуваним',
+    },
+  ]}
+/>
+
+### Атрибути стану модального вікна
+
+<PropsTable
+  data={[
+    {
+      name: 'openAccountModal',
+      required: false,
+      type: '() => void',
+      description: 'Функція для відкриття модального вікна акаунта',
+    },
+    {
+      name: 'openChainModal',
+      required: false,
+      type: '() => void',
+      description: 'Функція для відкриття модального вікна ланцюга',
+    },
+    {
+      name: 'openConnectModal',
+      required: false,
+      type: '() => void',
+      description: 'Функція для відкриття підключеного модального вікна',
+    },
+    {
+      name: 'accountModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Булеве значення, що вказує, чи відкрите модальне вікно акаунта',
+    },
+    {
+      name: 'chainModalOpen',
+      required: false,
+      type: 'boolean',
+      description: 'Булеве значення, що вказує, чи відкрите модальне вікно ланцюга',
+    },
+    {
+      name: 'connectModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Булеве значення, що вказує, чи відкрите підключене модальне вікно',
+    },
+  ]}
+/>
+
+### Атрибути загального стану
+
+<PropsTable
+  data={[
+    {
+      name: 'mounted',
+      required: false,
+      type: 'boolean',
+      description:
+        'Булеве значення, що вказує, чи було компонент підключено',
+    },
+    {
+      name: 'authenticationStatus',
+      required: false,
+      type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+      description:
+        'Статус аутентифікації, або не визначений, якщо аутентифікація не налаштована',
+    },
+  ]}
+/>

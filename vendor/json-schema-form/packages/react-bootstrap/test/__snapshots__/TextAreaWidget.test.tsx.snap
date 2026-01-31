@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TextareaWidget simple with errors 1`] = `
+<DocumentFragment>
+  <div
+    class="input-group"
+  >
+    <textarea
+      aria-describedby="_id__error _id__description _id__help"
+      class="form-control"
+      id="_id"
+      name="_id"
+      placeholder=""
+      readonly=""
+      required=""
+      rows="5"
+    >
+      value
+    </textarea>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`TextareaWidget simple without errors 1`] = `
+<DocumentFragment>
+  <div
+    class="input-group"
+  >
+    <textarea
+      aria-describedby="_id__error _id__description _id__help"
+      class="form-control"
+      id="_id"
+      name="_id"
+      placeholder=""
+      readonly=""
+      required=""
+      rows="5"
+    >
+      value
+    </textarea>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`TextareaWidget simple without required 1`] = `
+<DocumentFragment>
+  <div
+    class="input-group"
+  >
+    <textarea
+      aria-describedby="_id__error _id__description _id__help"
+      class="form-control"
+      id="_id"
+      name="_id"
+      placeholder=""
+      readonly=""
+      rows="5"
+    >
+      value
+    </textarea>
+  </div>
+</DocumentFragment>
+`;

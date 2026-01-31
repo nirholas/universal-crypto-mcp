@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ToggleWidget renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="form-control"
+  >
+    <label
+      class="cursor-pointer label my-auto"
+    >
+      <input
+        checked=""
+        class="toggle "
+        id="test-id"
+        required=""
+        type="checkbox"
+      />
+      <span
+        class="label-text"
+      />
+    </label>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ToggleWidget renders disabled state correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="form-control"
+  >
+    <label
+      class="cursor-pointer label my-auto"
+    >
+      <input
+        checked=""
+        class="toggle "
+        disabled=""
+        id="test-id"
+        required=""
+        type="checkbox"
+      />
+      <span
+        class="label-text"
+      />
+    </label>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ToggleWidget renders with custom label 1`] = `
+<DocumentFragment>
+  <div
+    class="form-control"
+  >
+    <label
+      class="cursor-pointer label my-auto"
+    >
+      <input
+        checked=""
+        class="toggle "
+        id="test-id"
+        required=""
+        type="checkbox"
+      />
+      <span
+        class="label-text"
+      />
+    </label>
+  </div>
+</DocumentFragment>
+`;

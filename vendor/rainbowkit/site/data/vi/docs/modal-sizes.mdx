@@ -1,0 +1,28 @@
+---
+title: Kích Thước Modal
+description: Rộng và Nhỏ Gọn
+---
+
+# Kích Thước Modal
+
+## Kích thước Rộng và Nhỏ Gọn
+
+Theo mặc định, `modalSize` của RainbowKit được đặt thành `rộng` (và trông như thế này):
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+Chúng tôi cũng cung cấp kích thước modal `nhỏ gọn`, trông như thế này:
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+Để đặt kích thước modal của bạn thành `nhỏ gọn`, chỉ cần thêm `modalSize="compact"` làm thuộc tính trong `RainbowKitProvider`:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

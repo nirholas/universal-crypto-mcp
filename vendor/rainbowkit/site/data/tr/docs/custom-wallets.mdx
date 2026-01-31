@@ -1,0 +1,280 @@
+---
+title: Özel Cüzdanlar
+description: Özel bir cüzdan oluştur
+---
+
+# Özel Cüzdanlar
+
+## Özel bir cüzdan oluştur
+
+> Not: Bu API dengesizdir ve yakın gelecekte değişiklik gösterebilir. Zamanla daha fazla yerleşik cüzdan ekleyeceğiz. İlgilendiğiniz belirli cüzdanlar varsa, [bize bildirin](https://github.com/rainbow-me/rainbowkit/issues).
+
+`Wallet` fonksiyon türü, kendi özel cüzdanlarınızı tanımlamanıza yardımcı olmak için sağlanmıştır. `Wallet` fonksiyonunuzun dönüş değerinde yapılandırılabilecek özellikler şunlardır:
+
+### Cüzdan Özellikleri
+
+<PropsTable
+ data={[
+ {
+ name: 'id',
+ required: true,
+ type: 'string',
+ description: 'Cüzdan başına benzersiz ID',
+ },
+ {
+ name: 'name',
+ required: true,
+ type: 'string',
+ description: 'İnsan tarafından okunabilir cüzdan adı',
+ },
+ {
+ name: 'rdns',
+ required: false,
+ type: 'string',
+ description: 'EIP6963\u00fc destekleyen cüzdan için RDNS',
+ },
+ {
+ name: 'shortName',
+ required: false,
+ type: 'string | undefined',
+ description: 'Mobil kullanım için isteğe bağlı kısa ad',
+ },
+ {
+ name: 'iconUrl',
+ required: true,
+ type: 'string | (() => Promise<string>)',
+ description:
+ 'Cüzdan simgesi için URL veya bir Base64 veri URL\'sine çözümlenecek bir taahhüt',
+ },
+ {
+ name: 'iconAccent',
+ required: false,
+ type: 'string',
+ description:
+ 'Hem tarayıcı uzantısı hem de mobil uygulaması olan cüzdanlar için indirme akışlarındaki vurgu rengi',
+ },
+ {
+ name: 'iconBackground',
+ required: true,
+ type: 'string',
+ description: 'Cüzdan ikonu yüklenirken arka plan rengi',
+ },
+ {
+ name: 'installed',
+ required: false,
+ type: 'boolean | undefined',
+ description: (
+ <>
+ Cüzdanın bilindiğine dair indikatör veya <code>undefined</code> indirimli
+ </>
+ ),
+ },
+ {
+ name: 'downloadUrls',
+ required: false,
+ type: '{ android?: string, ios?: string, mobile?: string, qrCode?: string, chrome?: string, firefox?: string, edge?: string, safari?: string, opera?: string, browserExtension?: string } | undefined',
+ typeSimple: 'DownloadUrls | undefined',
+ description: 'İndirme URL\'lerini içeren obje',
+ },
+ {
+ name: 'hidden',
+ required: false,
+ type: '(args: { wallets: Array<{ id: string, connector: Connector, installed?: boolean }> }) => boolean',
+ typeSimple: '(args) => boolean | undefined',
+ description:
+ 'Bu cüzdanın listeden gizlenip gizlenmeyeceğini hesaplayan fonksiyon. Bu özellik, \"Enjekte Edilmiş Cüzdan\" gibi yerleşik yedek cüzdanlar tanımlamak için faydalıdır',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: '() => RainbowKitConnector',
+ typeSimple: 'RainbowKitConnector',
+ description:
+ 'Farklı bağlantı yöntemleri ve konfigürasyon için konektör örneğini sağlayan fonksiyon',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'object',
+ description:
+ 'Mobil cüzdan bağlantısı URI\'sini çözen fonksiyon',
+ },
+ {
+ name: 'desktop',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'object',
+ description: 'Masaüstü uygulama derin bağlantısını çözen fonksiyon',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: "{ getUri: (uri: string) => string, instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'object',
+ description:
+ 'QR kod URI\'sini çözen fonksiyon ve isteğe bağlı mobil cüzdan kurulum talimatlarını içeren obje',
+ },
+ {
+ name: 'extension',
+ required: false,
+ type: "{ instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'object',
+ description:
+ 'İsteğe bağlı tarayıcı uzantı kurulum talimatlarını içeren obje',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: "createConnector: (details: WalletDetailsParams) => CreateConnectorFn",
+ typeSimple: '(details: WalletDetailsParams) => CreateConnectorFn',
+ description: 'Konektör örneğini sağlayan fonksiyon',
+ },
+ ]}
+/>
+
+### DownloadUrls Özellikleri
+
+<PropsTable
+ data={[
+ {
+ name: 'android',
+ required: false,
+ type: 'string',
+ description: 'Google Play URL',
+ },
+ {
+ name: 'ios',
+ required: false,
+ type: 'string',
+ description: 'Apple App Store URL',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: 'string',
+ description:
+ '`android` veya `ios` kullanılabilir değilse mobil kullanıcılar için açılış sayfası',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: 'string',
+ description:
+ 'Mobil indirme QR Kodunu tarayan kullanıcılar için açılış sayfası',
+ },
+ {
+ name: 'chrome',
+ required: false,
+ type: 'string',
+ description: 'Chrome Mağazası URL',
+ },
+ {
+ name: 'edge',
+ required: false,
+ type: 'string',
+ description: 'Microsoft Edge Eklentiler URL',
+ },
+ {
+ name: 'firefox',
+ required: false,
+ type: 'string',
+ description: 'Firefox Tarayıcı Eklentiler URL',
+ },
+ {
+ name: 'opera',
+ required: false,
+ type: 'string',
+ description: 'Opera eklentiler URL',
+ },
+ {
+ name: 'safari',
+ required: false,
+ type: 'string',
+ description: 'Mac App Store URL',
+ },
+ {
+ name: 'browserExtension',
+ required: false,
+ type: 'string',
+ description:
+ 'Tarayıcı tarafından kullanılabilir URL\'ler mevcut değilse masaüstü uzantı kullanıcıları için açılış sayfası',
+ },
+ ]}
+/>
+
+### Örnekler
+
+Örneğin, WalletConnect kullanarak özel bir cüzdan oluşturmak için:
+
+```tsx
+import { Wallet, getWalletConnectConnector } from '@rainbow-me/rainbowkit';
+
+export interface MyWalletOptions {
+  projectId: string;
+}
+
+export const rainbow = ({ projectId }: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
+  downloadUrls: {
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
+  },
+  mobile: {
+    getUri: (uri: string) => uri,
+  },
+  qrCode: {
+    getUri: (uri: string) => uri,
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend putting My Wallet on your home screen for faster access to your wallet.',
+          step: 'install',
+          title: 'Open the My Wallet app',
+        },
+        {
+          description:
+            'After you scan, a connection prompt will appear for you to connect your wallet.',
+          step: 'scan',
+          title: 'Tap the scan button',
+        },
+      ],
+    },
+  },
+  extension: {
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend pinning My Wallet to your taskbar for quicker access to your wallet.',
+          step: 'install',
+          title: 'Install the My Wallet extension',
+        },
+        {
+          description:
+            'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+          step: 'create',
+          title: 'Create or Import a Wallet',
+        },
+        {
+          description:
+            'Once you set up your wallet, click below to refresh the browser and load up the extension.',
+          step: 'refresh',
+          title: 'Refresh your browser',
+        },
+      ],
+    },
+  },
+  createConnector: getWalletConnectConnector({ projectId }),
+});
+```
+
+Daha sonra özel cüzdanınızı [cüzdan listesine](/docs/custom-wallet-list) ekleyebilirsiniz.

@@ -1,0 +1,51 @@
+---
+title: 自定義頭像
+description: 自訂您的應用程式使用者頭像
+---
+
+# 自定義頭像
+
+## 自訂您的應用程式使用者頭像
+
+預設情況下，我們會為使用者提供頭像，以防其 ENS 圖像未設置，但您可以透過提供自己的頭像元件來進行自訂。如果使用 TypeScript，您可以匯入 `AvatarComponent` 類型：
+
+```tsx
+import {
+  RainbowKitProvider,
+  AvatarComponent,
+} from '@rainbow-me/rainbowkit';
+import { generateColorFromAddress } from './utils';
+
+const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
+  const color = generateColorFromAddress(address);
+  return ensImage ? (
+    <img
+      src={ensImage}
+      width={size}
+      height={size}
+      style={{ borderRadius: 999 }}
+    />
+  ) : (
+    <div
+      style={{
+        backgroundColor: color,
+        borderRadius: 999,
+        height: size,
+        width: size,
+      }}
+    >
+      :^)
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <RainbowKitProvider avatar={CustomAvatar} {...etc}>
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+傳入 `avatar` 道具的 `AvatarComponent` 其道具類型如下：`<{ address: string; ensImage?: string | null; size: number;}>`

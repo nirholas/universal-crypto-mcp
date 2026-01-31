@@ -1,0 +1,47 @@
+flavors:
+  - flavor: svg
+    path: /network/
+  - flavor: canvas
+    path: /network/canvas/
+
+Network:
+  package: '@nivo/network'
+  tags: []
+  stories:
+    - label: Custom node tooltip
+      link: network--custom-node-tooltip
+    - label: Custom node component
+      link: network--custom-node
+    - label: Custom link component
+      link: network--custom-link
+  description: |
+    A network component connecting nodes with links using various forces,
+    the resulting layout will depends on `linkDistance`, `centeringStrength`
+    and `repulsivity`, so you should play with those parameters in order
+    to achieve the desired result.
+
+    You can also add some extra constrains via `distanceMin` and `distanceMax`.
+
+    Please note that you can also use the `useNetwork` React hook if you want
+    to handle the rendering by yourself, it accepts an object with almost
+    the same props as the component and returns computed nodes & links.
+
+NetworkCanvas:
+  package: '@nivo/network'
+  tags:
+    - canvas
+  stories:
+    - label: Custom node tooltip
+      link: networkcanvas--custom-node-tooltip
+    - label: Custom node renderer
+      link: networkcanvas--custom-node-renderer
+    - label: Custom link renderer
+      link: networkcanvas--custom-link-renderer
+  description: |
+    A variation around the [Network](self:/network/) component.
+    Well suited for large data sets as it does not impact DOM tree depth,
+    however you'll lose the isomorphic ability and transitions.
+
+    Please note that you can also use the `useNetwork` React hook if you want
+    to handle the rendering by yourself, it accepts an object with almost
+    the same props as the component and returns computed nodes & links.

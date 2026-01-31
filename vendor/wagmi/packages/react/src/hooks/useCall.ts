@@ -1,0 +1,37 @@
+'use client'
+import type { CallErrorType, Config, ResolvedRegister } from '@wagmi/core'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
+import {
+  type CallData,
+  type CallOptions,
+  callQueryOptions,
+} from '@wagmi/core/query'
+import { type UseQueryReturnType, useQuery } from '../utils/query.js'
+import { useChainId } from './useChainId.js'
+import { useConfig } from './useConfig.js'
+
+export type UseCallParameters<
+  config extends Config = Config,
+  selectData = CallData,
+> = Compute<CallOptions<config, selectData> & ConfigParameter<config>>
+
+export type UseCallReturnType<selectData = CallData> = UseQueryReturnType<
+  selectData,
+  CallErrorType
+>
+
+/** https://wagmi.sh/react/api/hooks/useCall */
+export function useCall<
+  config extends Config = ResolvedRegister['config'],
+  selectData = CallData,
+>(
+  parameters: UseCallParameters<config, selectData> = {},
+): UseCallReturnType<selectData> {
+  const config = useConfig(parameters)
+  const chainId = useChainId({ config })
+  const options = callQueryOptions(config, {
+    ...parameters,
+    chainId: parameters.chainId ?? chainId,
+  })
+  return useQuery(options)
+}

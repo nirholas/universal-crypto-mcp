@@ -1,0 +1,165 @@
+---
+title: 自定义主题
+description: 创建自定义主题
+---
+
+# 自定义主题
+
+## 创建自定义主题
+
+> 注意：此 API 不稳定，未来可能会发生变化。我们建议暂时使用[内置主题](/docs/theming)。
+
+虽然内置主题提供了一定程度的自定义功能，但提供了`Theme`类型以帮助您定义自己的自定义主题，以较低级别的访问权限控制底层主题变量。
+
+```tsx
+import { RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+
+const myCustomTheme: Theme = {
+  blurs: {
+    modalOverlay: '...',
+  },
+  colors: {
+    accentColor: '...',
+    accentColorForeground: '...',
+    actionButtonBorder: '...',
+    actionButtonBorderMobile: '...',
+    actionButtonSecondaryBackground: '...',
+    closeButton: '...',
+    closeButtonBackground: '...',
+    connectButtonBackground: '...',
+    connectButtonBackgroundError: '...',
+    connectButtonInnerBackground: '...',
+    connectButtonText: '...',
+    connectButtonTextError: '...',
+    connectionIndicator: '...',
+    downloadBottomCardBackground: '...',
+    downloadTopCardBackground: '...',
+    error: '...',
+    generalBorder: '...',
+    generalBorderDim: '...',
+    menuItemBackground: '...',
+    modalBackdrop: '...',
+    modalBackground: '...',
+    modalBorder: '...',
+    modalText: '...',
+    modalTextDim: '...',
+    modalTextSecondary: '...',
+    profileAction: '...',
+    profileActionHover: '...',
+    profileForeground: '...',
+    selectedOptionBorder: '...',
+    standby: '...',
+  },
+  fonts: {
+    body: '...',
+  },
+  radii: {
+    actionButton: '...',
+    connectButton: '...',
+    menuButton: '...',
+    modal: '...',
+    modalMobile: '...',
+  },
+  shadows: {
+    connectButton: '...',
+    dialog: '...',
+    profileDetailsAction: '...',
+    selectedOption: '...',
+    selectedWallet: '...',
+    walletLogo: '...',
+  },
+};
+
+const App = () => (
+  <RainbowKitProvider theme={myCustomTheme} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>;
+)
+```
+
+### 扩展内置主题
+
+不用重新定义整个主题，您可以扩展一个内置主题。这在您只想覆盖特定主题令牌时非常有用。
+
+要做到这一点，安装`lodash.merge`（或等效项）：
+
+```bash
+npm install lodash.merge
+```
+
+导入它，以及您想扩展的主题（例如：`darkTheme`）和 TypeScript `Theme` 类型：
+
+```tsx
+import merge from 'lodash.merge';
+import {
+  RainbowKitProvider,
+  darkTheme,
+  Theme,
+} from '@rainbow-me/rainbowkit';
+```
+
+然后，将内置主题与您想要覆盖的主题令牌合并。在此示例中，我将`accentColor`令牌覆盖为与我的品牌的强调色匹配。
+
+```tsx
+const myTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: '#07296d',
+  },
+} as Theme);
+```
+
+最后，您现在可以将自定义主题传递给`RainbowKitProvider`的`theme`属性。
+
+```tsx
+const App = () => {
+  return (
+    <RainbowKitProvider theme={myTheme} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### 创建自定义主题选择器
+
+如果您的应用是服务器/静态渲染的，并且允许用户手动切换主题，RainbowKit 的主题系统可以通过以下函数连接到自定义 CSS 选择器，这些函数可以与任何 CSS-in-JS 系统一起使用：
+
+- `cssStringFromTheme`
+- `cssObjectFromTheme`
+
+这些函数返回设置所有必需主题变量的 CSS。由于同时支持字符串和对象，这可以与任何 CSS-in-JS 系统集成。
+
+作为一个基本示例，您可以为每个主题使用自定义选择器渲染您自己的`style`元素。由于我们控制渲染主题的 CSS，我们将`null`传递给`theme`属性，以便开启 RainbowKitProvider 不为我们渲染任何样式。还要注意在 cssStringFromTheme 函数上使用 extends 选项，以省略与基本主题相同的任何主题变量。
+
+```tsx
+import {
+  RainbowKitProvider,
+  cssStringFromTheme,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider theme={null} {...etc}>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            :root {
+              ${cssStringFromTheme(lightTheme)}
+            }
+
+            html[data-dark] {
+              ${cssStringFromTheme(darkTheme, {
+                extends: lightTheme,
+              })}
+            }
+          `,
+        }}
+      />
+
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```

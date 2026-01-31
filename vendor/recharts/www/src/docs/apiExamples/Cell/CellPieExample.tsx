@@ -1,0 +1,37 @@
+import { PieChart, Pie, Sector, PieSectorShapeProps, Label, LabelList, LabelProps } from 'recharts';
+import { RechartsDevtools } from '@recharts/devtools';
+
+// #region Sample data
+const data = [
+  { name: 'Group A', value: 400 },
+  { name: 'Group B', value: 300 },
+  { name: 'Group C', value: 500 },
+  { name: 'Group D', value: 200 },
+  { name: 'Group E', value: 278 },
+  { name: 'Group F', value: 189 },
+];
+const colors = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c', 'url(#pattern-checkers)'];
+
+const MyCustomPie = (props: PieSectorShapeProps) => <Sector {...props} fill={colors[props.index % colors.length]} />;
+
+const MyCustomLabel = (props: LabelProps) => (
+  <Label {...props} fill={colors[(props.index ?? 0) % colors.length]} position="outside" offset={20} />
+);
+
+// #endregion
+const CellPieExample = ({ isAnimationActive = true }: { isAnimationActive?: boolean }) => (
+  <PieChart style={{ width: '100%', maxWidth: '500px', maxHeight: '70vh', aspectRatio: 1 }} responsive>
+    <defs>
+      <pattern id="pattern-checkers" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <rect className="checker" x="0" width="5" height="5" y="0" />
+        <rect className="checker" x="10" width="5" height="5" y="10" />
+      </pattern>
+    </defs>
+    <Pie data={data} isAnimationActive={isAnimationActive} shape={MyCustomPie}>
+      <LabelList content={MyCustomLabel} />
+    </Pie>
+    <RechartsDevtools />
+  </PieChart>
+);
+
+export default CellPieExample;

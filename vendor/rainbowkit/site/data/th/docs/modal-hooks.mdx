@@ -1,0 +1,64 @@
+---
+title: Modal Hooks
+description: เปิดโมดอลด้วยวิธีทางโปรแกรมผ่าน Hooks
+---
+
+# Modal Hooks
+
+## เปิดโมดอลด้วยวิธีทางโปรแกรมผ่าน Hooks
+
+Hooks ต่อไปนี้ถูกจัดเตรียมไว้เพื่อรองรับการเปิดโมดอลในแอปพลิเคชันของคุณด้วยวิธีทางโปรแกรมทุกที่.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+แต่ละ Hook เหล่านี้จะคืนค่าวัตถุที่มีฟังก์ชันสำหรับเปิดโมดอลที่เกี่ยวข้อง. โปรดทราบว่าฟังก์ชันที่ส่งคืนจะไม่ได้กำหนดไว้หากแอปพลิเคชันของคุณไม่ได้อยู่ในสถานะที่ต้องการสำหรับการเปิดโมดอล.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+Hook แต่ละตัวจะคืนค่าบูลีนสำหรับสถานะของโมดอล. โดยปกติแล้วจะมีการแนะนำให้พึ่งพา Purely บน Wagmi hooks (เช่น `useAccount`) เพื่อตอบสนองต่อสถานะการเชื่อมต่อกระเป๋าเงินของผู้ใช้โดยตรง แทนที่จะพึ่งพาสถานะของ Connect Modal.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit ถูกออกแบบมาให้ไม่มีการรบกวนและตอบสนองต่อการเปลี่ยนแปลงได้ ดังนั้น dApps ควรแสดงอินเทอร์เฟซสำหรับผู้ใช้เสมอ ไม่ว่าพวกเขาจะได้เชื่อมต่อกระเป๋าเงินหรือไม่. ผู้ใช้อาจเชื่อมต่อหรือยกเลิกการเชื่อมต่อกระเป๋าเงินของพวกเขาโดยตรงจาก MetaMask ทำให้ dApp ต้องตอบสนองต่อสถานะการเชื่อมต่อพื้นฐานโดยตรง.
+
+dApps ที่พึ่งพากลไกอย่างเช่นการลงชื่อเข้าใช้งานด้วย Ethereum เพื่อการตรวจสอบผู้ใช้ควรพึ่งพาฟีเจอร์ [การรับรองตัวตน](/docs/authentication) แทน.

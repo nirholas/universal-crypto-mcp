@@ -1,0 +1,87 @@
+{
+  "name": "@tenderly/sdk",
+  "version": "0.3.1",
+  "description": "Tenderly SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "homepage:": "https://github.com/Tenderly/tenderly-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tenderly/tenderly-sdk.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start:example:addContracts": "ts-node examples/addContracts/index.ts",
+    "start:example:addWallets": "ts-node examples/addWallets/index.ts",
+    "start:example:allowAndTransfer": "ts-node examples/allowAndTransfer/index.ts",
+    "start:example:contractVerification:withDependencies": "ts-node examples/contractVerification/withDependencies/index.ts",
+    "start:example:contractVerification:simpleCounter": "ts-node examples/contractVerification/simpleCounter/index.ts",
+    "start:example:contractVerification:withLibrary": "ts-node examples/contractVerification/withLibrary/index.ts",
+    "start:example:simulateBundle": "ts-node examples/simulateBundle/index.ts",
+    "start:example:simulateTransaction": "ts-node examples/simulateTransaction/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "node prebuild.js && tsup lib/index.ts --dts --format cjs,esm",
+    "lint": "tsc && eslint . --ext .ts,.js",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "prepare": "husky install",
+    "publish": "changeset publish",
+    "version": "pnpm changeset version"
+  },
+  "author": "Tenderly Dev Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@safe-global/safe-deployments": "^1.21.1",
+    "@swc/core": "^1.3.46",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^20.4.8",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "ethers": "^6.2.0",
+    "husky": "^8.0.3",
+    "jest": "^29.4.3",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.4",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "axios": "^1.3.4"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "pnpm eslint --fix --max-warnings 0",
+      "pnpm prettier --write"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/Tenderly/tenderly-sdk/issues"
+  },
+  "homepage": "https://github.com/Tenderly/tenderly-sdk#readme",
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
+  },
+  "keywords": [
+    "sdk",
+    "javascript",
+    "web3",
+    "simulations",
+    "ethereum"
+  ],
+  "packageManager": "pnpm@8.15.7"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@examples/react-solana",
+  "private": true,
+  "version": "1.2.0",
+  "scripts": {
+    "dev": "vite --port 3002",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@reown/appkit": "workspace:*",
+    "@reown/appkit-adapter-solana": "workspace:*",
+    "@tanstack/react-query": "5.75.5",
+    "react": "19.1.2",
+    "react-dom": "19.1.2",
+    "@solana/wallet-adapter-backpack": "0.1.14"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.15",
+    "@types/react-dom": "19.1.9",
+    "@vitejs/plugin-react": "4.2.1",
+    "vite": "5.4.20"
+  }
+}

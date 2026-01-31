@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "noEmit": true,
+    "target": "es2023",
+    "types": ["vitest/globals"],
+    /* Disable noUncheckedIndexedAccess in tests - fixing all array access would be a large undertaking */
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["./**/*", "../types.d.ts", "./helper/toBeRechartsScale.ts","./helper/expectFunctionReturning.ts"]
+}

@@ -1,0 +1,63 @@
+import { Steps } from 'nextra/components'
+
+# Static Exports
+
+Export your pages statically, and deploy with [Nginx](https://nginx.org),
+[GitHub Pages](https://pages.github.com) and more.
+
+## Getting started
+
+<Steps>
+
+### Configuration
+
+To enable a static export, update the options in `next.config.mjs` file as
+follows:
+
+```js filename="next.config.mjs" {7-10}
+import nextra from 'nextra'
+
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  output: 'export',
+  images: {
+    unoptimized: true // mandatory, otherwise won't export
+  }
+  // Optional: Change the output directory `out` -> `dist`
+  // distDir: "build"
+}
+const withNextra = nextra({
+  // ... other Nextra config options
+})
+
+export default withNextra(nextConfig)
+```
+
+### Update `postbuild` script
+
+Update the Pagefind [search engine setup](./search#add-a-postbuild-script) to
+set the correct output path:
+
+```json filename="package.json"
+"scripts": {
+  "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind"
+}
+```
+
+### Building
+
+Run the `build` command according to your package manager:
+
+```sh npm2yarn
+npm run build
+```
+
+By default, static export will be stored in `out` directory in the root of your
+project.
+
+For more in detail documentation for static export visit
+[Next.js docs](https://nextjs.org/docs/app/building-your-application/deploying/static-exports).
+
+</Steps>

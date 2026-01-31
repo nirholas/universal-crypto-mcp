@@ -1,0 +1,24 @@
+*.log*
+.DS_Store
+node_modules
+dist
+test-output.*
+.cache
+storybook-static
+.env
+.eslintcache
+.pnp
+.pnp.js
+*.pem
+.npmrc
+
+# Testing
+cypress/videos
+cypress/screenshots
+
+# Editor-specific
+.vscode
+.idea
+
+# So devs can maintain their own todo lists in the project
+TODO.md

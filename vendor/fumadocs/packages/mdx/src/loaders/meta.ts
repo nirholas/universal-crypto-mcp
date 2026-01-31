@@ -1,0 +1,111 @@
+import type { Loader, LoaderInput } from '@/loaders/adapter';
+import type { ConfigLoader } from '@/loaders/config';
+import { load } from 'js-yaml';
+import { z } from 'zod';
+import { metaLoaderGlob } from '.';
+import type { MetaCollectionItem } from '@/config/build';
+
+const querySchema = z.looseObject({
+  collection: z.string().optional(),
+  workspace: z.string().optional(),
+});
+
+/**
+ * load meta files, fallback to bundler's built-in plugins when ?collection is unspecified.
+ */
+export function createMetaLoader(
+  { getCore }: ConfigLoader,
+  resolve: {
+    json?: 'json' | 'js';
+    yaml?: 'js';
+  } = {},
+): Loader {
+  const { json: resolveJson = 'js' } = resolve;
+
+  function parse(filePath: string, source: string) {
+    try {
+      if (filePath.endsWith('.json')) return JSON.parse(source);
+      if (filePath.endsWith('.yaml')) return load(source);
+    } catch (e) {
+      throw new Error(`invalid data in ${filePath}`, { cause: e });
+    }
+
+    throw new Error('Unknown file type ' + filePath);
+  }
+
+  function onMeta(source: string, { filePath, query }: LoaderInput) {
+    const parsed = querySchema.safeParse(query);
+    if (!parsed.success || !parsed.data.collection) return null;
+    const { collection: collectionName, workspace } = parsed.data;
+
+    return async (): Promise<unknown> => {
+      let core = await getCore();
+      if (workspace) {
+        core = core.getWorkspaces().get(workspace) ?? core;
+      }
+
+      const collection = core.getCollection(collectionName);
+      let metaCollection: MetaCollectionItem | undefined;
+
+      switch (collection?.type) {
+        case 'meta':
+          metaCollection = collection;
+          break;
+        case 'docs':
+          metaCollection = collection.meta;
+          break;
+      }
+
+      const data = parse(filePath, source);
+
+      if (!metaCollection) return data;
+      return core.transformMeta(
+        {
+          collection: metaCollection,
+          filePath,
+          source,
+        },
+        data,
+      );
+    };
+  }
+
+  return {
+    test: metaLoaderGlob,
+    async load(input) {
+      const result = onMeta(await input.getSource(), input);
+      if (result === null) return null;
+      const data = await result();
+
+      if (input.filePath.endsWith('.json')) {
+        return {
+          moduleType: resolveJson,
+          code:
+            resolveJson === 'json'
+              ? JSON.stringify(data)
+              : `export default ${JSON.stringify(data)}`,
+        };
+      } else {
+        return {
+          moduleType: 'js',
+          code: `export default ${JSON.stringify(data)}`,
+        };
+      }
+    },
+    bun: {
+      load(source, input) {
+        const result = onMeta(source, input);
+        if (result === null)
+          return {
+            loader: 'object',
+            exports: parse(input.filePath, source),
+          };
+
+        return result().then((data) => ({
+          loader: 'object',
+          exports: { default: data },
+        }));
+      },
+    },
+  };
+}

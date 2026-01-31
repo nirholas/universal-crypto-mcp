@@ -1,0 +1,281 @@
+---
+title: Dompet Kustom
+description: Buat dompet kustom
+---
+
+# Dompet Kustom
+
+## Buat dompet kustom
+
+> Catatan: API ini tidak stabil dan kemungkinan akan berubah di waktu dekat. Kami akan menambah lebih banyak dompet built-in seiring waktu. [Beri tahu kami](https://github.com/rainbow-me/rainbowkit/issues) jika ada dompet tertentu yang Anda minati.
+
+Tipe fungsi `Wallet` disediakan untuk membantu Anda mendefinisikan dompet kustom Anda sendiri. Properti berikut dapat dikonfigurasi pada nilai pengembalian fungsi `Wallet` Anda:
+
+### Properti Dompet
+
+<PropsTable
+  data={[
+    {
+      name: 'id',
+      required: true,
+      type: 'string',
+      description: 'ID unik untuk setiap dompet',
+    },
+    {
+      name: 'name',
+      required: true,
+      type: 'string',
+      description: 'Nama dompet yang dapat dibaca oleh manusia',
+    },
+    {
+      name: 'rdns',
+      required: false,
+      type: 'string',
+      description: 'RDNS untuk dompet yang mendukung EIP6963',
+    },
+    {
+      name: 'shortName',
+      required: false,
+      type: 'string | undefined',
+      description: 'Nama pendek opsional untuk penggunaan di ponsel',
+    },
+    {
+      name: 'iconUrl',
+      required: true,
+      type: 'string | (() => Promise<string>)',
+      description:
+        'URL untuk ikon dompet, atau janji yang menyelesaikan ke Base64 data URL',
+    },
+    {
+      name: 'iconAccent',
+      required: false,
+      type: 'string',
+      description:
+        'Warna aksen digunakan dalam aliran unduhan untuk dompet dengan ekstensi browser dan aplikasi seluler',
+    },
+    {
+      name: 'iconBackground',
+      required: true,
+      type: 'string',
+      description: 'Warna latar belakang saat ikon dompet dimuat',
+    },
+    {
+      name: 'installed',
+      required: false,
+      type: 'boolean | undefined',
+      description: (
+        <>
+          Apakah dompet diketahui terpasang, atau{' '}
+          <code>undefined</code> jika tidak dapat ditentukan
+        </>
+      ),
+    },
+    {
+      name: 'downloadUrls',
+      required: false,
+      type: '{ android?: string, ios?: string, mobile?: string, qrCode?: string, chrome?: string, firefox?: string, edge?: string, safari?: string, opera?: string, browserExtension?: string } | undefined',
+      typeSimple: 'DownloadUrls | undefined',
+      description: 'Objek yang berisi URL unduhan',
+    },
+    {
+      name: 'hidden',
+      required: false,
+      type: '(args: { wallets: Array<{ id: string, connector: Connector, installed?: boolean }> }) => boolean',
+      typeSimple: '(args) => boolean | undefined',
+      description:
+        'Fungsi untuk menghitung apakah dompet ini harus disembunyikan dari daftar. Ini berguna untuk mendefinisikan dompet fallback umum, misalnya, "Injected Wallet" bawaan menggunakan fitur ini',
+    },
+    {
+      name: 'createConnector',
+      required: true,
+      type: '() => RainbowKitConnector',
+      typeSimple: 'RainbowKitConnector',
+      description:
+        'Fungsi untuk menyediakan instance konektor dan konfigurasi untuk metode koneksi yang berbeda, dijelaskan di bawah ini',
+    },
+    {
+      name: 'mobile',
+      required: false,
+      type: '{ getUri?: (uri: string) => string }',
+      typeSimple: 'object',
+      description:
+        'Fungsi untuk menyelesaikan URI koneksi dompet seluler',
+    },
+    {
+      name: 'desktop',
+      required: false,
+      type: '{ getUri?: (uri: string) => string }',
+      typeSimple: 'object',
+      description: 'Fungsi untuk menyelesaikan link dalam aplikasi desktop',
+    },
+    {
+      name: 'qrCode',
+      required: false,
+      type: "{ getUri: (uri: string) => string, instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+      typeSimple: 'object',
+      description:
+        'Objek yang berisi fungsi untuk menyelesaikan URI kode QR, ditambah instruksi pengaturan dompet seluler yang opsional',
+    },
+    {
+      name: 'extension',
+      required: false,
+      type: "{ instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+      typeSimple: 'object',
+      description:
+        'Objek yang berisi instruksi pengaturan ekstensi browser yang opsional',
+    },
+    {
+      name: 'createConnector',
+      required: true,
+      type: "createConnector: (details: WalletDetailsParams) => CreateConnectorFn",
+      typeSimple: '(details: WalletDetailsParams) => CreateConnectorFn',
+      description: 'Fungsi untuk menyediakan instance konektor',
+    },
+  ]}
+/>
+
+### Properti DownloadUrls
+
+<PropsTable
+  data={[
+    {
+      name: 'android',
+      required: false,
+      type: 'string',
+      description: 'URL Google Play',
+    },
+    {
+      name: 'ios',
+      required: false,
+      type: 'string',
+      description: 'URL Apple App Store',
+    },
+    {
+      name: 'mobile',
+      required: false,
+      type: 'string',
+      description:
+        'Halaman pendaratan untuk pengguna ponsel ketika `android` atau `ios` tidak tersedia',
+    },
+    {
+      name: 'qrCode',
+      required: false,
+      type: 'string',
+      description:
+        'Halaman pendaratan untuk pengguna yang memindai kode QR unduhan ponsel',
+    },
+    {
+      name: 'chrome',
+      required: false,
+      type: 'string',
+      description: 'URL Chrome Web Store',
+    },
+    {
+      name: 'edge',
+      required: false,
+      type: 'string',
+      description: 'URL Microsoft Edge Add-ons',
+    },
+    {
+      name: 'firefox',
+      required: false,
+      type: 'string',
+      description: 'URL Firefox Browser Add-ons',
+    },
+    {
+      name: 'opera',
+      required: false,
+      type: 'string',
+      description: 'URL add-ons Opera',
+    },
+    {
+      name: 'safari',
+      required: false,
+      type: 'string',
+      description: 'URL Mac App Store',
+    },
+    {
+      name: 'browserExtension',
+      required: false,
+      type: 'string',
+      description:
+        'Halaman pendaratan untuk pengguna ekstensi desktop saat URL kompatibel browser tidak tersedia',
+    },
+  ]}
+/>
+
+### Contoh
+
+Sebagai contoh, untuk membuat dompet kustom menggunakan WalletConnect:
+
+```tsx
+import { Wallet, getWalletConnectConnector } from '@rainbow-me/rainbowkit';
+
+export interface MyWalletOptions {
+  projectId: string;
+}
+
+export const rainbow = ({ projectId }: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
+  downloadUrls: {
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
+  },
+  mobile: {
+    getUri: (uri: string) => uri,
+  },
+  qrCode: {
+    getUri: (uri: string) => uri,
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend putting My Wallet on your home screen for faster access to your wallet.',
+          step: 'install',
+          title: 'Open the My Wallet app',
+        },
+        {
+          description:
+            'After you scan, a connection prompt will appear for you to connect your wallet.',
+          step: 'scan',
+          title: 'Tap the scan button',
+        },
+      ],
+    },
+  },
+  extension: {
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend pinning My Wallet to your taskbar for quicker access to your wallet.',
+          step: 'install',
+          title: 'Install the My Wallet extension',
+        },
+        {
+          description:
+            'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+          step: 'create',
+          title: 'Create or Import a Wallet',
+        },
+        {
+          description:
+            'Once you set up your wallet, click below to refresh the browser and load up the extension.',
+          step: 'refresh',
+          title: 'Refresh your browser',
+        },
+      ],
+    },
+  },
+  createConnector: getWalletConnectConnector({ projectId }),
+});
+```
+
+Anda kemudian dapat menambahkan dompet kustom Anda dalam [daftar dompet](/docs/custom-wallet-list).

@@ -1,0 +1,95 @@
+import { state } from 'lit/decorators.js'
+
+import {
+  ConnectionController,
+  ConnectionControllerUtil,
+  ConstantsUtil,
+  EventsController,
+  type OpenTarget,
+  OptionsController,
+  RouterController
+} from '@reown/appkit-controllers'
+import { customElement } from '@reown/appkit-ui'
+
+import { W3mConnectingWidget } from '../../utils/w3m-connecting-widget/index.js'
+
+@customElement('w3m-connecting-wc-mobile')
+export class W3mConnectingWcMobile extends W3mConnectingWidget {
+  // -- Private ------------------------------------------- //
+  private btnLabelTimeout?: ReturnType<typeof setTimeout> = undefined
+
+  // -- State --------------------------------------------- //
+  @state() protected redirectDeeplink: string | undefined = undefined
+
+  @state() protected redirectUniversalLink: string | undefined = undefined
+
+  @state() protected target: OpenTarget | undefined = undefined
+
+  @state() protected preferUniversalLinks =
+    OptionsController.state.experimental_preferUniversalLinks
+
+  @state() protected override isLoading = true
+
+  // -- Lifecycle ----------------------------------------- //
+  public constructor() {
+    super()
+    if (!this.wallet) {
+      throw new Error('w3m-connecting-wc-mobile: No wallet provided')
+    }
+
+    this.secondaryBtnLabel = 'Open'
+    this.secondaryLabel = ConstantsUtil.CONNECT_LABELS.MOBILE
+    this.secondaryBtnIcon = 'externalLink'
+
+    // Update isLoading state initially and whenever URI changes
+    this.onHandleURI()
+
+    this.unsubscribe.push(
+      ConnectionController.subscribeKey('wcUri', () => {
+        this.onHandleURI()
+      })
+    )
+
+    EventsController.sendEvent({
+      type: 'track',
+      event: 'SELECT_WALLET',
+      properties: {
+        name: this.wallet.name,
+        platform: 'mobile',
+        displayIndex: this.wallet?.display_index,
+        walletRank: this.wallet.order,
+        view: RouterController.state.view
+      }
+    })
+  }
+
+  public override disconnectedCallback() {
+    super.disconnectedCallback()
+    clearTimeout(this.btnLabelTimeout)
+  }
+
+  // -- Private ------------------------------------------- //
+  private onHandleURI() {
+    this.isLoading = !this.uri
+    if (!this.ready && this.uri) {
+      this.ready = true
+      this.onConnect?.()
+    }
+  }
+
+  protected override onConnect = () => {
+    ConnectionControllerUtil.onConnectMobile(this.wallet)
+  }
+
+  protected override onTryAgain() {
+    // Reset error state and attempt connection again
+    ConnectionController.setWcError(false)
+    this.onConnect?.()
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'w3m-connecting-wc-mobile': W3mConnectingWcMobile
+  }
+}

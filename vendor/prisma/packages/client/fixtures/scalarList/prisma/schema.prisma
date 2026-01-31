@@ -1,0 +1,9 @@
+datasource my_db {
+  provider = "postgres"
+}
+
+model User {
+  id      String   @default(cuid()) @id
+  name    String
+  hobbies String[]
+}

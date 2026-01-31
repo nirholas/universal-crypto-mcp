@@ -198,7 +198,7 @@ export function ProviderAnalytics({ stats, period = '30d', onPeriodChange }: Pro
                         'text-green-600'
                       )}
                     >
-                      {service.uptime.toFixed(2)}%
+                      {(service.uptime ?? 0).toFixed(2)}%
                     </span>
                   </td>
                   <td className="py-3">

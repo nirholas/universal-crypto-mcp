@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "description": "An example project for Auth.js with SvelteKit",
+  "repository": "https://github.com/nextauthjs/sveltekit-auth-example",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "homepage": "https://sveltekit-auth-example.vercel.app",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "3.2.0",
+    "@sveltejs/kit": "2.8.3",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "svelte": "4.2.19",
+    "svelte-check": "3.6.9",
+    "typescript": "5.4.5",
+    "vite": "5.2.14"
+  },
+  "dependencies": {
+    "@auth/sveltekit": "latest"
+  },
+  "type": "module"
+}

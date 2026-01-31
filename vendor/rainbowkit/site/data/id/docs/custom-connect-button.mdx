@@ -1,0 +1,338 @@
+---
+title: Tombol Hubungkan Kustom
+description: Membuat Tombol Hubungkan Kustom
+---
+
+# Tombol Hubungkan Kustom
+
+## Membuat Tombol Hubungkan Kustom
+
+Anda dapat menggunakan `ConnectButton.Custom` level rendah untuk membuat tombol koneksi kustom Anda sendiri. Komponen ini menampilkan fungsi, yang mencakup semua yang Anda butuhkan untuk menerapkan ulang tombol bawaan.
+
+Implementasi ulang minimal untuk tombol bawaan akan terlihat seperti ini:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+Props berikut diteruskan ke fungsi render Anda.
+
+### Properti Akun
+
+<PropsTable
+  data={[
+    {
+      name: 'account',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Objek yang berisi detail tentang akun saat ini, dijelaskan di bawah',
+    },
+    {
+      name: 'account.address',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          Alamat akun lengkap, misalnya
+          "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceDecimals',
+      required: false,
+      type: 'string | undefined	',
+      description: 'Saldo akun dalam desimal',
+    },
+    {
+      name: 'account.balanceFormatted',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          Saldo akun diformat sebagai string, misalnya{' '}
+          <code>1.234567890123456789</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceSymbol',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          Simbol mata uang untuk saldo, misalnya <code>ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayBalance',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          Saldo diformat ke 3 digit signifikan, plus simbolnya,
+          misalnya <code>1.23 ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayName',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          Nama ENS, atau versi terpotong dari alamat, misalnya{' '}
+          <code>"rainbowwallet.eth"</code> atau <code>"0x7a…384f"</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.ensAvatar',
+      required: false,
+      type: 'string	| undefined',
+      description: 'URI avatar ENS',
+    },
+    {
+      name: 'account.ensName',
+      required: false,
+      type: 'string	| undefined',
+      description: (
+        <>
+          Nama ENS, misalnya <code>rainbowwallet.eth</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.hasPendingTransactions',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean menunjukkan apakah akun memiliki transaksi tertunda untuk rantai saat ini',
+    },
+  ]}
+/>
+
+### Properti Rantai
+
+<PropsTable
+  data={[
+    {
+      name: 'chain',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'Objek yang berisi detail tentang rantai saat ini, dijelaskan di bawah',
+    },
+    {
+      name: 'chain.hasIcon',
+      required: false,
+      type: 'boolean',
+      description: 'Apakah rantai memiliki ikon yang ditentukan',
+    },
+    {
+      name: 'chain.iconUrl',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'URL ikon rantai (yang mungkin juga tidak ada sambil mengunduh URL data Base64)',
+    },
+    {
+      name: 'chain.iconBackground',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'Latar belakang ikon rantai yang akan terlihat saat gambar sedang dimuat',
+    },
+    {
+      name: 'chain.id',
+      required: false,
+      type: 'number',
+      description: (
+        <>
+          ID rantai, misalnya <code>1</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.name',
+      required: false,
+      type: 'string | undefined',
+      description: (
+        <>
+          Nama rantai, misalnya <code>"Ethereum"</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.unsupported',
+      required: false,
+      type: 'boolean | undefined',
+      description:
+        'Boolean menunjukkan apakah rantai saat ini tidak didukung',
+    },
+  ]}
+/>
+
+### Properti Status Modal
+
+<PropsTable
+  data={[
+    {
+      name: 'openAccountModal',
+      required: false,
+      type: '() => void',
+      description: 'Fungsi untuk membuka modal akun',
+    },
+    {
+      name: 'openChainModal',
+      required: false,
+      type: '() => void',
+      description: 'Fungsi untuk membuka modal rantai',
+    },
+    {
+      name: 'openConnectModal',
+      required: false,
+      type: '() => void',
+      description: 'Fungsi untuk membuka modal hubungkan',
+    },
+    {
+      name: 'accountModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean menunjukkan apakah modal akun terbuka',
+    },
+    {
+      name: 'chainModalOpen',
+      required: false,
+      type: 'boolean',
+      description: 'Boolean menunjukkan apakah modal rantai terbuka',
+    },
+    {
+      name: 'connectModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean menunjukkan apakah modal hubungkan terbuka',
+    },
+  ]}
+/>
+
+### Properti Status Umum
+
+<PropsTable
+  data={[
+    {
+      name: 'mounted',
+      required: false,
+      type: 'boolean',
+      description:
+        'Boolean menunjukkan apakah komponen telah dimount',
+    },
+    {
+      name: 'authenticationStatus',
+      required: false,
+      type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+      description:
+        'Status otentikasi, atau undefined jika otentikasi belum dikonfigurasikan',
+    },
+  ]}
+/>

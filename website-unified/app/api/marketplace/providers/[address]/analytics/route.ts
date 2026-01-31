@@ -18,6 +18,7 @@ import {
   NotFoundError,
   setCacheHeaders,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -38,9 +39,10 @@ const AnalyticsQuerySchema = z.object({
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ address: string }> }
+  ctx: RequestContext
 ) {
-  const { address } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const address = pathParts[pathParts.length - 2]; // /providers/[address]/analytics
   const query = parseQuery(request, AnalyticsQuerySchema);
   const db = getDatabase();
   
@@ -109,7 +111,7 @@ async function handler(
       const activeSubsOnDay = flatSubscriptions.filter(s => {
         const startDate = new Date(s.startDate);
         const endDate = s.endDate ? new Date(s.endDate) : new Date('2099-12-31');
-        return startDate <= date && endDate >= date && s.status === 'active';
+        return startDate <= date && endDate >= date && s.active;
       });
       const estimatedCalls = activeSubsOnDay.length * Math.floor(Math.random() * 500 + 100);
       
@@ -124,9 +126,9 @@ async function handler(
     // Calculate top consumers
     const consumerStats = new Map<string, { calls: number; revenue: number }>();
     for (const sub of flatSubscriptions) {
-      const current = consumerStats.get(sub.subscriberAddress) || { calls: 0, revenue: 0 };
+      const current = consumerStats.get(sub.subscriberWallet) || { calls: 0, revenue: 0 };
       const price = parseFloat(sub.price?.replace(/[^0-9.]/g, '') || '0');
-      consumerStats.set(sub.subscriberAddress, {
+      consumerStats.set(sub.subscriberWallet, {
         calls: current.calls + Math.floor(Math.random() * 10000 + 1000),
         revenue: current.revenue + price,
       });
@@ -198,9 +200,7 @@ async function handler(
     }
     console.error('[API] Provider analytics error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch provider analytics',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch provider analytics')
     );
   }
 }

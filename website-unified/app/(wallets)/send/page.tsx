@@ -481,7 +481,7 @@ export default function SendPage() {
                 onChange={setRecipient}
                 resolvedName={recipientName}
                 isValid={isValidRecipient}
-                isContract={isContract}
+                isContract={isContract ?? undefined}
                 isKnownScam={isKnownScam}
               />
 
@@ -619,7 +619,7 @@ export default function SendPage() {
           transaction={{
             type: 'send',
             recipient,
-            recipientName,
+            recipientName: recipientName ?? undefined,
             amount: amount,
             token: selectedToken.token,
             estimatedGas: estimatedCost,

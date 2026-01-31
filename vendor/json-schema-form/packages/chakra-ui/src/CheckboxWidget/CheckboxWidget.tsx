@@ -1,0 +1,85 @@
+import { FocusEvent } from 'react';
+import { CheckboxCheckedChangeDetails, Text } from '@chakra-ui/react';
+import {
+  ariaDescribedByIds,
+  descriptionId,
+  getTemplate,
+  labelValue,
+  WidgetProps,
+  schemaRequiresTrueValue,
+  StrictRJSFSchema,
+  RJSFSchema,
+  FormContextType,
+  getUiOptions,
+} from '@rjsf/utils';
+
+import { Field } from '../components/ui/field';
+import { Checkbox } from '../components/ui/checkbox';
+import { getChakra } from '../utils';
+
+export default function CheckboxWidget<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>(props: WidgetProps<T, S, F>) {
+  const {
+    id,
+    htmlName,
+    value,
+    disabled,
+    readonly,
+    onChange,
+    onBlur,
+    onFocus,
+    label,
+    hideLabel,
+    registry,
+    options,
+    uiSchema,
+    schema,
+  } = props;
+  // Because an unchecked checkbox will cause html5 validation to fail, only add
+  // the "required" attribute if the field value must be "true", due to the
+  // "const" or "enum" keywords
+  const required = schemaRequiresTrueValue<S>(schema);
+  const DescriptionFieldTemplate = getTemplate<'DescriptionFieldTemplate', T, S, F>(
+    'DescriptionFieldTemplate',
+    registry,
+    options,
+  );
+  const uiOptions = getUiOptions(uiSchema);
+  const isCheckbox = uiOptions.widget === 'checkbox';
+  const description = isCheckbox ? undefined : (options.description ?? schema.description);
+
+  const _onChange = ({ checked }: CheckboxCheckedChangeDetails) => onChange(checked);
+  const _onBlur = ({ target }: FocusEvent<HTMLInputElement | any>) => onBlur(id, target && target.checked);
+  const _onFocus = ({ target }: FocusEvent<HTMLInputElement | any>) => onFocus(id, target && target.checked);
+
+  const chakraProps = getChakra({ uiSchema });
+
+  return (
+    <Field mb={1} required={required} {...chakraProps}>
+      {!hideLabel && description && (
+        <DescriptionFieldTemplate
+          id={descriptionId(id)}
+          description={description}
+          schema={schema}
+          uiSchema={uiSchema}
+          registry={registry}
+        />
+      )}
+      <Checkbox
+        id={id}
+        name={htmlName || id}
+        checked={typeof value === 'undefined' ? false : value}
+        disabled={disabled || readonly}
+        onCheckedChange={_onChange}
+        onBlur={_onBlur}
+        onFocus={_onFocus}
+        aria-describedby={ariaDescribedByIds(id)}
+      >
+        {labelValue(<Text>{label}</Text>, hideLabel || !label)}
+      </Checkbox>
+    </Field>
+  );
+}

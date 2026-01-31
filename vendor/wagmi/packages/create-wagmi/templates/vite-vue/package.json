@@ -1,0 +1,21 @@
+{
+  "name": "wagmi-vue-vite-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/vue-query": "latest",
+    "@wagmi/vue": "latest",
+    "viem": "latest",
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "latest",
+    "vite": "latest",
+    "vue-tsc": "latest"
+  }
+}

@@ -1,0 +1,348 @@
+/**
+ * @fileOverview Auto-generates Storybook ArgTypes from TypeScript source code
+ *
+ * This tool generates Storybook arg types by reading TypeScript comments
+ * and type definitions from the source code.
+ *
+ * Usage:
+ *   npm run omnidoc
+ *
+ * The generated files will always overwrite existing files - no merging is attempted.
+ */
+import * as fs from 'fs';
+import * as path from 'path';
+import * as prettier from 'prettier';
+import { glob } from 'glob';
+import { ReactNode } from 'react';
+import { getTagText, ProjectDocReader } from './readProject';
+import { processType, generateApiDoc, buildContextMap } from './generateApiDoc';
+import { ExampleReader } from './readExamples';
+import { StorybookArg, StorybookArgs } from '../storybook/StorybookArgs';
+import { defaultLocale } from '../www/src/utils/LocaleUtils';
+import { writeFormattedFile } from './writerUtils';
+
+const ARGS_OUTPUT_DIR = path.join(__dirname, '../storybook/stories/API/arg-types');
+const PRETTIER_CONFIG_PATH = path.join(__dirname, '../.prettierrc');
+
+/**
+ * Determines the Storybook control type based on the TypeScript type
+ */
+function getControlType(
+  typeNames: string[],
+  isInline: boolean,
+): { control?: StorybookArg['control']; options?: unknown[] } | undefined {
+  // If it's a function type, don't add a control
+  if (typeNames.some(name => name === 'Function' || name.includes('=>'))) {
+    return undefined;
+  }
+
+  // Handle ReactNode and complex types - no control
+  if (typeNames.some(name => name === 'ReactNode' || name.includes('ReactElement') || name.includes('JSX.Element'))) {
+    return undefined;
+  }
+
+  // Handle Object types - no control (too complex)
+  if (typeNames.some(name => name === 'Object' || (name.startsWith('{') && name.includes(':')))) {
+    return undefined;
+  }
+
+  // Handle Array types - no control (too complex)
+  if (typeNames.some(name => name.startsWith('Array') || name.endsWith('[]'))) {
+    return undefined;
+  }
+
+  const processedType = processType(typeNames, isInline);
+
+  // Boolean
+  if (
+    processedType === 'boolean' ||
+    (typeNames.length === 2 && typeNames.includes('true') && typeNames.includes('false'))
+  ) {
+    return { control: 'boolean' };
+  }
+
+  // Number
+  if (processedType === 'number') {
+    return { control: 'number' };
+  }
+
+  // String
+  if (processedType === 'string') {
+    return { control: 'text' };
+  }
+
+  // Color (heuristic based on prop name - handled separately)
+  // This function doesn't have access to prop name, so we handle it in the main function
+
+  // Enum/union of string literals
+  if (isInline && typeNames.length > 1) {
+    // Check if all types are string literals (quoted values)
+    const allStringLiterals = typeNames.every(name => {
+      const trimmed = name.trim();
+      return (trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"));
+    });
+    if (allStringLiterals) {
+      const options = typeNames.map(name => name.replace(/^["']|["']$/g, ''));
+      return { control: 'select', options };
+    }
+  }
+
+  // For mixed types or complex unions, no control
+  return undefined;
+}
+
+/**
+ * Determines the category for a prop based on its name and origin
+ */
+function getCategory(propName: string, origin: 'recharts' | 'dom' | 'other'): string {
+  // Event handlers
+  if (propName.startsWith('on')) {
+    return 'Events';
+  }
+
+  // Animation props
+  if (propName.includes('animation') || propName.includes('Animation') || propName === 'animateNewValues') {
+    return 'Animation';
+  }
+
+  // Style props
+  const styleProps = ['stroke', 'fill', 'opacity', 'strokeWidth', 'strokeDasharray', 'className', 'style'];
+  if (styleProps.includes(propName) || propName.includes('Style')) {
+    return 'Style';
+  }
+
+  // DOM props
+  if (origin === 'dom') {
+    return 'DOM';
+  }
+
+  return 'General';
+}
+
+/**
+ * Generates Storybook ArgTypes for a single component
+ */
+function generateStorybookArgs(componentName: string, projectReader: ProjectDocReader): StorybookArgs {
+  const args: StorybookArgs = {};
+  const rechartsPropNames = projectReader.getRechartsPropsOf(componentName);
+
+  for (const propName of rechartsPropNames) {
+    const comment = projectReader.getCommentOf(componentName, propName);
+    const defaultValue = projectReader.getDefaultValueOf(componentName, propName);
+    const typeInfo = projectReader.getTypeOf(componentName, propName);
+    const propMetaList = projectReader.getPropMeta(componentName, propName);
+
+    // Get origin for categorization
+    const origin = propMetaList.some(m => m.origin === 'recharts') ? 'recharts' : 'dom';
+
+    // Build the arg
+    const arg: StorybookArg = {};
+
+    // Description
+    if (comment) {
+      arg.description = comment;
+    }
+
+    // Type and control
+    if (typeInfo) {
+      const typeString = processType(typeInfo.names, typeInfo.isInline);
+      const controlInfo = getControlType(typeInfo.names, typeInfo.isInline);
+
+      // Handle color props specially
+      if (propName === 'stroke' || propName === 'fill' || propName.toLowerCase().includes('color')) {
+        arg.control = { type: 'color' };
+      } else if (controlInfo?.control) {
+        if (typeof controlInfo.control === 'string') {
+          arg.control = { type: controlInfo.control };
+        } else {
+          arg.control = controlInfo.control;
+        }
+        if (controlInfo.options) {
+          arg.options = controlInfo.options;
+        }
+      }
+
+      arg.table = {
+        type: { summary: typeString },
+        category: getCategory(propName, origin),
+      };
+    } else {
+      arg.table = {
+        category: getCategory(propName, origin),
+      };
+    }
+
+    // Default value
+    if (defaultValue.type === 'known' && defaultValue.value !== undefined) {
+      arg.defaultValue = defaultValue.value;
+      if (arg.table) {
+        arg.table.defaultValue = {
+          summary:
+            typeof defaultValue.value === 'object' ? JSON.stringify(defaultValue.value) : String(defaultValue.value),
+        };
+      }
+    }
+
+    // Check for deprecated
+    const rechartsProp = propMetaList.find(p => p.origin === 'recharts');
+    if (rechartsProp?.jsDoc) {
+      const deprecatedTag = getTagText(rechartsProp.jsDoc, 'deprecated');
+      if (deprecatedTag) {
+        arg.description = `@deprecated ${deprecatedTag.text || ''}\n\n${arg.description || ''}`.trim();
+      }
+    }
+
+    args[propName] = arg;
+  }
+
+  return args;
+}
+
+/**
+ * Writes the Storybook args to a TypeScript file
+ */
+async function writeStorybookArgsFile(
+  componentName: string,
+  args: StorybookArgs,
+  outputPath: string,
+  prettierConfig: prettier.Options | null,
+): Promise<void> {
+  const varName = `${componentName}Args`;
+
+  const fileContent = `/**
+ * This file is auto-generated by generateStorybookArgsFromSource.ts
+ * Do not edit manually.
+ */
+import { StorybookArgs } from '../../../StorybookArgs';
+
+export const ${varName}: StorybookArgs = ${JSON.stringify(args, null, 2)};
+`;
+
+  await writeFormattedFile(outputPath, fileContent, prettierConfig);
+}
+
+/**
+ * Generates MDX documentation for a component
+ */
+function generateMdx(
+  componentName: string,
+  description: ReactNode,
+  parentComponents: ReadonlyArray<string> | undefined,
+  childrenComponents: ReadonlyArray<string> | undefined,
+): string {
+  const importPath = `./${componentName}.stories`;
+
+  let mdx = `import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as ComponentStories from '${importPath}';
+
+# ${componentName}
+
+<Meta of={ComponentStories} />
+
+<Canvas of={ComponentStories.API} layout='padded'/>
+`;
+
+  if (description) {
+    mdx += `
+## Description
+
+${description}
+`;
+  }
+
+  if (parentComponents && parentComponents.length > 0) {
+    mdx += `
+## Parent Component
+
+The ${componentName} can be used within the following parent components:
+${parentComponents.map(p => `- \`<${p}/>\``).join('\n')}
+`;
+  }
+
+  if (childrenComponents && childrenComponents.length > 0) {
+    mdx += `
+## Child Components
+
+The ${componentName} can be used with the following child components:
+${childrenComponents.map(c => `- \`<${c}/>\``).join('\n')}
+`;
+  }
+
+  mdx += `
+## Props
+
+<Controls of={ComponentStories.API} />
+`;
+
+  return mdx;
+}
+
+/**
+ * Main function
+ */
+async function main() {
+  const projectReader = new ProjectDocReader();
+  const exampleReader = new ExampleReader();
+
+  const componentsToGenerate = projectReader.getAllRuntimeExportedNames();
+
+  // Ensure output directory exists
+  if (!fs.existsSync(ARGS_OUTPUT_DIR)) {
+    fs.mkdirSync(ARGS_OUTPUT_DIR, { recursive: true });
+  }
+
+  // Build context map for parent/child relationships
+  const allComponentNames = projectReader.getPublicComponentNames();
+  const contextMap = buildContextMap(allComponentNames, projectReader);
+
+  const prettierConfig = await prettier.resolveConfig(PRETTIER_CONFIG_PATH);
+
+  // Find all stories files
+  const storiesFiles = await glob('storybook/stories/API/**/*.stories.tsx');
+
+  console.log('Generating Storybook ArgTypes and MDX for:', componentsToGenerate);
+
+  /**
+   * Strips <Link> and <a> tags from a string, preserving the text content.
+   */
+  function stripLinks(html: string): string {
+    return html.replace(/<Link\s+[^>]*>(.*?)<\/Link>/g, '$1').replace(/<a\s+[^>]*>(.*?)<\/a>/g, '$1');
+  }
+
+  for (const componentName of componentsToGenerate) {
+    try {
+      // Generate Args
+      const args = generateStorybookArgs(componentName, projectReader);
+      const argsOutputPath = path.join(ARGS_OUTPUT_DIR, `${componentName}Args.ts`);
+      await writeStorybookArgsFile(componentName, args, argsOutputPath, prettierConfig);
+
+      // Generate MDX
+      const apiDoc = await generateApiDoc(componentName, projectReader, exampleReader, contextMap);
+      const descriptionRaw = typeof apiDoc.desc === 'string' ? apiDoc.desc : apiDoc.desc?.[defaultLocale];
+      const description = descriptionRaw ? stripLinks(descriptionRaw) : descriptionRaw;
+
+      // Find stories file
+      const storiesFile = storiesFiles.find(f => path.basename(f) === `${componentName}.stories.tsx`);
+
+      if (storiesFile) {
+        const absoluteStoriesPath = path.resolve(storiesFile);
+        const mdxContent = generateMdx(componentName, description, apiDoc.parentComponents, apiDoc.childrenComponents);
+        // Overwrite MDX in-place (next to the stories file)
+        const mdxOutputPath = absoluteStoriesPath.replace(/\.stories\.tsx$/, '.mdx');
+        await writeFormattedFile(mdxOutputPath, mdxContent, prettierConfig, 'mdx');
+      } else {
+        console.warn(`⚠ Could not find stories file for ${componentName}, skipping MDX generation.`);
+      }
+    } catch (error) {
+      console.error(`✗ Failed to generate Storybook args/MDX for ${componentName}:`, error);
+    }
+  }
+
+  console.log('\nDone! Remember to review the generated files.');
+}
+
+if (require.main === module) {
+  main();
+}
+
+export { generateStorybookArgs, writeStorybookArgsFile };

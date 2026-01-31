@@ -1,0 +1,71 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build:clean": {
+      "outputs": ["dist/**"],
+      "cache": false
+    },
+    "watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": [
+        "src/**",
+        "app/**",
+        "public/**",
+        "index.*",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "package.json",
+        "next.config.*",
+        "vite.config.*"
+      ],
+      "outputs": ["dist/**", "lib/**", ".next/**", "!.next/cache/**"]
+    },
+    "typecheck": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "app/**",
+        "index.*",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "package.json",
+        "next.config.*",
+        "vite.config.*"
+      ]
+    },
+    "test": {
+      "cache": false
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "src/**",
+        "app/**",
+        "index.*",
+        "*.js",
+        "*.ts",
+        "*.tsx",
+        "*.mjs",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "package.json",
+        ".eslintrc.json",
+        "next.config.*",
+        "vite.config.*",
+        "../../.eslintrc.json",
+        "../../.prettierrc.json",
+        "../../.prettierignore"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

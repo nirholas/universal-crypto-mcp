@@ -1,0 +1,79 @@
+---
+id: curried-produce
+title: Curried producers
+---
+
+<center>
+	<div
+		data-ea-publisher="immerjs"
+		data-ea-type="image"
+		className="horizontal bordered"
+	></div>
+</center> <details>
+	<summary className="egghead-summary">
+		egghead.io lesson 6: Simplify code by using curried _reduce_
+	</summary>
+	<br />
+	<div>
+		<iframe
+			width="760"
+			height="427"
+			scrolling="no"
+			src="https://egghead.io/lessons/javascript-simplify-immer-producer-functions-using-currying/embed"
+		></iframe>
+	</div>
+	<a
+		className="egghead-link"
+		href="https://egghead.io/lessons/javascript-simplify-immer-producer-functions-using-currying"
+	>
+		Hosted on egghead.io
+	</a>
+</details>
+
+Passing a function as the first argument to `produce` creates a function that doesn't apply `produce` yet to a specific state, but rather creates a function that will apply `produce` to any state that is passed to it in the future. This generally is called _currying_. Take for example the following example:
+
+```javascript
+import {produce} from "immer"
+
+function toggleTodo(state, id) {
+	return produce(state, draft => {
+		const todo = draft.find(todo => todo.id === id)
+		todo.done = !todo.done
+	})
+}
+
+const baseState = [
+	{
+		id: "JavaScript",
+		title: "Learn TypeScript",
+		done: true
+	},
+	{
+		id: "Immer",
+		title: "Try Immer",
+		done: false
+	}
+]
+
+const nextState = toggleTodo(baseState, "Immer")
+```
+
+The above pattern of `toggleTodo` is quite typical; pass an existing state to `produce`, modify the `draft`, and then return the result. Since `state` isn't used for anything else than passing it on to `produce`, the above example can be simplified by using the _curried_ form of `produce`, where you pass `produce` only the recipe function, and `produce` will return a new function that will apply recipe to the base state. This allows us to shorten the above `toggleTodo` definition.
+
+```javascript
+import {produce} from "immer"
+
+// curried producer:
+const toggleTodo = produce((draft, id) => {
+	const todo = draft.find(todo => todo.id === id)
+	todo.done = !todo.done
+})
+
+const baseState = [
+	/* as is */
+]
+
+const nextState = toggleTodo(baseState, "Immer")
+```
+
+Note that the `id` param has now become part of the recipe function! This pattern of having curried producers combines really neatly with for example the `useState` hook from React, as we will see on the next page.

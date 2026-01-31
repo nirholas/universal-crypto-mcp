@@ -1,0 +1,106 @@
+import { ReactElement, ChangeEvent, FocusEvent, useCallback } from 'react';
+import {
+  descriptionId,
+  getTemplate,
+  StrictRJSFSchema,
+  RJSFSchema,
+  FormContextType,
+  WidgetProps,
+  labelValue,
+  ariaDescribedByIds,
+} from '@rjsf/utils';
+import { Checkbox } from '@mantine/core';
+
+/** The `CheckBoxWidget` is a widget for rendering boolean properties.
+ *  It is typically used to represent a boolean.
+ *
+ * @param props - The `WidgetProps` for this component
+ */
+export default function CheckboxWidget<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>(props: WidgetProps<T, S, F>): ReactElement {
+  const {
+    id,
+    name,
+    htmlName,
+    value = false,
+    required,
+    disabled,
+    readonly,
+    autofocus,
+    label,
+    hideLabel,
+    schema,
+    rawErrors,
+    options,
+    onChange,
+    onBlur,
+    onFocus,
+    registry,
+    uiSchema,
+  } = props;
+
+  const DescriptionFieldTemplate = getTemplate<'DescriptionFieldTemplate', T, S, F>(
+    'DescriptionFieldTemplate',
+    registry,
+    options,
+  );
+
+  const handleCheckboxChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!disabled && !readonly && onChange) {
+        onChange(e.currentTarget.checked);
+      }
+    },
+    [onChange, disabled, readonly],
+  );
+
+  const handleBlur = useCallback(
+    ({ target }: FocusEvent<HTMLInputElement>) => {
+      if (onBlur) {
+        onBlur(id, target.checked);
+      }
+    },
+    [onBlur, id],
+  );
+
+  const handleFocus = useCallback(
+    ({ target }: FocusEvent<HTMLInputElement>) => {
+      if (onFocus) {
+        onFocus(id, target.checked);
+      }
+    },
+    [onFocus, id],
+  );
+
+  const description = options.description || schema.description;
+  return (
+    <>
+      {!hideLabel && !!description && (
+        <DescriptionFieldTemplate
+          id={descriptionId(id)}
+          description={description}
+          schema={schema}
+          uiSchema={uiSchema}
+          registry={registry}
+        />
+      )}
+      <Checkbox
+        id={id}
+        name={htmlName || name}
+        label={labelValue(label || undefined, hideLabel, false)}
+        disabled={disabled || readonly}
+        required={required}
+        autoFocus={autofocus}
+        checked={typeof value === 'undefined' ? false : value === 'true' || value}
+        onChange={handleCheckboxChange}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        error={rawErrors && rawErrors.length > 0 ? rawErrors.join('\n') : undefined}
+        aria-describedby={ariaDescribedByIds(id)}
+      />
+    </>
+  );
+}

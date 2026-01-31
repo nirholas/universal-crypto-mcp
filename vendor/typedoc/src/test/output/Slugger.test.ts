@@ -1,0 +1,33 @@
+import { deepStrictEqual as equal } from "assert";
+import { Slugger } from "../../lib/output/index.js";
+
+describe("Slugger", () => {
+    it("Is case sensitive #2012", () => {
+        const slugger = new Slugger({ lowercase: true });
+        equal(slugger.slug("model"), "model");
+        equal(slugger.slug("Model"), "model-1");
+    });
+
+    it("Is case sensitive even when lowercasing output is disabled", () => {
+        const slugger = new Slugger({ lowercase: false });
+        equal(slugger.slug("model"), "model");
+        equal(slugger.slug("Model"), "Model-1");
+    });
+
+    it("Handles embedded html characters", () => {
+        const slugger = new Slugger({ lowercase: true });
+        equal(slugger.slug("test <T>"), "test-t");
+        equal(slugger.slug("test <T>"), "test-t-1");
+    });
+
+    it("Handles adjacent whitespace", () => {
+        const slugger = new Slugger({ lowercase: true });
+        equal(slugger.slug("test    test2"), "test-test2");
+    });
+
+    it("Handles empty slugs", () => {
+        const slugger = new Slugger({ lowercase: true });
+        equal(slugger.slug("$"), "_");
+        equal(slugger.slug("$"), "_-1");
+    });
+});

@@ -1,0 +1,154 @@
+baseUrl: http://localhost:8000
+capture:
+    pages:
+      - id: home
+        path: ''
+        selector: '#all'
+        viewport: [1400, 900]
+
+    home:
+      - id: area-bump
+      - id: bar-horizontal
+      - id: bar-vertical
+      - id: bump
+      - id: calendar
+      - id: chord
+      - id: choropleth
+      - id: circle-packing
+      - id: icicle
+      - id: line
+      - id: marimekko
+      - id: pie
+      - id: radar
+      - id: radial-bar
+      - id: sankey
+      - id: stream
+      - id: sunburst
+      - id: swarmplot
+      - id: treemap
+      - id: voronoi
+
+    charts:
+      - pkg: boxplot
+        chart: boxplot
+        flavors: [svg]
+
+      - pkg: bump
+        chart: bump
+        flavors: [svg]
+
+      - pkg: bump
+        chart: area-bump
+        flavors: [svg]
+
+      - pkg: swarmplot
+        chart: swarmplot
+        theme: dark
+        flavors: [svg, canvas]
+
+      - pkg: geo
+        chart: geomap
+        flavors: [svg, canvas]
+
+      - pkg: geo
+        chart: choropleth
+        flavors: [svg, canvas]
+
+      - pkg: bar
+        chart: bar
+        flavors: [svg, canvas]
+
+      - pkg: bullet
+        chart: bullet
+        flavors: [ svg ]
+
+      - pkg: calendar
+        chart: calendar
+        flavors: [svg]
+
+      - pkg: chord
+        chart: chord
+        flavors: [svg, canvas]
+
+      - pkg: circle-packing
+        chart: circle-packing
+        flavors: [svg, html, canvas]
+
+      - pkg: heatmap
+        chart: heatmap
+        flavors: [svg, canvas]
+
+      - pkg: icicle
+        chart: icicle
+        flavors: [svg]
+
+      - pkg: line
+        chart: line
+        theme: dark
+        flavors: [svg, canvas]
+
+      - pkg: network
+        chart: network
+        theme: dark
+        flavors: [svg, canvas]
+
+      - pkg: parallel-coordinates
+        chart: parallel-coordinates
+        flavors: [svg, canvas]
+
+      - pkg: pie
+        chart: pie
+        flavors: [svg, canvas]
+
+      - pkg: polar-bar
+        chart: polar-bar
+        flavors: [svg]
+
+      - pkg: radar
+        chart: radar
+        flavors: [svg]
+
+      - pkg: radial-bar
+        chart: radial-bar
+        flavors: [svg]
+
+      - pkg: sankey
+        chart: sankey
+        flavors: [svg]
+
+      - pkg: scatterplot
+        chart: scatterplot
+        flavors: [svg, canvas]
+
+      - pkg: stream
+        chart: stream
+        flavors: [svg]
+
+      - pkg: sunburst
+        chart: sunburst
+        flavors: [svg]
+
+      - pkg: tree
+        chart: tree
+        theme: dark
+        flavors: [svg]
+
+      - pkg: treemap
+        chart: treemap
+        flavors: [svg, html, canvas]
+
+      - pkg: voronoi
+        chart: voronoi
+        flavors: [svg]
+
+      - pkg: waffle
+        chart: waffle
+        flavors: [svg, html, canvas]
+
+      - pkg: funnel
+        chart: funnel
+        flavors: [svg]
+
+      - pkg: marimekko
+        chart: marimekko
+        flavors: [svg]

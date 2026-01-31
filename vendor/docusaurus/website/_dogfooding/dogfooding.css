@@ -1,0 +1,84 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+html {
+  @media screen and (min-width: 1px) {
+    &.plugin-docs.plugin-id-docs-tests {
+      .red > a {
+        color: red;
+
+        &::after {
+          background-image: url('./red.svg');
+          background-size: contain;
+          margin-left: 0.5rem;
+          width: 1rem;
+          height: 1rem;
+          content: ' ';
+        }
+      }
+
+      .navbar {
+        border-bottom: solid thin cyan;
+      }
+
+      .shadow {
+        --shadow-color: red;
+        box-shadow: 10px 10px 10px var(--shadow-color);
+
+        &.blue {
+          --shadow-color: blue;
+        }
+      }
+
+      #info-1 {
+        border: solid 2px blue;
+      }
+
+      #info-2 {
+        border: solid 2px green;
+      }
+
+      #info-3 {
+        border: solid 2px red;
+      }
+
+      .dogfood_sidebar_class_name_test {
+        &.theme-doc-sidebar-item-link > a {
+          color: cyan;
+        }
+
+        &.theme-doc-sidebar-item-category > div > a {
+          color: cyan;
+        }
+
+        &.card {
+          border: solid thin cyan;
+        }
+      }
+    }
+
+    &.plugin-blog.plugin-id-blog-tests {
+      .navbar {
+        border-bottom: solid thin lime;
+      }
+    }
+
+    &.plugin-pages.plugin-id-pages-tests {
+      .navbar {
+        border-bottom: solid thin yellow;
+      }
+    }
+
+    &:has(#navbar-dropdown-tests) .navbar__item.dropdown ~ a {
+      display: none;
+    }
+  }
+}
+
+#z-index-test {
+  z-index: 100;
+}

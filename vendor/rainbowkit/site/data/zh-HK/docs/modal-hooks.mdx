@@ -1,0 +1,64 @@
+---
+title: 模式掛鈎
+description: 透過掛鈎以程式化開啟模式
+---
+
+# 模式掛鈎
+
+## 透過掛鈎以程式化開啟模式
+
+提供以下掛鈎，以允許在應用程式的任何地方程式化地開啟模式。
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+這些掛鈎中的每一個都會返回一個包含開啟各自模式的函數的對象。請注意，如果您的應用程式未處於開啟模式所需的狀態，返回的函數將是未定義。
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+每個掛鈎還會返回一個布林值以表示模式的狀態。通常建議您完全依賴 Wagmi 的掛鈎（例如 `useAccount`) 以直接對用戶的錢包連接狀態作出反應，而不是依賴於連接模式的狀態。
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit 被設計為非中斷和響應式，因此 dApps 無論用戶是否已連接其錢包，都應始終為用戶呈現介面。用戶可以從 MetaMask 直接連接或斷開其錢包，因此 dApp 必須直接對基礎連接狀態作出響應。
+
+依賴 Sign-in with Ethereum 做用戶驗證的 dApps 應改為依賴 [身份驗證](/docs/authentication) 功能。

@@ -1,0 +1,11 @@
+datasource my_db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "@prisma/client"
+}
+model Blog {
+
+// This is intentionally broken

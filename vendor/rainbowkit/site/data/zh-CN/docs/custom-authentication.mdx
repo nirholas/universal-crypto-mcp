@@ -1,0 +1,102 @@
+---
+title: 自定义身份验证
+description: 连接到您自己的身份验证后端
+---
+
+# 自定义身份验证
+
+## 连接到您自己的身份验证后端
+
+虽然RainbowKit 为以太坊登入和NextAuth提供一流支持，但您也可以集成到自定义后端和消息格式。详情请访问 [这里](/docs/authentication#set-up-sign-in-with-ethereum-and-nextauth)。
+
+### 创建自定义适配器
+
+首先创建一个身份验证适配器。这允许RainbowKit创建/准备消息并与您的后端通讯。
+
+例如，我们可以创建一个身份验证适配器，使我们能够使用 [以太坊登录](https://login.xyz) 对某些自定义API端点进行身份验证，例如 [iron-session](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-siwe-iron-session)。
+
+```tsx
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
+
+const authenticationAdapter = createAuthenticationAdapter({
+  getNonce: async () => {
+    const response = await fetch('/api/nonce');
+    return await response.text();
+  },
+
+  createMessage: ({ nonce, address, chainId }) => {
+    return createSiweMessage({
+      domain: window.location.host,
+      address,
+      statement: 'Sign in with Ethereum to the app.',
+      uri: window.location.origin,
+      version: '1',
+      chainId,
+      nonce,
+    });
+  },
+
+  verify: async ({ message, signature }) => {
+    const verifyRes = await fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, signature }),
+    });
+
+    return Boolean(verifyRes.ok);
+  },
+
+  signOut: async () => {
+    await fetch('/api/logout');
+  },
+});
+```
+
+#### 提供身份验证状态
+
+假设您的应用程序已经以某种方式管理身份验证生命周期，您可以将当前身份验证状态与自定义适配器一起传递给 `RainbowKitAuthenticationProvider`，并包装现有的 `RainbowKitProvider`。
+
+```tsx
+import {
+  createAuthenticationAdapter,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const authenticationAdapter = createAuthenticationAdapter({
+  /* See above... */
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }: AppProps) {
+  // You'll need to resolve AUTHENTICATION_STATUS here
+  // using your application's authentication system.
+  // It needs to be either 'loading' (during initial load),
+  // 'unauthenticated' or 'authenticated'.
+
+  return (
+    <WagmiProvider {...etc}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitAuthenticationProvider
+          adapter={authenticationAdapter}
+          status={AUTHENTICATION_STATUS}
+        >
+          <RainbowKitProvider {...etc}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+如果您已走到这一步并为现有的开源身份验证库创建了适配器，请考虑创建一个包供其他人使用！

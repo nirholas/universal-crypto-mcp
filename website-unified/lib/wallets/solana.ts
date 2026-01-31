@@ -8,7 +8,6 @@
  */
 
 import { Connection, clusterApiUrl, PublicKey, Transaction, VersionedTransaction, SendOptions } from '@solana/web3.js';
-import type { WalletName } from '@solana/wallet-adapter-base';
 
 // ============================================
 // Types
@@ -75,6 +74,7 @@ interface SolanaWindowWallet {
   signTransaction<T extends Transaction | VersionedTransaction>(transaction: T): Promise<T>;
   signAllTransactions<T extends Transaction | VersionedTransaction>(transactions: T[]): Promise<T[]>;
   signMessage(message: Uint8Array, display?: 'utf8' | 'hex'): Promise<{ signature: Uint8Array }>;
+  sendTransaction(transaction: Transaction | VersionedTransaction, connection: Connection, options?: SendOptions): Promise<string>;
   connect(): Promise<{ publicKey: PublicKey }>;
   disconnect(): Promise<void>;
   publicKey?: PublicKey;

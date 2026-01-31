@@ -1,0 +1,58 @@
+[
+  {
+    "language": "cn",
+    "pages": [
+      {
+        "data": {
+          "title": "Hello Chinese",
+        },
+        "locale": "cn",
+        "path": "test.cn.mdx",
+        "slugs": [
+          "test",
+        ],
+        "url": "/cn/test",
+      },
+      {
+        "data": {
+          "title": "Nested Page Chinese",
+        },
+        "locale": "cn",
+        "path": "nested/test.cn.mdx",
+        "slugs": [
+          "nested",
+          "test",
+        ],
+        "url": "/cn/nested/test",
+      },
+    ],
+  },
+  {
+    "language": "en",
+    "pages": [
+      {
+        "data": {
+          "title": "Hello",
+        },
+        "locale": "en",
+        "path": "test.mdx",
+        "slugs": [
+          "test",
+        ],
+        "url": "/en/test",
+      },
+      {
+        "data": {
+          "title": "Nested Page",
+        },
+        "locale": "en",
+        "path": "nested/test.en.mdx",
+        "slugs": [
+          "nested",
+          "test",
+        ],
+        "url": "/en/nested/test",
+      },
+    ],
+  },
+]

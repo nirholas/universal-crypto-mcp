@@ -1,0 +1,28 @@
+---
+title: モーダルサイズ
+description: ワイド vs. コンパクト
+---
+
+# モーダルサイズ
+
+## ワイド vs. コンパクトサイズ
+
+デフォルトでは、RainbowKitの`modalSize`は`wide`に設定されています（次のように表示されます）:
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+`compact`モーダルサイズも提供しており、次のように表示されます:
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+モーダルサイズを`compact`に設定するには、`RainbowKitProvider`のプロパティに`modalSize="compact"`を追加するだけです:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

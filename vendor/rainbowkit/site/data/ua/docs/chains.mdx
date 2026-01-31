@@ -1,0 +1,75 @@
+---
+title: Ланцюги
+description: Налаштування ланцюгів
+---
+
+# Ланцюги
+
+## Налаштування ланцюгів
+
+RainbowKit призначений для інтеграції з [об'єктом `chain` від wagmi](https://wagmi.sh/react/chains). Перегляньте список підтримуваних ланцюгів [тут](https://wagmi.sh/react/chains#supported-chains).
+
+### Налаштування початкового ланцюга
+
+За замовчуванням, RainbowKit під'єднається до першого ланцюга, переданого до Wagmi. Цю поведінку можна налаштувати за допомогою властивості `initialChain`.
+
+Початковий ланцюг можна налаштувати, використовуючи ID ланцюга.
+
+```tsx
+<RainbowKitProvider initialChain={1}>
+```
+
+Для зручності ви також можете передати об'єкт ланцюга.
+
+```tsx
+<RainbowKitProvider initialChain={mainnet}>
+```
+
+### Користувацькі метадані ланцюга
+
+Декілька іконок і фонових зображень для ланцюгів надаються за замовчуванням, але ви можете налаштувати іконку і фон для кожного ланцюга, використовуючи властивості `iconUrl` та `iconBackground`.
+
+Приклад з `getDefaultConfig`
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+
+const config = getDefaultConfig({
+  chains: [
+    {
+      ...mainnet,
+      iconBackground: '#000',
+      iconUrl: 'https://example.com/icons/ethereum.png',
+    },
+    {
+      ...optimism,
+      iconBackground: '#ff0000',
+      iconUrl: 'https://example.com/icons/optimism.png',
+    },
+  ],
+});
+```
+
+Приклад з `createConfig`
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+import { Chain } from '@rainbow-me/rainbowkit';
+
+const chains: readonly [Chain, ...Chain[]] = [
+  {
+    ...mainnet,
+    iconBackground: '#000',
+    iconUrl: 'https://example.com/icons/ethereum.png',
+  },
+  {
+    ...optimism,
+    iconBackground: '#ff0000',
+    iconUrl: 'https://example.com/icons/optimism.png',
+  },
+];
+
+const config = createConfig({
+  chains,
+});
+```

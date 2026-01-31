@@ -1,0 +1,149 @@
+---
+title: Кнопка подключения
+description: Использование и настройка кнопки подключения
+---
+
+# Кнопка подключения
+
+## Использование и настройка кнопки подключения
+
+Это основной компонент. Он отвечает за отображение кнопки подключения/отключения, а также за интерфейс смены цепочки.
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> Примечание: Убедитесь, что ваше приложение обернуто в необходимые провайдеры. [Подробнее](/docs/installation#wrap-providers).
+
+### Свойства
+
+Компонент `ConnectButton` имеет несколько свойств для настройки его внешнего вида, включая возможность переключать видимость различных элементов.
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'Подключить кошелек',
+      type: 'string',
+      description: 'Текстовая метка, отображаемая на кнопке подключения',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "Отображается ли аватар и/или адрес активного аккаунта",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "Отображаются ли иконка и/или имя текущей цепочки или скрываются полностью",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'Отображается ли баланс рядом с именем аккаунта',
+    },
+  ]}
+/>
+
+> Примечание: встроенная точка остановки `largeScreen` - это `768px`.
+
+### Примеры
+
+#### Метка
+
+Используйте свойство `label` для установки пользовательского текста кнопки `ConnectButton`.
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### Статус аккаунта
+
+Вот несколько различных способов использования свойства `accountStatus`.
+
+Отображать только аватар аккаунта.
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+Отображать только адрес аккаунта.
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### Статус цепочки
+
+Вот несколько различных способов использования свойства `chainStatus`.
+
+Отображать только иконку текущей цепочки.
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+Отображать только имя текущей цепочки.
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+Полностью скрыть интерфейс цепочки.
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### Отображение баланса
+
+Используйте свойство `showBalance` для скрытия/отображения баланса.
+
+Скрыть баланс.
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### Адаптивность
+
+Эти свойства также могут быть определены в адаптивном формате.
+
+На маленьких экранах показывать только иконку аккаунта. Но на больших экранах показывать иконку и адрес.
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+На маленьких экранах скрыть баланс. Но на больших экранах показывать его.
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

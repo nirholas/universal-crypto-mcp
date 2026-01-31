@@ -1,0 +1,272 @@
+import React from 'react';
+import { fireEvent } from '@testing-library/react';
+import { describe, expect, it, Mock, vi } from 'vitest';
+import { Customized, SunburstChart } from '../../src';
+import { exampleSunburstData } from '../_data';
+import { useChartHeight, useChartWidth, useViewBox } from '../../src/context/chartLayoutContext';
+import { useAppSelector } from '../../src/state/hooks';
+import { sunburstChartMouseHoverTooltipSelector } from '../component/Tooltip/tooltipMouseHoverSelectors';
+import { assertNotNull } from '../helper/assertNotNull';
+
+import { useClipPathId } from '../../src/container/ClipPathProvider';
+import { rechartsTestRender } from '../helper/createSelectorTestCase';
+import { userEventSetup } from '../helper/userEventSetup';
+import { expectLastCalledWith } from '../helper/expectLastCalledWith';
+import { TooltipInteractionState } from '../../src/state/tooltipSlice';
+
+describe('<Sunburst />', () => {
+  it('renders each sector in order under the correct category', () => {
+    const { container } = rechartsTestRender(<SunburstChart width={500} height={500} data={exampleSunburstData} />);
+
+    const sectors = container.querySelectorAll('.recharts-sector');
+
+    expect(sectors[0]).toHaveAttribute('fill', '#264653');
+    expect(sectors[1]).toHaveAttribute('fill', '#264653');
+    expect(sectors[2]).toHaveAttribute('fill', '#2a9d8f');
+    expect(sectors[3]).toHaveAttribute('fill', '#2a9d8f');
+    expect(sectors[4]).toHaveAttribute('fill', '#e9c46a');
+  });
+
+  it('fires callbacks upon hover and click events', async () => {
+    const user = userEventSetup();
+    const onMouseEnter = vi.fn();
+    const onMouseLeave = vi.fn();
+    const onClick = vi.fn();
+
+    const { container } = rechartsTestRender(
+      <SunburstChart
+        width={500}
+        height={500}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        data={exampleSunburstData}
+      />,
+    );
+    const sector = container.querySelectorAll('.recharts-sector')[0];
+
+    await user.hover(sector);
+    expect(onMouseEnter).toHaveBeenCalled();
+    expectLastCalledWith(
+      onMouseEnter,
+      {
+        name: 'Child1',
+        fill: '#264653',
+        value: 30,
+        children: [
+          {
+            name: 'third child',
+            value: 10,
+          },
+        ],
+        tooltipIndex: '[0]',
+      },
+      expect.any(Object),
+    );
+
+    await user.unhover(sector);
+    expect(onMouseLeave).toHaveBeenCalled();
+    expectLastCalledWith(
+      onMouseLeave,
+      {
+        name: 'Child1',
+        fill: '#264653',
+        value: 30,
+        children: [
+          {
+            name: 'third child',
+            value: 10,
+          },
+        ],
+        tooltipIndex: '[0]',
+      },
+      expect.any(Object),
+    );
+
+    await user.click(sector);
+    expect(onClick).toHaveBeenCalled();
+    // click doesn't add the original event, not sure why?
+    expectLastCalledWith(onClick, {
+      name: 'Child1',
+      fill: '#264653',
+      value: 30,
+      children: [
+        {
+          name: 'third child',
+          value: 10,
+        },
+      ],
+      tooltipIndex: '[0]',
+    });
+  });
+
+  it('does not call touch event callbacks', async () => {
+    const onTouchMove = vi.fn();
+    const onTouchEnd = vi.fn();
+
+    const { container } = rechartsTestRender(
+      <SunburstChart
+        width={500}
+        height={500}
+        // @ts-expect-error typescript is correct here - indeed SunburstChart does not fire touch events
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        data={exampleSunburstData}
+      />,
+    );
+    const sector = container.querySelectorAll('.recharts-sector')[0];
+
+    fireEvent.touchMove(sector, { touches: [{ clientX: 200, clientY: 200 }] });
+    expect(onTouchMove).not.toHaveBeenCalled();
+  });
+
+  describe('SunburstChart layout context', () => {
+    it('should provide viewBox but not clipPathId', () => {
+      const clipPathSpy = vi.fn();
+      const viewBoxSpy = vi.fn();
+      const Comp = (): null => {
+        clipPathSpy(useClipPathId());
+        viewBoxSpy(useViewBox());
+        return null;
+      };
+      rechartsTestRender(
+        <SunburstChart width={100} height={50} data={exampleSunburstData}>
+          <Customized component={<Comp />} />
+        </SunburstChart>,
+      );
+
+      expect(clipPathSpy).toHaveBeenLastCalledWith(undefined);
+      expect(viewBoxSpy).toHaveBeenLastCalledWith({ x: 0, y: 0, width: 100, height: 50 });
+      expect(viewBoxSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should set width and height in context', () => {
+      const widthSpy = vi.fn();
+      const heightSpy = vi.fn();
+      const Comp = (): null => {
+        widthSpy(useChartWidth());
+        heightSpy(useChartHeight());
+        return null;
+      };
+      rechartsTestRender(
+        <SunburstChart width={100} height={50} data={exampleSunburstData}>
+          <Customized component={<Comp />} />
+        </SunburstChart>,
+      );
+      expect(widthSpy).toHaveBeenLastCalledWith(100);
+      expect(heightSpy).toHaveBeenLastCalledWith(50);
+      expect(widthSpy).toHaveBeenCalledTimes(2);
+      expect(heightSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('tooltip state', () => {
+    it('should start with tooltip inactive, and activate it on hover and click on a link', () => {
+      const tooltipStateSpy: Mock<
+        (state: { click: TooltipInteractionState; hover: TooltipInteractionState } | undefined) => void
+      > = vi.fn();
+      const Comp = (): null => {
+        tooltipStateSpy(useAppSelector(state => state.tooltip.itemInteraction));
+        return null;
+      };
+      const { container } = rechartsTestRender(
+        <SunburstChart width={1000} height={500} data={exampleSunburstData}>
+          <Customized component={<Comp />} />
+        </SunburstChart>,
+      );
+      expect(tooltipStateSpy).toHaveBeenLastCalledWith({
+        click: {
+          active: false,
+          index: null,
+          dataKey: undefined,
+          coordinate: undefined,
+        },
+        hover: {
+          active: false,
+          index: null,
+          dataKey: undefined,
+          coordinate: undefined,
+        },
+      });
+      expect(tooltipStateSpy).toHaveBeenCalledTimes(1);
+
+      const tooltipTriggerElement = container.querySelector(sunburstChartMouseHoverTooltipSelector);
+      assertNotNull(tooltipTriggerElement);
+
+      fireEvent.mouseOver(tooltipTriggerElement, { clientX: 200, clientY: 200 });
+
+      expectLastCalledWith(tooltipStateSpy, {
+        click: {
+          active: false,
+          index: null,
+          dataKey: undefined,
+          coordinate: undefined,
+          graphicalItemId: undefined,
+        },
+        hover: {
+          active: true,
+          index: '[0]',
+          dataKey: 'value',
+          graphicalItemId: expect.stringMatching(/^recharts-sunburst-.+/),
+          coordinate: {
+            x: 583.3333333333334,
+            y: 250,
+          },
+        },
+      });
+      expect(tooltipStateSpy).toHaveBeenCalledTimes(2);
+
+      fireEvent.click(tooltipTriggerElement);
+
+      expectLastCalledWith(tooltipStateSpy, {
+        click: {
+          active: true,
+          coordinate: {
+            x: 583.3333333333334,
+            y: 250,
+          },
+          dataKey: 'value',
+          index: '[0]',
+          graphicalItemId: expect.stringMatching(/^recharts-sunburst-.+/),
+        },
+        hover: {
+          active: true,
+          coordinate: {
+            x: 583.3333333333334,
+            y: 250,
+          },
+          dataKey: 'value',
+          index: '[0]',
+          graphicalItemId: expect.stringMatching(/^recharts-sunburst-.+/),
+        },
+      });
+      expect(tooltipStateSpy).toHaveBeenCalledTimes(3);
+
+      fireEvent.mouseLeave(tooltipTriggerElement);
+
+      expectLastCalledWith(tooltipStateSpy, {
+        click: {
+          active: true,
+          coordinate: {
+            x: 583.3333333333334,
+            y: 250,
+          },
+          dataKey: 'value',
+          index: '[0]',
+          graphicalItemId: expect.stringMatching(/^recharts-sunburst-.+/),
+        },
+        hover: {
+          active: false,
+          index: '[0]',
+          dataKey: 'value',
+          coordinate: {
+            x: 583.3333333333334,
+            y: 250,
+          },
+          graphicalItemId: expect.stringMatching(/^recharts-sunburst-.+/),
+        },
+      });
+      expect(tooltipStateSpy).toHaveBeenCalledTimes(4);
+    });
+  });
+});

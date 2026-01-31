@@ -1,0 +1,385 @@
+---
+title: Chủ đề
+description: Sử dụng và tùy chỉnh các chủ đề
+---
+
+# Chủ đề
+
+## Sử dụng và tùy chỉnh các chủ đề
+
+Bạn có thể điều chỉnh giao diện RainbowKit để phù hợp với thương hiệu của mình. Bạn có thể chọn từ một vài màu sắc nhấn định sẵn và cấu hình bo tròn.
+
+Có 3 chức năng chủ đề tích hợp sẵn:
+
+- `lightTheme` &nbsp; (mặc định)
+- `darkTheme`
+- `midnightTheme`
+
+Chức năng chủ đề trả về một đối tượng chủ đề. Bạn có thể chuyển đối tượng này vào thuộc tính `theme` của `RainbowKitProvider`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+Nếu muốn, bạn có thể chuyển vào `accentColor`, `accentColorForeground`, `borderRadius`, `fontStack` và `overlayBlur` để tùy chỉnh chúng.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider
+    theme={darkTheme({
+      __accentColor__: '#7b3fe4',
+      __accentColorForeground__: 'white',
+      __borderRadius__: 'small',
+      __fontStack__: 'system',
+      __overlayBlur__: 'small',
+    })}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### Tùy chỉnh các chủ đề tích hợp sẵn
+
+Các chức năng chủ đề tích hợp sẵn cũng chấp nhận một đối tượng tùy chọn, cho phép bạn chọn từ nhiều kiểu dáng khác nhau.
+
+<PropsTable
+  data={[
+    {
+      name: 'accentColor',
+      required: false,
+      default: '"#0E76FD"',
+      type: 'string',
+      description:
+        'Màu nền / văn bản của các phần tử tương tác khác nhau.',
+    },
+    {
+      name: 'accentColorForeground',
+      required: false,
+      default: '"white"',
+      type: 'string',
+      description:
+        'Màu được sử dụng cho các phần tử nền trước được hiển thị trên màu nhấn.',
+    },
+    {
+      name: 'borderRadius',
+      required: false,
+      default: 'large',
+      type: '"none" | "small" | "medium" | "large"',
+      typeSimple: 'enum',
+      description: 'Kích thước của thang đo bán kính biên toàn bộ.',
+    },
+    {
+      name: 'fontStack',
+      required: false,
+      default: 'rounded',
+      type: '"rounded" | "system"',
+      typeSimple: 'enum',
+      description:
+        "Kiểu chữ sử dụng trong toàn bộ giao diện. Lưu ý rằng `rounded` cố gắng sử dụng SF Pro Rounded, tự động chuyển sang font hệ thống khi không có sẵn.",
+    },
+    {
+      name: 'overlayBlur',
+      required: false,
+      default: 'none',
+      type: '"large" | "small" | "none"',
+      typeSimple: 'enum',
+      description: 'Độ mờ của nền sau mô hình.',
+    },
+  ]}
+/>
+
+Ví dụ, để tùy chỉnh chủ đề tối với màu nhấn tím và thang đo bán kính biên `vừa`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Mỗi chủ đề cũng cung cấp một số cài đặt trước màu nhấn (`xanh dương`, `xanh lá cây`, `cam`, `hồng`, `tím`, `đỏ`) có thể được trải ra trong đối tượng tùy chọn. Ví dụ, để sử dụng cài đặt trước màu nhấn `hồng`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.pink,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### Ví dụ
+
+#### Chức năng chủ đề
+
+Dưới đây là một vài cách khác nhau bạn có thể sử dụng thuộc tính `theme`.
+
+Sử dụng chủ đề `darkTheme`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+Sử dụng chủ đề `midnightTheme`.
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={midnightTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+#### Màu nhấn
+
+Dưới đây là một vài cách khác nhau bạn có thể sử dụng cấu hình `accentColor`.
+
+Đặt màu nhấn thành một giá trị tím tùy chỉnh.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Đặt màu nhấn thành cài đặt sẵn `xanh lá cây`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.green,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Bán kính biên
+
+Dưới đây là một vài cách khác nhau bạn có thể sử dụng cấu hình `borderRadius`.
+
+Đặt bán kính biên thành `vừa`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Đặt bán kính biên thành `không có`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'none',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+> Lưu ý: giá trị bán kính biên có sẵn là: `lớn` (mặc định), `vừa`, `nhỏ` và `không có`.
+
+#### Kiểu chữ
+
+Mặc định, `fontStack` được đặt thành `bo tròn`. Nhưng đây là cách bạn có thể sử dụng cấu hình `fontStack`.
+
+Đặt kiểu chữ thành `hệ thống`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Độ mờ nền sau
+
+Mặc định, `overlayBlur` được đặt thành `không có`. Nhưng đây là cách bạn có thể sử dụng cấu hình `overlayBlur`.
+
+Đặt độ mờ nền sau thành `nhỏ`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        overlayBlur: 'small',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Phối hợp và kết hợp
+
+Dưới đây là một vài cách khác nhau bạn có thể sử dụng các chủ đề khác nhau, với các thuộc tính `accentColor`, `borderRadius` và `fontStack` cùng nhau.
+
+- Sử dụng chủ đề `lightTheme`
+- Đặt màu nhấn thành một giá trị tím tùy chỉnh
+- Đặt bán kính biên thành `vừa`
+- Đặt kiểu chữ thành `hệ thống`
+
+```tsx
+import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={lightTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+- Sử dụng chủ đề `midnightTheme`
+- Đặt màu nhấn thành cài đặt sẵn `hồng`.
+- Đặt bán kính biên thành `nhỏ`
+- Đặt kiểu chữ thành `hệ thống`
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={midnightTheme({
+        ...midnightTheme.accentColors.pink,
+        borderRadius: 'small',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### Hỗ trợ chế độ tối
+
+Nếu ứng dụng của bạn sử dụng truy vấn phương tiện chuẩn `prefers-color-scheme: dark` để chuyển đổi giữa các chế độ sáng và tối, bạn có thể tùy chọn cung cấp một đối tượng chủ đề động chứa các giá trị `lightMode` và `darkMode`.
+
+```tsx
+import {
+  RainbowKitProvider,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => (
+  <RainbowKitProvider
+    theme={{
+      lightMode: lightTheme(),
+      darkMode: darkTheme(),
+    }}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

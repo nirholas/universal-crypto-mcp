@@ -1,0 +1,201 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { useEffect, useState } from 'react'
+
+import type { ChainNamespace } from '@reown/appkit-common'
+import type {
+  AppKitAccountButton,
+  AppKitButton,
+  AppKitConnectButton,
+  AppKitNetworkButton,
+  W3mAccountButton,
+  W3mButton,
+  W3mConnectButton,
+  W3mNetworkButton
+} from '@reown/appkit-scaffold-ui'
+
+import type {
+  AppKitBaseClient as AppKit,
+  OpenOptions,
+  Views
+} from '../../client/appkit-base-client.js'
+import type { AppKitOptions } from '../../utils/TypesUtil.js'
+
+type ThemeModeOptions = AppKitOptions['themeMode']
+
+type ThemeVariablesOptions = AppKitOptions['themeVariables']
+
+interface AppKitElements {
+  'appkit-modal': {
+    class?: string
+  }
+  'appkit-button': Pick<
+    AppKitButton,
+    'size' | 'label' | 'loadingLabel' | 'disabled' | 'balance' | 'namespace'
+  >
+  'appkit-connect-button': Pick<AppKitConnectButton, 'size' | 'label' | 'loadingLabel'>
+  'appkit-account-button': Pick<AppKitAccountButton, 'disabled' | 'balance'>
+  'appkit-network-button': Pick<AppKitNetworkButton, 'disabled'>
+  'w3m-connect-button': Pick<W3mConnectButton, 'size' | 'label' | 'loadingLabel'>
+  'w3m-account-button': Pick<W3mAccountButton, 'disabled' | 'balance'>
+  'w3m-button': Pick<W3mButton, 'size' | 'label' | 'loadingLabel' | 'disabled' | 'balance'>
+  'w3m-network-button': Pick<W3mNetworkButton, 'disabled'>
+}
+
+/* ------------------------------------------------------------------ */
+/* Declare global namespace for React 18     */
+/* ------------------------------------------------------------------ */
+declare global {
+  namespace JSX {
+    interface IntrinsicElements extends AppKitElements {}
+  }
+}
+/* ------------------------------------------------------------------ */
+/* Helper alias with the built‑ins that React already supplied     */
+/* ------------------------------------------------------------------ */
+type __BuiltinIntrinsics = JSX.IntrinsicElements
+
+/* ------------------------------------------------------------------ */
+/* Declare react namespace for React 19 and extend with JSX built-ins (div, button, etc.) and extend with AppKitElements */
+/* ------------------------------------------------------------------ */
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements extends __BuiltinIntrinsics, AppKitElements {}
+  }
+}
+let modal: AppKit | undefined = undefined
+
+export function getAppKit(appKit: AppKit) {
+  if (appKit) {
+    modal = appKit
+  }
+}
+
+// -- Core Hooks ---------------------------------------------------------------
+export * from '@reown/appkit-controllers/react'
+
+export function useAppKitTheme() {
+  if (!modal) {
+    throw new Error('Please call "createAppKit" before using "useAppKitTheme" hook')
+  }
+
+  function setThemeMode(themeMode: ThemeModeOptions) {
+    if (themeMode) {
+      modal?.setThemeMode(themeMode)
+    }
+  }
+
+  function setThemeVariables(themeVariables: ThemeVariablesOptions) {
+    if (themeVariables) {
+      modal?.setThemeVariables(themeVariables)
+    }
+  }
+
+  const [themeMode, setInternalThemeMode] = useState(modal.getThemeMode())
+  const [themeVariables, setInternalThemeVariables] = useState(modal.getThemeVariables())
+
+  useEffect(() => {
+    const unsubscribe = modal?.subscribeTheme(state => {
+      setInternalThemeMode(state.themeMode)
+      setInternalThemeVariables(state.themeVariables)
+    })
+
+    return () => {
+      unsubscribe?.()
+    }
+  }, [])
+
+  return {
+    themeMode,
+    themeVariables,
+    setThemeMode,
+    setThemeVariables
+  }
+}
+
+export function useAppKit() {
+  if (!modal) {
+    throw new Error('Please call "createAppKit" before using "useAppKit" hook')
+  }
+
+  async function open<View extends Views>(options?: OpenOptions<View>) {
+    return modal?.open(options)
+  }
+
+  async function close() {
+    await modal?.close()
+  }
+
+  return { open, close }
+}
+
+export function useWalletInfo(namespace?: ChainNamespace) {
+  if (!modal) {
+    throw new Error('Please call "createAppKit" before using "useWalletInfo" hook')
+  }
+
+  const [walletInfo, setWalletInfo] = useState(() => modal?.getWalletInfo(namespace))
+
+  useEffect(() => {
+    // Sync immediately on namespace change to avoid stale data until subscription emits
+    setWalletInfo(modal?.getWalletInfo(namespace))
+
+    const unsubscribe = modal?.subscribeWalletInfo(newWalletInfo => {
+      setWalletInfo(newWalletInfo)
+    }, namespace)
+
+    return () => unsubscribe?.()
+  }, [namespace])
+
+  return { walletInfo }
+}
+
+export function useAppKitState() {
+  if (!modal) {
+    throw new Error('Please call "createAppKit" before using "useAppKitState" hook')
+  }
+
+  const [state, setState] = useState({ ...modal.getState(), initialized: false })
+  const [remoteFeatures, setRemoteFeatures] = useState(modal.getRemoteFeatures())
+
+  useEffect(() => {
+    if (modal) {
+      setState({ ...modal.getState() })
+      setRemoteFeatures(modal.getRemoteFeatures())
+      const unsubscribe = modal?.subscribeState(newState => {
+        setState({ ...newState })
+      })
+      const unsubscribeRemoteFeatures = modal?.subscribeRemoteFeatures(newState => {
+        setRemoteFeatures(newState)
+      })
+
+      return () => {
+        unsubscribe?.()
+        unsubscribeRemoteFeatures?.()
+      }
+    }
+
+    return () => null
+  }, [])
+
+  return { ...state, ...(remoteFeatures ?? {}) }
+}
+
+export function useAppKitEvents() {
+  if (!modal) {
+    throw new Error('Please call "createAppKit" before using "useAppKitEvents" hook')
+  }
+
+  const [event, setEvents] = useState(modal.getEvent())
+
+  useEffect(() => {
+    const unsubscribe = modal?.subscribeEvents(newEvent => {
+      setEvents({ ...newEvent })
+    })
+
+    return () => {
+      unsubscribe?.()
+    }
+  }, [])
+
+  return event
+}

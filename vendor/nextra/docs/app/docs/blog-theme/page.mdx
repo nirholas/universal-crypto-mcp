@@ -1,0 +1,26 @@
+---
+asIndexPage: true
+sidebarTitle: Blog Theme
+---
+
+import {
+  ChevronRightIcon,
+  FilesIcon,
+  RSSIcon,
+  TagsIcon
+} from '@components/icons'
+import { FileIcon } from 'nextra/icons'
+import { OverviewPage } from '../../_components/overview-page'
+
+# Nextra Blog Theme
+
+<OverviewPage
+  filePath={metadata.filePath}
+  icons={{
+    ChevronRightIcon,
+    FilesIcon,
+    FileIcon,
+    TagsIcon,
+    RSSIcon
+  }}
+/>

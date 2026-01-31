@@ -1,0 +1,82 @@
+{
+  "name": "@rainbow-me/rainbowkit",
+  "version": "2.2.10",
+  "description": "The best way to connect a wallet",
+  "files": [
+    "dist",
+    "styles.css",
+    "wallets"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./styles.css": "./dist/index.css",
+    "./wallets": "./dist/wallets/walletConnectors/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "src/css/reset.css.ts"
+  ],
+  "engines": {
+    "node": ">=12.4"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "build:watch": "node build.js --watch",
+    "dev": "pnpm build:watch & pnpm typegen:watch",
+    "prepare": "MINIFY_CSS=true pnpm build",
+    "prebuild": "pnpm typegen",
+    "typecheck": "pnpm tsc --noEmit",
+    "typegen": "tsc --emitDeclarationOnly || true",
+    "typegen:watch": "tsc --emitDeclarationOnly --watch"
+  },
+  "keywords": [
+    "ens",
+    "ethereum",
+    "react",
+    "react-hook",
+    "hooks",
+    "blockchain"
+  ],
+  "author": "Rainbow",
+  "license": "MIT",
+  "peerDependencies": {
+    "@tanstack/react-query": ">=5.0.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "viem": "2.x",
+    "wagmi": "^2.9.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/ua-parser-js": "^0.7.39",
+    "@vanilla-extract/css-utils": "0.1.6",
+    "@vanilla-extract/private": "1.0.9",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^16.4.5",
+    "jsdom": "^25.0.0",
+    "msw": "^2.11.2",
+    "nock": "^13.4.0",
+    "postcss": "^8.5.5",
+    "react": "^19.2.3",
+    "vitest": "2.1.9"
+  },
+  "dependencies": {
+    "@vanilla-extract/css": "1.18.0",
+    "@vanilla-extract/dynamic": "2.1.5",
+    "@vanilla-extract/sprinkles": "1.6.5",
+    "clsx": "2.1.1",
+    "cuer": "0.0.3",
+    "react-remove-scroll": "2.6.2",
+    "ua-parser-js": "^1.0.37"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rainbow-me/rainbowkit.git",
+    "directory": "packages/rainbowkit"
+  }
+}

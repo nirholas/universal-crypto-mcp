@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+// @ts-check
+import md from "markdown-it";
+import cp from "child_process";
+import { writeFile } from "fs/promises";
+
+const curl =
+    `curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/typestrong/typedoc/issues/ISSUE`;
+
+/**
+ * @param {string} cmd
+ * @returns {Promise<string>}
+ */
+function exec(cmd) {
+    return new Promise((resolve, reject) => {
+        cp.exec(cmd, { encoding: "utf-8" }, (err, stdout, stderr) => {
+            if (err) return reject(err);
+
+            if (stderr.trim().length) {
+                return reject(new Error(stderr));
+            }
+
+            resolve(stdout.trim());
+        });
+    });
+}
+
+/** @param {import("markdown-it", { with: { "resolution-mode": "require" }}).Token} code */
+function guessExtension(code) {
+    switch (code.info) {
+        case "js":
+        case "jsx":
+            return ".js";
+        case "tsx":
+            return ".tsx";
+    }
+
+    return ".ts";
+}
+
+async function main() {
+    if (process.argv.length !== 3 && process.argv.length !== 4) {
+        console.log("Usage: node scripts/testcase.js <issue number> [lang]");
+        process.exit(1);
+    }
+
+    const issue = process.argv[2];
+    const data = JSON.parse(await exec(curl.replace("ISSUE", issue)));
+
+    const parser = md();
+    const tokens = parser.parse(data.body || "", {});
+
+    const code = tokens.find(
+        (tok) =>
+            tok.tag === "code" &&
+            ["ts", "tsx", "js", "jsx"].includes(tok.info || ""),
+    ) || tokens.find((tok) => tok.tag === "code");
+
+    /** @type {string} */
+    let file;
+    if (!code) {
+        console.log("No codeblock found");
+        file = `src/test/converter2/issues/gh${issue}.ts`;
+        await writeFile(file, "");
+    } else {
+        const ext = process.argv[3] ? `.${process.argv[3]}` : guessExtension(code);
+        file = `src/test/converter2/issues/gh${issue}${ext}`;
+        await writeFile(file, code.content);
+    }
+
+    console.log(file);
+    console.log("src/test/issues.c2.test.ts");
+}
+
+void main();

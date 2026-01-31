@@ -1,0 +1,8 @@
+datasource db {
+  provider          = "cockroachdb"
+}
+
+model User {
+  id   BigInt  @id(map: "primary") @default(autoincrement())
+  name String?
+}

@@ -1,0 +1,12 @@
+{
+  "display": "@xyflow/system",
+  "extends": "@xyflow/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "target": "esnext",
+    "outDir": "dist"
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

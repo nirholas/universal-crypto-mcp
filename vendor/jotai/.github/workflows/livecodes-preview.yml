@@ -1,0 +1,19 @@
+name: LiveCodes Preview
+
+on: [pull_request]
+
+jobs:
+  build_and_prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+      - uses: live-codes/preview-in-livecodes@v1
+        with:
+          install-command: pnpm install
+          build-command: pnpm run build
+          base-url: 'https://{{LC::REF}}.preview-in-livecodes-demo.pages.dev'

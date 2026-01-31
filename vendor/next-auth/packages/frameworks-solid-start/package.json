@@ -1,0 +1,70 @@
+{
+  "name": "@auth/solid-start",
+  "version": "0.19.0",
+  "description": "Authentication for SolidStart.",
+  "license": "ISC",
+  "author": "OrJDev <orjdeveloper@gmail.com>",
+  "homepage": "https://solid-start.authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "keywords": [
+    "SolidJS",
+    "SolidStart",
+    "oauth",
+    "jwt",
+    "oauth2",
+    "authentication",
+    "nextjs",
+    "csrf",
+    "oidc",
+    "Auth.js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "providers",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./adapters": {
+      "types": "./adapters.d.ts"
+    },
+    "./client": {
+      "types": "./client.d.ts",
+      "import": "./client.js"
+    },
+    "./providers": {
+      "types": "./providers/index.d.ts"
+    },
+    "./providers/*": {
+      "types": "./providers/*.d.ts",
+      "import": "./providers/*.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && pnpm providers && tsc",
+    "test": "vitest run -c ../utils/vitest.config.ts",
+    "providers": "node ../utils/scripts/providers",
+    "clean": "rm -rf *.js *.d.ts* providers src/providers"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@solidjs/meta": "^0.28.0",
+    "@types/node": "^18.7.14",
+    "solid-js": "^1.5.7",
+    "solid-start": "^0.2.14"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.5.7",
+    "solid-start": "^0.2.14"
+  }
+}

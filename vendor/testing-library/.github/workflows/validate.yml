@@ -1,0 +1,61 @@
+name: validate
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
+  contents: read #  to fetch code (actions/checkout)
+
+jobs:
+  main:
+    continue-on-error: ${{ matrix.react != 'latest' }}
+    # ignore all-contributors PRs
+    if: ${{ !contains(github.head_ref, 'all-contributors') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 24]
+        react: ['18.x', latest, canary, experimental]
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
+
+      # TODO: Can be removed if https://github.com/kentcdodds/kcd-scripts/pull/146 is released
+      - name: Verify format (`npm run format` committed?)
+        run: npm run format -- --check --no-write
+
+      # as requested by the React team :)
+      # https://reactjs.org/blog/2019/10/22/react-release-channels.html#using-the-next-channel-for-integration-testing
+      - name: ⚛️ Setup react
+        run: npm install react@${{ matrix.react }} react-dom@${{ matrix.react }}
+
+      - name: ⚛️ Setup react types
+        if: ${{ matrix.react != 'canary' && matrix.react != 'experimental' }}
+        run:
+          npm install @types/react@${{ matrix.react }} @types/react-dom@${{
+          matrix.react }}
+
+      - name: ▶️ Run validate script
+        run: npm run validate
+
+      - name: ⬆️ Upload coverage report
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          flags: ${{ matrix.react }}
+          token: ${{ secrets.CODECOV_TOKEN }}

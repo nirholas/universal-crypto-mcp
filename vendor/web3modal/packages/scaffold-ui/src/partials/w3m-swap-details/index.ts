@@ -1,0 +1,204 @@
+import { LitElement, html } from 'lit'
+import { property, state } from 'lit/decorators.js'
+
+import { NumberUtil } from '@reown/appkit-common'
+import { ChainController, ConstantsUtil, SwapController } from '@reown/appkit-controllers'
+import { customElement } from '@reown/appkit-ui'
+import '@reown/appkit-ui/wui-flex'
+import '@reown/appkit-ui/wui-icon'
+import '@reown/appkit-ui/wui-text'
+
+import '../w3m-tooltip-trigger/index.js'
+import '../w3m-tooltip/index.js'
+import styles from './styles.js'
+
+// -- Constants ----------------------------------------- //
+const slippageRate = ConstantsUtil.CONVERT_SLIPPAGE_TOLERANCE
+
+@customElement('w3m-swap-details')
+export class WuiSwapDetails extends LitElement {
+  public static override styles = [styles]
+
+  private unsubscribe: ((() => void) | undefined)[] = []
+
+  // -- State & Properties -------------------------------- //
+  @state() public networkName = ChainController.state.activeCaipNetwork?.name
+
+  @property() public detailsOpen = false
+
+  @state() public sourceToken = SwapController.state.sourceToken
+
+  @state() public toToken = SwapController.state.toToken
+
+  @state() public toTokenAmount = SwapController.state.toTokenAmount
+
+  @state() public sourceTokenPriceInUSD = SwapController.state.sourceTokenPriceInUSD
+
+  @state() public toTokenPriceInUSD = SwapController.state.toTokenPriceInUSD
+
+  @state() public priceImpact = SwapController.state.priceImpact
+
+  @state() public maxSlippage = SwapController.state.maxSlippage
+
+  @state() public networkTokenSymbol = SwapController.state.networkTokenSymbol
+
+  @state() public inputError = SwapController.state.inputError
+
+  // -- Lifecycle ----------------------------------------- //
+  public constructor() {
+    super()
+
+    this.unsubscribe.push(
+      ...[
+        SwapController.subscribe(newState => {
+          this.sourceToken = newState.sourceToken
+          this.toToken = newState.toToken
+          this.toTokenAmount = newState.toTokenAmount
+          this.priceImpact = newState.priceImpact
+          this.maxSlippage = newState.maxSlippage
+          this.sourceTokenPriceInUSD = newState.sourceTokenPriceInUSD
+          this.toTokenPriceInUSD = newState.toTokenPriceInUSD
+          this.inputError = newState.inputError
+        })
+      ]
+    )
+  }
+
+  // -- Render -------------------------------------------- //
+  public override render() {
+    const minReceivedAmount =
+      this.toTokenAmount && this.maxSlippage
+        ? NumberUtil.bigNumber(this.toTokenAmount).minus(this.maxSlippage).toString()
+        : null
+
+    if (!this.sourceToken || !this.toToken || this.inputError) {
+      return null
+    }
+
+    const toTokenSwappedAmount =
+      this.sourceTokenPriceInUSD && this.toTokenPriceInUSD
+        ? (1 / this.toTokenPriceInUSD) * this.sourceTokenPriceInUSD
+        : 0
+
+    return html`
+      <wui-flex flexDirection="column" alignItems="center" gap="01" class="details-container">
+        <wui-flex flexDirection="column">
+          <button @click=${this.toggleDetails.bind(this)}>
+            <wui-flex justifyContent="space-between" .padding=${['0', '2', '0', '2'] as const}>
+              <wui-flex justifyContent="flex-start" flexGrow="1" gap="2">
+                <wui-text variant="sm-regular" color="primary">
+                  1 ${this.sourceToken.symbol} =
+                  ${NumberUtil.formatNumberToLocalString(toTokenSwappedAmount, 3)}
+                  ${this.toToken.symbol}
+                </wui-text>
+                <wui-text variant="sm-regular" color="secondary">
+                  $${NumberUtil.formatNumberToLocalString(this.sourceTokenPriceInUSD)}
+                </wui-text>
+              </wui-flex>
+              <wui-icon name="chevronBottom"></wui-icon>
+            </wui-flex>
+          </button>
+          ${this.detailsOpen
+            ? html`
+                <wui-flex flexDirection="column" gap="2" class="details-content-container">
+                  ${this.priceImpact
+                    ? html` <wui-flex flexDirection="column" gap="2">
+                        <wui-flex
+                          justifyContent="space-between"
+                          alignItems="center"
+                          class="details-row"
+                        >
+                          <wui-flex alignItems="center" gap="2">
+                            <wui-text
+                              class="details-row-title"
+                              variant="sm-regular"
+                              color="secondary"
+                            >
+                              Price impact
+                            </wui-text>
+                            <w3m-tooltip-trigger
+                              text="Price impact reflects the change in market price due to your trade"
+                            >
+                              <wui-icon size="sm" color="default" name="info"></wui-icon>
+                            </w3m-tooltip-trigger>
+                          </wui-flex>
+                          <wui-flex>
+                            <wui-text variant="sm-regular" color="secondary">
+                              ${NumberUtil.formatNumberToLocalString(this.priceImpact, 3)}%
+                            </wui-text>
+                          </wui-flex>
+                        </wui-flex>
+                      </wui-flex>`
+                    : null}
+                  ${this.maxSlippage && this.sourceToken.symbol
+                    ? html`<wui-flex flexDirection="column" gap="2">
+                        <wui-flex
+                          justifyContent="space-between"
+                          alignItems="center"
+                          class="details-row"
+                        >
+                          <wui-flex alignItems="center" gap="2">
+                            <wui-text
+                              class="details-row-title"
+                              variant="sm-regular"
+                              color="secondary"
+                            >
+                              Max. slippage
+                            </wui-text>
+                            <w3m-tooltip-trigger
+                              text=${`Max slippage sets the minimum amount you must receive for the transaction to proceed. ${
+                                minReceivedAmount
+                                  ? `Transaction will be reversed if you receive less than ${NumberUtil.formatNumberToLocalString(
+                                      minReceivedAmount,
+                                      6
+                                    )} ${this.toToken.symbol} due to price changes.`
+                                  : ''
+                              }`}
+                            >
+                              <wui-icon size="sm" color="default" name="info"></wui-icon>
+                            </w3m-tooltip-trigger>
+                          </wui-flex>
+                          <wui-flex>
+                            <wui-text variant="sm-regular" color="secondary">
+                              ${NumberUtil.formatNumberToLocalString(this.maxSlippage, 6)}
+                              ${this.toToken.symbol} ${slippageRate}%
+                            </wui-text>
+                          </wui-flex>
+                        </wui-flex>
+                      </wui-flex>`
+                    : null}
+                  <wui-flex flexDirection="column" gap="2">
+                    <wui-flex
+                      justifyContent="space-between"
+                      alignItems="center"
+                      class="details-row provider-free-row"
+                    >
+                      <wui-flex alignItems="center" gap="2">
+                        <wui-text class="details-row-title" variant="sm-regular" color="secondary">
+                          Provider fee
+                        </wui-text>
+                      </wui-flex>
+                      <wui-flex>
+                        <wui-text variant="sm-regular" color="secondary">0.85%</wui-text>
+                      </wui-flex>
+                    </wui-flex>
+                  </wui-flex>
+                </wui-flex>
+              `
+            : null}
+        </wui-flex>
+      </wui-flex>
+    `
+  }
+
+  // -- Private ------------------------------------------- //
+  private toggleDetails() {
+    this.detailsOpen = !this.detailsOpen
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'wui-w3m-details': WuiSwapDetails
+  }
+}

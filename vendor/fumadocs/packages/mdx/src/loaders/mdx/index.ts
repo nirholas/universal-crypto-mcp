@@ -1,0 +1,122 @@
+import { fumaMatter } from '@/utils/fuma-matter';
+import type { Loader } from '@/loaders/adapter';
+import { z } from 'zod';
+import type { DocCollectionItem } from '@/config/build';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+import type { ConfigLoader } from '@/loaders/config';
+import { mdxLoaderGlob } from '..';
+
+const querySchema = z.looseObject({
+  only: z.literal(['frontmatter', 'all']).default('all'),
+  collection: z.string().optional(),
+  workspace: z.string().optional(),
+});
+
+const cacheEntry = z.object({
+  code: z.string(),
+  map: z.any().optional(),
+  hash: z.string().optional(),
+});
+
+type CacheEntry = z.infer<typeof cacheEntry>;
+
+export function createMdxLoader({ getCore }: ConfigLoader): Loader {
+  return {
+    test: mdxLoaderGlob,
+    async load({ getSource, development: isDevelopment, query, compiler, filePath }) {
+      let core = await getCore();
+      const value = await getSource();
+      const matter = fumaMatter(value);
+      const { collection: collectionName, workspace, only } = querySchema.parse(query);
+      if (workspace) {
+        core = core.getWorkspaces().get(workspace) ?? core;
+      }
+
+      let after: (() => Promise<void>) | undefined;
+
+      const { experimentalBuildCache = false } = core.getConfig().global;
+      if (!isDevelopment && experimentalBuildCache) {
+        const cacheDir = experimentalBuildCache;
+        const cacheKey = `${collectionName ?? 'global'}_${generateCacheHash(filePath)}`;
+
+        const cached = await fs
+          .readFile(path.join(cacheDir, cacheKey))
+          .then((content) => cacheEntry.parse(JSON.parse(content.toString())))
+          .catch(() => null);
+
+        if (cached && cached.hash === generateCacheHash(value)) return cached;
+        after = async () => {
+          await fs.mkdir(cacheDir, { recursive: true });
+          await fs.writeFile(
+            path.join(cacheDir, cacheKey),
+            JSON.stringify({
+              ...out,
+              hash: generateCacheHash(value),
+            } satisfies CacheEntry),
+          );
+        };
+      }
+
+      const collection = collectionName ? core.getCollection(collectionName) : undefined;
+
+      let docCollection: DocCollectionItem | undefined;
+      switch (collection?.type) {
+        case 'doc':
+          docCollection = collection;
+          break;
+        case 'docs':
+          docCollection = collection.docs;
+          break;
+      }
+
+      if (docCollection) {
+        matter.data = await core.transformFrontmatter(
+          { collection: docCollection, filePath, source: value },
+          matter.data as Record<string, unknown>,
+        );
+      }
+
+      if (only === 'frontmatter') {
+        return {
+          code: `export const frontmatter = ${JSON.stringify(matter.data)}`,
+          map: null,
+        };
+      }
+
+      const { buildMDX } = await import('@/loaders/mdx/build-mdx');
+      const compiled = await buildMDX(core, docCollection, {
+        isDevelopment,
+        // ensure the line number is correct in errors
+        source: '\n'.repeat(countLines(matter.matter)) + matter.content,
+        filePath,
+        frontmatter: matter.data as Record<string, unknown>,
+        _compiler: compiler,
+        environment: 'bundler',
+      });
+
+      const out = {
+        code: String(compiled.value),
+        map: compiled.map,
+      };
+
+      await after?.();
+      return out;
+    },
+  };
+}
+
+function generateCacheHash(input: string): string {
+  return createHash('md5').update(input).digest('hex');
+}
+
+function countLines(s: string) {
+  let num = 0;
+
+  for (const c of s) {
+    if (c === '\n') num++;
+  }
+
+  return num;
+}

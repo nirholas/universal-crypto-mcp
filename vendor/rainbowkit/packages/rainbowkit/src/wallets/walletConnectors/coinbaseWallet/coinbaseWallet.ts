@@ -1,0 +1,136 @@
+import { type CreateConnectorFn, createConnector } from 'wagmi';
+import {
+  type CoinbaseWalletParameters,
+  coinbaseWallet as coinbaseConnector,
+} from 'wagmi/connectors';
+import { isIOS } from '../../../utils/isMobile';
+import type { Wallet, WalletDetailsParams } from '../../Wallet';
+
+export interface CoinbaseWalletOptions {
+  appName: string;
+  appIcon?: string;
+}
+
+// supports preference, paymasterUrls, subAccounts
+type AcceptedCoinbaseWalletParameters = Omit<
+  CoinbaseWalletParameters<'4'>,
+  'headlessMode' | 'version' | 'appName' | 'appLogoUrl'
+>;
+
+interface CoinbaseWallet extends AcceptedCoinbaseWalletParameters {
+  (params: CoinbaseWalletOptions): Wallet;
+}
+
+/**
+ * @deprecated Use `baseAccount` instead. This wallet connector will be removed in a future version.
+ */
+export const coinbaseWallet: CoinbaseWallet = ({
+  appName,
+  appIcon,
+}: CoinbaseWalletOptions): Wallet => {
+  // Extract all AcceptedCoinbaseWalletParameters from coinbaseWallet
+  // This approach avoids type errors for properties not yet in upstream connector
+  const { preference, ...optionalConfig } = coinbaseWallet;
+
+  const getUri = (uri: string) => uri;
+  const ios = isIOS();
+
+  return {
+    id: 'coinbase',
+    name: 'Coinbase Wallet',
+    shortName: 'Coinbase',
+    rdns: 'com.coinbase.wallet',
+    iconUrl: async () => (await import('./coinbaseWallet.svg')).default,
+    iconAccent: '#2c5ff6',
+    iconBackground: '#2c5ff6',
+    // If the coinbase wallet browser extension is not installed, a popup will appear
+    // prompting the user to connect or create a wallet via passkey. This means if you either have
+    // or don't have the coinbase wallet browser extension installed it'll do some action anyways
+    installed: true,
+    downloadUrls: {
+      android: 'https://play.google.com/store/apps/details?id=org.toshi',
+      ios: 'https://apps.apple.com/us/app/coinbase-wallet-store-crypto/id1278383455',
+      mobile: 'https://coinbase.com/wallet/downloads',
+      qrCode: 'https://coinbase-wallet.onelink.me/q5Sx/fdb9b250',
+      chrome:
+        'https://chrome.google.com/webstore/detail/coinbase-wallet-extension/hnfanknocfeofbddgcijnmhnfnkdnaad',
+      browserExtension: 'https://coinbase.com/wallet',
+    },
+    ...(ios
+      ? {}
+      : {
+          qrCode: {
+            getUri,
+            instructions: {
+              learnMoreUrl:
+                'https://coinbase.com/wallet/articles/getting-started-mobile',
+              steps: [
+                {
+                  description:
+                    'wallet_connectors.coinbase.qr_code.step1.description',
+                  step: 'install',
+                  title: 'wallet_connectors.coinbase.qr_code.step1.title',
+                },
+                {
+                  description:
+                    'wallet_connectors.coinbase.qr_code.step2.description',
+                  step: 'create',
+                  title: 'wallet_connectors.coinbase.qr_code.step2.title',
+                },
+                {
+                  description:
+                    'wallet_connectors.coinbase.qr_code.step3.description',
+                  step: 'scan',
+                  title: 'wallet_connectors.coinbase.qr_code.step3.title',
+                },
+              ],
+            },
+          },
+          extension: {
+            instructions: {
+              learnMoreUrl:
+                'https://coinbase.com/wallet/articles/getting-started-extension',
+              steps: [
+                {
+                  description:
+                    'wallet_connectors.coinbase.extension.step1.description',
+                  step: 'install',
+                  title: 'wallet_connectors.coinbase.extension.step1.title',
+                },
+                {
+                  description:
+                    'wallet_connectors.coinbase.extension.step2.description',
+                  step: 'create',
+                  title: 'wallet_connectors.coinbase.extension.step2.title',
+                },
+                {
+                  description:
+                    'wallet_connectors.coinbase.extension.step3.description',
+                  step: 'refresh',
+                  title: 'wallet_connectors.coinbase.extension.step3.title',
+                },
+              ],
+            },
+          },
+        }),
+    createConnector: (walletDetails: WalletDetailsParams) => {
+      // Build preference config based on user input, always disabling telemetry
+      const preferenceConfig: CoinbaseWalletParameters<'4'>['preference'] =
+        typeof preference === 'string'
+          ? { options: preference, telemetry: false }
+          : { options: 'all', ...preference, telemetry: false };
+
+      const connector: CreateConnectorFn = coinbaseConnector({
+        appName,
+        appLogoUrl: appIcon,
+        ...optionalConfig,
+        preference: preferenceConfig,
+      });
+
+      return createConnector((config) => ({
+        ...connector(config),
+        ...walletDetails,
+      }));
+    },
+  };
+};

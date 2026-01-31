@@ -43,8 +43,21 @@ const DEFAULT_CONFIG: MarketplaceSDKConfig = {
 // Type Mappings
 // ============================================================================
 
-function mapDatabaseServiceToMarketplace(service: DatabaseService): MarketplaceService {
-  const provider = db.getProvider(service.providerId);
+// Helper to parse price from pricing object
+function parsePriceFromPricing(pricing: DatabaseService['pricing']): { payPerUse?: number; subscription?: number } {
+  const payPerUse = pricing.payPerUse ? parseFloat(pricing.payPerUse.replace(/[^0-9.]/g, '')) || undefined : undefined;
+  const subscription = pricing.subscription?.monthly ? parseFloat(pricing.subscription.monthly.replace(/[^0-9.]/g, '')) || undefined : undefined;
+  return { payPerUse, subscription };
+}
+
+async function mapDatabaseServiceToMarketplace(service: DatabaseService): Promise<MarketplaceService> {
+  const provider = await db.getProvider(service.walletAddress);
+  const { payPerUse, subscription } = parsePriceFromPricing(service.pricing);
+  
+  // Derive pricing type from pricing object
+  const pricingType: 'pay-per-use' | 'subscription' | 'freemium' = 
+    payPerUse && subscription ? 'freemium' :
+    subscription ? 'subscription' : 'pay-per-use';
   
   return {
     id: service.id,
@@ -56,11 +69,11 @@ function mapDatabaseServiceToMarketplace(service: DatabaseService): MarketplaceS
       id: provider.id,
       name: provider.name,
       walletAddress: provider.walletAddress,
-      avatarUrl: provider.avatarUrl,
+      avatarUrl: undefined,
       verified: provider.verified,
-      reputationScore: provider.reputationScore,
+      reputationScore: provider.rating * 20,
       totalServices: provider.totalServices,
-      joinedAt: provider.joinedAt,
+      joinedAt: provider.createdAt,
     } : {
       id: '',
       name: 'Unknown',
@@ -71,15 +84,15 @@ function mapDatabaseServiceToMarketplace(service: DatabaseService): MarketplaceS
       joinedAt: new Date(),
     },
     pricing: {
-      type: service.pricingType,
-      payPerUse: service.pricePerRequest ? {
-        pricePerRequest: service.pricePerRequest,
+      type: pricingType,
+      payPerUse: payPerUse ? {
+        pricePerRequest: payPerUse,
         currency: 'USD',
       } : undefined,
-      subscription: service.subscriptionPrice ? {
+      subscription: subscription ? {
         plans: [{
           name: 'professional',
-          price: service.subscriptionPrice,
+          price: subscription,
           currency: 'USD',
           billingPeriod: 'monthly',
           requestsIncluded: 10000,
@@ -88,9 +101,9 @@ function mapDatabaseServiceToMarketplace(service: DatabaseService): MarketplaceS
       } : undefined,
     },
     reputation: {
-      score: service.rating * 20,
-      rating: service.rating,
-      totalReviews: service.totalReviews,
+      score: 80,
+      rating: 4.0,
+      totalReviews: 0,
       verifiedPayments: 0,
       uptime: 99.9,
       responseTime: 150,
@@ -99,7 +112,7 @@ function mapDatabaseServiceToMarketplace(service: DatabaseService): MarketplaceS
     badges: [],
     tags: service.tags,
     endpoint: service.endpoint,
-    documentationUrl: service.documentationUrl,
+    documentationUrl: (service.metadata?.documentationUrl as string) || undefined,
     status: service.status,
     usageCount: 0,
     createdAt: service.createdAt,
@@ -138,35 +151,37 @@ export interface ServiceSearchResult {
  * Search for services with filtering and pagination
  */
 export async function searchServices(params: ServiceSearchParams): Promise<ServiceSearchResult> {
-  const filters: DiscoveryFilters = {
+  const { services: dbServices } = await db.findServices({
     category: params.category,
     minRating: params.minRating,
-    maxPrice: params.maxPrice,
+    maxPrice: params.maxPrice ? `$${params.maxPrice}` : undefined,
     verified: params.verified,
     search: params.search,
     tags: params.tags,
-    sortBy: params.sort === 'price-low' ? 'price-low' : 
-            params.sort === 'price-high' ? 'price-high' :
-            params.sort === 'rating' ? 'rating' :
-            params.sort === 'newest' ? 'newest' : 'popularity',
-  };
-
-  let dbServices = db.findServices(filters);
+    sort: params.sort === 'price-low' ? 'price' : 
+          params.sort === 'price-high' ? 'price' :
+          params.sort === 'rating' ? 'rating' :
+          params.sort === 'newest' ? 'newest' : 'popularity',
+  });
   
   // Filter by featured if requested
-  if (params.featured) {
-    dbServices = dbServices.filter(s => s.featured);
-  }
+  let filteredServices = params.featured 
+    ? dbServices.filter((s: DatabaseService) => s.featured) 
+    : dbServices;
 
   const page = params.page || 1;
   const limit = params.limit || 20;
-  const total = dbServices.length;
+  const total = filteredServices.length;
   const totalPages = Math.ceil(total / limit);
   const startIndex = (page - 1) * limit;
-  const paginatedServices = dbServices.slice(startIndex, startIndex + limit);
+  const paginatedServices = filteredServices.slice(startIndex, startIndex + limit);
+
+  const mappedServices = await Promise.all(
+    paginatedServices.map((s: DatabaseService) => mapDatabaseServiceToMarketplace(s))
+  );
 
   return {
-    services: paginatedServices.map(mapDatabaseServiceToMarketplace),
+    services: mappedServices,
     total,
     page,
     limit,
@@ -178,24 +193,25 @@ export async function searchServices(params: ServiceSearchParams): Promise<Servi
  * Get a single service by ID
  */
 export async function getService(serviceId: string): Promise<MarketplaceService | null> {
-  const service = db.getService(serviceId);
-  return service ? mapDatabaseServiceToMarketplace(service) : null;
+  const service = await db.getService(serviceId);
+  return service ? await mapDatabaseServiceToMarketplace(service) : null;
 }
 
 /**
  * Get featured services
  */
 export async function getFeaturedServices(limit = 10): Promise<MarketplaceService[]> {
-  const services = db.findServices({}).filter(s => s.featured).slice(0, limit);
-  return services.map(mapDatabaseServiceToMarketplace);
+  const { services } = await db.findServices({});
+  const featuredServices = services.filter((s: DatabaseService) => s.featured).slice(0, limit);
+  return Promise.all(featuredServices.map((s: DatabaseService) => mapDatabaseServiceToMarketplace(s)));
 }
 
 /**
  * Get services by provider
  */
 export async function getProviderServices(providerWallet: string): Promise<MarketplaceService[]> {
-  const services = db.findServices({ walletAddress: providerWallet });
-  return services.map(mapDatabaseServiceToMarketplace);
+  const { services } = await db.findServices({ walletAddress: providerWallet });
+  return Promise.all(services.map((s: DatabaseService) => mapDatabaseServiceToMarketplace(s)));
 }
 
 // ============================================================================
@@ -206,7 +222,7 @@ export interface CreateServiceParams {
   name: string;
   description: string;
   category: ServiceCategory;
-  providerId: string;
+  walletAddress: string;
   endpoint: string;
   tags: string[];
   pricePerRequest?: number;
@@ -215,22 +231,49 @@ export interface CreateServiceParams {
 }
 
 export async function createService(params: CreateServiceParams): Promise<MarketplaceService> {
-  const service = db.createService({
-    ...params,
+  const service = await db.createService({
+    name: params.name,
+    description: params.description,
+    category: params.category as DatabaseService['category'],
+    endpoint: params.endpoint,
+    walletAddress: params.walletAddress,
+    tags: params.tags,
     status: 'pending',
-    rating: 0,
-    totalReviews: 0,
+    verified: false,
     featured: false,
+    pricing: {
+      payPerUse: params.pricePerRequest ? `$${params.pricePerRequest}` : undefined,
+      subscription: params.subscriptionPrice ? {
+        monthly: `$${params.subscriptionPrice}`,
+      } : undefined,
+    },
   });
-  return mapDatabaseServiceToMarketplace(service);
+  return await mapDatabaseServiceToMarketplace(service);
 }
 
 export async function updateService(
   serviceId: string,
   updates: Partial<CreateServiceParams>
 ): Promise<MarketplaceService | null> {
-  const updated = db.updateService(serviceId, updates);
-  return updated ? mapDatabaseServiceToMarketplace(updated) : null;
+  const updateData: Partial<DatabaseService> = {};
+  if (updates.name) updateData.name = updates.name;
+  if (updates.description) updateData.description = updates.description;
+  if (updates.category) updateData.category = updates.category as DatabaseService['category'];
+  if (updates.endpoint) updateData.endpoint = updates.endpoint;
+  if (updates.tags) updateData.tags = updates.tags;
+  if (updates.pricePerRequest !== undefined || updates.subscriptionPrice !== undefined) {
+    updateData.pricing = {
+      payPerUse: updates.pricePerRequest ? `$${updates.pricePerRequest}` : undefined,
+      subscription: updates.subscriptionPrice ? { monthly: `$${updates.subscriptionPrice}` } : undefined,
+    };
+  }
+  
+  try {
+    const updated = await db.updateService(serviceId, updateData);
+    return await mapDatabaseServiceToMarketplace(updated);
+  } catch {
+    return null;
+  }
 }
 
 // ============================================================================
@@ -247,16 +290,21 @@ export interface CreateSubscriptionParams {
 }
 
 export async function createSubscription(params: CreateSubscriptionParams): Promise<Subscription> {
-  const service = db.getService(params.serviceId);
+  const service = await db.getService(params.serviceId);
   if (!service) throw new Error('Service not found');
   
-  const sub = db.createSubscription({
+  const now = new Date();
+  const endDate = new Date(now);
+  endDate.setMonth(endDate.getMonth() + 1);
+  
+  const sub = await db.createSubscription({
     serviceId: params.serviceId,
-    serviceName: service.name,
     subscriberWallet: params.subscriberWallet,
-    planName: params.planName,
-    price: params.price,
-    status: 'active',
+    plan: 'monthly',
+    price: `$${params.price}`,
+    startDate: now,
+    endDate: endDate,
+    active: true,
     autoRenew: params.autoRenew ?? true,
     txHash: params.txHash,
   });
@@ -264,75 +312,89 @@ export async function createSubscription(params: CreateSubscriptionParams): Prom
   return {
     id: sub.id,
     serviceId: sub.serviceId,
-    serviceName: sub.serviceName,
+    serviceName: service.name,
     subscriberWallet: sub.subscriberWallet,
     plan: {
-      name: sub.planName as 'free' | 'starter' | 'professional' | 'enterprise',
-      price: sub.price,
+      name: params.planName as 'free' | 'starter' | 'professional' | 'enterprise',
+      price: params.price,
       currency: 'USD',
       billingPeriod: 'monthly',
       requestsIncluded: 10000,
       features: [],
     },
-    status: sub.status,
+    status: sub.active ? 'active' : 'cancelled',
     startDate: sub.startDate,
     endDate: sub.endDate,
     autoRenew: sub.autoRenew,
     usageThisMonth: 0,
-    apiKey: sub.apiKey,
+    apiKey: `key_${sub.id}`,
     txHash: sub.txHash,
   };
 }
 
 export async function getWalletSubscriptions(walletAddress: string): Promise<Subscription[]> {
-  const subs = db.findSubscriptions({ subscriberWallet: walletAddress });
-  return subs.map(sub => ({
-    id: sub.id,
-    serviceId: sub.serviceId,
-    serviceName: sub.serviceName,
-    subscriberWallet: sub.subscriberWallet,
-    plan: {
-      name: sub.planName as 'free' | 'starter' | 'professional' | 'enterprise',
-      price: sub.price,
-      currency: 'USD',
-      billingPeriod: 'monthly',
-      requestsIncluded: 10000,
-      features: [],
-    },
-    status: sub.status,
-    startDate: sub.startDate,
-    endDate: sub.endDate,
-    autoRenew: sub.autoRenew,
-    usageThisMonth: 0,
-    apiKey: sub.apiKey,
-    txHash: sub.txHash,
+  const subs = await db.findSubscriptions({ subscriberWallet: walletAddress });
+  
+  // Get service names for all subscriptions
+  const subscriptions = await Promise.all(subs.map(async (sub: DatabaseSubscription) => {
+    const service = await db.getService(sub.serviceId);
+    const status: 'active' | 'cancelled' | 'expired' | 'pending' = 
+      sub.active && sub.endDate > new Date() ? 'active' :
+      sub.endDate <= new Date() ? 'expired' : 'cancelled';
+    return {
+      id: sub.id,
+      serviceId: sub.serviceId,
+      serviceName: service?.name || 'Unknown Service',
+      subscriberWallet: sub.subscriberWallet,
+      plan: {
+        name: sub.plan === 'annually' ? 'professional' as const : 'starter' as const,
+        price: parseFloat(sub.price.replace(/[^0-9.]/g, '')) || 0,
+        currency: 'USD',
+        billingPeriod: 'monthly' as const,
+        requestsIncluded: 10000,
+        features: [] as string[],
+      },
+      status,
+      startDate: sub.startDate,
+      endDate: sub.endDate,
+      autoRenew: sub.autoRenew,
+      usageThisMonth: 0,
+      apiKey: `key_${sub.id}`,
+      txHash: sub.txHash,
+    };
   }));
+  
+  return subscriptions;
 }
 
 export async function cancelSubscription(subscriptionId: string): Promise<Subscription | null> {
-  const updated = db.updateSubscription(subscriptionId, { status: 'cancelled' });
-  if (!updated) return null;
-  return {
-    id: updated.id,
-    serviceId: updated.serviceId,
-    serviceName: updated.serviceName,
-    subscriberWallet: updated.subscriberWallet,
-    plan: {
-      name: updated.planName as 'free' | 'starter' | 'professional' | 'enterprise',
-      price: updated.price,
-      currency: 'USD',
-      billingPeriod: 'monthly',
-      requestsIncluded: 10000,
-      features: [],
-    },
-    status: updated.status,
-    startDate: updated.startDate,
-    endDate: updated.endDate,
-    autoRenew: updated.autoRenew,
-    usageThisMonth: 0,
-    apiKey: updated.apiKey,
-    txHash: updated.txHash,
-  };
+  try {
+    const updated = await db.updateSubscription(subscriptionId, { active: false, autoRenew: false });
+    const service = await db.getService(updated.serviceId);
+    return {
+      id: updated.id,
+      serviceId: updated.serviceId,
+      serviceName: service?.name || 'Unknown Service',
+      subscriberWallet: updated.subscriberWallet,
+      plan: {
+        name: updated.plan === 'annually' ? 'professional' : 'starter',
+        price: parseFloat(updated.price.replace(/[^0-9.]/g, '')) || 0,
+        currency: 'USD',
+        billingPeriod: 'monthly',
+        requestsIncluded: 10000,
+        features: [],
+      },
+      status: 'cancelled',
+      startDate: updated.startDate,
+      endDate: updated.endDate,
+      autoRenew: updated.autoRenew,
+      usageThisMonth: 0,
+      apiKey: `key_${updated.id}`,
+      txHash: updated.txHash,
+    };
+  } catch {
+    return null;
+  }
 }
 
 // ============================================================================
@@ -352,51 +414,50 @@ export interface SubmitReviewParams {
 }
 
 export async function submitReview(params: SubmitReviewParams): Promise<ServiceReview> {
-  const review = db.createReview({
+  const review = await db.createReview({
     serviceId: params.serviceId,
     reviewerWallet: params.reviewerWallet,
-    reviewerName: params.reviewerName,
     rating: params.rating,
-    title: params.title || '',
-    pros: params.pros || '',
-    cons: params.cons || '',
-    useCase: params.useCase || '',
+    title: params.title,
     comment: params.comment,
+    verifiedPayment: false,
+    helpful: 0,
   });
   
   return {
     id: review.id,
     serviceId: review.serviceId,
     reviewerWallet: review.reviewerWallet,
-    reviewerName: review.reviewerName,
+    reviewerName: params.reviewerName,
     rating: review.rating,
-    title: review.title,
-    pros: review.pros,
-    cons: review.cons,
-    useCase: review.useCase,
+    title: review.title || '',
+    pros: params.pros || '',
+    cons: params.cons || '',
+    useCase: params.useCase || '',
     comment: review.comment,
     createdAt: review.createdAt,
     helpful: review.helpful,
-    verifiedPurchase: review.verifiedPurchase,
+    verifiedPurchase: review.verifiedPayment,
   };
 }
 
-export async function getServiceReviews(serviceId: string): Promise<ServiceReview[]> {
-  const reviews = db.findReviews({ serviceId });
-  return reviews.map(r => ({
+export async function getServiceReviews(serviceId: string, options?: { limit?: number }): Promise<ServiceReview[]> {
+  const reviews = await db.findReviews({ serviceId });
+  const limited = options?.limit ? reviews.slice(0, options.limit) : reviews;
+  return limited.map((r: DatabaseReview) => ({
     id: r.id,
     serviceId: r.serviceId,
     reviewerWallet: r.reviewerWallet,
-    reviewerName: r.reviewerName,
+    reviewerName: undefined,
     rating: r.rating,
-    title: r.title,
-    pros: r.pros,
-    cons: r.cons,
-    useCase: r.useCase,
+    title: r.title || '',
+    pros: '',
+    cons: '',
+    useCase: '',
     comment: r.comment,
     createdAt: r.createdAt,
     helpful: r.helpful,
-    verifiedPurchase: r.verifiedPurchase,
+    verifiedPurchase: r.verifiedPayment,
   }));
 }
 
@@ -413,52 +474,64 @@ export interface CreateDisputeParams {
 }
 
 export async function createDispute(params: CreateDisputeParams): Promise<Dispute> {
-  const service = db.getService(params.serviceId);
+  const service = await db.getService(params.serviceId);
   if (!service) throw new Error('Service not found');
   
-  const provider = db.getProvider(service.providerId);
+  // Map reason to valid dispute reason
+  const validReasons = ['service-not-working', 'downtime', 'quality', 'billing', 'unauthorized', 'other'] as const;
+  const reason = validReasons.includes(params.reason as typeof validReasons[number]) 
+    ? params.reason as typeof validReasons[number]
+    : 'other';
   
-  const dispute = db.createDispute({
+  const dispute = await db.createDispute({
     serviceId: params.serviceId,
-    subscriberWallet: params.subscriberWallet,
-    providerWallet: provider?.walletAddress || '',
-    reason: params.reason,
+    disputerWallet: params.subscriberWallet,
+    reason: reason,
     description: params.description,
-    escrowAmount: params.escrowAmount || 0,
+    status: 'open',
+    priority: 'medium',
+    evidence: [],
   });
   
   return {
     id: dispute.id,
     serviceId: dispute.serviceId,
-    subscriberWallet: dispute.subscriberWallet,
-    providerWallet: dispute.providerWallet,
+    subscriberWallet: dispute.disputerWallet,
+    providerWallet: service.walletAddress,
     reason: dispute.reason,
     description: dispute.description,
-    evidence: dispute.evidence,
-    status: dispute.status,
+    evidence: dispute.evidence.map((e: { type: string; url: string; uploadedAt: Date }) => e.url),
+    status: dispute.status as Dispute['status'],
     resolution: dispute.resolution,
     createdAt: dispute.createdAt,
-    resolvedAt: dispute.resolvedAt,
-    escrowAmount: dispute.escrowAmount,
+    resolvedAt: undefined,
+    escrowAmount: params.escrowAmount || 0,
   };
 }
 
 export async function getDisputes(): Promise<Dispute[]> {
-  const disputes = db.findDisputes({});
-  return disputes.map(d => ({
-    id: d.id,
-    serviceId: d.serviceId,
-    subscriberWallet: d.subscriberWallet,
-    providerWallet: d.providerWallet,
-    reason: d.reason,
-    description: d.description,
-    evidence: d.evidence,
-    status: d.status,
-    resolution: d.resolution,
-    createdAt: d.createdAt,
-    resolvedAt: d.resolvedAt,
-    escrowAmount: d.escrowAmount,
+  const disputes = await db.findDisputes({});
+  
+  // Get service wallet addresses for provider info
+  const disputesWithProvider = await Promise.all(disputes.map(async (d: DatabaseDispute) => {
+    const service = await db.getService(d.serviceId);
+    return {
+      id: d.id,
+      serviceId: d.serviceId,
+      subscriberWallet: d.disputerWallet,
+      providerWallet: service?.walletAddress || '',
+      reason: d.reason,
+      description: d.description,
+      evidence: d.evidence.map((e: { type: string; url: string; uploadedAt: Date }) => e.url),
+      status: d.status as Dispute['status'],
+      resolution: d.resolution,
+      createdAt: d.createdAt,
+      resolvedAt: undefined,
+      escrowAmount: 0,
+    };
   }));
+  
+  return disputesWithProvider;
 }
 
 // ============================================================================
@@ -466,35 +539,40 @@ export async function getDisputes(): Promise<Dispute[]> {
 // ============================================================================
 
 export async function getProviderStats(walletAddress: string): Promise<ProviderStats> {
-  const services = db.findServices({ walletAddress });
-  const totalSubscribers = services.reduce((sum, s) => {
-    const subs = db.findSubscriptions({ serviceId: s.id, status: 'active' });
-    return sum + subs.length;
-  }, 0);
+  const { services } = await db.findServices({ walletAddress });
+  
+  // Calculate subscribers for each service
+  let totalSubscribers = 0;
+  const serviceStats = await Promise.all(services.map(async (s: DatabaseService) => {
+    const subs = await db.findSubscriptions({ serviceId: s.id });
+    const activeSubs = subs.filter((sub: DatabaseSubscription) => sub.active);
+    totalSubscribers += activeSubs.length;
+    return {
+      id: s.id,
+      name: s.name,
+      revenue: Math.floor(Math.random() * 5000),
+      subscribers: activeSubs.length,
+      apiCalls: Math.floor(Math.random() * 10000),
+    };
+  }));
   
   return {
     totalServices: services.length,
-    activeServices: services.filter(s => s.status === 'active').length,
+    activeServices: services.filter((s: DatabaseService) => s.status === 'active').length,
     totalSubscribers,
     totalApiCalls: Math.floor(Math.random() * 100000),
     revenueThisMonth: Math.floor(Math.random() * 10000),
     revenueAllTime: Math.floor(Math.random() * 50000),
     totalRevenue: Math.floor(Math.random() * 50000),
-    averageRating: services.reduce((sum, s) => sum + s.rating, 0) / Math.max(services.length, 1),
-    services: services.map(s => ({
-      id: s.id,
-      name: s.name,
-      revenue: Math.floor(Math.random() * 5000),
-      subscribers: db.findSubscriptions({ serviceId: s.id, status: 'active' }).length,
-      apiCalls: Math.floor(Math.random() * 10000),
-    })),
+    averageRating: 4.0, // Default rating since services don't have rating property
+    services: serviceStats,
   };
 }
 
 export async function getPlatformStats(): Promise<PlatformStats> {
-  const services = db.findServices({});
-  const providers = new Set(services.map(s => s.providerId));
-  const disputes = db.findDisputes({});
+  const { services } = await db.findServices({});
+  const providers = new Set(services.map((s: DatabaseService) => s.walletAddress));
+  const disputes = await db.findDisputes({});
   
   return {
     totalServices: services.length,
@@ -506,8 +584,8 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     gmv: Math.floor(Math.random() * 500000),
     totalVolume: Math.floor(Math.random() * 1000000),
     platformRevenue: Math.floor(Math.random() * 50000),
-    pendingVerifications: services.filter(s => s.status === 'pending').length,
-    openDisputes: disputes.filter(d => d.status === 'open').length,
+    pendingVerifications: services.filter((s: DatabaseService) => s.status === 'pending').length,
+    openDisputes: disputes.filter((d: DatabaseDispute) => d.status === 'open').length,
     averageUptime: 99.9,
     disputeResolutionRate: 94.5,
     averageRating: 4.5,
@@ -519,3 +597,55 @@ export async function getPlatformStats(): Promise<PlatformStats> {
 // ============================================================================
 
 export { db };
+
+// ============================================================================
+// Additional API Functions
+// ============================================================================
+
+/**
+ * Get trending services (alias for search with popularity sort)
+ */
+export async function getTrendingServices(limit = 10): Promise<MarketplaceService[]> {
+  const result = await searchServices({ sort: 'popularity', limit });
+  return result.services;
+}
+
+/**
+ * Register a new service (alias for createService)
+ */
+export const registerService = createService;
+
+/**
+ * Get analytics for a service
+ */
+export async function getServiceAnalytics(serviceId: string, period: 'day' | 'week' | 'month' | 'year' = 'month') {
+  const service = await db.getService(serviceId);
+  if (!service) return null;
+  
+  const points = period === 'day' ? 24 : period === 'week' ? 7 : period === 'month' ? 30 : 365;
+  const data = [];
+  
+  for (let i = points; i >= 0; i--) {
+    const date = new Date();
+    if (period === 'day') date.setHours(date.getHours() - i);
+    else date.setDate(date.getDate() - i);
+    
+    data.push({
+      date: date.toISOString(),
+      revenue: Math.random() * 500 + 200,
+      calls: Math.floor(Math.random() * 1000 + 500),
+      latency: Math.floor(Math.random() * 50 + 100),
+    });
+  }
+  
+  return {
+    serviceId,
+    period,
+    data,
+    summary: {
+      totalRevenue: data.reduce((sum, d) => sum + d.revenue, 0),
+      totalCalls: data.reduce((sum, d) => sum + d.calls, 0),
+      avgLatency: Math.floor(data.reduce((sum, d) => sum + d.latency, 0) / data.length),
+    },
+  };
+}

@@ -1,0 +1,494 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"You are CEO. You''re an long time
+      CEO of a content creation agency with a Senior Writer on the team. You''re now
+      working on a new project and want to make sure the content produced is amazing.\nYour
+      personal goal is: Make sure the writers in your company produce amazing content."},{"role":"user","content":"\nCurrent
+      Task: Produce and amazing 1 paragraph draft of an article about AI Agents.\n\nThis
+      is the expected criteria for your final answer: A 4 paragraph article about
+      AI.\nyou MUST return the actual complete content as the final answer, not a
+      summary.\n\nThis is VERY important to you, your job depends on it!"}],"model":"gpt-4.1-mini","tool_choice":"auto","tools":[{"type":"function","function":{"name":"Delegate_work_to_coworker","description":"Delegate
+      a specific task to one of the following coworkers: Senior Writer\nThe input
+      to this tool should be the coworker, the task you want them to do, and ALL necessary
+      context to execute the task, they know nothing about the task, so share absolutely
+      everything you know, don''t reference things but instead explain them.","parameters":{"properties":{"task":{"description":"The
+      task to delegate","title":"Task","type":"string"},"context":{"description":"The
+      context for the task","title":"Context","type":"string"},"coworker":{"description":"The
+      role/name of the coworker to delegate to","title":"Coworker","type":"string"}},"required":["task","context","coworker"],"type":"object"}}},{"type":"function","function":{"name":"Ask_question_to_coworker","description":"Ask
+      a specific question to one of the following coworkers: Senior Writer\nThe input
+      to this tool should be the coworker, the question you have for them, and ALL
+      necessary context to ask the question properly, they know nothing about the
+      question, so share absolutely everything you know, don''t reference things but
+      instead explain them.","parameters":{"properties":{"question":{"description":"The
+      question to ask","title":"Question","type":"string"},"context":{"description":"The
+      context for the question","title":"Context","type":"string"},"coworker":{"description":"The
+      role/name of the coworker to ask","title":"Coworker","type":"string"}},"required":["question","context","coworker"],"type":"object"}}}]}'
+    headers:
+      User-Agent:
+      - X-USER-AGENT-XXX
+      accept:
+      - application/json
+      accept-encoding:
+      - ACCEPT-ENCODING-XXX
+      authorization:
+      - AUTHORIZATION-XXX
+      connection:
+      - keep-alive
+      content-length:
+      - '2270'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      x-stainless-arch:
+      - X-STAINLESS-ARCH-XXX
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - X-STAINLESS-OS-XXX
+      x-stainless-package-version:
+      - 1.83.0
+      x-stainless-read-timeout:
+      - X-STAINLESS-READ-TIMEOUT-XXX
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-D0uJLGWT3ELLQ84FugHD30N0rap1d\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1769108831,\n  \"model\": \"gpt-4.1-mini-2025-04-14\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": null,\n        \"tool_calls\": [\n          {\n
+        \           \"id\": \"call_j5vDsg6M6N1UbDUrQTZnwKia\",\n            \"type\":
+        \"function\",\n            \"function\": {\n              \"name\": \"Delegate_work_to_coworker\",\n
+        \             \"arguments\": \"{\\\"coworker\\\":\\\"Senior Writer\\\",\\\"task\\\":\\\"Produce
+        a 4-paragraph article about AI focusing on AI Agents, starting with a 1-paragraph
+        draft. The article should be engaging, informative, and demonstrate a deep
+        understanding of the topic, highlighting how AI Agents function, their applications,
+        benefits and potential future developments.\\\",\\\"context\\\":\\\"The task
+        is to produce an amazing 4-paragraph article about AI with a focus on AI Agents.
+        The first deliverable is a 1-paragraph draft that sets the tone for the full
+        article, emphasizing the significance and capabilities of AI Agents in modern
+        technology. The final article should be coherent, seamlessly cover the topic,
+        and be suitable for publication on a technology-focused platform.\\\"}\"\n
+        \           }\n          }\n        ],\n        \"refusal\": null,\n        \"annotations\":
+        []\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"tool_calls\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 399,\n    \"completion_tokens\":
+        159,\n    \"total_tokens\": 558,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_376a7ccef1\"\n}\n"
+    headers:
+      CF-RAY:
+      - CF-RAY-XXX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Jan 2026 19:07:14 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - SET-COOKIE-XXX
+      Strict-Transport-Security:
+      - STS-XXX
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - X-CONTENT-TYPE-XXX
+      access-control-expose-headers:
+      - ACCESS-CONTROL-XXX
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - OPENAI-ORG-XXX
+      openai-processing-ms:
+      - '2967'
+      openai-project:
+      - OPENAI-PROJECT-XXX
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2989'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - X-RATELIMIT-LIMIT-REQUESTS-XXX
+      x-ratelimit-limit-tokens:
+      - X-RATELIMIT-LIMIT-TOKENS-XXX
+      x-ratelimit-remaining-requests:
+      - X-RATELIMIT-REMAINING-REQUESTS-XXX
+      x-ratelimit-remaining-tokens:
+      - X-RATELIMIT-REMAINING-TOKENS-XXX
+      x-ratelimit-reset-requests:
+      - X-RATELIMIT-RESET-REQUESTS-XXX
+      x-ratelimit-reset-tokens:
+      - X-RATELIMIT-RESET-TOKENS-XXX
+      x-request-id:
+      - X-REQUEST-ID-XXX
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"You are Senior Writer. You''re
+      a senior writer, specialized in technology, software engineering, AI and startups.
+      You work as a freelancer and are now working on writing content for a new customer.\nYour
+      personal goal is: Write the best content about AI and AI agents.\nTo give my
+      best complete final answer to the task respond using the exact following format:\n\nThought:
+      I now can give a great answer\nFinal Answer: Your final answer must be the great
+      and the most complete as possible, it must be outcome described.\n\nI MUST use
+      these formats, my job depends on it!"},{"role":"user","content":"\nCurrent Task:
+      Produce a 4-paragraph article about AI focusing on AI Agents, starting with
+      a 1-paragraph draft. The article should be engaging, informative, and demonstrate
+      a deep understanding of the topic, highlighting how AI Agents function, their
+      applications, benefits and potential future developments.\n\nThis is the expected
+      criteria for your final answer: Your best answer to your coworker asking you
+      this, accounting for the context shared.\nyou MUST return the actual complete
+      content as the final answer, not a summary.\n\nThis is the context you''re working
+      with:\nThe task is to produce an amazing 4-paragraph article about AI with a
+      focus on AI Agents. The first deliverable is a 1-paragraph draft that sets the
+      tone for the full article, emphasizing the significance and capabilities of
+      AI Agents in modern technology. The final article should be coherent, seamlessly
+      cover the topic, and be suitable for publication on a technology-focused platform.\n\nBegin!
+      This is VERY important to you, use the tools available and give your best Final
+      Answer, your job depends on it!\n\nThought:"}],"model":"gpt-4.1-mini"}'
+    headers:
+      User-Agent:
+      - X-USER-AGENT-XXX
+      accept:
+      - application/json
+      accept-encoding:
+      - ACCEPT-ENCODING-XXX
+      authorization:
+      - AUTHORIZATION-XXX
+      connection:
+      - keep-alive
+      content-length:
+      - '1766'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      x-stainless-arch:
+      - X-STAINLESS-ARCH-XXX
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - X-STAINLESS-OS-XXX
+      x-stainless-package-version:
+      - 1.83.0
+      x-stainless-read-timeout:
+      - X-STAINLESS-READ-TIMEOUT-XXX
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-D0uJOvgyklVDFe1l4S0ty6oMuhfak\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1769108834,\n  \"model\": \"gpt-4.1-mini-2025-04-14\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Thought: I now can give a great answer\\nFinal
+        Answer: \\n\\nArtificial Intelligence (AI) agents have emerged as a transformative
+        force in modern technology, redefining how machines interact with the world
+        and assist humans in complex tasks. These autonomous systems are designed
+        to perceive their environment, make decisions, and execute actions to achieve
+        specific goals, often adapting in real-time to changing conditions. Unlike
+        traditional software that follows pre-programmed instructions without deviation,
+        AI agents exhibit a level of intelligence akin to decision-making entities,
+        leveraging advanced algorithms in machine learning, natural language processing,
+        and computer vision. From virtual assistants like Siri and Alexa to sophisticated
+        industrial robots and predictive analytics systems, AI agents are not only
+        enhancing efficiency but also opening new frontiers in automation and human-computer
+        interaction. Their capacity to learn, reason, and self-improve positions them
+        as pivotal enablers in sectors ranging from healthcare and finance to autonomous
+        vehicles and smart cities, heralding a future where intelligent agents will
+        seamlessly augment daily life and enterprise operations. This article delves
+        into the inner workings of AI agents, explores their diverse applications,
+        underscores their benefits, and envisions their evolving role in shaping the
+        technological landscape.\",\n        \"refusal\": null,\n        \"annotations\":
+        []\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 340,\n    \"completion_tokens\":
+        233,\n    \"total_tokens\": 573,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_2191215734\"\n}\n"
+    headers:
+      CF-RAY:
+      - CF-RAY-XXX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Jan 2026 19:07:18 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - SET-COOKIE-XXX
+      Strict-Transport-Security:
+      - STS-XXX
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - X-CONTENT-TYPE-XXX
+      access-control-expose-headers:
+      - ACCESS-CONTROL-XXX
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - OPENAI-ORG-XXX
+      openai-processing-ms:
+      - '3760'
+      openai-project:
+      - OPENAI-PROJECT-XXX
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '3776'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - X-RATELIMIT-LIMIT-REQUESTS-XXX
+      x-ratelimit-limit-tokens:
+      - X-RATELIMIT-LIMIT-TOKENS-XXX
+      x-ratelimit-remaining-requests:
+      - X-RATELIMIT-REMAINING-REQUESTS-XXX
+      x-ratelimit-remaining-tokens:
+      - X-RATELIMIT-REMAINING-TOKENS-XXX
+      x-ratelimit-reset-requests:
+      - X-RATELIMIT-RESET-REQUESTS-XXX
+      x-ratelimit-reset-tokens:
+      - X-RATELIMIT-RESET-TOKENS-XXX
+      x-request-id:
+      - X-REQUEST-ID-XXX
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"You are CEO. You''re an long time
+      CEO of a content creation agency with a Senior Writer on the team. You''re now
+      working on a new project and want to make sure the content produced is amazing.\nYour
+      personal goal is: Make sure the writers in your company produce amazing content."},{"role":"user","content":"\nCurrent
+      Task: Produce and amazing 1 paragraph draft of an article about AI Agents.\n\nThis
+      is the expected criteria for your final answer: A 4 paragraph article about
+      AI.\nyou MUST return the actual complete content as the final answer, not a
+      summary.\n\nThis is VERY important to you, your job depends on it!"},{"role":"assistant","content":null,"tool_calls":[{"id":"call_j5vDsg6M6N1UbDUrQTZnwKia","type":"function","function":{"name":"Delegate_work_to_coworker","arguments":"{\"coworker\":\"Senior
+      Writer\",\"task\":\"Produce a 4-paragraph article about AI focusing on AI Agents,
+      starting with a 1-paragraph draft. The article should be engaging, informative,
+      and demonstrate a deep understanding of the topic, highlighting how AI Agents
+      function, their applications, benefits and potential future developments.\",\"context\":\"The
+      task is to produce an amazing 4-paragraph article about AI with a focus on AI
+      Agents. The first deliverable is a 1-paragraph draft that sets the tone for
+      the full article, emphasizing the significance and capabilities of AI Agents
+      in modern technology. The final article should be coherent, seamlessly cover
+      the topic, and be suitable for publication on a technology-focused platform.\"}"}}]},{"role":"tool","tool_call_id":"call_j5vDsg6M6N1UbDUrQTZnwKia","content":"Artificial
+      Intelligence (AI) agents have emerged as a transformative force in modern technology,
+      redefining how machines interact with the world and assist humans in complex
+      tasks. These autonomous systems are designed to perceive their environment,
+      make decisions, and execute actions to achieve specific goals, often adapting
+      in real-time to changing conditions. Unlike traditional software that follows
+      pre-programmed instructions without deviation, AI agents exhibit a level of
+      intelligence akin to decision-making entities, leveraging advanced algorithms
+      in machine learning, natural language processing, and computer vision. From
+      virtual assistants like Siri and Alexa to sophisticated industrial robots and
+      predictive analytics systems, AI agents are not only enhancing efficiency but
+      also opening new frontiers in automation and human-computer interaction. Their
+      capacity to learn, reason, and self-improve positions them as pivotal enablers
+      in sectors ranging from healthcare and finance to autonomous vehicles and smart
+      cities, heralding a future where intelligent agents will seamlessly augment
+      daily life and enterprise operations. This article delves into the inner workings
+      of AI agents, explores their diverse applications, underscores their benefits,
+      and envisions their evolving role in shaping the technological landscape."},{"role":"user","content":"Analyze
+      the tool result. If requirements are met, provide the Final Answer. Otherwise,
+      call the next tool. Deliver only the answer without meta-commentary."}],"model":"gpt-4.1-mini","tool_choice":"auto","tools":[{"type":"function","function":{"name":"Delegate_work_to_coworker","description":"Delegate
+      a specific task to one of the following coworkers: Senior Writer\nThe input
+      to this tool should be the coworker, the task you want them to do, and ALL necessary
+      context to execute the task, they know nothing about the task, so share absolutely
+      everything you know, don''t reference things but instead explain them.","parameters":{"properties":{"task":{"description":"The
+      task to delegate","title":"Task","type":"string"},"context":{"description":"The
+      context for the task","title":"Context","type":"string"},"coworker":{"description":"The
+      role/name of the coworker to delegate to","title":"Coworker","type":"string"}},"required":["task","context","coworker"],"type":"object"}}},{"type":"function","function":{"name":"Ask_question_to_coworker","description":"Ask
+      a specific question to one of the following coworkers: Senior Writer\nThe input
+      to this tool should be the coworker, the question you have for them, and ALL
+      necessary context to ask the question properly, they know nothing about the
+      question, so share absolutely everything you know, don''t reference things but
+      instead explain them.","parameters":{"properties":{"question":{"description":"The
+      question to ask","title":"Question","type":"string"},"context":{"description":"The
+      context for the question","title":"Context","type":"string"},"coworker":{"description":"The
+      role/name of the coworker to ask","title":"Coworker","type":"string"}},"required":["question","context","coworker"],"type":"object"}}}]}'
+    headers:
+      User-Agent:
+      - X-USER-AGENT-XXX
+      accept:
+      - application/json
+      accept-encoding:
+      - ACCEPT-ENCODING-XXX
+      authorization:
+      - AUTHORIZATION-XXX
+      connection:
+      - keep-alive
+      content-length:
+      - '4785'
+      content-type:
+      - application/json
+      cookie:
+      - COOKIE-XXX
+      host:
+      - api.openai.com
+      x-stainless-arch:
+      - X-STAINLESS-ARCH-XXX
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - X-STAINLESS-OS-XXX
+      x-stainless-package-version:
+      - 1.83.0
+      x-stainless-read-timeout:
+      - X-STAINLESS-READ-TIMEOUT-XXX
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-D0uJShynrNj5AQsUdLGMcR3mi57nv\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1769108838,\n  \"model\": \"gpt-4.1-mini-2025-04-14\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Artificial Intelligence (AI) agents
+        have emerged as a transformative force in modern technology, redefining how
+        machines interact with the world and assist humans in complex tasks. These
+        autonomous systems are designed to perceive their environment, make decisions,
+        and execute actions to achieve specific goals, often adapting in real-time
+        to changing conditions. Unlike traditional software that follows pre-programmed
+        instructions without deviation, AI agents exhibit a level of intelligence
+        akin to decision-making entities, leveraging advanced algorithms in machine
+        learning, natural language processing, and computer vision. From virtual assistants
+        like Siri and Alexa to sophisticated industrial robots and predictive analytics
+        systems, AI agents are not only enhancing efficiency but also opening new
+        frontiers in automation and human-computer interaction. Their capacity to
+        learn, reason, and self-improve positions them as pivotal enablers in sectors
+        ranging from healthcare and finance to autonomous vehicles and smart cities,
+        heralding a future where intelligent agents will seamlessly augment daily
+        life and enterprise operations. This article delves into the inner workings
+        of AI agents, explores their diverse applications, underscores their benefits,
+        and envisions their evolving role in shaping the technological landscape.
+        \\n\\nAt the core, AI agents function by integrating sensory data with algorithms
+        that mimic human cognition, enabling them to interpret complex inputs and
+        make autonomous decisions. These agents operate through a cycle of perception,
+        reasoning, and action: perceiving their environment via sensors or input data;
+        processing this information through models that predict outcomes and strategize
+        moves; and finally, executing actions that influence or interact with the
+        external world. Machine learning plays a critical role, allowing agents to
+        improve their performance based on experience without explicit reprogramming.
+        Reinforcement learning, a subset of machine learning, teaches agents to learn
+        optimal behaviors by rewarding desirable outcomes. This intelligent adaptability
+        makes AI agents valuable in dynamic and unpredictable environments, where
+        rules and conditions continuously evolve.\\n\\nThe applications of AI agents
+        are vast and growing rapidly, spanning various industries and daily life realms.
+        In healthcare, AI agents support diagnostics, personalized treatment plans,
+        and patient monitoring, aiding doctors with data-driven insights. In finance,
+        they power algorithmic trading, fraud detection, and customer service chatbots.
+        Autonomous vehicles rely heavily on AI agents to navigate, interpret traffic
+        signals, and ensure passenger safety. Smart homes use these agents for energy
+        management and security, while industries deploy them in robotics for assembly
+        lines and quality control. These agents' ability to automate routine and complex
+        tasks leads to significant cost savings, higher precision, and scalability,
+        improving overall productivity and opening innovative business models.\\n\\nLooking
+        ahead, the evolution of AI agents promises even more profound impacts, with
+        advances in explainability, ethics, and collaboration between human and machine
+        intelligence. Future agents will likely be more transparent, offering clearer
+        reasoning for their decisions, which builds trust and accountability. Enhanced
+        multi-agent systems could coordinate complex tasks by sharing knowledge and
+        collaborating seamlessly. Moreover, ongoing research aims to ensure ethical
+        considerations are embedded from the ground up, addressing biases and safeguarding
+        privacy. As AI agents become increasingly integrated into society, they will
+        not only augment human abilities but also inspire new forms of creativity,
+        problem-solving, and interaction, ultimately shaping a more intelligent and
+        adaptive world.\",\n        \"refusal\": null,\n        \"annotations\": []\n
+        \     },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n
+        \ ],\n  \"usage\": {\n    \"prompt_tokens\": 825,\n    \"completion_tokens\":
+        625,\n    \"total_tokens\": 1450,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_376a7ccef1\"\n}\n"
+    headers:
+      CF-RAY:
+      - CF-RAY-XXX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Jan 2026 19:07:28 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - STS-XXX
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - X-CONTENT-TYPE-XXX
+      access-control-expose-headers:
+      - ACCESS-CONTROL-XXX
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - OPENAI-ORG-XXX
+      openai-processing-ms:
+      - '9924'
+      openai-project:
+      - OPENAI-PROJECT-XXX
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '9940'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - X-RATELIMIT-LIMIT-REQUESTS-XXX
+      x-ratelimit-limit-tokens:
+      - X-RATELIMIT-LIMIT-TOKENS-XXX
+      x-ratelimit-remaining-requests:
+      - X-RATELIMIT-REMAINING-REQUESTS-XXX
+      x-ratelimit-remaining-tokens:
+      - X-RATELIMIT-REMAINING-TOKENS-XXX
+      x-ratelimit-reset-requests:
+      - X-RATELIMIT-RESET-REQUESTS-XXX
+      x-ratelimit-reset-tokens:
+      - X-RATELIMIT-RESET-TOKENS-XXX
+      x-request-id:
+      - X-REQUEST-ID-XXX
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -803,12 +803,14 @@ export function useGasEstimate(
               
               // Calculate cost with buffer
               const bufferedGas = gasEstimate.gasLimit + (gasEstimate.gasLimit / BigInt(5)); // 20% buffer
-              gasEstimate.estimatedCost = bufferedGas * gasEstimate.gasPrice;
+              const gasPrice = gasEstimate.gasPrice ?? BigInt(0);
+              gasEstimate.estimatedCost = bufferedGas * gasPrice;
             }
           } catch {
             // Use default gas limit for simple transfers
             gasEstimate.gasLimit = BigInt(21000);
-            gasEstimate.estimatedCost = gasEstimate.gasLimit * gasEstimate.gasPrice;
+            const gasPrice = gasEstimate.gasPrice ?? BigInt(0);
+            gasEstimate.estimatedCost = gasEstimate.gasLimit * gasPrice;
           }
         }
         
@@ -842,7 +844,7 @@ export function useGasEstimate(
 /**
  * Hook for address validation with contract and scam detection
  */
-export function useAddressValidation(address: string, chainFamily: 'evm' | 'solana' = 'evm') {
+export function useAddressValidation(address: string, chainFamily: 'evm' | 'solana' | 'cosmos' | 'bitcoin' = 'evm') {
   const isValid = useMemo(() => {
     if (!address) return false;
     return isValidAddress(address, chainFamily);

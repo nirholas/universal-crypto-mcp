@@ -1,0 +1,64 @@
+---
+title: Modal Hooks
+description: Membuka modals secara programatis melalui Hooks
+---
+
+# Modal Hooks
+
+## Membuka modals secara programatis melalui Hooks
+
+Hooks berikut disediakan untuk memungkinkan pembukaan modals secara programatis di mana saja dalam aplikasi Anda.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+Setiap Hooks ini mengembalikan objek dengan fungsi untuk membuka modal masing-masing. Perhatikan bahwa fungsi yang dikembalikan tidak akan terdefinisi jika aplikasi Anda tidak dalam keadaan yang diperlukan agar modal dapat dibuka.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+Setiap hook juga mengembalikan boolean untuk status modal. Disarankan agar Anda sepenuhnya mengandalkan hooks Wagmi (mis. `useAccount`) untuk merespons status koneksi dompet pengguna secara langsung, daripada mengandalkan status dari Connect Modal.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+RainbowKit didesain agar tidak mengganggu dan responsif, sehingga dApp harus selalu menampilkan antarmuka untuk pengguna, apakah mereka telah menghubungkan dompet mereka atau belum. Seorang pengguna dapat menghubungkan atau memutuskan dompet mereka secara langsung dari MetaMask, sehingga dApp harus responsif terhadap status koneksi yang mendasarinya secara langsung.
+
+dApps yang mengandalkan mekanisme seperti Masuk dengan Ethereum untuk verifikasi pengguna seharusnya mengandalkan fitur [Authentication](/docs/authentication).

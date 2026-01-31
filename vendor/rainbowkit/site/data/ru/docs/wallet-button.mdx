@@ -1,0 +1,44 @@
+---
+title: Кнопка кошелька
+description: Использование и настройка кнопки кошелька
+---
+
+# Кнопка кошелька
+
+> Примечание: в настоящее время `WalletButton` основывается на стандарте кошелька EIP-1193, но в ближайшем будущем будет поддерживать EIP-6963.
+
+Новый компонент `WalletButton` помогает dApp с пользовательскими реализациями списка кошельков адаптировать RainbowKit и все его преимущества без технической поддержки.
+
+```tsx
+import { WalletButton } from '@rainbow-me/rainbowkit';
+
+<WalletButton wallet="rainbow" />
+<WalletButton wallet="metamask" />
+<WalletButton wallet="baseAccount" />
+```
+
+Как и `ConnectButton`, компонент `WalletButton.Custom` доступен для пользовательских реализаций и стилей.
+
+```tsx
+<WalletButton.Custom wallet="rainbow">
+  {({ ready, connect }) => {
+    return (
+      <button
+        type="button"
+        disabled={!ready}
+        onClick={connect}
+      >
+        Connect Rainbow
+      </button>
+    );
+  }}
+</WalletButton.Custom>
+```
+
+Большинство dApp лучше всего обслуживаются [ConnectButton](https://www.rainbowkit.com/docs/connect-button). Ознакомьтесь с документацией [здесь](https://www.rainbowkit.com/docs/wallet-button) для получения дополнительной информации о внедрении и сценариях использования `WalletButton`.
+
+#### Демо
+
+Нажмите на кнопки ниже, чтобы увидеть, как выглядит эта точка входа RainbowKit.
+
+<WalletButtonDemo />

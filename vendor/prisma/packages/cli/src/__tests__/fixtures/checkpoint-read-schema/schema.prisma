@@ -1,0 +1,23 @@
+datasource my_db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider        = "prisma-client"
+  previewFeatures = ["extendedIndexes"]
+}
+
+generator classicClient {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  output          = "./generated/prisma"
+}
+
+generator something {
+  provider = "something"
+}
+
+model Blog {
+  id        Int @id
+  viewCount Int
+}

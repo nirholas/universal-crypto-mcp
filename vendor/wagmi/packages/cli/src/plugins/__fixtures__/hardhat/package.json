@@ -1,0 +1,8 @@
+{
+  "name": "hardhat-fixture",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "hardhat": "^3.0.0"
+  }
+}

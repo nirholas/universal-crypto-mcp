@@ -1,0 +1,281 @@
+---
+title: カスタムウォレット
+description: カスタムウォレットを作成する
+---
+
+# カスタムウォレット
+
+## カスタムウォレットを作成する
+
+> 注意: このAPIは不安定で、近い将来変更される可能性があります。時間とともに、より多くの組み込みウォレットを追加します。興味のある特定のウォレットがあれば、[こちらからお知らせください](https://github.com/rainbow-me/rainbowkit/issues)。
+
+`Wallet`関数タイプは、独自のカスタムウォレットを定義するのに役立つよう提供されています。次のプロパティが`Wallet`関数の戻り値で設定可能です:
+
+### ウォレットプロパティ
+
+<PropsTable
+  data={[
+    {
+      name: 'id',
+      required: true,
+      type: 'string',
+      description: '各ウォレットごとに一意のID',
+    },
+    {
+      name: 'name',
+      required: true,
+      type: 'string',
+      description: '人間に読みやすいウォレット名',
+    },
+    {
+      name: 'rdns',
+      required: false,
+      type: 'string',
+      description: 'EIP6963をサポートするウォレットのRDNS',
+    },
+    {
+      name: 'shortName',
+      required: false,
+      type: 'string | undefined',
+      description: 'モバイル用のオプション短縮名',
+    },
+    {
+      name: 'iconUrl',
+      required: true,
+      type: 'string | (() => Promise<string>)',
+      description:
+        'ウォレットアイコンのURL、またはBase64データURLへのPromise',
+    },
+    {
+      name: 'iconAccent',
+      required: false,
+      type: 'string',
+      description:
+        'ウォレットがブラウザ拡張機能とモバイルアプリの両方を持つ場合のダウンロードフローに使用されるアクセントカラー',
+    },
+    {
+      name: 'iconBackground',
+      required: true,
+      type: 'string',
+      description: 'ウォレットアイコンがロードされる際の背景色',
+    },
+    {
+      name: 'installed',
+      required: false,
+      type: 'boolean | undefined',
+      description: (
+        <>
+          ウォレットがインストールされているか、判別不能な場合は<code>undefined</code>{' '}
+          か
+        </>
+      ),
+    },
+    {
+      name: 'downloadUrls',
+      required: false,
+      type: '{ android?: string, ios?: string, mobile?: string, qrCode?: string, chrome?: string, firefox?: string, edge?: string, safari?: string, opera?: string, browserExtension?: string } | undefined',
+      typeSimple: 'DownloadUrls | undefined',
+      description: 'ダウンロードURLを含むオブジェクト',
+    },
+    {
+      name: 'hidden',
+      required: false,
+      type: '(args: { wallets: Array<{ id: string, connector: Connector, installed?: boolean }> }) => boolean',
+      typeSimple: '(args) => boolean | undefined',
+      description:
+        'このウォレットをリストから非表示にするかどうかを計算するための関数。ビルトインの\"インジェクティッドウォレット\"フォールバックがこの機能を利用している',
+    },
+    {
+      name: 'createConnector',
+      required: true,
+      type: '() => RainbowKitConnector',
+      typeSimple: 'RainbowKitConnector',
+      description:
+        '接続方法の異なるインスタンスと設定を提供するための関数',
+    },
+    {
+      name: 'mobile',
+      required: false,
+      type: '{ getUri?: (uri: string) => string }',
+      typeSimple: 'object',
+      description:
+        'モバイルウォレット接続URIを解決するための関数',
+    },
+    {
+      name: 'desktop',
+      required: false,
+      type: '{ getUri?: (uri: string) => string }',
+      typeSimple: 'object',
+      description: 'デスクトップアプリのディープリンクを解決するための関数',
+    },
+    {
+      name: 'qrCode',
+      required: false,
+      type: "{ getUri: (uri: string) => string, instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+      typeSimple: 'object',
+      description:
+        'QRコードURIを解決するための関数、加えてオプションのモバイルウォレットセットアップ手順',
+    },
+    {
+      name: 'extension',
+      required: false,
+      type: "{ instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+      typeSimple: 'object',
+      description:
+        'オプションのブラウザ拡張セットアップ手順を含むオブジェクト',
+    },
+    {
+      name: 'createConnector',
+      required: true,
+      type: "createConnector: (details: WalletDetailsParams) => CreateConnectorFn",
+      typeSimple: '(details: WalletDetailsParams) => CreateConnectorFn',
+      description: 'コネクタインスタンスを提供するための関数',
+    }
+  ]}
+/>
+
+### ダウンロードURL プロパティ
+
+<PropsTable
+  data={[
+    {
+      name: 'android',
+      required: false,
+      type: 'string',
+      description: 'Google PlayのURL',
+    },
+    {
+      name: 'ios',
+      required: false,
+      type: 'string',
+      description: 'Apple App StoreのURL',
+    },
+    {
+      name: 'mobile',
+      required: false,
+      type: 'string',
+      description:
+        '`android`または`ios`が利用できない場合のモバイルユーザー用ランディングページ',
+    },
+    {
+      name: 'qrCode',
+      required: false,
+      type: 'string',
+      description:
+        'モバイルダウンロードQRコードをスキャンしたユーザー用ランディングページ',
+    },
+    {
+      name: 'chrome',
+      required: false,
+      type: 'string',
+      description: 'Chrome Web StoreのURL',
+    },
+    {
+      name: 'edge',
+      required: false,
+      type: 'string',
+      description: 'Microsoft EdgeアドオンのURL',
+    },
+    {
+      name: 'firefox',
+      required: false,
+      type: 'string',
+      description: 'FirefoxブラウザアドオンのURL',
+    },
+    {
+      name: 'opera',
+      required: false,
+      type: 'string',
+      description: 'OperaアドオンのURL',
+    },
+    {
+      name: 'safari',
+      required: false,
+      type: 'string',
+      description: 'Mac App StoreのURL',
+    },
+    {
+      name: 'browserExtension',
+      required: false,
+      type: 'string',
+      description:
+        'ブラウザ互換のURLが利用できない場合のデスクトップ拡張ユーザー用ランディングページ',
+    }
+  ]}
+/>
+
+### 例
+
+例えば、WalletConnectを使用してカスタムウォレットを作成するには:
+
+```tsx
+import { Wallet, getWalletConnectConnector } from '@rainbow-me/rainbowkit';
+
+export interface MyWalletOptions {
+  projectId: string;
+}
+
+export const rainbow = ({ projectId }: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
+  downloadUrls: {
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
+  },
+  mobile: {
+    getUri: (uri: string) => uri,
+  },
+  qrCode: {
+    getUri: (uri: string) => uri,
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend putting My Wallet on your home screen for faster access to your wallet.',
+          step: 'install',
+          title: 'Open the My Wallet app',
+        },
+        {
+          description:
+            'After you scan, a connection prompt will appear for you to connect your wallet.',
+          step: 'scan',
+          title: 'Tap the scan button',
+        },
+      ],
+    },
+  },
+  extension: {
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend pinning My Wallet to your taskbar for quicker access to your wallet.',
+          step: 'install',
+          title: 'Install the My Wallet extension',
+        },
+        {
+          description:
+            'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+          step: 'create',
+          title: 'Create or Import a Wallet',
+        },
+        {
+          description:
+            'Once you set up your wallet, click below to refresh the browser and load up the extension.',
+          step: 'refresh',
+          title: 'Refresh your browser',
+        },
+      ],
+    },
+  },
+  createConnector: getWalletConnectConnector({ projectId }),
+});
+```
+
+その後、[ウォレットリスト](/docs/custom-wallet-list)にカスタムウォレットを追加できます。

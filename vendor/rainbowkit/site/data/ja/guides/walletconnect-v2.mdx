@@ -1,0 +1,72 @@
+---
+title: あなたのdAppをWalletConnect v2にアップグレードする方法
+description: RainbowKitはv2に移行し、dAppを5分以内に準備できます。
+image: guide-walletconnect-v2.png
+---
+
+# WalletConnect v2 への移行
+
+## dAppを5分以内にv2のアップグレードに準備する方法
+
+WalletConnect v1 プロトコルは2023年6月28日にシャットダウンされますが、RainbowKitが移行を超簡単に行えるようにサポートします。
+
+RainbowKitでは、互換性を壊すことなく、標準でWalletConnect v2サポートを追加しました。単にアップグレードし、以下のガイドを参考にしてください。
+
+#### WalletConnect v2を理解する
+
+WalletConnectはユーザーがモバイルウォレットをdAppに接続することを可能にするプロトコルで、RainbowKitの重要な基盤です。最近リリースされたWalletConnect v2にはウォレットとdAppの体験をより良くするための多くの重要なアップグレードがあります。
+
+v2では、ユーザーは同時に複数チェーンに接続でき、チェーン切り替えの手間が省けます。また、より多くのネットワークをサポートし、Ethereumでのサインインをより高速にする改善が施されています。
+
+#### dAppのアップグレード
+
+すでにRainbowKit `0.12.x` と `1.0.x` の移行ガイドに従っている場合、もう少しで完了です！最新版の更新を試してください。
+
+RainbowKitは `0.12.15` と `1.0.2` でデフォルトでWalletConnect v2 を有効にし、あなたのdAppがwagmi v1とRainbowKit v1にまだアップグレードされていない場合に備えて`0.12.x`のサポートを続けています。
+
+**1. 依存関係のアップグレード**
+
+```bash
+npm i @rainbow-me/rainbowkit@^1.0.2 wagmi@^1.2
+```
+
+`0.12.x` または `1.0.x` より前のバージョンのRainbowKitを使用している場合は、[移行ガイド](/docs/migration-guide)に従って最新化してください。
+
+`0.12.x` のdAppは wagmi v1 へのアップグレードを始めることが推奨されています。というのも、WalletConnect v2 の安定性向上は未来の wagmi バージョンにしか含まれないからです。
+
+**2. projectIdの供給**
+
+WalletConnectに依存するすべてのdAppは現在、[WalletConnect Cloud](https://cloud.walletconnect.com/)から`projectId`を取得する必要があります。これは完全に無料で、数分で完了します。
+
+以下のように`projectId`を`getDefaultWallets`および個別のRainbowKitウォレットコネクタに供給してください：
+
+```ts
+const projectId = 'YOUR_PROJECT_ID';
+const { wallets } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  projectId,
+  chains,
+});
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: 'Other',
+    wallets: [
+      readyWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      ledgerWallet({ projectId, chains }),
+    ],
+  },
+]);
+```
+
+RainbowKitは型安全であり、`projectId`が欠落している場合に警告を表示します。v2を実際に動かすには例を参照してください：
+
+- [Create React App](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-create-react-app)
+- [Next.js](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next)
+- [Next.js App Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next-app)
+- [Remix](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-remix)
+- [Vite](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-vite)
+- [React Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-react-router)
+
+追加のサポートされたオプションについては[docs](https://www.rainbowkit.com/docs/custom-wallet-list#walletconnect)を参照してください。

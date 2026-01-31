@@ -1,0 +1,64 @@
+---
+title: خطافات النماذج
+description: فتح موديل برمجياً عبر الخطافات
+---
+
+# خطافات النماذج
+
+## فتح موديل برمجياً عبر الخطافات
+
+يوفر الخطافات التالية للسماح بفتح النماذج بشكل برمجي في أي مكان في تطبيقك.
+
+- `useConnectModal`
+- `useAccountModal`
+- `useChainModal`
+
+كل خطاف من هذه الخطافات يقوم بإرجاع كائن يحتوي على وظيفة لفتح النموذج الخاص به. لاحظ أن الوظائف المُرجعة ستكون غير معرفة إذا لم يكن التطبيق الخاص بك في الحالة المطلوبة لفتح النموذج.
+
+```tsx
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  return (
+    <>
+      {openConnectModal && (
+        <button onClick={openConnectModal} type="button">
+          Open Connect Modal
+        </button>
+      )}
+
+      {openAccountModal && (
+        <button onClick={openAccountModal} type="button">
+          Open Account Modal
+        </button>
+      )}
+
+      {openChainModal && (
+        <button onClick={openChainModal} type="button">
+          Open Chain Modal
+        </button>
+      )}
+    </>
+  );
+};
+```
+
+كل خطاف يرجع أيضًا قيمة منطقية لحالة النموذج. يُوصى عادةً بالاعتماد فقط على خطافات Wagmi (مثلاً `useAccount`) للاستجابة لحالة اتصال المحفظة للمستخدم مباشرةً، بدلاً من الاعتماد على حالة نافذة الاتصال.
+
+```tsx
+const { connectModalOpen } = useConnectModal();
+const { accountModalOpen } = useAccountModal();
+const { chainModalOpen } = useChainModal();
+```
+
+صُمم RainbowKit ليكون غير متقطع وقابل للاستجابة، لذا يجب على dApps دائمًا تقديم واجهة للمستخدمين سواء قاموا بتوصيل محفظتهم أم لا. يمكن للمستخدم الاتصال أو قطع الاتصال بمحفظته مباشرةً من MetaMask، لذا يجب أن تكون dApp مستجيبة لحالة الاتصال الأساسية مباشرةً.
+
+يجب على التطبيقات اللامركزية (dApps) التي تعتمد على آليات مثل تسجيل الدخول باستخدام Ethereum لأغراض التحقق من المستخدم الاعتماد بدلاً من ذلك على ميزة [المصادقة](/docs/authentication).

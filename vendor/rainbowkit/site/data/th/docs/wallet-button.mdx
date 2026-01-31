@@ -1,0 +1,44 @@
+---
+title: ปุ่มกระเป๋าเงิน
+description: การใช้งานและการตั้งค่าปุ่มกระเป๋าเงิน
+---
+
+# ปุ่มกระเป๋าเงิน
+
+> หมายเหตุ: ปุ่มกระเป๋าเงินรองรับมาตรฐานกระเป๋าเงิน EIP-1193 ในปัจจุบัน แต่จะสามารถรองรับ EIP-6963 ได้ในอนาคตอันใกล้
+
+คอมโพเนนต์ปุ่มกระเป๋าเงินใหม่ที่ช่วย dApps ปรับใช้ RainbowKit และทุกประโยชน์ที่ไม่ต้องบำรุงรักษา
+
+```tsx
+import { WalletButton } from '@rainbow-me/rainbowkit';
+
+<WalletButton wallet="rainbow" />
+<WalletButton wallet="metamask" />
+<WalletButton wallet="baseAccount" />
+```
+
+เหมือนกับปุ่มเชื่อมต่อ, คอมโพเนนต์ `WalletButton.Custom` มีสำหรับการดำเนินการและการออกแบบแบบกำหนดเอง
+
+```tsx
+<WalletButton.Custom wallet="rainbow">
+  {({ ready, connect }) => {
+    return (
+      <button
+        type="button"
+        disabled={!ready}
+        onClick={connect}
+      >
+        Connect Rainbow
+      </button>
+    );
+  }}
+</WalletButton.Custom>
+```
+
+แอปพลิเคชัน dApp ส่วนใหญ่ได้รับบริการดีที่สุดจาก [ปุ่มเชื่อมต่อ](https://www.rainbowkit.com/docs/connect-button). อ้างอิงจากเอกสาร [ได้ที่นี่](https://www.rainbowkit.com/docs/wallet-button) สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการใช้และการรับปุ่มกระเป๋าเงิน
+
+#### เดโม
+
+กดปุ่มด้านล่างเพื่อดูว่าจุดเริ่มต้นของ RainbowKit นี้มีลักษณะอย่างไร
+
+<WalletButtonDemo />

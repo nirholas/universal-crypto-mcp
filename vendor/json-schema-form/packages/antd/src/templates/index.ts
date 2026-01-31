@@ -1,0 +1,50 @@
+import { FormContextType, RJSFSchema, StrictRJSFSchema, TemplatesType } from '@rjsf/utils';
+
+import ArrayFieldItemTemplate from './ArrayFieldItemTemplate';
+import ArrayFieldTemplate from './ArrayFieldTemplate';
+import BaseInputTemplate from './BaseInputTemplate';
+import DescriptionField from './FieldDescriptionTemplate';
+import ErrorList from './ErrorList';
+import { AddButton, CopyButton, MoveDownButton, MoveUpButton, RemoveButton, ClearButton } from './IconButton';
+import FieldErrorTemplate from './FieldErrorTemplate';
+import FieldTemplate from './FieldTemplate';
+import GridTemplate from './GridTemplate';
+import MultiSchemaFieldTemplate from './MultiSchemaFieldTemplate';
+import ObjectFieldTemplate from './ObjectFieldTemplate';
+import OptionalDataControlsTemplate from './OptionalDataControlsTemplate';
+import SubmitButton from './SubmitButton';
+import TitleField from './TitleField';
+import WrapIfAdditionalTemplate from './WrapIfAdditionalTemplate';
+
+export function generateTemplates<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>(): Partial<TemplatesType<T, S, F>> {
+  return {
+    ArrayFieldItemTemplate,
+    ArrayFieldTemplate,
+    BaseInputTemplate,
+    ButtonTemplates: {
+      AddButton,
+      CopyButton,
+      MoveDownButton,
+      MoveUpButton,
+      RemoveButton,
+      SubmitButton,
+      ClearButton,
+    },
+    DescriptionFieldTemplate: DescriptionField,
+    ErrorListTemplate: ErrorList,
+    FieldErrorTemplate,
+    FieldTemplate,
+    GridTemplate,
+    MultiSchemaFieldTemplate,
+    ObjectFieldTemplate,
+    OptionalDataControlsTemplate,
+    TitleFieldTemplate: TitleField,
+    WrapIfAdditionalTemplate,
+  };
+}
+
+export default generateTemplates();

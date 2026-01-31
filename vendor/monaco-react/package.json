@@ -1,0 +1,62 @@
+{
+  "name": "@monaco-editor/react",
+  "version": "4.8.0-rc.3",
+  "description": "Monaco Editor for React - use the monaco-editor in any React application without needing to use webpack (or rollup/parcel/etc) configuration files / plugins",
+  "author": "Suren Atoyan <contact@surenatoyan.com>",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm test && npm run lint && npm run build",
+    "prepare": "husky",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suren-atoyan/monaco-react.git"
+  },
+  "keywords": [
+    "monaco",
+    "editor",
+    "react",
+    "vscode",
+    "code",
+    "text"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/suren-atoyan/monaco-react/issues"
+  },
+  "homepage": "https://github.com/suren-atoyan/monaco-react#readme",
+  "peerDependencies": {
+    "monaco-editor": ">= 0.25.0 < 1",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.0.0",
+    "prettier": "^3.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@monaco-editor/loader": "^1.7.0"
+  }
+}

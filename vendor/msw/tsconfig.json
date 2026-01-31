@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "references": [
+    // Source.
+    {
+      "path": "./src/browser/tsconfig.browser.json"
+    },
+    {
+      "path": "./src/tsconfig.node.json"
+    },
+    {
+      "path": "./src/tsconfig.worker.json"
+    },
+
+    // Tests.
+    {
+      "path": "./tsconfig.test.unit.json"
+    }
+  ]
+}

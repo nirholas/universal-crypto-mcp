@@ -1,0 +1,36 @@
+
+# Note: this file's config overrides the Netlify UI admin config
+
+# /!\ due to using a monorepo it can be a bit messy to configure Netlify
+# See also https://github.com/netlify/build/issues/2483
+
+[build]
+  command = "yarn --cwd .. build:packages && yarn build"
+  publish = "website/build"
+
+[build.environment]
+  NETLIFY_USE_YARN = "true"
+  YARN_VERSION = "1.22.19"
+  NODE_VERSION = "24"
+  NODE_OPTIONS = "--max_old_space_size=8192"
+
+
+# Note, we run build:packages and git backfill in parallel to speed up builds
+# We run "git backfill" here to ensure the full Git history is available fast
+# See https://github.com/facebook/docusaurus/pull/11553
+
+[context.production]
+  command = "(echo 'Build packages start' && yarn --cwd .. build:packages && echo 'Build packages end') & (echo 'Git backfill start' && git backfill && echo 'Git backfill end' ) & wait && yarn netlify:build:production"
+
+[context.branch-deploy]
+  command = "(echo 'Build packages start' && yarn --cwd .. build:packages && echo 'Build packages end') & (echo 'Git backfill start' && git backfill && echo 'Git backfill end' ) & wait && yarn netlify:build:branchDeploy"
+
+[context.deploy-preview]
+  command = "(echo 'Build packages start' && yarn --cwd .. build:packages && echo 'Build packages end') & (echo 'Git backfill start' && git backfill && echo 'Git backfill end' ) & wait && yarn netlify:build:deployPreview"
+
+[[plugins]]
+package = "netlify-plugin-cache"
+  [plugins.inputs]
+  paths = [
+    "node_modules/.cache",
+  ]

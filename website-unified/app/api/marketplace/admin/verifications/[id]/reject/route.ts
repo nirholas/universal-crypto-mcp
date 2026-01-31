@@ -17,6 +17,7 @@ import {
   parseBody,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -37,9 +38,10 @@ const RejectServiceSchema = z.object({
 
 async function rejectHandler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 2]; // -2 because path ends with /reject
   const body = await parseBody(request, RejectServiceSchema);
   const db = getDatabase();
   
@@ -53,9 +55,9 @@ async function rejectHandler(
       throw new NotFoundError('Service', id);
     }
     
-    // Update service to rejected status
+    // Update service to suspended status with rejection reason
     const updatedService = await db.updateService(id, {
-      status: 'rejected',
+      status: 'suspended',
       verified: false,
       metadata: {
         ...service.metadata,
@@ -79,9 +81,7 @@ async function rejectHandler(
     }
     console.error('[API] Admin service rejection error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to reject service',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to reject service')
     );
   }
 }

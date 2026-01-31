@@ -16,6 +16,7 @@ import {
   createErrorResponse,
   parseQuery,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -27,7 +28,7 @@ export const runtime = 'nodejs';
 // ============================================================================
 
 const ListDisputesQuerySchema = z.object({
-  status: z.enum(['pending', 'investigating', 'resolved', 'dismissed']).optional(),
+  status: z.enum(['open', 'investigating', 'mediation', 'resolved', 'rejected']).optional(),
   serviceId: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
@@ -39,6 +40,8 @@ const ListDisputesQuerySchema = z.object({
 
 async function handler(request: NextRequest, ctx: RequestContext) {
   const query = parseQuery(request, ListDisputesQuerySchema);
+  const page = query.page ?? 1;
+  const limit = query.limit ?? 50;
   const db = getDatabase();
   
   // Ensure database is seeded
@@ -48,25 +51,20 @@ async function handler(request: NextRequest, ctx: RequestContext) {
     const { disputes, total } = await db.findDisputes({
       status: query.status,
       serviceId: query.serviceId,
-      page: query.page,
-      limit: query.limit,
+      page,
+      limit,
     });
     
-    // Enrich disputes with service and review info
+    // Enrich disputes with service info
     const enrichedDisputes = await Promise.all(
       disputes.map(async (dispute) => {
         const service = await db.findServiceById(dispute.serviceId);
-        const review = dispute.reviewId 
-          ? (await db.findReviews({ limit: 1 })).reviews.find(r => r.id === dispute.reviewId)
-          : null;
         
         return {
           id: dispute.id,
           serviceId: dispute.serviceId,
           serviceName: service?.name || 'Unknown Service',
-          reviewId: dispute.reviewId,
-          reviewTitle: review?.title,
-          complainantAddress: dispute.complainantAddress,
+          disputerWallet: dispute.disputerWallet,
           reason: dispute.reason,
           evidence: dispute.evidence,
           status: dispute.status,
@@ -81,26 +79,24 @@ async function handler(request: NextRequest, ctx: RequestContext) {
       })
     );
     
-    const totalPages = Math.ceil(total / query.limit);
+    const totalPages = Math.ceil(total / limit);
     
     return createResponse({
       disputes: enrichedDisputes,
     }, {
       meta: {
-        page: query.page,
-        limit: query.limit,
+        page,
+        limit,
         total,
         totalPages,
-        hasNext: query.page < totalPages,
-        hasPrevious: query.page > 1,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
       },
     });
   } catch (error) {
     console.error('[API] Admin disputes list error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch disputes',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch disputes')
     );
   }
 }

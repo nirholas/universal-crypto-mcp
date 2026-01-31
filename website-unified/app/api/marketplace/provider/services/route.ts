@@ -17,6 +17,7 @@ import {
   parseBody,
   parseQuery,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext, Service } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -62,9 +63,7 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
   try {
     if (!walletAddress) {
       return createErrorResponse(
-        ErrorCodes.UNAUTHORIZED,
-        'Wallet address required',
-        401
+        new APIException(ErrorCodes.UNAUTHORIZED, 'Wallet address required')
       );
     }
     
@@ -124,26 +123,26 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
       })
     );
     
-    const totalPages = Math.ceil(total / query.limit);
+    const limit = query.limit ?? 20;
+    const page = query.page ?? 1;
+    const totalPages = Math.ceil(total / limit);
     
     return createResponse({
       services: enrichedServices,
     }, {
       meta: {
-        page: query.page,
-        limit: query.limit,
+        page,
+        limit,
         total,
         totalPages,
-        hasNext: query.page < totalPages,
-        hasPrevious: query.page > 1,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
       },
     });
   } catch (error) {
     console.error('[API] Provider services list error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch services',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch services')
     );
   }
 }
@@ -162,9 +161,7 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
   try {
     if (!walletAddress) {
       return createErrorResponse(
-        ErrorCodes.UNAUTHORIZED,
-        'Wallet address required',
-        401
+        new APIException(ErrorCodes.UNAUTHORIZED, 'Wallet address required')
       );
     }
     
@@ -219,9 +216,7 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
   } catch (error) {
     console.error('[API] Service creation error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to create service',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to create service')
     );
   }
 }

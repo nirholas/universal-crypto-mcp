@@ -1,0 +1,145 @@
+---
+title: 身份驗證
+description: 用戶身份驗證中
+---
+
+# 身份驗證
+
+## 為您的應用程式提供經過身份驗證的訪問
+
+在連接過程中，您可以選擇性地要求用戶使用其錢包簽署消息，以證明他們擁有連接的帳戶，並允許您建立一個具有特權訪問應用程式的用戶身份驗證會話。
+
+雖然可以[整合自定後端和消息格式，](/docs/custom-authentication)但RainbowKit對[以太坊登入](https://login.xyz)和[NextAuth](https://next-auth.js.org)提供一流的支援。
+
+### 設置以太坊登入和NextAuth
+
+#### 安裝
+
+安裝 `@rainbow-me/rainbowkit-siwe-next-auth` 套件。
+
+```bash
+npm install @rainbow-me/rainbowkit-siwe-next-auth
+```
+
+#### 設定提供者
+
+在您的 `App` 組件中，導入 `RainbowKitSiweNextAuthProvider`。
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+```
+
+用 `RainbowKitSiweNextAuthProvider` 包裹 `RainbowKitProvider`，確保其在 NextAuth 的 `SessionProvider` 內，以便能夠存取會話。
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { SessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps<{
+  session: Session;
+}>) {
+  return (
+    <WagmiProvider {...etc}>
+      <SessionProvider refetchInterval={0} session={pageProps.session}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitSiweNextAuthProvider>
+            <RainbowKitProvider {...etc}>
+              <Component {...pageProps} />
+            </RainbowKitProvider>
+          </RainbowKitSiweNextAuthProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </WagmiProvider>;
+  );
+}
+```
+
+有了 `RainbowKitSiweNextAuthProvider`，當用戶連接他們的錢包後，系統將提示他們通過簽名訊息來進行身份驗證。
+
+#### 自訂 SIWE 訊息選項
+
+您可以通過將一個函數傳遞給 `RainbowKitSiweNextAuthProvider` 的 `getSiweMessageOptions` 屬性來自訂 [SIWE 訊息選項](https://viem.sh/docs/siwe/utilities/createSiweMessage#parameters)。
+
+每當創建新訊息時，將調用此函數。從此函數返回的選項將會與預設選項合併。
+
+```tsx
+import {
+  RainbowKitSiweNextAuthProvider,
+  GetSiweMessageOptions,
+} from '@rainbow-me/rainbowkit-siwe-next-auth';
+
+const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+  statement: 'Sign in to my RainbowKit app',
+});
+
+<RainbowKitSiweNextAuthProvider
+  getSiweMessageOptions={getSiweMessageOptions}
+>
+  ...
+</RainbowKitSiweNextAuthProvider>;
+```
+
+#### 在伺服器端存取會話
+
+您可以使用從 `next-auth/jwt` 中導入的 NextAuth 的 `getToken` 函數來訪問會話令牌。如果用戶成功驗證，會話令牌的 `sub` 屬性（令牌的"主體"，即用戶）將是用戶的地址。
+
+您還可以透過 `getServerSideProps` 將從伺服器解析的會話物件傳遞下來，使得 NextAuth 不需要在客戶端再次解析它。
+
+例如：
+
+```tsx
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
+import React from 'react';
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const session = await getSession(context);
+  const token = await getToken({ req: context.req });
+
+  const address = token?.sub ?? null;
+  // If you have a value for "address" here, your
+  // server knows the user is authenticated.
+
+  // You can then pass any data you want
+  // to the page component here.
+  return {
+    props: {
+      address,
+      session,
+    },
+  };
+};
+
+type AuthenticatedPageProps = InferGetServerSidePropsType<
+  typeof getServerSideProps
+>;
+
+export default function AuthenticatedPage({
+  address,
+}: AuthenticatedPageProps) {
+  return address ? (
+    <h1>Authenticated as {address}</h1>
+  ) : (
+    <h1>Unauthenticated</h1>
+  );
+}
+```
+
+有關管理會話的更多信息，您可以參考以下文檔：
+
+- [Next.js 認證指南](https://nextjs.org/docs/pages/guides/authentication)
+- [NextAuth 文檔](https://next-auth.js.org)

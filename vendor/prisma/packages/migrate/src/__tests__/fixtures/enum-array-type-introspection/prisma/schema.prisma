@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource my_db {
+  provider = "postgresql"
+}
+
+model Post {
+  id             String                  @id
+  contentFilters ContentFilterCategory[]
+}
+
+enum ContentFilterCategory {
+  FIRST
+  SECOND
+
+  @@map("_foo")
+}

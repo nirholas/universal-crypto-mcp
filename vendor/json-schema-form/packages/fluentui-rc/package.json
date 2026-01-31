@@ -1,0 +1,107 @@
+{
+  "name": "@rjsf/fluentui-rc",
+  "version": "6.2.5",
+  "description": "FluentUI React Components theme, fields and widgets for react-jsonschema-form",
+  "scripts": {
+    "build:ts": "tsc -b tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build:cjs": "esbuild ./src/index.ts --bundle --outfile=dist/index.cjs --sourcemap --packages=external --format=cjs",
+    "build:esm": "esbuild ./src/index.ts --bundle --outfile=dist/index.esm.js --sourcemap --packages=external --format=esm",
+    "build:umd": "rollup dist/index.esm.js --format=umd --file=dist/core.umd.js --name=JSONSchemaForm",
+    "build": "npm run build:ts && npm run build:cjs && npm run build:esm && npm run build:umd",
+    "cs-check": "prettier -l \"{src,test,testSnap}/**/*.[jt]s?(x)\"",
+    "cs-format": "prettier \"{src,test,testSnap}/**/*.[jt]s?(x)\" --write",
+    "lint": "eslint src test",
+    "precommit": "lint-staged",
+    "publish-to-npm": "npm run build && npm publish",
+    "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest",
+    "test:update": "jest --u",
+    "test:watch": "jest --watch",
+    "test-coverage": "jest --coverage"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.[jt]s?(x)": [
+      "eslint --fix"
+    ]
+  },
+  "main": "dist/index.js",
+  "module": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./lib/index.js"
+    },
+    "./lib": {
+      "types": "./lib/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./lib/index.js"
+    },
+    "./lib/*.js": {
+      "types": "./lib/*.d.ts",
+      "require": "./dist/*.cjs",
+      "import": "./lib/*.js"
+    },
+    "./dist": {
+      "types": "./lib/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./lib/index.js"
+    },
+    "./dist/*.cjs": {
+      "types": "./lib/*.d.ts",
+      "require": "./dist/*.cjs",
+      "import": "./lib/*.js"
+    }
+  },
+  "files": [
+    "dist",
+    "lib",
+    "src"
+  ],
+  "engineStrict": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "@fluentui/react-components": "^9.63.0",
+    "@fluentui/react-icons": "^2.0.298",
+    "@fluentui/react-migration-v0-v9": "^9.3.10",
+    "@rjsf/core": "^6.2.x",
+    "@rjsf/utils": "^6.2.x",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@fluentui/react-components": "^9.72.4",
+    "@fluentui/react-icons": "^2.0.313",
+    "@fluentui/react-migration-v0-v9": "^9.6.12",
+    "@rjsf/core": "^6.2.0",
+    "@rjsf/snapshot-tests": "^6.2.0",
+    "@rjsf/utils": "^6.2.0",
+    "@rjsf/validator-ajv8": "^6.2.0",
+    "eslint": "^8.57.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjsf-team/react-jsonschema-form.git"
+  },
+  "author": "Marc Veens <veens.marc@gmail.com>",
+  "contributors": [],
+  "keywords": [
+    "react",
+    "form",
+    "json-schema",
+    "fluentui",
+    "fluentui-rc",
+    "rjsf-fluentui-rc"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/rjsf-team/react-jsonschema-form",
+  "publishConfig": {
+    "access": "public"
+  }
+}

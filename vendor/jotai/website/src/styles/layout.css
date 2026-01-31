@@ -1,0 +1,106 @@
+html {
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
+
+body {
+  @apply overflow-x-clip overflow-y-scroll overscroll-none bg-black leading-none font-sans;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#___gatsby {
+  @apply bg-white text-black dark:bg-gray-950 dark:text-gray-50;
+}
+
+#___gatsby > div {
+  opacity: 0;
+  animation: fadeIn cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards !important;
+  animation-delay: 0.7s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+pre,
+code,
+pre span,
+code span {
+  font-family: 'Fira Code', monospace !important;
+}
+
+::selection {
+  @apply bg-black text-white dark:bg-gray-50 dark:text-gray-950;
+}
+
+a,
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+*:focus {
+  outline: 0 !important;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  @apply relative z-0;
+}
+
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  @apply z-10 ring-blue-400 dark:!ring-teal-700;
+}
+
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  @apply appearance-none;
+}
+
+svg:not([fill]) {
+  fill: currentColor;
+}
+
+*::-webkit-scrollbar {
+  @apply h-full w-4 bg-white dark:bg-gray-950;
+}
+
+body.dark::-webkit-scrollbar {
+  @apply bg-gray-950;
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-white dark:bg-gray-950;
+}
+
+body.dark::-webkit-scrollbar-track {
+  @apply bg-gray-950;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply rounded-2xl border-4 border-solid border-white bg-gray-350 dark:border-gray-950 dark:bg-gray-800;
+}
+
+body.dark::-webkit-scrollbar-thumb {
+  @apply border-gray-950 bg-gray-800;
+}
+
+*::-webkit-scrollbar-button {
+  @apply hidden;
+}

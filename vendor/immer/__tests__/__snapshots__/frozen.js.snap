@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`auto freeze - proxy > will freeze maps 1`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;
+
+exports[`auto freeze - proxy > will freeze maps 2`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;
+
+exports[`auto freeze - proxy > will freeze maps 3`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;
+
+exports[`auto freeze - proxy > will freeze sets 1`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;
+
+exports[`auto freeze - proxy > will freeze sets 2`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;
+
+exports[`auto freeze - proxy > will freeze sets 3`] = `[Error: [Immer] This object has been frozen and should not be mutated]`;

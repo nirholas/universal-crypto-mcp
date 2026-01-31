@@ -1,0 +1,28 @@
+---
+title: Tailles de la fenêtre modale
+description: Large vs Compact
+---
+
+# Tailles de la fenêtre modale
+
+## Taille Large vs Compact
+
+Par défaut, la `modalSize` de RainbowKit est réglée sur `large` (et ressemble à ceci) :
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+Nous proposons également une taille de fenêtre modale `compact`, qui ressemble à ceci :
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+Pour définir la taille de votre fenêtre modale sur `compact`, ajoutez simplement `modalSize="compact"` comme prop dans votre `RainbowKitProvider` :
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

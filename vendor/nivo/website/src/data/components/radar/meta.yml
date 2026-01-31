@@ -1,0 +1,24 @@
+flavors:
+  - flavor: svg
+    path: /radar/
+  - flavor: api
+    path: /radar/api/
+
+Radar:
+  package: '@nivo/radar'
+  tags:
+    - radial
+  stories:
+    - label: Formatting tooltip value
+      link: radar--with-formatted-values
+    - label: Custom label component
+      link: radar--custom-label-component
+    - label: Adding patterns to radar layers
+      link: radar--with-patterns
+  description: |
+    Generates a radar chart from an array of data.
+    Note that margin object does not take grid labels into account,
+    so you should adjust it to leave enough room for it.
+
+    See the [dedicated guide](self:/guides/legends) on how to setup
+    legends for this component.

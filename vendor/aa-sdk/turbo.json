@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "cache": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "test": {
+      "env": ["VITEST_SEPOLIA_FORK_URL"],
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "test:ci": {
+      "env": ["VITEST_SEPOLIA_FORK_URL"],
+      "dependsOn": ["^build"],
+      "cache": false
+    }
+  }
+}

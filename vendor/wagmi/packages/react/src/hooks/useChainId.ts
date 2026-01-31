@@ -1,0 +1,31 @@
+'use client'
+
+import {
+  type Config,
+  type GetChainIdReturnType,
+  getChainId,
+  type ResolvedRegister,
+  watchChainId,
+} from '@wagmi/core'
+import type { ConfigParameter } from '@wagmi/core/internal'
+import { useSyncExternalStore } from 'react'
+import { useConfig } from './useConfig.js'
+
+export type UseChainIdParameters<config extends Config = Config> =
+  ConfigParameter<config>
+
+export type UseChainIdReturnType<config extends Config = Config> =
+  GetChainIdReturnType<config>
+
+/** https://wagmi.sh/react/api/hooks/useChainId */
+export function useChainId<config extends Config = ResolvedRegister['config']>(
+  parameters: UseChainIdParameters<config> = {},
+): UseChainIdReturnType<config> {
+  const config = useConfig(parameters)
+
+  return useSyncExternalStore(
+    (onChange) => watchChainId(config, { onChange }),
+    () => getChainId(config),
+    () => getChainId(config),
+  )
+}

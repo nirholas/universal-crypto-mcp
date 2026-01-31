@@ -1,0 +1,55 @@
+{
+    "name": "@nivo/rects",
+    "version": "0.99.0",
+    "license": "MIT",
+    "author": {
+        "name": "Raphaël Benitte",
+        "url": "https://github.com/plouc"
+    },
+    "contributors": [
+        "Lilian Saget-Lethias <lilian.sagetlethias@gmail.com>",
+        "Mehdi Louraoui <med.louraoui@gmail.com>"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/plouc/nivo.git",
+        "directory": "packages/rects"
+    },
+    "keywords": [
+        "nivo",
+        "dataviz",
+        "react",
+        "d3",
+        "rects"
+    ],
+    "main": "./dist/nivo-rects.cjs.js",
+    "module": "./dist/nivo-rects.mjs",
+    "typings": "./dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/nivo-rects.mjs",
+            "require": "./dist/nivo-rects.cjs.js"
+        }
+    },
+    "files": [
+        "README.md",
+        "LICENSE.md",
+        "dist/",
+        "!dist/tsconfig.tsbuildinfo"
+    ],
+    "dependencies": {
+        "@nivo/colors": "workspace:*",
+        "@nivo/core": "workspace:*",
+        "@nivo/text": "workspace:*",
+        "@nivo/theming": "workspace:*",
+        "@react-spring/core": "9.4.5 || ^9.7.2 || ^10.0",
+        "@react-spring/web": "9.4.5 || ^9.7.2 || ^10.0"
+    },
+    "peerDependencies": {
+        "react": "^16.14 || ^17.0 || ^18.0 || ^19.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

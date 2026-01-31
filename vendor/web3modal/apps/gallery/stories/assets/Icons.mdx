@@ -1,0 +1,40 @@
+import { Meta, Title } from '@storybook/addon-docs/blocks'
+
+import '@reown/appkit-ui/wui-flex'
+import '@reown/appkit-ui/wui-grid'
+import '@reown/appkit-ui/wui-icon'
+import '@reown/appkit-ui/wui-text'
+
+import { iconOptions } from '../../utils/PresetUtils'
+
+<Meta title="assets/Icons" />
+
+<Title>Icons</Title>
+
+## Icons
+
+<wui-grid gridTemplateColumns="repeat(6, 1fr)" gap="4" style={{ marginBottom: '32px' }}>
+{[
+'add', 'allWallets', 'arrowBottom', 'arrowBottomCircle', 'arrowClockWise', 'arrowLeft',
+'arrowRight', 'arrowTop', 'arrowTopRight', 'bank', 'bin', 'browser', 'card', 'checkmark',
+'checkmarkBold', 'chevronBottom', 'chevronLeft', 'chevronRight', 'chevronTop', 'clock',
+'close', 'coinPlaceholder', 'compass', 'copy', 'desktop', 'dollar', 'exclamationCircle',
+'extension', 'externalLink', 'filters', 'helpCircle', 'id', 'image', 'info', 'lightbulb',
+'mail', 'mobile', 'more', 'networkPlaceholder', 'nftPlaceholder', 'plus', 'power', 'qrCode',
+'questionMark', 'refresh', 'search', 'sealCheck', 'send', 'signOut', 'spinner', 'swapHorizontal', 'swapVertical', 'threeDots',
+'user', 'verify', 'verifyFilled', 'wallet', 'warning', 'warningCircle'
+].map(value => (
+<wui-flex
+key={value}
+flexDirection="column"
+alignItems="center"
+justifyContent="space-between"
+gap="2"
+style={{ padding: '8px', backgroundColor: 'var(--wui-color-success-glass-002)', borderRadius: '8px' }} >
+<wui-icon color="default" size="lg" name={value}></wui-icon>
+<wui-text variant="sm-regular" color="inverse" align="center">
+{value}
+</wui-text>
+</wui-flex>
+))}
+</wui-grid>

@@ -1,0 +1,12 @@
+/*/src/*.js
+/*/src/*.ts
+!/*/src/*.d.ts
+/*/src/*.map
+/*/src/README.md
+/*/test
+/node_modules
+/demo
+/.travis.yml
+.tern-*
+/bin
+/website

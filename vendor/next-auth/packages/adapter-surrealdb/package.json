@@ -1,0 +1,51 @@
+{
+  "name": "@auth/surrealdb-adapter",
+  "version": "2.2.0",
+  "description": "SurrealDB adapter for next-auth.",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "Dylan Vanmali <https://github.com/dvanmali>",
+  "contributors": [
+    "Martin Schaer <martin@schaerweb.com>",
+    "Thang Huu Vu <hi@thvu.dev>"
+  ],
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "license": "ISC",
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "oauth",
+    "surrealdb",
+    "adapter"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "./test/test.sh",
+    "build": "tsc",
+    "clean": "rm -rf *.js *.d.ts*"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "surrealdb": "^1.3.0"
+  }
+}

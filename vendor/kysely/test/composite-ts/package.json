@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "scripts": {
+    "precheck:types": "cd ../.. && pnpm build && cp -r dist test/composite-ts/node_modules/kysely/",
+    "check:types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "kysely": "^0.28.9"
+  }
+}

@@ -1,0 +1,161 @@
+import React, { useState } from 'react';
+import { Label, Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from '../../../../src';
+import { pageDataWithFillColor } from '../../data';
+import { getStoryArgsFromArgsTypesObject } from '../props/utils';
+import { RechartsHookInspector } from '../../../storybook-addon-recharts';
+import { PieChartArgs } from '../arg-types/PieChartArgs';
+import { assertNotNull } from '../../../../test/helper/assertNotNull';
+
+export default {
+  argTypes: PieChartArgs,
+  component: PieChart,
+};
+
+export const API = {
+  name: 'Simple',
+  render: (args: Record<string, any>) => {
+    const { data, activeShape } = args;
+    return (
+      <ResponsiveContainer width="100%" height={400}>
+        <PieChart {...args}>
+          <Pie
+            data={data}
+            dataKey="uv"
+            shape={({ isActive, ...props }) => {
+              return <Sector {...props} fill={isActive ? activeShape.fill : props.fill} />;
+            }}
+          />
+          <Tooltip defaultIndex={3} />
+          <RechartsHookInspector />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+  },
+  args: {
+    ...getStoryArgsFromArgsTypesObject(PieChartArgs),
+    data: pageDataWithFillColor,
+    activeShape: { fill: 'red' },
+    margin: {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
+  },
+};
+
+export const Donut = {
+  render: (args: Record<string, any>) => {
+    return (
+      <PieChart {...args}>
+        <Pie data={args.data} dataKey="uv" nameKey="name" innerRadius={50} outerRadius={80} cornerRadius={8}>
+          <Label position="center" fill="#000" fontSize={12} fontWeight="bold" dy={-7}>
+            Donut
+          </Label>
+          <Label position="center" fontSize={12} fontWeight="bold" dy={8}>
+            Chart
+          </Label>
+          <Legend align="right" verticalAlign="middle" layout="vertical" />
+        </Pie>
+        <RechartsHookInspector />
+      </PieChart>
+    );
+  },
+  args: {
+    ...getStoryArgsFromArgsTypesObject(PieChartArgs),
+    width: 500,
+    height: 300,
+    data: pageDataWithFillColor,
+  },
+};
+
+export const ChangingDataKey = {
+  render: (args: Record<string, any>) => {
+    type MockDataType = {
+      x?: { value: number };
+      y?: { value: number };
+      name: string;
+      fill: string;
+    };
+    const data1: ReadonlyArray<MockDataType> = [
+      { x: { value: 1 }, name: 'x1', fill: 'blue' },
+      { x: { value: 2 }, name: 'x2', fill: 'red' },
+      { x: { value: 3 }, name: 'x3', fill: 'green' },
+    ];
+    const data2: ReadonlyArray<MockDataType> = [
+      { y: { value: 3 }, name: 'y1', fill: 'blue' },
+      { y: { value: 2 }, name: 'y2', fill: 'red' },
+      { y: { value: 1 }, name: 'y3', fill: 'green' },
+    ];
+
+    const dataKey1 = (d: MockDataType) => {
+      assertNotNull(d.x);
+      return d.x.value;
+    };
+    const dataKey2 = (d: MockDataType) => {
+      assertNotNull(d.y);
+      return d.y.value;
+    };
+
+    const [useData2, setUseData2] = useState(false);
+    const [visible, setVisible] = useState(true);
+
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => {
+            setUseData2(false);
+            setVisible(true);
+          }}
+        >
+          Use data1
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setUseData2(true);
+            setVisible(true);
+          }}
+        >
+          Use data2
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVisible(false);
+          }}
+        >
+          Hide
+        </button>
+        <PieChart {...args} data={useData2 ? data2 : data1}>
+          <Tooltip />
+          <Legend />
+          <RechartsHookInspector />
+          <Pie
+            data={useData2 ? data2 : data1}
+            name="Animated line"
+            hide={!visible}
+            type="monotone"
+            dataKey={useData2 ? dataKey2 : dataKey1}
+            stroke="#8884d8"
+            strokeDasharray="5 5"
+            label={{ fill: 'red' }}
+            animationDuration={3000}
+          />
+        </PieChart>
+      </>
+    );
+  },
+  args: {
+    ...getStoryArgsFromArgsTypesObject(PieChartArgs),
+    width: 500,
+    height: 300,
+    margin: {
+      top: 30,
+      right: 30,
+      left: 20,
+      bottom: 5,
+    },
+  },
+};

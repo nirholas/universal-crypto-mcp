@@ -7,7 +7,7 @@
  * @license Apache-2.0
  */
 
-import { WalletProvider, WalletProviderType } from './types';
+import { WalletProvider, WalletProviderType, ChainFamily } from './types';
 
 export const walletProviders: Record<WalletProviderType, WalletProvider> = {
   metamask: {
@@ -111,7 +111,7 @@ export const walletProviders: Record<WalletProviderType, WalletProvider> = {
 /**
  * Get wallet providers by chain family
  */
-export function getWalletProvidersByChain(family: 'evm' | 'solana'): WalletProvider[] {
+export function getWalletProvidersByChain(family: ChainFamily): WalletProvider[] {
   return Object.values(walletProviders).filter(p => 
     p.supportedChains.includes(family)
   );

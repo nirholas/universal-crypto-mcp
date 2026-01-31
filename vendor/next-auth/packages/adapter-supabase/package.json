@@ -1,0 +1,49 @@
+{
+  "name": "@auth/supabase-adapter",
+  "version": "1.11.0",
+  "description": "Supabase adapter for Auth.js",
+  "homepage": "https://authjs.dev",
+  "repository": "https://github.com/nextauthjs/next-auth",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
+  },
+  "author": "Martin Sonnberger <martin.sonnberger@icloud.com>",
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts*",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "keywords": [
+    "next-auth",
+    "next.js",
+    "supabase"
+  ],
+  "license": "ISC",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf *.d.ts* *.js dist/ coverage/ supabase/{.branches,.temp}",
+    "test": "./test/test.sh"
+  },
+  "dependencies": {
+    "@auth/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.43.1"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.43.1",
+    "supabase": "^1.165.0"
+  }
+}

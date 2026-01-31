@@ -1,0 +1,30 @@
+---
+title: クールモード
+description: クールモードの有効化
+---
+
+# クールモード
+
+## クールモードの有効化 🌈🌈🌈
+
+`RainbowKitProvider`の`coolMode`プロップを使ってクールモードを有効にすることができます。
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => (
+  <RainbowKitProvider coolMode {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### でも、それは何ですか？
+
+ウォレットリストからウォレットを選択すると、絵文字の爆発が🌈🌈🌈表示されます。選択したウォレットのアイコンを使用します。
+
+#### デモ
+
+下のボタンを押して、クールモードの動作を確認してください。
+
+<CoolMode />

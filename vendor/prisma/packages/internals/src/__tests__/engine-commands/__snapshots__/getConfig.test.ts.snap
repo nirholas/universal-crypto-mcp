@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getConfig datasource with env var 1`] = `
+""{
+  "generators": [],
+  "datasources": [
+    {
+      "name": "db",
+      "provider": "postgresql",
+      "activeProvider": "postgresql",
+      "schemas": [],
+      "sourceFilePath": "schema.prisma"
+    }
+  ],
+  "warnings": []
+}""
+`;
+
+exports[`getConfig empty config 1`] = `
+""{
+  "generators": [],
+  "datasources": [
+    {
+      "name": "db",
+      "provider": "sqlite",
+      "activeProvider": "sqlite",
+      "schemas": [],
+      "sourceFilePath": "schema.prisma"
+    }
+  ],
+  "warnings": []
+}""
+`;
+
+exports[`getConfig with generator and datasource 1`] = `
+""{
+  "generators": [
+    {
+      "name": "gen",
+      "provider": {
+        "fromEnvVar": null,
+        "value": "fancy-provider"
+      },
+      "output": null,
+      "config": {},
+      "binaryTargets": [
+        {
+          "fromEnvVar": null,
+          "value": "TEST_PLATFORM",
+          "native": true
+        }
+      ],
+      "previewFeatures": [],
+      "sourceFilePath": "schema.prisma"
+    }
+  ],
+  "datasources": [
+    {
+      "name": "db",
+      "provider": "sqlite",
+      "activeProvider": "sqlite",
+      "schemas": [],
+      "sourceFilePath": "schema.prisma"
+    }
+  ],
+  "warnings": []
+}""
+`;

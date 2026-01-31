@@ -1,0 +1,28 @@
+---
+title: Tamaños de Modal
+description: Ancho vs. Compacto
+---
+
+# Tamaños de Modal
+
+## Tamaño Ancho vs. Compacto
+
+Por defecto, el `modalSize` de RainbowKit está configurado como `wide` (y se ve así):
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+También ofrecemos un tamaño de modal `compact`, que se ve así:
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+Para configurar el tamaño de tu modal a `compact`, solo añade `modalSize="compact"` como un prop en tu `RainbowKitProvider`:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

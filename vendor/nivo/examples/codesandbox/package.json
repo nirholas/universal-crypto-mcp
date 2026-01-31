@@ -1,0 +1,67 @@
+{
+  "name": "nivo-codesandbox",
+  "version": "1.0.0",
+  "description": "Nivo example starter project",
+  "keywords": [
+    "nivo",
+    "starter"
+  ],
+  "main": "src/index.js",
+  "dependencies": {
+    "@nivo/annotations": "0.86.0",
+    "@nivo/arcs": "0.86.0",
+    "@nivo/axes": "0.86.0",
+    "@nivo/bar": "0.86.0",
+    "@nivo/bullet": "0.86.0",
+    "@nivo/bump": "0.86.0",
+    "@nivo/calendar": "0.86.0",
+    "@nivo/chord": "0.86.0",
+    "@nivo/circle-packing": "0.86.0",
+    "@nivo/colors": "0.86.0",
+    "@nivo/core": "0.86.0",
+    "@nivo/funnel": "0.86.0",
+    "@nivo/generators": "0.86.0",
+    "@nivo/geo": "0.86.0",
+    "@nivo/heatmap": "0.86.0",
+    "@nivo/legends": "0.86.0",
+    "@nivo/line": "0.86.0",
+    "@nivo/marimekko": "0.86.0",
+    "@nivo/network": "0.86.0",
+    "@nivo/parallel-coordinates": "0.86.0",
+    "@nivo/pie": "0.86.0",
+    "@nivo/radar": "0.86.0",
+    "@nivo/sankey": "0.86.0",
+    "@nivo/scales": "0.86.0",
+    "@nivo/scatterplot": "0.86.0",
+    "@nivo/stream": "0.86.0",
+    "@nivo/sunburst": "0.86.0",
+    "@nivo/swarmplot": "0.86.0",
+    "@nivo/tooltip": "0.86.0",
+    "@nivo/treemap": "0.86.0",
+    "@nivo/voronoi": "0.86.0",
+    "@nivo/waffle": "0.86.0",
+    "history": "5.0.0",
+    "otion": "0.6.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-scripts": "4.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.5",
+    "@types/react-dom": "17.0.5",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

@@ -1,0 +1,45 @@
+import { LitElement, html } from 'lit'
+
+import { RouterController } from '@reown/appkit-controllers'
+import { customElement } from '@reown/appkit-ui'
+import '@reown/appkit-ui/wui-button'
+import '@reown/appkit-ui/wui-flex'
+import '@reown/appkit-ui/wui-icon'
+import '@reown/appkit-ui/wui-text'
+import '@reown/appkit-ui/wui-visual'
+
+@customElement('w3m-what-is-a-buy-view')
+export class W3mWhatIsABuyView extends LitElement {
+  // -- Render -------------------------------------------- //
+  public override render() {
+    return html`
+      <wui-flex
+        flexDirection="column"
+        .padding=${['6', '10', '5', '10'] as const}
+        alignItems="center"
+        gap="5"
+      >
+        <wui-visual name="onrampCard"></wui-visual>
+        <wui-flex flexDirection="column" gap="2" alignItems="center">
+          <wui-text align="center" variant="md-medium" color="primary">
+            Quickly and easily buy digital assets!
+          </wui-text>
+          <wui-text align="center" variant="sm-regular" color="secondary">
+            Simply select your preferred onramp provider and add digital assets to your account
+            using your credit card or bank transfer
+          </wui-text>
+        </wui-flex>
+        <wui-button @click=${RouterController.goBack}>
+          <wui-icon size="sm" color="inherit" name="add" slot="iconLeft"></wui-icon>
+          Buy
+        </wui-button>
+      </wui-flex>
+    `
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'w3m-what-is-a-buy-view': W3mWhatIsABuyView
+  }
+}

@@ -1,0 +1,9 @@
+datasource db {
+  provider     = "postgresql"
+  extensions   = [citext(schema: "public")]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}

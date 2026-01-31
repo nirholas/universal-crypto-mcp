@@ -1,0 +1,29 @@
+# API
+
+## `useThemeConfig` hook
+
+The `useThemeConfig` hook returns values of your
+[theme configuration](/docs/docs-theme/theme-configuration) and is made to
+dynamically configure your project.
+
+```js
+import { useThemeConfig } from 'nextra-theme-docs'
+```
+
+<APIDocs
+  code="export type { useThemeConfig as default } from 'nextra-theme-docs'"
+  flattened
+/>
+
+## `useConfig` hook
+
+```js
+import { useConfig } from 'nextra-theme-docs'
+```
+
+The `useConfig` hook returns data from your current page context.
+
+<APIDocs
+  code="export type { useConfig as default } from 'nextra-theme-docs'"
+  flattened
+/>

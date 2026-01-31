@@ -1,0 +1,17 @@
+name: Compressed Size
+
+on: [pull_request]
+
+jobs:
+  compressed_size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+      - uses: preactjs/compressed-size-action@v3
+        with:
+          pattern: './dist/**/*.{js,mjs}'

@@ -1,0 +1,102 @@
+---
+title: Користувальницька аутентифікація
+description: Підключіться до власного бекенду аутентифікації
+---
+
+# Користувальницька аутентифікація
+
+## Підключіться до власного бекенду аутентифікації
+
+Хоча RainbowKit забезпечує [підтримку Вхід з Ethereum і NextAuth на першокласному рівні,](/docs/authentication#set-up-sign-in-with-ethereum-and-nextauth) ви також можете інтегруватися з користувальницькими бекендами та форматами повідомлень.
+
+### Створення користувальницького адаптера
+
+Спочатку створіть адаптер аутентифікації. Це дозволяє RainbowKit створювати/готувати повідомлення та взаємодіяти з вашим бекендом.
+
+Як приклад, ми можемо створити адаптер аутентифікації, який дозволяє нам використовувати [Sign-In з Ethereum](https://login.xyz) за допомогою деяких налаштовуваних точок API, наприклад, [iron-session](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-siwe-iron-session).
+
+```tsx
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
+
+const authenticationAdapter = createAuthenticationAdapter({
+  getNonce: async () => {
+    const response = await fetch('/api/nonce');
+    return await response.text();
+  },
+
+  createMessage: ({ nonce, address, chainId }) => {
+    return createSiweMessage({
+      domain: window.location.host,
+      address,
+      statement: 'Sign in with Ethereum to the app.',
+      uri: window.location.origin,
+      version: '1',
+      chainId,
+      nonce,
+    });
+  },
+
+  verify: async ({ message, signature }) => {
+    const verifyRes = await fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, signature }),
+    });
+
+    return Boolean(verifyRes.ok);
+  },
+
+  signOut: async () => {
+    await fetch('/api/logout');
+  },
+});
+```
+
+#### Надання стану аутентифікації
+
+Припускаючи, що ваш додаток вже певним чином керує життєвим циклом аутентифікації, ви можете передати поточний статус аутентифікації разом із вашим користувальницьким адаптером до `RainbowKitAuthenticationProvider`, обгортаючи ваш існуючий `RainbowKitProvider`.
+
+```tsx
+import {
+  createAuthenticationAdapter,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const authenticationAdapter = createAuthenticationAdapter({
+  /* See above... */
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }: AppProps) {
+  // You'll need to resolve AUTHENTICATION_STATUS here
+  // using your application's authentication system.
+  // It needs to be either 'loading' (during initial load),
+  // 'unauthenticated' or 'authenticated'.
+
+  return (
+    <WagmiProvider {...etc}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitAuthenticationProvider
+          adapter={authenticationAdapter}
+          status={AUTHENTICATION_STATUS}
+        >
+          <RainbowKitProvider {...etc}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+Якщо ви вже створили адаптер для існуючої бібліотеки аутентифікації з відкритим вихідним кодом, будь ласка, розгляньте можливість створення пакета, який можуть використовувати інші!

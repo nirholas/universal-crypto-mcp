@@ -1,0 +1,96 @@
+import {
+  ADDITIONAL_PROPERTY_FLAG,
+  UI_OPTIONS_KEY,
+  buttonId,
+  FormContextType,
+  RJSFSchema,
+  StrictRJSFSchema,
+  TranslatableString,
+  WrapIfAdditionalTemplateProps,
+} from '@rjsf/utils';
+import { Flex, Grid, TextInput } from '@mantine/core';
+
+/** The `WrapIfAdditional` component is used by the `FieldTemplate` to rename, or remove properties that are
+ * part of an `additionalProperties` part of a schema.
+ *
+ * @param props - The `WrapIfAdditionalProps` for this component
+ */
+export default function WrapIfAdditionalTemplate<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>(props: WrapIfAdditionalTemplateProps<T, S, F>) {
+  const {
+    id,
+    classNames,
+    style,
+    label,
+    displayLabel,
+    rawDescription,
+    required,
+    readonly,
+    disabled,
+    schema,
+    uiSchema,
+    onKeyRenameBlur,
+    onRemoveProperty,
+    registry,
+    children,
+  } = props;
+  const { templates, translateString } = registry;
+  // Button templates are not overridden in the uiSchema
+  const { RemoveButton } = templates.ButtonTemplates;
+  const keyLabel = translateString(TranslatableString.KeyLabel, [label]);
+  const additional = ADDITIONAL_PROPERTY_FLAG in schema;
+
+  if (!additional) {
+    return (
+      <div className={classNames} style={style}>
+        {children}
+      </div>
+    );
+  }
+
+  // The `block` prop is not part of the `IconButtonProps` defined in the template, so put it into the uiSchema instead
+  const uiOptions = uiSchema ? uiSchema[UI_OPTIONS_KEY] : {};
+  const buttonUiOptions = {
+    ...uiSchema,
+    [UI_OPTIONS_KEY]: { ...uiOptions, block: true },
+  };
+
+  return (
+    <div className={classNames} style={style}>
+      <Flex gap='xs' align='end' justify='center'>
+        <Grid w='100%' align='center'>
+          <Grid.Col span={6} className='form-additional'>
+            <TextInput
+              className='form-group'
+              label={displayLabel ? keyLabel : undefined}
+              defaultValue={label}
+              required={required}
+              description={rawDescription ? '\u00A0' : undefined}
+              disabled={disabled || readonly}
+              id={`${id}-key`}
+              name={`${id}-key`}
+              onBlur={!readonly ? onKeyRenameBlur : undefined}
+            />
+          </Grid.Col>
+          <Grid.Col span={6} className='form-additional'>
+            {children}
+          </Grid.Col>
+        </Grid>
+        <div>
+          <RemoveButton
+            id={buttonId(id, 'remove')}
+            iconType='sm'
+            className='rjsf-array-item-remove'
+            disabled={disabled || readonly}
+            onClick={onRemoveProperty}
+            uiSchema={buttonUiOptions}
+            registry={registry}
+          />
+        </div>
+      </Flex>
+    </div>
+  );
+}

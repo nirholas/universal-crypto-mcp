@@ -378,12 +378,11 @@ export async function getNFTsForOwner(
       floorPrice: nft.contract.openSeaMetadata?.floorPrice,
       isVerified: !!nft.contract.openSeaMetadata?.collectionSlug,
     },
-    attributes: nft.raw?.metadata?.attributes?.map((attr) => ({
+    traits: nft.raw?.metadata?.attributes?.map((attr) => ({
       traitType: attr.trait_type,
       value: String(attr.value),
     })),
-    tokenType: nft.tokenType as 'ERC721' | 'ERC1155',
-    balance: 1,
+    standard: nft.tokenType,
   }));
 
   return {

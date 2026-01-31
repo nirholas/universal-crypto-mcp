@@ -1,0 +1,44 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+      - docusaurus-v**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Node
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Installation
+        run: yarn install --frozen-lockfile || yarn install --frozen-lockfile || yarn install --frozen-lockfile
+      - name: Check immutable yarn.lock
+        run: git diff --exit-code
+
+      - name: Check for suspicious yarn.lock
+        # for allowed aliases, see https://github.com/yargs/cliui/pull/139/files#r1670711112
+        run: yarn lockfile-lint --path yarn.lock --type yarn --allowed-hosts yarn --validate-https --validate-package-names --validate-integrity --empty-hostname=false --allowed-package-name-aliases react-loadable react-helmet-async string-width-cjs strip-ansi-cjs wrap-ansi-cjs
+
+      - name: Lint
+        run: |
+          echo "::add-matcher::.github/workflows/cspell-problem-matcher.json"
+          yarn lint:ci
+
+      - name: Prettier Code
+        run: yarn format:diff

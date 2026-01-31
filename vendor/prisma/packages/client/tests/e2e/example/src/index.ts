@@ -1,0 +1,17 @@
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaClient } from '@prisma/client'
+
+async function main() {
+  const adapter = new PrismaBetterSqlite3({
+    url: './dev.db',
+  })
+  const prisma = new PrismaClient({ adapter })
+
+  const user = await prisma.user.create({
+    data: { email: 'john@doe.io' },
+  })
+
+  console.log(user)
+}
+
+void main()

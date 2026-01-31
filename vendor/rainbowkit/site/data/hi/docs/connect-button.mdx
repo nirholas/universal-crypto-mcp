@@ -1,0 +1,149 @@
+---
+title: कनेक्ट बटन
+description: कनेक्ट बटन का उपयोग और अनुकूलन
+---
+
+# कनेक्ट बटन
+
+## कनेक्ट बटन का उपयोग और अनुकूलन
+
+यह मुख्य घटक है। यह कनेक्ट/डिस्कनेक्ट बटन के साथ-साथ चेन-स्वैपिंग यूआई को प्रस्तुत करने के लिए जिम्मेदार है।
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> ध्यान दें: सुनिश्चित करें कि आपका ऐप आवश्यक प्रोवाइडर्स में लिपटा हुआ है। [अधिक पढ़ें](/docs/installation#wrap-providers)।
+
+### गुण
+
+`कनेक्ट बटन` घटक कई गुणों को प्रकट करता है जिससे इसके स्वरूप को अनुकूलित किया जा सकता है, जिसमें विभिन्न तत्वों की दृश्यता को टॉगल करना शामिल है।
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: 'वॉलेट को कनेक्ट करें',
+      type: 'string',
+      description: 'कनेक्ट बटन पर प्रदर्शित पाठ लेबल',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "क्या सक्रिय खाते का अवतार और/या पता दिखाया जाता है",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "क्या वर्तमान चेन का चिह्न और/या नाम प्रदर्शित किया जाता है, या पूरी तरह छुपा है",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        'क्या अकाउंट नाम के बगल में बैलेंस दिखाई देता है',
+    },
+  ]}
+/>
+
+> ध्यान दें: बिल्ट-इन `largeScreen` ब्रेकप्वाइंट `768px` है।
+
+### उदाहरण
+
+#### लेबल
+
+`लेबल` गुण का उपयोग करके एक कस्टम `कनेक्ट बटन` पाठ सेट करें।
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### खाता स्थिति
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनका आप `खाता स्थिति` गुण का उपयोग कर सकते हैं।
+
+केवल खाते का अवतार दिखाएं।
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+केवल खाते का पता दिखाएं।
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### चेन स्थिति
+
+यहाँ कुछ अलग-अलग तरीके हैं जिनका आप `चेन स्थिति` गुण का उपयोग कर सकते हैं।
+
+केवल वर्तमान चेन का चिह्न दिखाएं।
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+केवल वर्तमान चेन का नाम दिखाएं।
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+चेन यूआई को पूरी तरह से छुपाएं।
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### बैलेंस दिखाएं
+
+`बैलेंस दिखाएं` गुण का उपयोग करके बैलेंस को छुपाएं/दिखाएं।
+
+बैलेंस को छुपाएं।
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### उत्तरदायी
+
+ये गुण एक उत्तरदायी स्वरूप में भी परिभाषित किए जा सकते हैं।
+
+छोटे स्क्रीन पर, केवल खाता चिह्न दिखाएं। लेकिन बड़े स्क्रीन पर, चिह्न और पता दोनों दिखाएं।
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+छोटे स्क्रीन पर बैलेंस छुपाएं। लेकिन बड़े स्क्रीन पर, इसे दिखाएं।
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

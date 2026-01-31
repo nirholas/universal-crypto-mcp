@@ -17,6 +17,7 @@ import {
   parseBody,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -37,9 +38,10 @@ const RenewSubscriptionSchema = z.object({
 
 async function handler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 2]; // /subscriptions/[id]/renew
   const body = await parseBody(request, RenewSubscriptionSchema);
   const walletAddress = request.headers.get('x-wallet-address');
   const db = getDatabase();
@@ -57,11 +59,9 @@ async function handler(
     
     // Verify ownership if wallet address provided
     if (walletAddress && 
-        subscription.subscriberAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+        subscription.subscriberWallet.toLowerCase() !== walletAddress.toLowerCase()) {
       return createErrorResponse(
-        ErrorCodes.FORBIDDEN,
-        'You do not own this subscription',
-        403
+        new APIException(ErrorCodes.FORBIDDEN, 'You do not own this subscription')
       );
     }
     
@@ -73,13 +73,11 @@ async function handler(
     
     // Update subscription
     const updatedSubscription = await db.updateSubscription(id, {
-      status: 'active',
+      active: true,
       startDate: now,
       endDate,
-      nextBillingDate: endDate,
       autoRenew: true,
       txHash: body.txHash,
-      usage: { used: 0, limit: subscription.usage?.limit || 1000, period: now.toISOString().slice(0, 7) },
     });
     
     // Get service for response
@@ -92,16 +90,16 @@ async function handler(
         serviceName: service?.name || 'Unknown Service',
         plan: updatedSubscription.plan,
         price: updatedSubscription.price,
-        status: updatedSubscription.status,
+        status: updatedSubscription.active ? 'active' : 'cancelled',
         startDate: updatedSubscription.startDate instanceof Date 
           ? updatedSubscription.startDate.toISOString() 
           : updatedSubscription.startDate,
         endDate: updatedSubscription.endDate instanceof Date 
           ? updatedSubscription.endDate.toISOString() 
           : updatedSubscription.endDate,
-        nextBillingDate: updatedSubscription.nextBillingDate instanceof Date 
-          ? updatedSubscription.nextBillingDate.toISOString() 
-          : updatedSubscription.nextBillingDate,
+        nextBillingDate: updatedSubscription.endDate instanceof Date 
+          ? updatedSubscription.endDate.toISOString() 
+          : updatedSubscription.endDate,
         autoRenew: updatedSubscription.autoRenew,
       },
       message: 'Subscription renewed successfully.',
@@ -113,9 +111,7 @@ async function handler(
     }
     console.error('[API] Subscription renewal error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to renew subscription',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to renew subscription')
     );
   }
 }

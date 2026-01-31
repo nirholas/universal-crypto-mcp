@@ -1,0 +1,149 @@
+---
+title: 连接按钮
+description: 使用和定制连接按钮
+---
+
+# 连接按钮
+
+## 使用和定制连接按钮
+
+这是主要组件。负责呈现连接/断开按钮以及链切换UI。
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return <ConnectButton />;
+};
+```
+
+> 注意：请确保您的应用程序包含在必要的提供程序中。[阅读更多](/docs/installation#wrap-providers)。
+
+### 属性
+
+`ConnectButton`组件提供了几个属性，用于自定义其外观，包括切换不同元素的可见性。
+
+<PropsTable
+  data={[
+    {
+      name: 'label',
+      required: false,
+      default: '连接钱包',
+      type: 'string',
+      description: '显示在连接按钮上的文本标签',
+    },
+    {
+      name: 'accountStatus',
+      required: false,
+      default: 'full',
+      type: '"avatar" | "address" | "full" | { smallScreen: AccountStatus, largeScreen?: AccountStatus }',
+      typeSimple: 'enum',
+      description:
+        "是否显示活跃账户的头像和/或地址",
+    },
+    {
+      name: 'chainStatus',
+      required: false,
+      default: '{ smallScreen: "icon", largeScreen: "full" }',
+      type: '"icon" | "name" | "full" | "none" | { smallScreen: ChainStatus, largeScreen?: ChainStatus }',
+      typeSimple: 'enum',
+      description:
+        "是否显示当前链的图标和/或名称，或完全隐藏",
+    },
+    {
+      name: 'showBalance',
+      required: false,
+      default: '{ smallScreen: false, largeScreen: true }',
+      type: 'boolean | { smallScreen: boolean, largeScreen?: boolean }',
+      typeSimple: 'enum',
+      description:
+        '是否在账户名称旁边显示余额',
+    },
+  ]}
+/>
+
+> 注意：内置的`largeScreen`断点为`768px`。
+
+### 示例
+
+#### 标签
+
+使用`label`属性设置自定义的`ConnectButton`文本。
+
+```tsx
+<ConnectButton label="__Sign in__" />
+```
+
+#### 账户状态
+
+以下是使用`accountStatus`属性的几种不同方式。
+
+仅显示账户的头像。
+
+```tsx
+<ConnectButton accountStatus="__avatar__" />
+```
+
+仅显示账户的地址。
+
+```tsx
+<ConnectButton accountStatus="__address__" />
+```
+
+#### 链状态
+
+以下是使用`chainStatus`属性的几种不同方式。
+
+仅显示当前链的图标。
+
+```tsx
+<ConnectButton chainStatus="__icon__" />
+```
+
+仅显示当前链的名称。
+
+```tsx
+<ConnectButton chainStatus="__name__" />
+```
+
+完全隐藏链UI。
+
+```tsx
+<ConnectButton chainStatus="__none__" />
+```
+
+#### 显示余额
+
+使用`showBalance`属性隐藏/显示余额。
+
+隐藏余额。
+
+```tsx
+<ConnectButton showBalance={__false__} />
+```
+
+#### 响应式
+
+这些属性也可以以响应式格式定义。
+
+在小屏幕上，仅显示账户图标。但在大屏幕上，显示图标和地址。
+
+```tsx
+<ConnectButton
+  accountStatus={{
+    smallScreen: 'avatar',
+    largeScreen: 'full',
+  }}
+/>
+```
+
+在小屏幕上隐藏余额，但在大屏幕上显示余额。
+
+```tsx
+<ConnectButton
+  showBalance={{
+    smallScreen: false,
+    largeScreen: true,
+  }}
+/>
+```

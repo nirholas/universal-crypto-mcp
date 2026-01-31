@@ -1,0 +1,338 @@
+---
+title: कस्टम कनेक्टबटन
+description: कस्टम कनेक्टबटन का निर्माण
+---
+
+# कस्टम कनेक्टबटन
+
+## कस्टम कनेक्टबटन का निर्माण
+
+आप अपने स्वयं के कस्टम कनेक्शन बटन बनाने के लिए निम्न-स्तरीय `कनेक्टबटन.कस्टम` का उपयोग कर सकते हैं। यह घटक एक फ़ंक्शन को रेंडर करता है, जिसमें बिल्ट-इन बटनों को पुनः लागू करने के लिए आपकी आवश्यकता की सभी चीजें शामिल होती हैं।
+
+बिल्ट-इन बटनों का न्यूनतम पुनः कार्यान्वयन कुछ इस रूप में दिखाई देगा:
+
+```tsx
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+export const YourApp = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              'style': {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={openChainModal}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+निम्नलिखित गुण आपके रेंडर फ़ंक्शन को पास किए जाते हैं।
+
+### खाता गुण
+
+<PropsTable
+  data={[
+    {
+      name: 'account',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'वर्तमान खाते के विवरणों को शामिल करने वाला ऑब्जेक्ट, नीचे वर्णित',
+    },
+    {
+      name: 'account.address',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          पूरा खाता पता, जैसे
+          "0x7a3d05c70581bD345fe117c06e45f9669205384f"
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceDecimals',
+      required: false,
+      type: 'string | undefined	',
+      description: 'अकाउंट बैलेंस का दशमलव में रूप',
+    },
+    {
+      name: 'account.balanceFormatted',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          स्ट्रिंग के रूप में स्वरूपित अकाउंट बैलेंस, जैसे {' '}
+          <code>1.234567890123456789</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.balanceSymbol',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          बैलेंस के लिए मुद्रा प्रतीक, जैसे <code>ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayBalance',
+      required: false,
+      type: 'string | undefined	',
+      description: (
+        <>
+          बैलेंस को 3 महत्वपूर्ण अंकों में स्वरूपित करें, और
+          प्रतीक के साथ, जैसे <code>1.23 ETH</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.displayName',
+      required: false,
+      type: 'string',
+      description: (
+        <>
+          ENS नाम, या पते का एक छोटा संस्करण, जैसे {' '}
+          <code>"rainbowwallet.eth"</code> या <code>"0x7a…384f"</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.ensAvatar',
+      required: false,
+      type: 'string	| undefined',
+      description: 'ENS अवतार URI',
+    },
+    {
+      name: 'account.ensName',
+      required: false,
+      type: 'string	| undefined',
+      description: (
+        <>
+          ENS नाम, जैसे <code>rainbowwallet.eth</code>
+        </>
+      ),
+    },
+    {
+      name: 'account.hasPendingTransactions',
+      required: false,
+      type: 'boolean',
+      description:
+        'बूलियन जो यह इंगित करता है कि खाते में वर्तमान श्रृंखला के लिए लंबित लेन-देन हैं या नहीं',
+    },
+  ]}
+/>
+
+### श्रृंखला गुण
+
+<PropsTable
+  data={[
+    {
+      name: 'chain',
+      required: false,
+      type: 'object | undefined',
+      description:
+        'वर्तमान श्रृंखला के विवरणों को शामिल करने वाला ऑब्जेक्ट, नीचे वर्णित',
+    },
+    {
+      name: 'chain.hasIcon',
+      required: false,
+      type: 'boolean',
+      description: 'क्या श्रृंखला का एक आइकन निर्दिष्ट है',
+    },
+    {
+      name: 'chain.iconUrl',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'श्रृंखला का आइकन URL (जो Base64 डेटा URLs डाउनलोड करते समय भी अप्रबंधित हो सकता है)',
+    },
+    {
+      name: 'chain.iconBackground',
+      required: false,
+      type: 'string | undefined',
+      description:
+        'श्रृंखला आइकन पृष्ठभूमि जो छवियों के लोड होते समय दिखाई देगी',
+    },
+    {
+      name: 'chain.id',
+      required: false,
+      type: 'number',
+      description: (
+        <>
+          श्रृंखला आईडी, जैसे <code>1</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.name',
+      required: false,
+      type: 'string | undefined',
+      description: (
+        <>
+          श्रृंखला का नाम, जैसे <code>"Ethereum"</code>
+        </>
+      ),
+    },
+    {
+      name: 'chain.unsupported',
+      required: false,
+      type: 'boolean | undefined',
+      description:
+        'बूलियन जो यह इंगित करता है कि वर्तमान श्रृंखला असमर्थित है',
+    },
+  ]}
+/>
+
+### मोडल अवस्था गुण
+
+<PropsTable
+  data={[
+    {
+      name: 'openAccountModal',
+      required: false,
+      type: '() => void',
+      description: 'अकाउंट मोडल खोलने के लिए फ़ंक्शन',
+    },
+    {
+      name: 'openChainModal',
+      required: false,
+      type: '() => void',
+      description: 'श्रृंखला मोडल खोलने के लिए फ़ंक्शन',
+    },
+    {
+      name: 'openConnectModal',
+      required: false,
+      type: '() => void',
+      description: 'कनेक्ट मोडल खोलने के लिए फ़ंक्शन',
+    },
+    {
+      name: 'accountModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'बूलियन जो यह इंगित करता है कि अकाउंट मोडल खुले हुआ है',
+    },
+    {
+      name: 'chainModalOpen',
+      required: false,
+      type: 'boolean',
+      description: 'बूलियन जो यह इंगित करता है कि श्रृंखला मोडल खुले हुआ है',
+    },
+    {
+      name: 'connectModalOpen',
+      required: false,
+      type: 'boolean',
+      description:
+        'बूलियन जो यह इंगित करता है कि कनेक्ट मोडल खुले हुआ है',
+    },
+  ]}
+/>
+
+### सामान्य अवस्था गुण
+
+<PropsTable
+  data={[
+    {
+      name: 'mounted',
+      required: false,
+      type: 'boolean',
+      description:
+        'बूलियन जो यह इंगित करता है कि घटक माउंट हो गया है',
+    },
+    {
+      name: 'authenticationStatus',
+      required: false,
+      type: '"loading" | "unauthenticated" | "authenticated" | undefined',
+      description:
+        'प्रमाणीकरण स्थिति, या अज्ञात यदि प्रमाणीकरण कॉन्फ़िगर नहीं किया गया है',
+    },
+  ]}
+/>

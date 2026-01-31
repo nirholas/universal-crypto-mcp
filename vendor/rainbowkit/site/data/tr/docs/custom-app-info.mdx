@@ -1,0 +1,62 @@
+---
+title: Özel Uygulama Bilgileri
+description: Uygulamanızın bilgilerini özelleştirme
+---
+
+# Özel Uygulama Bilgileri
+
+## Uygulamanızın bilgilerini özelleştirme
+
+Uygulamanızın bilgilerini `RainbowKitProvider` üzerindeki `appInfo` özelliği ile iletebilirsiniz. Özelleştirebileceğiniz özellikler, uygulamanızın adı (`appName`) ve bağlantı modülündeki 'Daha Fazla Bilgi’ düğmesinin yönlendirdiği bağlantı (`learnMoreUrl`) dır:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'Rainbowkit Demo',
+        learnMoreUrl: 'https://learnaboutcryptowallets.example',
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### Bir Feragatname Ekleyin
+
+Bağlantı modülünün en altında gösterilecek kendi feragatnamenizi sağlayabilirsiniz. `appInfo`'daki `disclaimer` özelliği, `Text` ve `Link` argümanlarıyla bir `DisclaimerComponent` alır. Kendi temanızı miras alan bir feragatname oluşturmak için bunu kullanabilirsiniz. TypeScript kullanıcıları için `DisclaimerComponent` türünü dışa aktarıyoruz:
+
+```tsx
+import {
+  RainbowKitProvider,
+  DisclaimerComponent,
+} from '@rainbow-me/rainbowkit';
+
+const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
+  <Text>
+    By connecting your wallet, you agree to the{' '}
+    <Link href="https://termsofservice.xyz">Terms of Service</Link> and
+    acknowledge you have read and understand the protocol{' '}
+    <Link href="https://disclaimer.xyz">Disclaimer</Link>
+  </Text>
+);
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'RainbowKit Demo',
+        disclaimer: Disclaimer,
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```

@@ -1,0 +1,47 @@
+import { up } from 'empathic/package'
+import fs, { readFileSync } from 'fs'
+import packlist from 'npm-packlist'
+import path from 'path'
+import tempy from 'tempy'
+
+import { resolvePkg } from './resolvePkg'
+
+export async function getPackedPackage(name: string, target?: string, packageDir?: string): Promise<string | void> {
+  packageDir =
+    packageDir || (await resolvePkg(name, { basedir: process.cwd() })) || (await resolvePkg(name, { basedir: target }))
+
+  if (!packageDir) {
+    const pkgPath = up({ cwd: target })
+    if (pkgPath) {
+      const pkgJson = JSON.parse(readFileSync(pkgPath, { encoding: 'utf-8' }))
+      if (pkgJson.name === name) {
+        packageDir = path.dirname(pkgPath)
+      }
+    }
+  }
+
+  if (!packageDir && fs.existsSync(path.join(process.cwd(), 'package.json'))) {
+    packageDir = process.cwd()
+  }
+
+  if (!packageDir) {
+    throw new Error(`Error in getPackage: Could not resolve package ${name} from ${process.cwd()} target ${target}`)
+  }
+
+  const tmpDir = target ?? tempy.directory() // thanks Sindre
+
+  const pkgFiles = await packlist({ path: packageDir })
+
+  // we compute the paths of the files that would get npm published
+
+  // we copy each file that we found in pkg to a new destination
+  for (const file of pkgFiles) {
+    const src = path.join(packageDir, file)
+    const dest = path.join(tmpDir, file)
+
+    await fs.promises.mkdir(path.dirname(dest), { recursive: true })
+    await fs.promises.copyFile(src, dest)
+  }
+
+  return path.join(tmpDir)
+}

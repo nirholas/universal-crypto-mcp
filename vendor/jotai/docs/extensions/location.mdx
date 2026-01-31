@@ -1,0 +1,170 @@
+---
+title: Location
+description: This doc describes window.location extension.
+nav: 4.06
+keywords: location,hash
+---
+
+To deal with `window.location`, we have some functions to create atoms.
+
+### Install
+
+You have to install `jotai-location` to use this feature.
+
+```
+npm install jotai-location
+```
+
+## atomWithLocation
+
+```js
+atomWithLocation(options): PrimitiveAtom
+```
+
+`atomWithLocation` creates a new atom that links to `window.location`.
+
+Typically, you should only instantiate `atomWithLocation` once per application. This is because changes made to one instance might not be reflected in others.
+As this atom is designed to synchronize with the `window.location` object, using multiple instances can lead to unpredictable behavior.
+
+### Parameters
+
+**options** (optional): an object of options to customize the behavior of the atom
+
+### Options
+
+**preloaded** (optional): preloaded location value to avoid getting location at initialization.
+
+**replace** (optional): a boolean to indicate to use `replaceState` instead of `pushState`.
+
+**getLocation** (optional): a custom function to get location value.
+
+**applyLocation** (optional): a custom function to set location value.
+
+**subscribe** (optional): a custom function to subscribe to location change.
+
+### Examples
+
+```jsx
+import { useAtom } from 'jotai'
+import { atomWithLocation } from 'jotai-location'
+
+const locationAtom = atomWithLocation()
+
+const App = () => {
+  const [loc, setLoc] = useAtom(locationAtom)
+  return (
+    <ul>
+      <li>
+        <button
+          style={{
+            fontWeight: loc.pathname === '/' ? 'bold' : 'normal',
+          }}
+          onClick={() => setLoc((prev) => ({ ...prev, pathname: '/' }))}
+        >
+          Home
+        </button>
+      </li>
+      <li>
+        <button
+          style={{
+            fontWeight:
+              loc.pathname === '/foo' && !loc.searchParams?.get('bar')
+                ? 'bold'
+                : 'normal',
+          }}
+          onClick={() =>
+            setLoc((prev) => ({
+              ...prev,
+              pathname: '/foo',
+              searchParams: new URLSearchParams(),
+            }))
+          }
+        >
+          Foo
+        </button>
+      </li>
+      <li>
+        <button
+          style={{
+            fontWeight:
+              loc.pathname === '/foo' && loc.searchParams?.get('bar') === '1'
+                ? 'bold'
+                : 'normal',
+          }}
+          onClick={() =>
+            setLoc((prev) => ({
+              ...prev,
+              pathname: '/foo',
+              searchParams: new URLSearchParams([['bar', '1']]),
+            }))
+          }
+        >
+          Foo?bar=1
+        </button>
+      </li>
+    </ul>
+  )
+}
+```
+
+### Stackblitz
+
+<Stackblitz id="vitejs-vite-9v72fq" file="src%2FApp.tsx" />
+
+## atomWithHash
+
+```js
+atomWithHash(key, initialValue, options): PrimitiveAtom
+```
+
+This creates a new atom that is connected with URL hash.
+The hash must be in the URLSearchParams format.
+It's a two-way binding: changing the atom value will change the hash and
+changing the hash will change the atom value.
+This function works only with DOM.
+
+### Parameters
+
+**key** (required): a unique string used as the key when syncing state with localStorage, sessionStorage, or AsyncStorage
+
+**initialValue** (required): the initial value of the atom
+
+**options** (optional): an object of options to customize the behavior of the atom
+
+### Options
+
+**serialize** (optional): a custom function to serialize the atom value to the hash. Defaults to `JSON.stringify`.
+
+**deserialize** (optional): a custom function to deserialize the hash to the atom value. Defaults to `JSON.parse`.
+
+**subscribe** (optional): custom hash change subscribe function
+
+**setHash** (optional): `replaceState` or a custom function that describes how hash gets updated on the side of the browser. Defaults to pushing a new entry to the history via `window.location.hash = searchParams` ([jotai-location#4](https://github.com/jotaijs/jotai-location/pull/4))
+
+### Examples
+
+```jsx
+import { useAtom } from 'jotai'
+import { atomWithHash } from 'jotai-location'
+
+const countAtom = atomWithHash('count', 1)
+
+const Counter = () => {
+  const [count, setCount] = useAtom(countAtom)
+  return (
+    <div>
+      <div>count: {count}</div>
+      <button onClick={() => setCount((c) => c + 1)}>+1</button>
+    </div>
+  )
+}
+```
+
+### Stackblitz
+
+<Stackblitz id="vitejs-vite-zngpjt" file="src%2FApp.tsx" />
+
+### Deleting Item
+
+Please refer [atomWithStorage](../utilities/storage.mdx)
+for the usage about deleting items.

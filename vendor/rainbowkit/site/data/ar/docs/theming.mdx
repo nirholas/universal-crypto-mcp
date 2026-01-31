@@ -1,0 +1,385 @@
+---
+title: التنسيق
+description: استخدام وتخصيص الثيمات
+---
+
+# التنسيق
+
+## استخدام وتخصيص الثيمات
+
+يمكنك تعديل واجهة RainbowKit لتتناسب مع علامتك التجارية. يمكنك اختيار ألوان تمييز وتهيئات نصف القطر للحواف محددة مسبقًا.
+
+توجد ثلاث وظائف ثيم مدمجة:
+
+- `lightTheme` &nbsp; (الافتراضي)
+- `darkTheme`
+- `midnightTheme`
+
+وظيفة الثيم تعيد كائن الثيم. يمكنك تمرير الكائن إلى خاصية `theme` في `RainbowKitProvider`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+إذا أردت، يمكنك إدخال `accentColor`، `accentColorForeground`، `borderRadius`، `fontStack` و `overlayBlur` لتخصيصها.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider
+    theme={darkTheme({
+      __accentColor__: '#7b3fe4',
+      __accentColorForeground__: 'white',
+      __borderRadius__: 'small',
+      __fontStack__: 'system',
+      __overlayBlur__: 'small',
+    })}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### تخصيص الثيمات المدمجة
+
+الوظائف الثيمية المدمجة تقبل أيضًا كائن الخيارات، مما يسمح لك بالاختيار من بين عدة أنماط بصرية مختلفة.
+
+<PropsTable
+  data={[
+    {
+      name: 'accentColor',
+      required: false,
+      default: '"#0E76FD"',
+      type: 'string',
+      description:
+        'لون الخلفية/النص للعناصر التفاعلية المختلفة.',
+    },
+    {
+      name: 'accentColorForeground',
+      required: false,
+      default: '"white"',
+      type: 'string',
+      description:
+        'اللون المستخدم لعناصر المقدمة المعروضة فوق لون التمييز.',
+    },
+    {
+      name: 'borderRadius',
+      required: false,
+      default: 'large',
+      type: '"none" | "small" | "medium" | "large"',
+      typeSimple: 'enum',
+      description: 'حجم مقياس نصف القطر للحواف بالكامل.',
+    },
+    {
+      name: 'fontStack',
+      required: false,
+      default: 'rounded',
+      type: '"rounded" | "system"',
+      typeSimple: 'enum',
+      description:
+        "مكدس الخطوط المستخدم طوال الواجهة. لاحظ أن `rounded` يحاول استخدام SF Pro Rounded ويعود إلى الخطوط الافتراضية عند عدم توفره.",
+    },
+    {
+      name: 'overlayBlur',
+      required: false,
+      default: 'none',
+      type: '"large" | "small" | "none"',
+      typeSimple: 'enum',
+      description: 'تشويش خلفية النافذة المنبثقة.',
+    },
+  ]}
+/>
+
+على سبيل المثال، لتخصيص الثيم الداكن بلون تمييز بنفسجي ومقياس نصف قطر `medium`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+كل ثيم يوفر أيضًا عدة إعدادات مسبقة لألوان التمييز (`blue`, `green`, `orange`, `pink`, `purple`, `red`) التي يمكن دمجها في كائن الخيارات. على سبيل المثال، لاستخدام إعداد اللون التمييزي `pink`:
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.pink,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### أمثلة
+
+#### وظيفة الثيم
+
+إليك بعض الطرق المختلفة لاستخدام خاصية `theme`.
+
+استخدام الثيم `darkTheme`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={darkTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+استخدام الثيم `midnightTheme`.
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider theme={midnightTheme()} {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+#### لون التمييز
+
+إليك بعض الطرق المختلفة لاستخدام إعداد `accentColor`.
+
+ضبط لون التمييز إلى قيمة بنفسجية مخصصة.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+ضبط لون التمييز إلى الإعداد المسبق `green` المدمج.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        ...darkTheme.accentColors.green,
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### نصف قطر الحافة
+
+إليك بعض الطرق المختلفة لاستخدام إعداد `borderRadius`.
+
+ضبط نصف قطر الحافة إلى `medium`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'medium',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+ضبط نصف قطر الحافة إلى `none`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        borderRadius: 'none',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+> تذكير: القيم المتاحة لنصف قطر الحافة هي: `large` (افتراضيًا)، `medium`، `small` و `none`.
+
+#### مكدس الخطوط
+
+افتراضيًا، يتم تعيين `fontStack` إلى `rounded`. ولكن إليك كيفية استخدام إعداد `fontStack`.
+
+ضبط مكدس الخطوط إلى `system`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### تشويش الخلفية
+
+افتراضيًا، يتم تعيين `overlayBlur` إلى `none`. ولكن إليك كيفية استخدام إعداد `overlayBlur`.
+
+ضبط تشويش الخلفية إلى `small`.
+
+```tsx
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={darkTheme({
+        overlayBlur: 'small',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### مزج وتطابق
+
+إليك بعض الطرق المختلفة لاستخدام الثيمات المختلفة، مع خواص `accentColor`, `borderRadius` و `fontStack` معًا.
+
+- استخدام الثيم `lightTheme`
+- ضبط لون التمييز إلى قيمة بنفسجية مخصصة
+- ضبط نصف قطر الحافة إلى `medium`
+- ضبط مكدس الخطوط إلى `system`
+
+```tsx
+import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={lightTheme({
+        accentColor: '#7b3fe4',
+        accentColorForeground: 'white',
+        borderRadius: 'medium',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+- استخدام الثيم `midnightTheme`
+- ضبط لون التمييز إلى الإعداد المسبق `pink` المدمج.
+- ضبط نصف قطر الحافة إلى `small`
+- ضبط مكدس الخطوط إلى `system`
+
+```tsx
+import {
+  RainbowKitProvider,
+  midnightTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      theme={midnightTheme({
+        ...midnightTheme.accentColors.pink,
+        borderRadius: 'small',
+        fontStack: 'system',
+      })}
+      {...etc}
+    >
+      {/* Your App */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+#### دعم الوضع الداكن
+
+إذا كانت تطبيقك يستخدم استعلام الوسائط القياسية `prefers-color-scheme: dark` للتبديل بين أوضاع الضوء والظلام، يمكنك تقديم كائن ثيم ديناميكي يحتوي على قيم `lightMode` و `darkMode` اختياريًا.
+
+```tsx
+import {
+  RainbowKitProvider,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
+const App = () => (
+  <RainbowKitProvider
+    theme={{
+      lightMode: lightTheme(),
+      darkMode: darkTheme(),
+    }}
+    {...etc}
+  >
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

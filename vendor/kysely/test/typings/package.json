@@ -1,0 +1,8 @@
+{
+  "types": "index.d.ts",
+  "tsd": {
+    "compilerOptions": {
+      "exactOptionalPropertyTypes": true
+    }
+  }
+}

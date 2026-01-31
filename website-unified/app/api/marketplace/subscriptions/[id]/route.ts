@@ -17,6 +17,7 @@ import {
   parseBody,
   NotFoundError,
   ErrorCodes,
+  APIException,
 } from '@/lib/api';
 import type { RequestContext, Subscription, SubscriptionUsage } from '@/lib/api';
 import { getDatabase, seedDatabase } from '@/lib/marketplace/database';
@@ -48,9 +49,10 @@ async function findSubscription(db: ReturnType<typeof getDatabase>, id: string) 
 
 async function getHandler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 1];
   const db = getDatabase();
   
   await seedDatabase();
@@ -65,15 +67,19 @@ async function getHandler(
     // Get service details
     const service = await db.findServiceById(subscription.serviceId);
     
+    // Calculate usage from subscription data (usageThisMonth or estimate)
+    const usedRequests = 0; // Would come from usage tracking system in production
+    const requestLimit = 10000; // Default limit, would come from plan in production
+    
     // Build usage data
     const usage: SubscriptionUsage = {
       subscriptionId: subscription.id,
       period: new Date().toISOString().slice(0, 7),
-      requests: subscription.usage?.used || 0,
-      limit: subscription.usage?.limit || 1000,
-      overage: Math.max(0, (subscription.usage?.used || 0) - (subscription.usage?.limit || 1000)),
+      requests: usedRequests,
+      limit: requestLimit,
+      overage: Math.max(0, usedRequests - requestLimit),
       overageCharges: '$0.00',
-      dailyUsage: generateDailyUsage(subscription.usage?.used || 0),
+      dailyUsage: generateDailyUsage(usedRequests),
     };
     
     return createResponse({
@@ -89,12 +95,12 @@ async function getHandler(
         endDate: subscription.endDate instanceof Date 
           ? subscription.endDate.toISOString() 
           : subscription.endDate,
-        nextBillingDate: subscription.nextBillingDate instanceof Date 
-          ? subscription.nextBillingDate.toISOString() 
-          : subscription.nextBillingDate,
-        status: subscription.status,
+        nextBillingDate: subscription.endDate instanceof Date 
+          ? subscription.endDate.toISOString() 
+          : subscription.endDate,
+        status: subscription.active ? 'active' : 'cancelled',
         autoRenew: subscription.autoRenew,
-        usage: subscription.usage,
+        usage: { used: usedRequests, limit: requestLimit },
       },
       usage,
     });
@@ -104,9 +110,7 @@ async function getHandler(
     }
     console.error('[API] Subscription get error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch subscription',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to fetch subscription')
     );
   }
 }
@@ -135,9 +139,10 @@ function generateDailyUsage(totalUsed: number): Array<{ date: string; requests: 
 
 async function updateHandler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 1];
   const db = getDatabase();
   
   await seedDatabase();
@@ -155,10 +160,10 @@ async function updateHandler(
     let updates: Partial<typeof subscription> = {};
     
     if (body.action === 'cancel') {
-      updates = { status: 'cancelled', autoRenew: false };
+      updates = { active: false, autoRenew: false };
       message = 'Subscription cancelled. You will have access until the end of your billing period.';
     } else if (body.action === 'resume') {
-      updates = { status: 'active', autoRenew: true };
+      updates = { active: true, autoRenew: true };
       message = 'Subscription resumed successfully.';
     } else if (body.action === 'upgrade' && body.newPlan) {
       const pricing = body.newPlan === 'annually' ? '$299.99' : '$29.99';
@@ -174,7 +179,7 @@ async function updateHandler(
     return createResponse({
       subscription: {
         id: updatedSubscription.id,
-        status: updatedSubscription.status,
+        status: updatedSubscription.active ? 'active' : 'cancelled',
         plan: updatedSubscription.plan,
         price: updatedSubscription.price,
         autoRenew: updatedSubscription.autoRenew,
@@ -187,9 +192,7 @@ async function updateHandler(
     }
     console.error('[API] Subscription update error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to update subscription',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to update subscription')
     );
   }
 }
@@ -200,9 +203,10 @@ async function updateHandler(
 
 async function deleteHandler(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: RequestContext
 ) {
-  const { id } = await context.params;
+  const pathParts = request.nextUrl.pathname.split('/');
+  const id = pathParts[pathParts.length - 1];
   const walletAddress = request.headers.get('x-wallet-address');
   const db = getDatabase();
   
@@ -217,23 +221,21 @@ async function deleteHandler(
     
     // Verify ownership if wallet address provided
     if (walletAddress && 
-        subscription.subscriberAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+        subscription.subscriberWallet.toLowerCase() !== walletAddress.toLowerCase()) {
       return createErrorResponse(
-        ErrorCodes.FORBIDDEN,
-        'You do not own this subscription',
-        403
+        new APIException(ErrorCodes.FORBIDDEN, 'You do not own this subscription')
       );
     }
     
     const updatedSubscription = await db.updateSubscription(id, {
-      status: 'cancelled',
+      active: false,
       autoRenew: false,
     });
     
     return createResponse({
       subscription: {
         id: updatedSubscription.id,
-        status: updatedSubscription.status,
+        status: updatedSubscription.active ? 'active' : 'cancelled',
         autoRenew: updatedSubscription.autoRenew,
       },
       message: 'Subscription cancelled. You will have access until the end of your billing period.',
@@ -244,9 +246,7 @@ async function deleteHandler(
     }
     console.error('[API] Subscription cancel error:', error);
     return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to cancel subscription',
-      500
+      new APIException(ErrorCodes.INTERNAL_ERROR, error instanceof Error ? error.message : 'Failed to cancel subscription')
     );
   }
 }

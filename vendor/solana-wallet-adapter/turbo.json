@@ -1,0 +1,19 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "inputs": ["$TURBO_DEFAULT$", "tsconfig.*", "src/**"],
+            "outputs": [".next/**", "build/**", "dist/**", "lib/**"]
+        },
+        "lint": {
+            "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
+            "outputs": []
+        },
+        "test": {
+            "dependsOn": ["build"],
+            "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
+            "outputs": []
+        }
+    }
+}

@@ -1,0 +1,62 @@
+---
+title: カスタムアプリ情報
+description: アプリ情報のカスタマイズ
+---
+
+# カスタムアプリ情報
+
+## アプリ情報のカスタマイズ
+
+アプリの情報は、`RainbowKitProvider`の`appInfo`プロップで渡すことができます。修正可能なプロパティは、アプリ名 (`appName`) と接続モーダルの「Learn More」ボタンがリダイレクトするリンク (`learnMoreUrl`) です。
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'Rainbowkit Demo',
+        learnMoreUrl: 'https://learnaboutcryptowallets.example',
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### 免責事項を追加する
+
+接続モーダルの下部に表示される独自の免責事項を提供することができます。`appInfo`内の`disclaimer`プロパティは、`Text`および`Link`引数を含む`DisclaimerComponent`を受け取ります。テーマシステムを継承する独自の免責事項の構築に使用できます。TypeScriptユーザーのために`DisclaimerComponent`型をエクスポートしています。
+
+```tsx
+import {
+  RainbowKitProvider,
+  DisclaimerComponent,
+} from '@rainbow-me/rainbowkit';
+
+const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
+  <Text>
+    By connecting your wallet, you agree to the{' '}
+    <Link href="https://termsofservice.xyz">Terms of Service</Link> and
+    acknowledge you have read and understand the protocol{' '}
+    <Link href="https://disclaimer.xyz">Disclaimer</Link>
+  </Text>
+);
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'RainbowKit Demo',
+        disclaimer: Disclaimer,
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```

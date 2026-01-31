@@ -1,0 +1,72 @@
+---
+title: Mise à niveau de votre dApp vers WalletConnect v2
+description: RainbowKit a migré vers v2, et vous pouvez préparer votre dApp en 5 minutes ou moins
+image: guide-walletconnect-v2.png
+---
+
+# Migration vers WalletConnect v2
+
+## Préparez votre dApp pour la mise à niveau vers v2 en 5 minutes ou moins
+
+Le protocole WalletConnect v1 sera arrêté le 28 juin 2023, et RainbowKit est là pour rendre la transition très simple.
+
+La prise en charge de WalletConnect v2 est maintenant standard dans RainbowKit, sans changements de rupture. Il suffit de mettre à jour et de consulter le guide ci-dessous pour des détails supplémentaires.
+
+#### Comprendre WalletConnect v2
+
+WalletConnect est le protocole qui permet à vos utilisateurs de connecter leurs portefeuilles mobiles à votre dApp, et c'est un fondement important de RainbowKit. La récente version de WalletConnect v2 apporte plusieurs améliorations importantes pour rendre l'expérience portefeuille-dApp encore meilleure.
+
+Avec v2, vos utilisateurs peuvent désormais se connecter simultanément à plusieurs chaînes, il n'est donc plus nécessaire de passer d'une chaîne à l'autre. Cela élargit également la prise en charge de plus de réseaux et apporte des améliorations qui rendent la connexion avec Ethereum encore plus rapide.
+
+#### Mise à niveau de votre dApp
+
+Si vous avez déjà suivi les guides de migration pour RainbowKit `0.12.x` et `1.0.x`, vous y êtes presque ! Il suffit de mettre à jour vers la dernière version de correctif et d'essayer.
+
+RainbowKit a activé WalletConnect v2 par défaut avec `0.12.15` et `1.0.2`. Nous continuons le soutien pour `0.12.x` si votre dApp n'est pas encore passée à wagmi v1 et RainbowKit v1.
+
+**1. Mise à niveau des dépendances**
+
+```bash
+npm i @rainbow-me/rainbowkit@^1.0.2 wagmi@^1.2
+```
+
+Si vous utilisez une version de RainbowKit avant `0.12.x` ou `1.0.x`, suivez simplement les [guides de migration](/docs/migration-guide) pour être à jour.
+
+Il est recommandé que les dApps `0.12.x` commencent à passer à wagmi v1, car les améliorations de stabilité pour WalletConnect v2 ne seront incluses que dans les versions futures de wagmi.
+
+**2. Fourniture d'un projectId**
+
+Chaque dApp qui repose sur WalletConnect doit maintenant obtenir un `projectId` de [WalletConnect Cloud](https://cloud.walletconnect.com/). C'est absolument gratuit et ne prend que quelques minutes.
+
+Fournissez votre `projectId` à `getDefaultWallets` et aux connecteurs de portefeuille RainbowKit individuels de la manière suivante :
+
+```ts
+const projectId = 'YOUR_PROJECT_ID';
+const { wallets } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  projectId,
+  chains,
+});
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: 'Other',
+    wallets: [
+      readyWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      ledgerWallet({ projectId, chains }),
+    ],
+  },
+]);
+```
+
+RainbowKit est sûr avec les types et vous avertira lorsqu'un `projectId` est manquant. Référez-vous à nos exemples pour voir v2 en action :
+
+- [Create React App](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-create-react-app)
+- [Next.js](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next)
+- [Next.js App Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-next-app)
+- [Remix](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-remix)
+- [Vite](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-vite)
+- [React Router](https://codesandbox.io/p/sandbox/github/rainbow-me/rainbowkit/tree/main/examples/with-react-router)
+
+Consultez les [docs](https://www.rainbowkit.com/docs/custom-wallet-list#walletconnect) pour d'autres options prises en charge.

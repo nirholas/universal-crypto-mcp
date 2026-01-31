@@ -2,6 +2,8 @@
  * MCP Tool Streaming Execution API Route
  * POST /api/tools/stream - Execute tool with streaming output
  * 
+ * Real implementation using actual blockchain/API calls
+ * 
  * @author nich
  * @license Apache-2.0
  */
@@ -9,7 +11,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createRequestContext } from '@/lib/api/handler';
-import { NotFoundError, ValidationError } from '@/lib/api/errors';
 
 export const runtime = 'edge';
 export const maxDuration = 60;
@@ -25,6 +26,74 @@ const StreamRequestSchema = z.object({
     timeout: z.number().int().min(1000).max(120000).optional().default(60000),
   }).optional().default({}),
 });
+
+// ============================================================================
+// Real API Helpers
+// ============================================================================
+
+async function fetchEthBalance(address: string, chain: string = 'ethereum'): Promise<{ balance: string; formatted: string }> {
+  const rpcUrls: Record<string, string> = {
+    ethereum: 'https://eth.llamarpc.com',
+    arbitrum: 'https://arb1.arbitrum.io/rpc',
+    polygon: 'https://polygon-rpc.com',
+    base: 'https://mainnet.base.org',
+    optimism: 'https://mainnet.optimism.io',
+  };
+
+  const rpcUrl = rpcUrls[chain] || rpcUrls.ethereum;
+  
+  const response = await fetch(rpcUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'eth_getBalance',
+      params: [address, 'latest'],
+      id: 1,
+    }),
+  });
+
+  const data = await response.json();
+  const balanceWei = BigInt(data.result || '0');
+  const formatted = (Number(balanceWei) / 1e18).toFixed(4);
+  
+  return { balance: balanceWei.toString(), formatted };
+}
+
+async function fetchCoinGeckoPrice(coinId: string): Promise<{ price: number; change24h: number }> {
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`,
+    { headers: { 'Accept': 'application/json' } }
+  );
+  
+  const data = await response.json();
+  const coinData = data[coinId] || {};
+  
+  return {
+    price: coinData.usd || 0,
+    change24h: coinData.usd_24h_change || 0,
+  };
+}
+
+async function fetchContractInfo(address: string): Promise<{ verified: boolean; name?: string; compiler?: string }> {
+  try {
+    const response = await fetch(
+      `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${address}`,
+      { headers: { 'Accept': 'application/json' } }
+    );
+    
+    const data = await response.json();
+    const result = data.result?.[0] || {};
+    
+    return {
+      verified: result.ABI !== 'Contract source code not verified',
+      name: result.ContractName || undefined,
+      compiler: result.CompilerVersion || undefined,
+    };
+  } catch {
+    return { verified: false };
+  }
+}
 
 // ============================================================================
 // Streaming Tools
@@ -47,42 +116,80 @@ const STREAMING_TOOLS: Record<string, StreamingTool> = {
   'analyze-portfolio': {
     validate: (params) => typeof params.address === 'string',
     stream: async (params, emit) => {
-      const steps = [
-        { message: 'Fetching wallet data...', progress: 10 },
-        { message: 'Analyzing token holdings...', progress: 25 },
-        { message: 'Calculating USD values...', progress: 40 },
-        { message: 'Fetching DeFi positions...', progress: 55 },
-        { message: 'Analyzing NFT holdings...', progress: 70 },
-        { message: 'Computing portfolio metrics...', progress: 85 },
-        { message: 'Generating recommendations...', progress: 95 },
-      ];
+      const address = params.address as string;
+      const chains = ['ethereum', 'arbitrum', 'polygon', 'base', 'optimism'];
       
-      for (const step of steps) {
-        await delay(500);
-        emit({ type: 'progress', progress: step.progress, message: step.message });
+      emit({ type: 'progress', progress: 5, message: 'Starting portfolio analysis...' });
+      
+      // Fetch balances from all chains in parallel
+      emit({ type: 'progress', progress: 10, message: 'Fetching multi-chain balances...' });
+      
+      const balanceResults = await Promise.allSettled(
+        chains.map(chain => fetchEthBalance(address, chain).then(b => ({ chain, ...b })))
+      );
+      
+      const balances: Array<{ chain: string; balance: string; formatted: string }> = [];
+      for (const result of balanceResults) {
+        if (result.status === 'fulfilled') {
+          balances.push(result.value);
+        }
       }
       
-      await delay(300);
+      emit({ type: 'progress', progress: 35, message: 'Fetching token prices...' });
+      
+      // Fetch current prices for native tokens
+      const priceResults = await Promise.allSettled([
+        fetchCoinGeckoPrice('ethereum'),
+        fetchCoinGeckoPrice('matic-network'),
+      ]);
+      
+      const ethPrice = priceResults[0].status === 'fulfilled' ? priceResults[0].value.price : 0;
+      const maticPrice = priceResults[1].status === 'fulfilled' ? priceResults[1].value.price : 0;
+      
+      emit({ type: 'progress', progress: 60, message: 'Calculating portfolio value...' });
+      
+      // Calculate total value
+      let totalValue = 0;
+      const tokenHoldings = balances.map(b => {
+        const price = b.chain === 'polygon' ? maticPrice : ethPrice;
+        const value = parseFloat(b.formatted) * price;
+        totalValue += value;
+        return {
+          chain: b.chain,
+          symbol: b.chain === 'polygon' ? 'MATIC' : 'ETH',
+          balance: b.formatted,
+          usdValue: value,
+        };
+      });
+      
+      emit({ type: 'progress', progress: 80, message: 'Generating insights...' });
+      
+      // Generate recommendations based on portfolio
+      const recommendations: string[] = [];
+      if (totalValue > 10000) {
+        recommendations.push('Consider diversifying across more L2 chains for lower gas fees');
+      }
+      if (balances.some(b => parseFloat(b.formatted) > 5)) {
+        recommendations.push('Large holdings detected - consider hardware wallet for security');
+      }
+      if (tokenHoldings.filter(t => t.usdValue > 0).length < 3) {
+        recommendations.push('Portfolio is concentrated - consider spreading across more chains');
+      }
+      
+      emit({ type: 'progress', progress: 95, message: 'Finalizing report...' });
+      
       emit({
         type: 'complete',
         progress: 100,
         data: {
-          address: params.address,
-          totalValue: Math.floor(Math.random() * 100000) + 10000,
-          tokens: [
-            { symbol: 'ETH', balance: '2.5', usdValue: 6250 },
-            { symbol: 'USDC', balance: '5000', usdValue: 5000 },
-            { symbol: 'ARB', balance: '1000', usdValue: 1200 },
-          ],
-          defiPositions: [
-            { protocol: 'Aave', type: 'lending', value: 3000 },
-            { protocol: 'Uniswap', type: 'liquidity', value: 2000 },
-          ],
-          recommendations: [
-            'Consider diversifying into more L2 tokens',
-            'Your lending position has good APY',
-            'NFT exposure is minimal',
-          ],
+          address,
+          totalValue: Math.round(totalValue * 100) / 100,
+          tokens: tokenHoldings.filter(t => t.usdValue > 0),
+          chainsAnalyzed: chains.length,
+          recommendations: recommendations.length > 0 
+            ? recommendations 
+            : ['Portfolio looks well-balanced'],
+          timestamp: new Date().toISOString(),
         },
       });
     },
@@ -90,35 +197,86 @@ const STREAMING_TOOLS: Record<string, StreamingTool> = {
   'scan-contract': {
     validate: (params) => typeof params.address === 'string',
     stream: async (params, emit) => {
-      const checks = [
-        { name: 'Fetching contract code', progress: 10 },
-        { name: 'Analyzing bytecode', progress: 20 },
-        { name: 'Checking for known vulnerabilities', progress: 35 },
-        { name: 'Analyzing function selectors', progress: 50 },
-        { name: 'Checking ownership patterns', progress: 65 },
-        { name: 'Analyzing token mechanics', progress: 80 },
-        { name: 'Generating security report', progress: 95 },
-      ];
+      const address = params.address as string;
       
-      for (const check of checks) {
-        await delay(400);
-        emit({ type: 'progress', progress: check.progress, message: check.name });
+      emit({ type: 'progress', progress: 10, message: 'Fetching contract metadata...' });
+      
+      // Fetch contract info from Etherscan
+      const contractInfo = await fetchContractInfo(address);
+      
+      emit({ type: 'progress', progress: 30, message: 'Checking verification status...' });
+      
+      // Fetch contract bytecode size
+      let bytecodeSize = 0;
+      try {
+        const response = await fetch('https://eth.llamarpc.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'eth_getCode',
+            params: [address, 'latest'],
+            id: 1,
+          }),
+        });
+        const data = await response.json();
+        bytecodeSize = ((data.result?.length || 2) - 2) / 2; // Convert hex to bytes
+      } catch {
+        // Ignore errors
       }
       
-      const score = Math.floor(Math.random() * 40) + 60;
+      emit({ type: 'progress', progress: 50, message: 'Analyzing contract patterns...' });
+      
+      // Calculate security score based on real data
+      let score = 50;
+      const findings: Array<{ severity: string; title: string; description: string }> = [];
+      
+      if (contractInfo.verified) {
+        score += 25;
+        findings.push({
+          severity: 'info',
+          title: 'Contract is verified',
+          description: 'Source code is publicly available and matches bytecode',
+        });
+      } else {
+        findings.push({
+          severity: 'warning',
+          title: 'Contract not verified',
+          description: 'Source code is not publicly available - use with caution',
+        });
+      }
+      
+      if (contractInfo.name) {
+        score += 10;
+        findings.push({
+          severity: 'info',
+          title: `Contract: ${contractInfo.name}`,
+          description: contractInfo.compiler ? `Compiled with ${contractInfo.compiler}` : 'Known contract',
+        });
+      }
+      
+      if (bytecodeSize > 24000) {
+        findings.push({
+          severity: 'info',
+          title: 'Large contract',
+          description: `Bytecode size: ${bytecodeSize} bytes - complex functionality`,
+        });
+      }
+      
+      emit({ type: 'progress', progress: 80, message: 'Generating security report...' });
+      
       emit({
         type: 'complete',
         progress: 100,
         data: {
-          address: params.address,
-          score,
-          riskLevel: score > 80 ? 'low' : score > 60 ? 'medium' : 'high',
-          verified: Math.random() > 0.3,
-          findings: [
-            { severity: 'info', title: 'Contract is verified', description: 'Source code matches deployed bytecode' },
-            { severity: 'warning', title: 'Centralized ownership', description: 'Single owner can pause contract' },
-          ],
-          gasEfficiency: Math.floor(Math.random() * 30) + 70,
+          address,
+          score: Math.min(score, 100),
+          riskLevel: score > 75 ? 'low' : score > 50 ? 'medium' : 'high',
+          verified: contractInfo.verified,
+          contractName: contractInfo.name,
+          bytecodeSize,
+          findings,
+          timestamp: new Date().toISOString(),
         },
       });
     },
@@ -127,21 +285,41 @@ const STREAMING_TOOLS: Record<string, StreamingTool> = {
     validate: (params) => Array.isArray(params.tokens),
     stream: async (params, emit) => {
       const tokens = params.tokens as string[];
+      
+      // Map symbols to CoinGecko IDs
+      const symbolToId: Record<string, string> = {
+        ETH: 'ethereum', BTC: 'bitcoin', SOL: 'solana', 
+        ARB: 'arbitrum', OP: 'optimism', MATIC: 'matic-network',
+        AVAX: 'avalanche-2', BNB: 'binancecoin', USDC: 'usd-coin',
+        USDT: 'tether', LINK: 'chainlink', UNI: 'uniswap',
+        AAVE: 'aave', CRV: 'curve-dao-token', MKR: 'maker',
+      };
+      
       const results: Array<{ symbol: string; price: number; change24h: number }> = [];
       
       for (let i = 0; i < tokens.length; i++) {
-        await delay(200);
-        const price = Math.random() * 5000;
-        results.push({
-          symbol: tokens[i],
-          price,
-          change24h: (Math.random() - 0.5) * 20,
-        });
+        const symbol = tokens[i].toUpperCase();
+        const coinId = symbolToId[symbol];
+        
+        if (coinId) {
+          try {
+            const priceData = await fetchCoinGeckoPrice(coinId);
+            results.push({
+              symbol,
+              price: priceData.price,
+              change24h: priceData.change24h,
+            });
+          } catch {
+            results.push({ symbol, price: 0, change24h: 0 });
+          }
+        } else {
+          results.push({ symbol, price: 0, change24h: 0 });
+        }
         
         emit({
           type: 'data',
-          progress: Math.floor(((i + 1) / tokens.length) * 100),
-          message: `Fetched ${tokens[i]}`,
+          progress: Math.floor(((i + 1) / tokens.length) * 95),
+          message: `Fetched ${symbol}`,
           data: results[results.length - 1],
         });
       }
@@ -153,46 +331,7 @@ const STREAMING_TOOLS: Record<string, StreamingTool> = {
       });
     },
   },
-  'generate-tax-report': {
-    validate: (params) => typeof params.address === 'string' && typeof params.year === 'number',
-    stream: async (params, emit) => {
-      const steps = [
-        { message: 'Fetching transaction history...', progress: 10 },
-        { message: 'Categorizing transactions...', progress: 25 },
-        { message: 'Calculating cost basis...', progress: 40 },
-        { message: 'Computing gains/losses...', progress: 55 },
-        { message: 'Applying tax rules...', progress: 70 },
-        { message: 'Generating summary...', progress: 85 },
-        { message: 'Preparing report...', progress: 95 },
-      ];
-      
-      for (const step of steps) {
-        await delay(600);
-        emit({ type: 'progress', progress: step.progress, message: step.message });
-      }
-      
-      emit({
-        type: 'complete',
-        progress: 100,
-        data: {
-          address: params.address,
-          year: params.year,
-          summary: {
-            shortTermGains: Math.floor(Math.random() * 10000),
-            longTermGains: Math.floor(Math.random() * 20000),
-            totalLosses: Math.floor(Math.random() * 5000),
-            transactionCount: Math.floor(Math.random() * 500) + 50,
-          },
-          status: 'complete',
-        },
-      });
-    },
-  },
 };
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 // ============================================================================
 // SSE Handler

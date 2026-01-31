@@ -1,0 +1,62 @@
+---
+title: Інформація про спеціальний додаток
+description: Налаштування інформації про ваш додаток
+---
+
+# Інформація про спеціальний додаток
+
+## Налаштування інформації про ваш додаток
+
+Ви можете передати інформацію про ваш додаток у властивості `appInfo` для `RainbowKitProvider`. Властивості, які можна змінити - це назва вашого додатка (`appName`) і посилання, куди перенаправляє кнопка "Дізнатися більше" в модулі підключення (`learnMoreUrl`):
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'Rainbowkit Demo',
+        learnMoreUrl: 'https://learnaboutcryptowallets.example',
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+### Додайте застереження
+
+Ви можете надати власне застереження, яке буде відображатися внизу модального вікна з'єднання. Властивість `disclaimer` у `appInfo` приймає `DisclaimerComponent` з аргументами `Text` та `Link`. Ви можете використовувати його, щоб створити власне застереження, що успадковує систему темізації. Ми експортуємо тип `DisclaimerComponent` для користувачів TypeScript:
+
+```tsx
+import {
+  RainbowKitProvider,
+  DisclaimerComponent,
+} from '@rainbow-me/rainbowkit';
+
+const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
+  <Text>
+    By connecting your wallet, you agree to the{' '}
+    <Link href="https://termsofservice.xyz">Terms of Service</Link> and
+    acknowledge you have read and understand the protocol{' '}
+    <Link href="https://disclaimer.xyz">Disclaimer</Link>
+  </Text>
+);
+
+const App = () => {
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: 'RainbowKit Demo',
+        disclaimer: Disclaimer,
+      }}
+      {...etc}
+    >
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```

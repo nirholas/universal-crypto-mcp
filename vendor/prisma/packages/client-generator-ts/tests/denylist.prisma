@@ -1,0 +1,16 @@
+datasource db {
+  provider = "postgres"
+}
+
+generator client {
+  provider = "prisma-client-ts"
+  output   = "./generated"
+}
+
+model public {
+  id Int @id
+}
+
+model return {
+  id Int @id
+}

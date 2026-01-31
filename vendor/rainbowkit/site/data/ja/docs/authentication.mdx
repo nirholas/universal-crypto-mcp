@@ -1,0 +1,145 @@
+---
+title: 認証
+description: ユーザーの認証
+---
+
+# 認証
+
+## あなたのアプリケーションへの認証されたアクセスの提供
+
+接続プロセス中にユーザーがウォレットでメッセージに署名することを必要とすることも可能で、これにより接続されたアカウントを所有していることの証明と、アプリケーションへの特権アクセスを持つ認証されたユーザーセッションを作成することができる。
+
+カスタムのバックエンドやメッセージ形式と統合することも可能ですが、RainbowKitは[Sign-In with Ethereum](https://login.xyz)と[NextAuth](https://next-auth.js.org)のファーストクラスサポートを提供しています。
+
+### EthereumとNextAuthを使用したサインインを設定する
+
+#### をインストールする
+
+`@rainbow-me/rainbowkit-siwe-next-auth`パッケージをインストールします。
+
+```bash
+npm install @rainbow-me/rainbowkit-siwe-next-auth
+```
+
+#### プロバイダの設定
+
+`App`コンポーネントで`RainbowKitSiweNextAuthProvider`をインポートします。
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+```
+
+`RainbowKitSiweNextAuthProvider`で`RainbowKitProvider`をラップし、それがNextAuthの`SessionProvider`内にネストされていることを確認します。これにより、セッションにアクセスできます。
+
+```tsx
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { SessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
+import { AppProps } from 'next/app';
+import { WagmiProvider } from 'wagmi';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps<{
+  session: Session;
+}>) {
+  return (
+    <WagmiProvider {...etc}>
+      <SessionProvider refetchInterval={0} session={pageProps.session}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitSiweNextAuthProvider>
+            <RainbowKitProvider {...etc}>
+              <Component {...pageProps} />
+            </RainbowKitProvider>
+          </RainbowKitSiweNextAuthProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </WagmiProvider>;
+  );
+}
+```
+
+`RainbowKitSiweNextAuthProvider`が位置していると、ユーザーはウォレットを接続した後、メッセージに署名して認証するように求められます。
+
+#### SIWEメッセージオプションのカスタマイズ
+
+[SIWEメッセージオプション](https://viem.sh/docs/siwe/utilities/createSiweMessage#parameters)をカスタマイズするには、`getSiweMessageOptions` propに関数を渡すことにより、`RainbowKitSiweNextAuthProvider`上で行うことができます。
+
+この関数は新しいメッセージが作成されるたびに呼び出されます。この関数から返されるオプションはデフォルトとマージされます。
+
+```tsx
+import {
+  RainbowKitSiweNextAuthProvider,
+  GetSiweMessageOptions,
+} from '@rainbow-me/rainbowkit-siwe-next-auth';
+
+const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+  statement: 'Sign in to my RainbowKit app',
+});
+
+<RainbowKitSiweNextAuthProvider
+  getSiweMessageOptions={getSiweMessageOptions}
+>
+  ...
+</RainbowKitSiweNextAuthProvider>;
+```
+
+#### セッションをサーバーサイドでアクセスします
+
+NextAuthの`getToken`関数を`next-auth/jwt`からインポートすることで、セッショントークンにアクセスできます。ユーザーが正常に認証された場合、セッショントークンの`sub`プロパティ（トークンの「subject」、つまりユーザー）はユーザーのアドレスになります。
+
+また、NextAuthがクライアント側で再度それを解決する必要がないように、解決済みのセッションオブジェクトを`getServerSideProps`経由で渡すこともできます。
+
+例えば：
+
+```tsx
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
+import React from 'react';
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const session = await getSession(context);
+  const token = await getToken({ req: context.req });
+
+  const address = token?.sub ?? null;
+  // If you have a value for "address" here, your
+  // server knows the user is authenticated.
+
+  // You can then pass any data you want
+  // to the page component here.
+  return {
+    props: {
+      address,
+      session,
+    },
+  };
+};
+
+type AuthenticatedPageProps = InferGetServerSidePropsType<
+  typeof getServerSideProps
+>;
+
+export default function AuthenticatedPage({
+  address,
+}: AuthenticatedPageProps) {
+  return address ? (
+    <h1>Authenticated as {address}</h1>
+  ) : (
+    <h1>Unauthenticated</h1>
+  );
+}
+```
+
+セッションの管理に関する詳細は、以下のドキュメンテーションを参照してください：
+
+- [Next.js認証ガイド](https://nextjs.org/docs/pages/guides/authentication)
+- [NextAuthドキュメンテーション](https://next-auth.js.org)

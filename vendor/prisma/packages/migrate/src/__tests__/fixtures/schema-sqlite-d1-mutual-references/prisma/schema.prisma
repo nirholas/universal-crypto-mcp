@@ -1,0 +1,15 @@
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model A {
+    id Int @id
+}
+
+model B {
+    id Int @id
+}

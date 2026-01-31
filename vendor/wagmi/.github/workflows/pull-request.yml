@@ -1,0 +1,66 @@
+name: Pull Request
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify
+    permissions:
+      contents: write
+    uses: ./.github/workflows/verify.yml
+    secrets: inherit
+
+  publish:
+    name: Publish preview release
+    # prevents this action from running on forks
+    if: github.repository == 'wevm/wagmi'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+
+      - name: Install dependencies
+        uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
+        with:
+          node-version: 24.5
+
+      - name: Publish to pkg.pr.new
+        run: |
+          pnpm changeset:prepublish
+          pnpx pkg-pr-new publish --pnpm --compact './packages/*'
+        env:
+          PKG_PR_NEW: true
+
+  size:
+    name: Size
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+
+      - name: Install dependencies
+        uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
+        with:
+          node-version: 24.5
+
+      - name: Report build size
+        uses: preactjs/compressed-size-action@946a292cd35bd1088e0d7eb92b69d1a8d5b5d76a
+        with:
+          pattern: 'packages/**/dist/**'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

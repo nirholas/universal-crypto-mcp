@@ -1,0 +1,51 @@
+---
+title: รูปแทนตัวที่ปรับแต่งเอง
+description: การปรับแต่งรูปแทนตัวของผู้ใช้ในแอปของคุณ
+---
+
+# รูปแทนตัวที่ปรับแต่งเอง
+
+## การปรับแต่งรูปแทนตัวของผู้ใช้ในแอปของคุณ
+
+โดยค่าเริ่มต้นเรามีรูปแทนตัวสำหรับผู้ใช้ในกรณีที่ไม่ได้ตั้งค่ารูปภาพ ENS แต่คุณสามารถปรับแต่งได้โดยใช้คอมโพเนนต์รูปแทนตัวของคุณเอง คุณสามารถนำเข้า `AvatarComponent` type ได้หากใช้ TypeScript:
+
+```tsx
+import {
+  RainbowKitProvider,
+  AvatarComponent,
+} from '@rainbow-me/rainbowkit';
+import { generateColorFromAddress } from './utils';
+
+const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
+  const color = generateColorFromAddress(address);
+  return ensImage ? (
+    <img
+      src={ensImage}
+      width={size}
+      height={size}
+      style={{ borderRadius: 999 }}
+    />
+  ) : (
+    <div
+      style={{
+        backgroundColor: color,
+        borderRadius: 999,
+        height: size,
+        width: size,
+      }}
+    >
+      :^)
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <RainbowKitProvider avatar={CustomAvatar} {...etc}>
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+`AvatarComponent` ที่ส่งผ่านไปยัง prop `avatar` มีประเภท prop ดังนี้: `<{ address: string; ensImage?: string | null; size: number;}>`

@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   compress: true,
   
-  // Edge runtime for global deployment
+  // Turbopack configuration (Next.js 16+)
+  turbopack: {},
+  
+  // Experimental features
   experimental: {
-    runtime: 'edge',
-    serverActions: true,
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',
@@ -17,7 +17,13 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    domains: ['raw.githubusercontent.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '/**',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     minimumCacheTTL: 31536000, // 1 year
@@ -82,7 +88,7 @@ const nextConfig = {
     ]
   },
   
-  // Webpack optimizations
+  // Webpack optimizations (used with --webpack flag)
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -90,41 +96,6 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
-      }
-      
-      // Split vendor chunks for optimal caching
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            framework: {
-              name: 'framework',
-              chunks: 'all',
-              test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-              priority: 40,
-              enforce: true,
-            },
-            lib: {
-              test: /[\\/]node_modules[\\/]/,
-              name(module) {
-                const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
-                const packageName = match ? match[1] : 'vendor'
-                return `npm.${packageName.replace('@', '')}`
-              },
-              priority: 30,
-              minChunks: 1,
-              reuseExistingChunk: true,
-            },
-            commons: {
-              name: 'commons',
-              minChunks: 2,
-              priority: 20,
-            },
-          },
-        },
       }
     }
     

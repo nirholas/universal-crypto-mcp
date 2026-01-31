@@ -1,0 +1,88 @@
+---
+title: 在您的 dApp 中采用 Rainbow 按钮
+description: Wagmi 的即插即用库，以支持您 dApp 中的 Rainbow 钱包
+image: guide-rainbow-button.png
+---
+
+# 在您的 dApp 中采用 Rainbow 按钮
+
+`RainbowButton` 组件是为使用 `wagmi` 的 dApp 添加 Rainbow Wallet 支持的最简单方式，并且比 [RainbowKit](https://www.rainbowkit.com/docs/installation) 提供了更定制化的连接体验。
+
+**1. 安装 `@rainbow-me/rainbow-button` 及其对等依赖项**
+
+该软件包兼容 Next.js、React 和 Vite。请确保遵循对等依赖警告。
+
+```bash
+npm install @rainbow-me/rainbow-button wagmi viem@2.x @tanstack/react-query
+```
+
+**2. 使用 Wagmi 配置并安装 RainbowButton**
+
+将 `rainbowConnector` 的实例传递给 Wagmi 的 `createConfig`，并提供 `projectId` 和 `appName`，然后将您的应用程序封装在 `RainbowButtonProvider` 中。接下来插入使用 `RainbowButton` 组件。
+
+```tsx
+import '@rainbow-me/rainbow-button/styles.css';
+import {
+  RainbowButtonProvider,
+  RainbowButton,
+  rainbowConnector,
+} from '@rainbow-me/rainbow-button';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { mainnet } from 'viem/chains';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const config = createConfig({
+  connectors: [
+    rainbowConnector({
+      appName: 'RainbowKit demo',
+      projectId: 'YOUR_PROJECT_ID',
+    }),
+  ],
+  chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(),
+  },
+  ssr: true,
+});
+
+const queryClient = new QueryClient();
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowButtonProvider>
+          <RainbowButton />
+        </RainbowButtonProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+您还可以使用 `RainbowButton.Custom` 组件进行自定义实现和样式设置。
+
+```tsx
+<RainbowButton.Custom>
+  {({ ready, connect }) => {
+    return (
+      <button
+        type="button"
+        disabled={!ready}
+        onClick={connect}
+      >
+        Connect Rainbow
+      </button>
+    );
+  }}
+</RainbowButton.Custom>
+```
+
+**3. 这样就完成了！**
+
+现在您的用户可以享受无缝连接的体验，不再需要维护头痛。
+
+如果您希望支持更多的钱包，RainbowKit 还提供一个 [`WalletButton`](https://www.rainbowkit.com/docs/wallet-button) 组件。

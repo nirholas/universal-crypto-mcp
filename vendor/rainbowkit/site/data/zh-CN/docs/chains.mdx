@@ -1,0 +1,75 @@
+---
+title: 链
+description: 自定义链
+---
+
+# 链
+
+## 自定义链
+
+RainbowKit设计用于与[wagmi的`链`对象](https://wagmi.sh/react/chains)集成。 查看支持的链列表[此处](https://wagmi.sh/react/chains#supported-chains)。
+
+### 自定义初始链
+
+默认情况下，RainbowKit会连接到提供给Wagmi的第一个链。此行为可以通过`initialChain`属性自定义。
+
+初始链可使用链ID进行配置。
+
+```tsx
+<RainbowKitProvider initialChain={1}>
+```
+
+为了方便，您还可以传递一个链对象。
+
+```tsx
+<RainbowKitProvider initialChain={mainnet}>
+```
+
+### 自定义链元数据
+
+默认情况下提供了几个链图标和背景，但是您可以使用`iconUrl`和`iconBackground`属性自定义每个链的图标和背景。
+
+使用`getDefaultConfig`的示例
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+
+const config = getDefaultConfig({
+  chains: [
+    {
+      ...mainnet,
+      iconBackground: '#000',
+      iconUrl: 'https://example.com/icons/ethereum.png',
+    },
+    {
+      ...optimism,
+      iconBackground: '#ff0000',
+      iconUrl: 'https://example.com/icons/optimism.png',
+    },
+  ],
+});
+```
+
+使用`createConfig`的示例
+
+```tsx
+import { mainnet, optimism } from 'wagmi/chains';
+import { Chain } from '@rainbow-me/rainbowkit';
+
+const chains: readonly [Chain, ...Chain[]] = [
+  {
+    ...mainnet,
+    iconBackground: '#000',
+    iconUrl: 'https://example.com/icons/ethereum.png',
+  },
+  {
+    ...optimism,
+    iconBackground: '#ff0000',
+    iconUrl: 'https://example.com/icons/optimism.png',
+  },
+];
+
+const config = createConfig({
+  chains,
+});
+```

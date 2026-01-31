@@ -1,0 +1,16 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "@prisma/client"
+}
+
+// / User model comment
+model User {
+  id    String  @id @default(uuid())
+  email String  @unique
+  name  String?
+  info  Json?
+}

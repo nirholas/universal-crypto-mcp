@@ -1,0 +1,78 @@
+{
+  "name": "abitype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "vitest bench",
+    "bench:types": "TYPES=true vitest bench-d.ts",
+    "build": "pnpm run --r --filter \"./packages/**\" build",
+    "changeset:prepublish": "pnpm version:update && pnpm build && node scripts/formatPackageJson.ts && node scripts/generateProxyPackages.ts",
+    "changeset:publish": "pnpm changeset:prepublish && changeset publish",
+    "changeset:version": "changeset version && pnpm version:update && pnpm format",
+    "check": "biome check --write",
+    "check:repo": "sherif",
+    "check:types": "pnpm run --r --parallel check:types && tsc --noEmit",
+    "check:types:propertyTypes": "pnpm run --r --parallel check:types --exactOptionalPropertyTypes false && tsc --noEmit --exactOptionalPropertyTypes false",
+    "check:unused": "pnpm clean && knip",
+    "clean": "pnpm run --r --parallel clean && rm -rf packages/**/*.json.tmp",
+    "deps": "pnpx taze -r",
+    "deps:ci": "pnpx actions-up",
+    "docs:dev": "pnpm -r --filter docs dev",
+    "format": "biome format --write",
+    "postinstall": "pnpm preconstruct",
+    "preconstruct": "node scripts/preconstruct.ts",
+    "preinstall": "pnpx only-allow pnpm",
+    "prepare": "pnpm simple-git-hooks",
+    "test": "vitest",
+    "test:build": "pnpm run --r --parallel test:build",
+    "test:cov": "vitest run --coverage",
+    "test:update": "vitest --update",
+    "trace": "tsc --noEmit --generateTrace ./playgrounds/performance/out --incremental false --project playgrounds/performance/tsconfig.json && echo \"Open playgrounds/performance/out/trace.json in https://ui.perfetto.dev\"",
+    "typeperf": "pnpm run --r --parallel typeperf",
+    "version:update": "node scripts/updateVersion.ts"
+  },
+  "devDependencies": {
+    "@ark/attest": "^0.56.0",
+    "@biomejs/biome": "1.9.4",
+    "@changesets/cli": "^3.0.0-next.0",
+    "@ethersproject/abi": "^5.7.0",
+    "@svitejs/changesets-changelog-github-compact": "^1.2.0",
+    "@types/node": "^24.10.1",
+    "@vitest/coverage-v8": "^4.0.10",
+    "ethers": "^6.13.1",
+    "glob": "^10.4.2",
+    "knip": "^5.22.3",
+    "publint": "^0.2.12",
+    "sherif": "^0.9.0",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "5.9.3",
+    "vitest": "^4.0.10"
+  },
+  "packageManager": "pnpm@10.16.1",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.5.1",
+      "onFail": "download"
+    }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm check"
+  },
+  "knip": {
+    "ignoreBinaries": ["dev", "only-allow"],
+    "ignoreWorkspaces": ["packages/register-tests/**", "playgrounds/**"],
+    "workspaces": {
+      ".": {
+        "project": "scripts/*.ts"
+      },
+      "docs": {
+        "project": ["**/*.ts", "**/*.tsx"]
+      },
+      "packages/abitype": {
+        "entry": ["src/exports/{abis,index,zod}.ts!"],
+        "project": ["src/**/*.ts", "test/**/*.ts"]
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+---
+title: Transacciones recientes
+description: Muestra tus transacciones recientes
+---
+
+# Transacciones recientes
+
+## Muestra tus transacciones recientes
+
+Puedes optar por mostrar las transacciones recientes dentro del modal de cuenta de RainbowKit. Ten en cuenta que todas las transacciones se mantienen en el almacenamiento local y deben ser registradas manualmente con RainbowKit para ser mostradas.
+
+La implementación por defecto del `ConnectButton` también mostrará un indicador de carga alrededor del avatar del usuario si hay alguna transacción pendiente. Las implementaciones personalizadas de `ConnectButton` pueden recrear este comportamiento a través de la propiedad `account.hasPendingTransactions` que se pasa a tu función render.
+
+Para usar esta función, primero habilita la opción `showRecentTransactions` en `RainbowKitProvider`.
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const App = () => {
+  return (
+    <RainbowKitProvider showRecentTransactions={true} {...etc}>
+      {/* ... */}
+    </RainbowKitProvider>
+  );
+};
+```
+
+Las transacciones pueden ser registradas en RainbowKit usando el hook `useAddRecentTransaction`.
+
+```tsx
+import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
+
+export default () => {
+  const addRecentTransaction = useAddRecentTransaction();
+
+  return (
+    <button
+      onClick={() => {
+        addRecentTransaction({
+          hash: '0x...',
+          description: '...',
+        });
+      }}
+    >
+      Add recent transaction
+    </button>
+  );
+};
+```
+
+Una vez que una transacción ha sido registrada con RainbowKit, su estado se actualizará al completarse.
+
+Por defecto, la transacción se considerará completada una vez que se haya minado un solo bloque encima del bloque en el que la transacción fue minada, pero esto se puede configurar especificando un valor personalizado de `confirmations`.
+
+```tsx
+import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
+
+export default () => {
+  const addRecentTransaction = useAddRecentTransaction();
+
+  return (
+    <button
+      onClick={() => {
+        addRecentTransaction({
+          hash: '0x...',
+          description: '...',
+          confirmations: 100,
+        });
+      }}
+    >
+      Add recent transaction
+    </button>
+  );
+};
+```

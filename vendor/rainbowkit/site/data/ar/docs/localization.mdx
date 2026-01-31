@@ -1,0 +1,97 @@
+---
+title: التوطين
+description: تخصيص لغة التطبيق اللامركزي (dApp) باستخدام ترجمات مضمنة
+---
+
+# التوطين
+
+## تخصيص لغة التطبيق اللامركزي (dApp) باستخدام ترجمات مضمنة
+
+بشكل افتراضي، يدعم RainbowKit اللغة الإنجليزية بالنمط "en-US" لمستخدمي اللغة الإنجليزية.
+
+إذا كانت متاحة، سيكتشف RainbowKit [اللغة المفضلة](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language) للمستخدم ويختار الترجمات المناسبة. يمكن للمطورين دائمًا تجاوز اللغة الافتراضية.
+
+لتحديد لغة لمستخدميك، أضف ببساطة `locale="zh-CN"` كخاصية في `RainbowKitProvider`
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider locale="zh-CN" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### الاستخدام مع Next.js
+
+يدعم RainbowKit التوطين بشكل أفضل مع [التوجيه الفرعي لمسار](https://nextjs.org/docs/pages/building-your-application/routing/internationalization#sub-path-routing).
+
+قم بتكوين مشروع Next.js الخاص بك على النحو الوارد في المثال أدناه لإضافة مسار فرعي اختياري `/locale/` إلى المسارات الخاصة بك، مما سيساعد محركات البحث والمستخدمين في اكتشاف دعم لغات متعددة بشكل أفضل.
+
+```json
+// next.config.js
+{
+  i18n: {
+    locales: ['default', 'en', 'zh-CN'],
+    defaultLocale: 'default',
+  },
+}
+```
+
+ثم مرر `locale` المقدم من Pages Router إلى \`RainbowKitProvider\`\`
+
+```tsx
+import { RainbowKitProvider, Locale } from '@rainbow-me/rainbowkit';
+
+export const App = () => {
+  const { locale } = useRouter() as { locale: Locale };
+  return (
+    <RainbowKitProvider locale={locale} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  )
+};
+```
+
+يمكنك الرجوع إلى مثال لـ Pages Router [هنا](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next).
+
+لا يدعم تطبيق Router حتى الآن i18n. انظر مثالنا المنفصل [هنا](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-app-i18n) لأفضل الممارسات للتنفيذ باستخدام وسائط [`next-intl`](https://github.com/amannn/next-intl).
+
+يوصى باستخدام نفس التقنيات لترجمة محتوى التطبيق اللامركزي (dApp) الخاص بك للحصول على دعم توطين كامل. ستساعد مكتبات التوطين مثل [`i18n-js`](https://github.com/fnando/i18n) و [`next-intl`](https://github.com/amannn/next-intl) وأدوات الإدارة مثل Crowdin على تبسيط هذه العملية.
+
+### اللغات المدعومة
+
+نحن نقدم دعمًا كاملاً للمناطق `locale` التالية:
+
+<Table
+  header={[
+    'اللغة', 'المنطقة', 'الموقع', 'الاختصار'
+  ]}
+  dataTypes={[
+    'string', 'string', 'code', 'code'
+  ]}
+  data={[
+    ['الإنجليزية', 'الولايات المتحدة 🇺🇸', 'en-US', 'en'],
+    ['中文', 'الصين 🇨🇳', 'zh-CN', 'zh-Hans', 'zh'],
+    ['繁體中文', 'هونج كونج 🇭🇰', 'zh-HK'],
+    ['繁體中文', 'تايوان 🇹🇼', 'zh-TW', 'zh-Hant'],
+    ['हिंदी', 'الهند 🇮🇳', 'hi-IN', 'hi'],
+    ['إسبانية', 'أمريكا اللاتينية 🌎', 'es-419', 'es'],
+    ['فرنسية', 'فرنسا 🇫🇷', 'fr-FR', 'fr'],
+    ['العربية', 'الشرق الأوسط 🌍', 'ar-AR', 'ar'],
+    ['البرتغالية', 'البرازيل 🇧🇷', 'pt-BR', 'pt'],
+    ['الروسية', 'روسيا 🇷🇺', 'ru-RU', 'ru'],
+    ['Bahasa Indonesia', 'إندونيسيا 🇮🇩', 'id-ID', 'id'],
+    ['日本語', 'اليابان 🇯🇵', 'ja-JP', 'ja'],
+    ['تركية', 'تركيا 🇹🇷', 'tr-TR', 'tr'],
+    ['한국어', 'كوريا الجنوبية 🇰🇷', 'ko-KR', 'ko'],
+    ['ภาษาไทย', 'تايلاند 🇹🇭', 'th-TH', 'th'],
+    ['українська', 'أوكرانيا 🇺🇦', 'uk-UA', 'ua'],
+    ['Tiếng Việt', 'فيتنام 🇻🇳', 'vi-VN', 'vi'],
+    ['ألمانية', 'ألمانيا 🇩🇪', 'de-DE', 'de'],
+    ['Bahasa Melayu', 'ماليزيا 🇲🇾', 'ms-MY', 'ms']
+  ]}
+/>
+
+إذا كنت ترغب في رؤية دعم للغة إضافية، يرجى فتح [مناقشة على GitHub](https://github.com/rainbow-me/rainbowkit/discussions/new?category=ideas) وسنعمل على دعمها في أقرب فرصة ممكنة.

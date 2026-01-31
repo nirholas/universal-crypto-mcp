@@ -1,0 +1,2727 @@
+import { describe, expect, it, vi } from 'vitest';
+import React from 'react';
+import { Selector } from '@reduxjs/toolkit';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  ComposedChart,
+  Line,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  RadialBar,
+  RadialBarChart,
+  Scatter,
+  Tooltip,
+  TooltipItemSorter,
+  XAxis,
+  YAxis,
+} from '../../../src';
+import { PageData } from '../../_data';
+import { createSelectorTestCase } from '../../helper/createSelectorTestCase';
+import { RechartsRootState } from '../../../src/state/store';
+import { expectTooltipPayload, showTooltip } from './tooltipTestHelpers';
+import {
+  barChartMouseHoverTooltipSelector,
+  composedChartMouseHoverTooltipSelector,
+  pieChartMouseHoverTooltipSelector,
+  radarChartMouseHoverTooltipSelector,
+  radialBarChartMouseHoverTooltipSelector,
+} from './tooltipMouseHoverSelectors';
+import { selectTooltipPayload, selectTooltipPayloadConfigurations } from '../../../src/state/selectors/selectors';
+import { mockGetBoundingClientRect } from '../../helper/mockGetBoundingClientRect';
+import { expectLastCalledWith } from '../../helper/expectLastCalledWith';
+import { noop } from '../../../src/util/DataUtils';
+
+describe('itemSorter in ComposedChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  describe('without name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <ComposedChart width={300} height={300} data={PageData}>
+          <Area dataKey="uv" name="area" id="area-uv" />
+          <Bar dataKey="pv" name="bar" id="bar-pv" />
+          <Line dataKey="amt" name="line" id="line-amt" />
+          {/* name prop on Scatter doesn't do anything, not sure why */}
+          <Scatter dataKey="uv" name="scatter" id="scatter-uv" />
+          <YAxis dataKey="pv" />
+          <XAxis dataKey="name" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </ComposedChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'area : 200',
+          'bar : 9800',
+          'line : 2400',
+          'name : Page D',
+          'pv : 9800',
+        ]);
+      });
+
+      it('should select tooltipPayloadConfigurations', () => {
+        const { spy } = renderTestCase(undefined, state =>
+          selectTooltipPayloadConfigurations(state, 'axis', 'hover', '0'),
+        );
+        expectLastCalledWith(spy, [
+          {
+            dataDefinedOnItem: undefined,
+            getPosition: noop,
+            settings: {
+              color: '#3182bd',
+              dataKey: 'uv',
+              fill: '#3182bd',
+              hide: false,
+              name: 'area',
+              nameKey: undefined,
+              stroke: '#3182bd',
+              strokeWidth: 1,
+              type: undefined,
+              unit: undefined,
+              graphicalItemId: 'area-uv',
+            },
+          },
+          {
+            dataDefinedOnItem: undefined,
+            getPosition: noop,
+            settings: {
+              color: undefined,
+              dataKey: 'pv',
+              fill: undefined,
+              hide: false,
+              name: 'bar',
+              nameKey: undefined,
+              stroke: undefined,
+              strokeWidth: undefined,
+              type: undefined,
+              unit: undefined,
+              graphicalItemId: 'bar-pv',
+            },
+          },
+          {
+            dataDefinedOnItem: undefined,
+            getPosition: noop,
+            settings: {
+              color: '#3182bd',
+              dataKey: 'amt',
+              fill: '#fff',
+              hide: false,
+              name: 'line',
+              nameKey: undefined,
+              stroke: '#3182bd',
+              strokeWidth: 1,
+              type: undefined,
+              unit: undefined,
+              graphicalItemId: 'line-amt',
+            },
+          },
+          {
+            dataDefinedOnItem: [
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page A',
+                    pv: 2400,
+                    uv: 400,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page A',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page A',
+                    pv: 2400,
+                    uv: 400,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 2400,
+                },
+              ],
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page B',
+                    pv: 4567,
+                    uv: 300,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page B',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page B',
+                    pv: 4567,
+                    uv: 300,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 4567,
+                },
+              ],
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page C',
+                    pv: 1398,
+                    uv: 300,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page C',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page C',
+                    pv: 1398,
+                    uv: 300,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 1398,
+                },
+              ],
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page D',
+                    pv: 9800,
+                    uv: 200,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page D',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page D',
+                    pv: 9800,
+                    uv: 200,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 9800,
+                },
+              ],
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page E',
+                    pv: 3908,
+                    uv: 278,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page E',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page E',
+                    pv: 3908,
+                    uv: 278,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 3908,
+                },
+              ],
+              [
+                {
+                  dataKey: 'name',
+                  name: 'name',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page F',
+                    pv: 4800,
+                    uv: 189,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 'Page F',
+                },
+                {
+                  dataKey: 'pv',
+                  name: 'pv',
+                  payload: {
+                    amt: 2400,
+                    name: 'Page F',
+                    pv: 4800,
+                    uv: 189,
+                  },
+                  type: undefined,
+                  unit: '',
+                  value: 4800,
+                },
+              ],
+            ],
+            getPosition: expect.functionReturning([
+              ['0', { x: 84.16666666666667, y: 202.6 }],
+              ['1', { x: 122.50000000000001, y: 146.258 }],
+              ['2', { x: 160.83333333333334, y: 228.65200000000002 }],
+              ['3', { x: 199.16666666666666, y: 10.200000000000005 }],
+              ['4', { x: 237.5, y: 163.392 }],
+              ['5', { x: 275.83333333333337, y: 140.20000000000002 }],
+            ]),
+            settings: {
+              color: undefined,
+              dataKey: 'uv',
+              fill: undefined,
+              hide: false,
+              name: 'scatter',
+              nameKey: undefined,
+              stroke: undefined,
+              strokeWidth: undefined,
+              type: undefined,
+              unit: '',
+              graphicalItemId: 'scatter-uv',
+            },
+          },
+        ]);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: '#3182bd',
+            dataKey: 'uv',
+            fill: '#3182bd',
+            hide: false,
+            name: 'area',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+            graphicalItemId: 'area-uv',
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            hide: false,
+            name: 'bar',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'bar-pv',
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'amt',
+            fill: '#fff',
+            hide: false,
+            name: 'line',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'line-amt',
+          },
+          {
+            color: undefined,
+            dataKey: 'name',
+            fill: undefined,
+            hide: false,
+            name: 'name',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 'Page A',
+            graphicalItemId: 'scatter-uv',
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            hide: false,
+            name: 'pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+            graphicalItemId: 'scatter-uv',
+          },
+        ]);
+        expect(spy).toHaveBeenCalledTimes(3);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'line : 2400',
+          'name : Page D',
+          'bar : 9800',
+          'pv : 9800',
+          'area : 200',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'area : 200',
+          'line : 2400',
+          'bar : 9800',
+          'name : Page D',
+          'pv : 9800',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'area : 200',
+          'bar : 9800',
+          'line : 2400',
+          'name : Page D',
+          'pv : 9800',
+        ]);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'area : 200',
+          'line : 2400',
+          'bar : 9800',
+          'pv : 9800',
+          'name : Page D',
+        ]);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(5);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: '#3182bd',
+          dataKey: 'uv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-uv',
+          hide: false,
+          name: 'area',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'bar-pv',
+          hide: false,
+          name: 'bar',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: '#3182bd',
+          dataKey: 'amt',
+          fill: '#fff',
+          graphicalItemId: 'line-amt',
+          hide: false,
+          name: 'line',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+        expect(spy).toHaveBeenNthCalledWith(4, {
+          color: undefined,
+          dataKey: 'name',
+          fill: undefined,
+          graphicalItemId: 'scatter-uv',
+          hide: false,
+          name: 'name',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 'Page D',
+        });
+        expect(spy).toHaveBeenNthCalledWith(5, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'scatter-uv',
+          hide: false,
+          name: 'pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 9800,
+        });
+      });
+    });
+  });
+
+  describe('with name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <ComposedChart width={300} height={300} data={PageData}>
+          <Line dataKey="amt" name="Line" id="line-amt" />
+          <Area dataKey="uv" name="Area" id="area-uv" />
+          <Bar dataKey="pv" name="Bar" id="bar-pv" />
+          <Scatter dataKey="uv" name="Scatter" id="scatter-uv" />
+          <YAxis dataKey="pv" name="YAxis" />
+          <XAxis dataKey="name" name="XAxis" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </ComposedChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'Area : 200',
+          'Bar : 9800',
+          'Line : 2400',
+          'XAxis : Page D',
+          'YAxis : 9800',
+        ]);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: '#3182bd',
+            dataKey: 'amt',
+            fill: '#fff',
+            graphicalItemId: 'line-amt',
+            hide: false,
+            name: 'Line',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'uv',
+            fill: '#3182bd',
+            graphicalItemId: 'area-uv',
+            hide: false,
+            name: 'Area',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'bar-pv',
+            hide: false,
+            name: 'Bar',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'name',
+            fill: undefined,
+            graphicalItemId: 'scatter-uv',
+            hide: false,
+            name: 'XAxis',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 'Page A',
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'scatter-uv',
+            hide: false,
+            name: 'YAxis',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+        ]);
+        expect(spy).toHaveBeenCalledTimes(3);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'Line : 2400',
+          'XAxis : Page D',
+          'Bar : 9800',
+          'YAxis : 9800',
+          'Area : 200',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'Area : 200',
+          'Line : 2400',
+          'Bar : 9800',
+          'XAxis : Page D',
+          'YAxis : 9800',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'Area : 200',
+          'Bar : 9800',
+          'Line : 2400',
+          'XAxis : Page D',
+          'YAxis : 9800',
+        ]);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'Area : 200',
+          'Line : 2400',
+          'Bar : 9800',
+          'YAxis : 9800',
+          'XAxis : Page D',
+        ]);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, composedChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(5);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: '#3182bd',
+          dataKey: 'amt',
+          fill: '#fff',
+          graphicalItemId: 'line-amt',
+          hide: false,
+          name: 'Line',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: '#3182bd',
+          dataKey: 'uv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-uv',
+          hide: false,
+          name: 'Area',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'bar-pv',
+          hide: false,
+          name: 'Bar',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(4, {
+          color: undefined,
+          dataKey: 'name',
+          fill: undefined,
+          graphicalItemId: 'scatter-uv',
+          hide: false,
+          name: 'XAxis',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 'Page D',
+        });
+        expect(spy).toHaveBeenNthCalledWith(5, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'scatter-uv',
+          hide: false,
+          name: 'YAxis',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 9800,
+        });
+      });
+    });
+  });
+});
+
+describe('itemSorter in PieChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  function renderTestCase<T>(
+    itemSorter: TooltipItemSorter | undefined,
+    selector?: Selector<RechartsRootState, T, never>,
+  ) {
+    return createSelectorTestCase(({ children }) => (
+      <PieChart width={300} height={300}>
+        <Pie data={PageData} dataKey="uv" isAnimationActive={false} id="pie-uv" />
+        <Tooltip itemSorter={itemSorter} />
+        {children}
+      </PieChart>
+    ))(selector);
+  }
+
+  describe('when itemSorter is undefined', () => {
+    it('should render only one item in the Tooltip so there is nothing to sort', () => {
+      const { container } = renderTestCase(undefined);
+      showTooltip(container, pieChartMouseHoverTooltipSelector);
+      expectTooltipPayload(container, '', ['Page A : 400']);
+    });
+
+    it('should select payload with only one item so there is nothing to sort', () => {
+      const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'item', 'hover', '0'));
+      expectLastCalledWith(spy, [
+        {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'pie-uv',
+          hide: false,
+          name: 'Page A',
+          nameKey: 'name',
+          payload: {
+            amt: 2400,
+            name: 'Page A',
+            pv: 2400,
+            uv: 400,
+          },
+          stroke: '#fff',
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 400,
+        },
+      ]);
+    });
+  });
+});
+
+describe('itemSorter in RadarChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  describe('without name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <RadarChart width={600} height={600} data={PageData}>
+          <Radar dataKey="uv" isAnimationActive={false} id="radar-uv" />
+          <Radar dataKey="pv" isAnimationActive={false} id="radar-pv" />
+          <Radar dataKey="amt" isAnimationActive={false} id="radar-amt" />
+          <PolarAngleAxis dataKey="name" />
+          <PolarRadiusAxis dataKey="uv" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </RadarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['amt : 2400', 'pv : 4800', 'uv : 189']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'radar-uv',
+            hide: false,
+            name: 'uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'radar-pv',
+            hide: false,
+            name: 'pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'radar-amt',
+            hide: false,
+            name: 'amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['amt : 2400', 'pv : 4800', 'uv : 189']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['uv : 189', 'amt : 2400', 'pv : 4800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['amt : 2400', 'pv : 4800', 'uv : 189']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['uv : 189', 'amt : 2400', 'pv : 4800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'radar-uv',
+          hide: false,
+          name: 'uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page F',
+            pv: 4800,
+            uv: 189,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 189,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'radar-pv',
+          hide: false,
+          name: 'pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page F',
+            pv: 4800,
+            uv: 189,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 4800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'amt',
+          fill: undefined,
+          graphicalItemId: 'radar-amt',
+          hide: false,
+          name: 'amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page F',
+            pv: 4800,
+            uv: 189,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 2400,
+        });
+      });
+    });
+  });
+
+  describe('with name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <RadarChart width={600} height={600} data={PageData}>
+          <Radar dataKey="uv" isAnimationActive={false} name="Radar-uv" id="radar-uv" />
+          <Radar dataKey="pv" isAnimationActive={false} name="Radar-pv" id="radar-pv" />
+          <Radar dataKey="amt" isAnimationActive={false} name="Radar-amt" id="radar-amt" />
+          <PolarAngleAxis dataKey="name" name="PolarAngleAxis" />
+          <PolarRadiusAxis dataKey="uv" name="PolarRadiusAxis" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </RadarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['Radar-amt : 2400', 'Radar-pv : 4800', 'Radar-uv : 189']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'radar-uv',
+            hide: false,
+            name: 'Radar-uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'radar-pv',
+            hide: false,
+            name: 'Radar-pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'radar-amt',
+            hide: false,
+            name: 'Radar-amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['Radar-amt : 2400', 'Radar-pv : 4800', 'Radar-uv : 189']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['Radar-uv : 189', 'Radar-amt : 2400', 'Radar-pv : 4800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, radarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page F', ['Radar-amt : 2400', 'Radar-pv : 4800', 'Radar-uv : 189']);
+      });
+    });
+  });
+});
+
+describe('itemSorter in RadialBarChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  describe('without name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <RadialBarChart width={600} height={600} data={PageData}>
+          <RadialBar dataKey="uv" isAnimationActive={false} id="radialbar-uv" />
+          <RadialBar dataKey="pv" isAnimationActive={false} id="radialbar-pv" />
+          <RadialBar dataKey="amt" isAnimationActive={false} id="radialbar-amt" />
+          <PolarAngleAxis dataKey="uv" />
+          <PolarRadiusAxis dataKey="name" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </RadialBarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'radialbar-uv',
+            hide: false,
+            name: 'uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 3.9333333333333336,
+                outerRadius: 10.933333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 3.9333333333333336,
+              name: 'Page A',
+              outerRadius: 10.933333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'radialbar-pv',
+            hide: false,
+            name: 'pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 14.933333333333334,
+                outerRadius: 21.933333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 2160,
+              innerRadius: 14.933333333333334,
+              name: 'Page A',
+              outerRadius: 21.933333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 2400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'radialbar-amt',
+            hide: false,
+            name: 'amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 25.933333333333334,
+                outerRadius: 32.93333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 2160,
+              innerRadius: 25.933333333333334,
+              name: 'Page A',
+              outerRadius: 32.93333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 2400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'radialbar-uv',
+          hide: false,
+          name: 'uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 121.93333333333334,
+              outerRadius: 128.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 180,
+            innerRadius: 121.93333333333334,
+            name: 'Page D',
+            outerRadius: 128.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'radialbar-pv',
+          hide: false,
+          name: 'pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 132.93333333333334,
+              outerRadius: 139.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 8820,
+            innerRadius: 132.93333333333334,
+            name: 'Page D',
+            outerRadius: 139.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 9800,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'amt',
+          fill: undefined,
+          graphicalItemId: 'radialbar-amt',
+          hide: false,
+          name: 'amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 143.93333333333334,
+              outerRadius: 150.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 2160,
+            innerRadius: 143.93333333333334,
+            name: 'Page D',
+            outerRadius: 150.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 2400,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 2400,
+        });
+      });
+    });
+  });
+
+  describe('with name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <RadialBarChart width={600} height={600} data={PageData}>
+          <RadialBar dataKey="uv" isAnimationActive={false} name="RadialBar-uv" id="radialbar-uv" />
+          <RadialBar dataKey="pv" isAnimationActive={false} name="RadialBar-pv" id="radialbar-pv" />
+          <RadialBar dataKey="amt" isAnimationActive={false} name="RadialBar-amt" id="radialbar-amt" />
+          <PolarAngleAxis dataKey="uv" name="PolarAngleAxis" />
+          <PolarRadiusAxis dataKey="name" name="PolarRadiusAxis" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </RadialBarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'RadialBar-amt : 2400',
+          'RadialBar-pv : 9800',
+          'RadialBar-uv : 200',
+        ]);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'radialbar-uv',
+            hide: false,
+            name: 'RadialBar-uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 3.9333333333333336,
+                outerRadius: 10.933333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 3.9333333333333336,
+              name: 'Page A',
+              outerRadius: 10.933333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'radialbar-pv',
+            hide: false,
+            name: 'RadialBar-pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 14.933333333333334,
+                outerRadius: 21.933333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 2160,
+              innerRadius: 14.933333333333334,
+              name: 'Page A',
+              outerRadius: 21.933333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 2400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'radialbar-amt',
+            hide: false,
+            name: 'RadialBar-amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              background: {
+                cx: 300,
+                cy: 300,
+                endAngle: 360,
+                innerRadius: 25.933333333333334,
+                outerRadius: 32.93333333333334,
+                startAngle: 0,
+              },
+              cx: 300,
+              cy: 300,
+              endAngle: 2160,
+              innerRadius: 25.933333333333334,
+              name: 'Page A',
+              outerRadius: 32.93333333333334,
+              payload: {
+                amt: 2400,
+                name: 'Page A',
+                pv: 2400,
+                uv: 400,
+              },
+              pv: 2400,
+              startAngle: 0,
+              uv: 400,
+              value: 2400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: '',
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'RadialBar-amt : 2400',
+          'RadialBar-pv : 9800',
+          'RadialBar-uv : 200',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'RadialBar-uv : 200',
+          'RadialBar-amt : 2400',
+          'RadialBar-pv : 9800',
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'RadialBar-amt : 2400',
+          'RadialBar-pv : 9800',
+          'RadialBar-uv : 200',
+        ]);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', [
+          'RadialBar-uv : 200',
+          'RadialBar-amt : 2400',
+          'RadialBar-pv : 9800',
+        ]);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, radialBarChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'radialbar-uv',
+          hide: false,
+          name: 'RadialBar-uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 121.93333333333334,
+              outerRadius: 128.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 180,
+            innerRadius: 121.93333333333334,
+            name: 'Page D',
+            outerRadius: 128.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'radialbar-pv',
+          hide: false,
+          name: 'RadialBar-pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 132.93333333333334,
+              outerRadius: 139.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 8820,
+            innerRadius: 132.93333333333334,
+            name: 'Page D',
+            outerRadius: 139.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 9800,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'amt',
+          fill: undefined,
+          graphicalItemId: 'radialbar-amt',
+          hide: false,
+          name: 'RadialBar-amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            background: {
+              cx: 300,
+              cy: 300,
+              endAngle: 360,
+              innerRadius: 143.93333333333334,
+              outerRadius: 150.93333333333334,
+              startAngle: 0,
+            },
+            cx: 300,
+            cy: 300,
+            endAngle: 2160,
+            innerRadius: 143.93333333333334,
+            name: 'Page D',
+            outerRadius: 150.93333333333334,
+            payload: {
+              amt: 2400,
+              name: 'Page D',
+              pv: 9800,
+              uv: 200,
+            },
+            pv: 9800,
+            startAngle: 0,
+            uv: 200,
+            value: 2400,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: '',
+          value: 2400,
+        });
+      });
+    });
+  });
+});
+
+// Funnel, Treemap, Sankey - always only render one payload item so there is nothing to sort either
+
+describe('itemSorter in stacked BarChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  describe('without name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <BarChart width={300} height={300} data={PageData}>
+          <Bar dataKey="pv" stackId="stack-1" id="bar-pv" />
+          <Bar dataKey="uv" stackId="stack-1" id="bar-uv" />
+          <Bar dataKey="amt" stackId="stack-1" id="bar-amt" />
+          <YAxis />
+          <XAxis dataKey="name" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </BarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'bar-pv',
+            hide: false,
+            name: 'pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'bar-uv',
+            hide: false,
+            name: 'uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'bar-amt',
+            hide: false,
+            name: 'amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'bar-pv',
+          hide: false,
+          name: 'pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'bar-uv',
+          hide: false,
+          name: 'uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'amt',
+          fill: undefined,
+          graphicalItemId: 'bar-amt',
+          hide: false,
+          name: 'amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+      });
+    });
+  });
+
+  describe('with name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <BarChart width={300} height={300} data={PageData}>
+          <Bar dataKey="pv" stackId="stack-1" name="Bar-pv" id="bar-pv" />
+          <Bar dataKey="uv" stackId="stack-1" name="Bar-uv" id="bar-uv" />
+          <Bar dataKey="amt" stackId="stack-1" name="Bar-amt" id="bar-amt" />
+          <YAxis name="YAxis" />
+          <XAxis dataKey="name" name="XAxis" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </BarChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Bar-amt : 2400', 'Bar-pv : 9800', 'Bar-uv : 200']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: undefined,
+            dataKey: 'pv',
+            fill: undefined,
+            graphicalItemId: 'bar-pv',
+            hide: false,
+            name: 'Bar-pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+          {
+            color: undefined,
+            dataKey: 'uv',
+            fill: undefined,
+            graphicalItemId: 'bar-uv',
+            hide: false,
+            name: 'Bar-uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+          },
+          {
+            color: undefined,
+            dataKey: 'amt',
+            fill: undefined,
+            graphicalItemId: 'bar-amt',
+            hide: false,
+            name: 'Bar-amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: undefined,
+            strokeWidth: undefined,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Bar-amt : 2400', 'Bar-pv : 9800', 'Bar-uv : 200']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Bar-uv : 200', 'Bar-amt : 2400', 'Bar-pv : 9800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Bar-amt : 2400', 'Bar-pv : 9800', 'Bar-uv : 200']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Bar-uv : 200', 'Bar-amt : 2400', 'Bar-pv : 9800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: undefined,
+          dataKey: 'pv',
+          fill: undefined,
+          graphicalItemId: 'bar-pv',
+          hide: false,
+          name: 'Bar-pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: undefined,
+          dataKey: 'uv',
+          fill: undefined,
+          graphicalItemId: 'bar-uv',
+          hide: false,
+          name: 'Bar-uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: undefined,
+          dataKey: 'amt',
+          fill: undefined,
+          graphicalItemId: 'bar-amt',
+          hide: false,
+          name: 'Bar-amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: undefined,
+          strokeWidth: undefined,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+      });
+    });
+  });
+});
+
+describe('itemSorter in stacked AreaChart', () => {
+  beforeEach(() => {
+    mockGetBoundingClientRect({ width: 100, height: 100 });
+  });
+
+  describe('without name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <AreaChart width={300} height={300} data={PageData}>
+          <Area dataKey="pv" stackId="stack-1" id="area-pv" />
+          <Area dataKey="uv" stackId="stack-1" id="area-uv" />
+          <Area dataKey="amt" stackId="stack-1" id="area-amt" />
+          <YAxis />
+          <XAxis dataKey="name" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </AreaChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload sorted by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: '#3182bd',
+            dataKey: 'pv',
+            fill: '#3182bd',
+            hide: false,
+            name: 'pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'area-pv',
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'uv',
+            fill: '#3182bd',
+            hide: false,
+            name: 'uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+            graphicalItemId: 'area-uv',
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'amt',
+            fill: '#3182bd',
+            hide: false,
+            name: 'amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'area-amt',
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['amt : 2400', 'pv : 9800', 'uv : 200']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['uv : 200', 'amt : 2400', 'pv : 9800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: '#3182bd',
+          dataKey: 'pv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-pv',
+          hide: false,
+          name: 'pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: '#3182bd',
+          dataKey: 'uv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-uv',
+          hide: false,
+          name: 'uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: '#3182bd',
+          dataKey: 'amt',
+          fill: '#3182bd',
+          graphicalItemId: 'area-amt',
+          hide: false,
+          name: 'amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+      });
+    });
+  });
+
+  describe('with name prop', () => {
+    function renderTestCase<T>(
+      itemSorter: TooltipItemSorter | undefined,
+      selector?: Selector<RechartsRootState, T, never>,
+    ) {
+      return createSelectorTestCase(({ children }) => (
+        <AreaChart width={300} height={300} data={PageData}>
+          <Area dataKey="pv" stackId="stack-1" name="Area-pv" id="area-pv" />
+          <Area dataKey="uv" stackId="stack-1" name="Area-uv" id="area-uv" />
+          <Area dataKey="amt" stackId="stack-1" name="Area-amt" id="area-amt" />
+          <YAxis name="YAxis" />
+          <XAxis dataKey="name" name="XAxis" />
+          <Tooltip itemSorter={itemSorter} />
+          {children}
+        </AreaChart>
+      ))(selector);
+    }
+
+    describe('when itemSorter is undefined', () => {
+      it('should render payload by name', () => {
+        const { container } = renderTestCase(undefined);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Area-amt : 2400', 'Area-pv : 9800', 'Area-uv : 200']);
+      });
+
+      it('should select payload sorted by name', () => {
+        const { spy } = renderTestCase(undefined, state => selectTooltipPayload(state, 'axis', 'hover', '0'));
+        expectLastCalledWith(spy, [
+          {
+            color: '#3182bd',
+            dataKey: 'pv',
+            fill: '#3182bd',
+            hide: false,
+            name: 'Area-pv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'area-pv',
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'uv',
+            fill: '#3182bd',
+            hide: false,
+            name: 'Area-uv',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 400,
+            graphicalItemId: 'area-uv',
+          },
+          {
+            color: '#3182bd',
+            dataKey: 'amt',
+            fill: '#3182bd',
+            hide: false,
+            name: 'Area-amt',
+            nameKey: undefined,
+            payload: {
+              amt: 2400,
+              name: 'Page A',
+              pv: 2400,
+              uv: 400,
+            },
+            stroke: '#3182bd',
+            strokeWidth: 1,
+            type: undefined,
+            unit: undefined,
+            value: 2400,
+            graphicalItemId: 'area-amt',
+          },
+        ]);
+      });
+    });
+
+    describe('when itemSorter=`dataKey`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('dataKey');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Area-amt : 2400', 'Area-pv : 9800', 'Area-uv : 200']);
+      });
+    });
+
+    describe('when itemSorter=`value`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('value');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Area-uv : 200', 'Area-amt : 2400', 'Area-pv : 9800']);
+      });
+    });
+
+    describe('when itemSorter=`name`', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase('name');
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Area-amt : 2400', 'Area-pv : 9800', 'Area-uv : 200']);
+      });
+    });
+
+    describe('when itemSorter is a function', () => {
+      it('should render sorted payload', () => {
+        const { container } = renderTestCase(item => String(item.value));
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expectTooltipPayload(container, 'Page D', ['Area-uv : 200', 'Area-amt : 2400', 'Area-pv : 9800']);
+      });
+
+      it('should call the function once for every payload item, and pass the item as an argument', () => {
+        const spy = vi.fn();
+        const { container } = renderTestCase(spy);
+        expect(spy).toHaveBeenCalledTimes(0);
+        showTooltip(container, barChartMouseHoverTooltipSelector);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          color: '#3182bd',
+          dataKey: 'pv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-pv',
+          hide: false,
+          name: 'Area-pv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 9800,
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          color: '#3182bd',
+          dataKey: 'uv',
+          fill: '#3182bd',
+          graphicalItemId: 'area-uv',
+          hide: false,
+          name: 'Area-uv',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 200,
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, {
+          color: '#3182bd',
+          dataKey: 'amt',
+          fill: '#3182bd',
+          graphicalItemId: 'area-amt',
+          hide: false,
+          name: 'Area-amt',
+          nameKey: undefined,
+          payload: {
+            amt: 2400,
+            name: 'Page D',
+            pv: 9800,
+            uv: 200,
+          },
+          stroke: '#3182bd',
+          strokeWidth: 1,
+          type: undefined,
+          unit: undefined,
+          value: 2400,
+        });
+      });
+    });
+  });
+});

@@ -1,0 +1,50 @@
+{
+  "commit-all": true,
+  "scripts": {
+    "prerelease": "node ./tools/prebump.cjs && npm run-script build-all",
+    "postbump": "node ./tools/postbump.cjs",
+    "postchangelog": "sed -i '' -e 's/### \\[/## [/g' CHANGELOG.md"
+  },
+  "types": [
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Fixes"
+    },
+    {
+      "type": "chore",
+      "hidden": true
+    },
+    {
+      "type": "docs",
+      "section": "Documentation",
+      "hidden": false
+    },
+    {
+      "type": "style",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "section": "Refactor",
+      "hidden": false
+    },
+    {
+      "type": "revert",
+      "section": "Reverts",
+      "hidden": false
+    },
+    {
+      "type": "perf",
+      "section": "Performance",
+      "hidden": false
+    },
+    {
+      "type": "test",
+      "hidden": true
+    }
+  ]
+}

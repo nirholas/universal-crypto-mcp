@@ -1,0 +1,28 @@
+---
+title: Ukuran Modal
+description: Luas vs. Kompak
+---
+
+# Ukuran Modal
+
+## Ukuran luas vs. kompak
+
+Secara default, ukuran `modalSize` RainbowKit diatur ke `luas` (dan tampil seperti ini):
+
+<Img src="/modal-default.png" height="569" width="1029" />
+
+Kami juga menyediakan ukuran modal `kompak`, yang tampil seperti ini:
+
+<Img src="/modal-compact.png" height="569" width="1029" />
+
+Untuk mengatur ukuran modal ke `kompak`, cukup tambahkan `modalSize="kompak"` sebagai prop dalam `RainbowKitProvider` Anda:
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider modalSize="compact" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```

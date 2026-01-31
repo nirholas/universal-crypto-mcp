@@ -1,0 +1,270 @@
+---
+title: कस्टम वॉलेट्स
+description: एक कस्टम वॉलेट बनाएं
+---
+
+# कस्टम वॉलेट्स
+
+## एक कस्टम वॉलेट बनाएं
+
+> नोट: यह API अस्थिर है और निकट भविष्य में बदल सकता है। हम समय के साथ अधिक बिल्ट-इन वॉलेट जोड़ेंगे। [हमें बताएं](https://github.com/rainbow-me/rainbowkit/issues) यदि कोई विशेष वॉलेट हैं जिनमें आप रुचि रखते हैं।
+
+`वॉलेट` फ़ंक्शन प्रकार आपके अपने कस्टम वॉलेट को परिभाषित करने में मदद करने के लिए प्रदान किया गया है। आपकी `वॉलेट` फ़ंक्शन के रिटर्न मान पर निम्नलिखित प्रॉपर्टीज़ को कॉन्फ़िगर किया जा सकता है:
+
+### वॉलेट गुण
+
+<PropsTable
+ data={[
+ {
+ name: 'id',
+ required: true,
+ type: 'string',
+ description: 'प्रति वॉलेट अद्वितीय आईडी',
+ },
+ {
+ name: 'name',
+ required: true,
+ type: 'string',
+ description: 'मानव-पठनीय वॉलेट नाम',
+ },
+ {
+ name: 'rdns',
+ required: false,
+ type: 'string',
+ description: 'EIP6963 समर्थन करने वाले वॉलेट के लिए RDNS',
+ },
+ {
+ name: 'shortName',
+ required: false,
+ type: 'string | undefined',
+ description: 'मोबाइल उपयोग के लिए वैकल्पिक शॉर्ट नाम',
+ },
+ {
+ name: 'iconUrl',
+ required: true,
+ type: 'string | (() => Promise<string>)',
+ description: 'वॉलेट आइकन के लिए URL, या एक प्रॉमिस जो Base64 डेटा URL को हल करता है',
+ },
+ {
+ name: 'iconAccent',
+ required: false,
+ type: 'string',
+ description: 'ब्राउज़र एक्सटेंशन और मोबाइल ऐप वाले वॉलेट्स के लिए डाउनलोड फ्लोज़ में उपयोग किया गया एक्सेंट रंग',
+ },
+ {
+ name: 'iconBackground',
+ required: true,
+ type: 'string',
+ description: 'वॉलेट आइकन लोड होने के दौरान पृष्ठभूमि का रंग',
+ },
+ {
+ name: 'installed',
+ required: false,
+ type: 'boolean | undefined',
+ description: (
+ <>
+ वॉलेट के इंस्टाल होने का ज्ञात होना या <code>अपरिभाषित</code> होना अगर तनावमुक्त
+ </>
+ ),
+ },
+ {
+ name: 'downloadUrls',
+ required: false,
+ type: '{ android?: string, ios?: string, mobile?: string, qrCode?: string, chrome?: string, firefox?: string, edge?: string, safari?: string, opera?: string, browserExtension?: string } | undefined',
+ typeSimple: 'डाउनलोडUrls | undefined',
+ description: 'डाउनलोड URL को समायोजित करने वाला ऑब्जेक्ट',
+ },
+ {
+ name: 'hidden',
+ required: false,
+ type: '(args: { wallets: Array<{ id: string, connector: Connector, installed?: boolean }> }) => boolean',
+ typeSimple: '(args) => boolean | undefined',
+ description: 'इस वॉलेट को सूची से छिपाया जाना चाहिए या नहीं यह गणना करने के लिए फंक्शन। यह सामान्य फॉलबैक वॉलेट्स को परिभाषित करने के लिए उपयोगी है, उदाहरण के लिए, "Injected Wallet" फॉलबैक इस सुविधा का उपयोग करता है',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: '() => RainbowKitConnector',
+ typeSimple: 'RainbowKitConnector',
+ description: 'कनेक्टर इंस्टेंस और विभिन्न कनेक्शन विधियों के लिए कॉन्फ़िगरेशन प्रदान करने के लिए फंक्शन, नीचे वर्णित',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'ऑब्जेक्ट',
+ description: 'मूवाइल वॉलेट कनेक्शन URI को हल करने के लिए फंक्शन',
+ },
+ {
+ name: 'desktop',
+ required: false,
+ type: '{ getUri?: (uri: string) => string }',
+ typeSimple: 'ऑब्जेक्ट',
+ description: 'डेस्कटॉप ऐप दीप लिंक को हल करने के लिए फंक्शन',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: "{ getUri: (uri: string) => string, instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'ऑब्जेक्ट',
+ description: 'ऑब्जेक्ट जिसमें QR कोड URI को हल करने के लिए एक फंक्शन शामिल है, साथ ही वैकल्पिक मूवाइल वॉलेट सेटअप निर्देश',
+ },
+ {
+ name: 'extension',
+ required: false,
+ type: "{ instructions?: { learnMoreUrl: string, steps: Array<{ step: 'install' | 'create' | 'scan', title: string, description: string }> }}}",
+ typeSimple: 'ऑब्जेक्ट',
+ description: 'ऑब्जेक्ट जिसमें वैकल्पिक ब्राउज़र एकक्चन्सनसेटअप निर्देश शामिल हैं',
+ },
+ {
+ name: 'createConnector',
+ required: true,
+ type: "createConnector: (details: WalletDetailsParams) => CreateConnectorFn",
+ typeSimple: '(details: WalletDetailsParams) => CreateConnectorFn',
+ description: 'कनेक्टर इंस्टेंस प्रदान करने के लिए फंक्शन',
+ },
+ ]}
+/>
+
+### DownloadUrls गुण
+
+<PropsTable
+ data={[
+ {
+ name: 'android',
+ required: false,
+ type: 'string',
+ description: 'गूगल प्ले URL',
+ },
+ {
+ name: 'ios',
+ required: false,
+ type: 'string',
+ description: 'ऐप्पल ऐप स्टोर URL',
+ },
+ {
+ name: 'mobile',
+ required: false,
+ type: 'string',
+ description: 'मोबाइल उपयोगकर्ताओं के लिए लैंडिंग पृष्ठ जब `android` या `ios` उपलब्ध नहीं हैं',
+ },
+ {
+ name: 'qrCode',
+ required: false,
+ type: 'string',
+ description: 'उपयोगकर्ताओं के लिए लैंडिंग पृष्ठ जो मोबाइल डाउनलोड QR कोड को स्कैन करते हैं',
+ },
+ {
+ name: 'chrome',
+ required: false,
+ type: 'string',
+ description: 'क्रोम वेब स्टोर URL',
+ },
+ {
+ name: 'edge',
+ required: false,
+ type: 'string',
+ description: 'माइक्रोसॉफ्ट एज ऐड-ऑन URL',
+ },
+ {
+ name: 'firefox',
+ required: false,
+ type: 'string',
+ description: 'फ़ायरफ़ॉक्स ब्राउजर ऐड-ऑन URL',
+ },
+ {
+ name: 'opera',
+ required: false,
+ type: 'string',
+ description: 'ओपेरा ऐड-ऑन URL',
+ },
+ {
+ name: 'safari',
+ required: false,
+ type: 'string',
+ description: 'मैक ऐप स्टोर URL',
+ },
+ {
+ name: 'browserExtension',
+ required: false,
+ type: 'string',
+ description: 'डेस्कटॉप एक्सटेंशन उपयोगकर्ताओं के लिए लैंडिंग पृष्ठ जब ब्राउजर-संगत URL उपलब्ध नहीं हैं',
+ },
+ ]}
+/>
+
+### उदाहरण
+
+उदाहरण के लिए, WalletConnect का उपयोग करके एक कस्टम वॉलेट बनाने के लिए:
+
+```tsx
+import { Wallet, getWalletConnectConnector } from '@rainbow-me/rainbowkit';
+
+export interface MyWalletOptions {
+  projectId: string;
+}
+
+export const rainbow = ({ projectId }: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
+  downloadUrls: {
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
+  },
+  mobile: {
+    getUri: (uri: string) => uri,
+  },
+  qrCode: {
+    getUri: (uri: string) => uri,
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend putting My Wallet on your home screen for faster access to your wallet.',
+          step: 'install',
+          title: 'Open the My Wallet app',
+        },
+        {
+          description:
+            'After you scan, a connection prompt will appear for you to connect your wallet.',
+          step: 'scan',
+          title: 'Tap the scan button',
+        },
+      ],
+    },
+  },
+  extension: {
+    instructions: {
+      learnMoreUrl: 'https://my-wallet/learn-more',
+      steps: [
+        {
+          description:
+            'We recommend pinning My Wallet to your taskbar for quicker access to your wallet.',
+          step: 'install',
+          title: 'Install the My Wallet extension',
+        },
+        {
+          description:
+            'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+          step: 'create',
+          title: 'Create or Import a Wallet',
+        },
+        {
+          description:
+            'Once you set up your wallet, click below to refresh the browser and load up the extension.',
+          step: 'refresh',
+          title: 'Refresh your browser',
+        },
+      ],
+    },
+  },
+  createConnector: getWalletConnectConnector({ projectId }),
+});
+```
+
+फिर आप अपने कस्टम वॉलेट को [वॉलेट सूची](/docs/custom-wallet-list) में जोड़ सकते हैं।

@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [12.x, 14.x, 16.x, 18.x, 20.x]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref || github.ref_name }} 
+
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: latest
+
+      - run: npm run cluster:setup
+
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test:tsd
+      - run: npm run test:cov || npm run test:cov || npm run test:cov
+      - run: npm run test:cluster

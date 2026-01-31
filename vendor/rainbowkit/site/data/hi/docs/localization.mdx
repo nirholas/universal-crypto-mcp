@@ -1,0 +1,97 @@
+---
+title: स्थानीयकरण
+description: बिल्ट-इन अनुवादों के साथ आपके dApp की भाषा को कस्टमाइज़ करना
+---
+
+# स्थानीयकरण
+
+## बिल्ट-इन अनुवादों के साथ आपके dApp की भाषा को कस्टमाइज़ करना
+
+डिफ़ॉल्ट रूप से, रेनबो किट `en-US` भाषा क्षेत्र के अंग्रेजी भाषा उपयोगकर्ताओं के लिए समर्थन करता है।
+
+यदि उपलब्ध हो, तो रेनबो किट उपयोगकर्ता की [पसंदीदा भाषा](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language) का पता लगाएगा और उपयुक्त अनुवाद चुन लेगा। डेवलपर्स हमेशा डिफ़ॉल्ट भाषा को अधिलेखित (ओवरराइड) कर सकते हैं।
+
+अपने उपयोगकर्ताओं के लिए एक भाषा निर्दिष्ट करने के लिए, बस `locale="zh-CN"` को अपने `RainbowKitProvider` में एक प्रॉप के रूप में जोड़ें।
+
+```tsx
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+export const App = () => (
+  <RainbowKitProvider locale="zh-CN" {...etc}>
+    {/* Your App */}
+  </RainbowKitProvider>
+);
+```
+
+### Next.js के साथ उपयोग करना
+
+रेनबो किट का स्थानीयकरण समर्थन [उप-पथ रूटिंग](https://nextjs.org/docs/pages/building-your-application/routing/internationalization#sub-path-routing) के साथ और भी बेहतर काम करता है।
+
+आपके Next.js परियोजना को नीचे दिए गए उदाहरण के अनुसार कॉन्फ़िगर करें ताकि आपके रूट्स में वैकल्पिक `/locale/` उप-पथ जोड़ा जा सके, जो खोज इंजन और उपयोगकर्ताओं को आपकी बहुभाषीय समर्थन की बेहतर खोज में मदद करेगा।
+
+```json
+// next.config.js
+{
+  i18n: {
+    locales: ['default', 'en', 'zh-CN'],
+    defaultLocale: 'default',
+  },
+}
+```
+
+फिर `locale` को पास करें जो पेज राउटर द्वारा प्रदान किया गया है `RainbowKitProvider` को।
+
+```tsx
+import { RainbowKitProvider, Locale } from '@rainbow-me/rainbowkit';
+
+export const App = () => {
+  const { locale } = useRouter() as { locale: Locale };
+  return (
+    <RainbowKitProvider locale={locale} {...etc}>
+      {/* Your App */}
+    </RainbowKitProvider>
+  )
+};
+```
+
+आप पेजेस राउटर के लिए [यहाँ](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next) एक उदाहरण संदर्भित कर सकते हैं।
+
+ऐप राउटर अभी तक i18n का समर्थन नहीं करता है। हमारे अलग-अलग उदाहरण को [यहाँ](https://github.com/rainbow-me/rainbowkit/tree/main/examples/with-next-app-i18n) देखें [`next-intl`](https://github.com/amannn/next-intl) मीडलवेयर के साथ कार्यान्वयन सर्वोत्तम प्रथाओं के लिए।
+
+पूरा स्थानीयकरण समर्थन के लिए यह सिफारिश की जाती है कि आप अपने dApp की सामग्री का अनुवाद करने के लिए वही तकनीकें उपयोग करें। स्थानीयकरण लाइब्रेरी जैसे [`i18n-js`](https://github.com/fnando/i18n) और [`next-intl`](https://github.com/amannn/next-intl) और प्रबंधन उपकरण जैसे Crowdin इस प्रक्रिया को सरल बनाएँगे।
+
+### समर्थित भाषाएँ
+
+हम निम्नलिखित `locale` क्षेत्रों के लिए पूर्ण समर्थन प्रदान करते हैं:
+
+<Table
+  header={[
+    'भाषा', 'क्षेत्र', 'लोकल', 'शॉर्टफॉर्म'
+  ]}
+  dataTypes={[
+    'string', 'string', 'code', 'code'
+  ]}
+  data={[
+    ['अंग्रेज़ी', 'संयुक्त राज्य अमेरिका 🇺🇸', 'en-US', 'en'],
+    ['中文', 'मेनलैंड चीन 🇨🇳', 'zh-CN', 'zh-Hans', 'zh'],
+    ['繁體中文', 'हांगकांग 🇭🇰', 'zh-HK'],
+    ['繁體中文', 'ताइवान 🇹🇼', 'zh-TW', 'zh-Hant'],
+    ['हिंदी', 'भारत 🇮🇳', 'hi-IN', 'hi'],
+    ['स्पैनिश', 'लैटिन अमेरिका 🌎', 'es-419', 'es'],
+    ['फ्रेंच', 'फ्रांस 🇫🇷', 'fr-FR', 'fr'],
+    ['अरबी', 'मध्य पूर्व 🌍', 'ar-AR', 'ar'],
+    ['पुर्तगाली', 'ब्राजील 🇧🇷', 'pt-BR', 'pt'],
+    ['रूसी', 'रूस 🇷🇺', 'ru-RU', 'ru'],
+    ['बाहासा इंडोनेशिया', 'इंडोनेशिया 🇮🇩', 'id-ID', 'id'],
+    ['जापानी', 'जापान 🇯🇵', 'ja-JP', 'ja'],
+    ['तुर्क', 'तुर्की 🇹🇷', 'tr-TR', 'tr'],
+    ['कोरियाई', 'दक्षिण कोरिया 🇰🇷', 'ko-KR', 'ko'],
+    ['थाई', 'थाईलैंड 🇹🇭', 'th-TH', 'th'],
+    ['यूक्रेनी', 'यूक्रेन 🇺🇦', 'uk-UA', 'ua'],
+    ['वियतनामी', 'वियतनाम 🇻🇳', 'vi-VN', 'vi'],
+    ['जर्मन', 'जर्मनी 🇩🇪', 'de-DE', 'de'],
+    ['बाहासा मलय', 'मलेशिया 🇲🇾', 'ms-MY', 'ms']
+  ]}
+/>
+
+यदि आप किसी और भाषा के लिए समर्थन देखना चाहते हैं, तो कृपया एक [GitHub चर्चा](https://github.com/rainbow-me/rainbowkit/discussions/new?category=ideas) खोलें और हम जल्द से जल्द समर्थन देने के लिए काम करेंगे।
