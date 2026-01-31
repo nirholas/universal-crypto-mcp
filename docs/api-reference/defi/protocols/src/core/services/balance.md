@@ -170,3 +170,4 @@ Check if an address owns a specific NFT
 `Promise`\<`boolean`\>
 
 True if the address owns the NFT
+
