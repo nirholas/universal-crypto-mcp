@@ -232,3 +232,4 @@ Transfer ETH to an address
 `Promise`\<`` `0x${string}` ``\>
 
 Transaction hash
+
