@@ -166,3 +166,4 @@ receivers:
 # Templates can be used to customize notifications
 templates:
   - '/etc/alertmanager/templates/*.tmpl'
+
