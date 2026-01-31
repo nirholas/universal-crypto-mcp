@@ -199,3 +199,4 @@ groups:
         annotations:
           summary: "Significant revenue drop"
           description: "Revenue is down more than 50% compared to yesterday"
+
