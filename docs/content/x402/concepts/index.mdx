@@ -1,0 +1,721 @@
+---
+title: x402 Core Concepts
+description: Essential concepts for understanding and using the x402 payment protocol
+category: x402
+keywords: [x402, concepts, payment, mechanisms, hooks, verification]
+order: 3
+published: true
+---
+
+# x402 Core Concepts
+
+Essential concepts for building with the x402 payment protocol.
+
+## 1. Payment Required (402 Response)
+
+The foundation of x402 is the HTTP 402 status code: **Payment Required**.
+
+### Standard HTTP Codes
+```
+200 OK              ← Request succeeded
+401 Unauthorized    ← Authentication failed
+402 Payment Required ← x402 uses this!
+403 Forbidden       ← No permission
+404 Not Found       ← Resource doesn't exist
+```
+
+### x402 Response Format
+
+When a server requires payment, it returns:
+
+```http
+HTTP/1.1 402 Payment Required
+Content-Type: application/json
+X-Payment-Required: true
+
+{
+  "error": "Payment Required",
+  "payment": {
+    "chain": "arbitrum",
+    "token": "USDC",
+    "amount": "10000",
+    "recipient": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "nonce": "req_20260131_abc123",
+    "deadline": 1738368000
+  },
+  "message": "Pay 0.01 USDC to access this endpoint"
+}
+```
+
+### Payment Object Fields
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `chain` | string | Blockchain network | `"arbitrum"` |
+| `token` | string | Token symbol | `"USDC"` |
+| `amount` | string | Amount in token's smallest unit | `"10000"` (0.01 USDC with 6 decimals) |
+| `recipient` | string | Payment recipient address | `"0x742d..."` |
+| `nonce` | string | Unique payment identifier | `"req_20260131_abc123"` |
+| `deadline` | number | Payment expiration (Unix timestamp) | `1738368000` |
+
+### Amount Encoding
+
+Amounts are in the token's smallest unit:
+
+```typescript
+// USDC has 6 decimals
+$1.00 USDC  = 1000000  (1 * 10^6)
+$0.01 USDC  = 10000    (0.01 * 10^6)
+$0.001 USDC = 1000     (0.001 * 10^6)
+
+// USDT has 6 decimals
+$1.00 USDT  = 1000000
+
+// Native ETH has 18 decimals
+1 ETH     = 1000000000000000000  (1 * 10^18)
+0.001 ETH = 1000000000000000     (0.001 * 10^18)
+```
+
+**Helper function**:
+```typescript
+import { parseUnits } from 'viem'
+
+// Convert human-readable to token units
+const amount = parseUnits('0.01', 6) // USDC/USDT
+// Returns: 10000n
+
+const ethAmount = parseUnits('0.001', 18) // ETH
+// Returns: 1000000000000000n
+```
+
+---
+
+## 2. Payment Mechanisms
+
+Mechanisms handle blockchain-specific payment logic.
+
+### Mechanism Interface
+
+```typescript
+interface PaymentMechanism {
+  // Create payment transaction
+  createPayment(params: PaymentParams): Promise<Transaction>
+  
+  // Verify payment on-chain
+  verifyPayment(txHash: string, expected: PaymentDetails): Promise<boolean>
+  
+  // Estimate transaction cost
+  estimateGas(params: PaymentParams): Promise<GasEstimate>
+}
+```
+
+### Built-in Mechanisms
+
+#### EVM Mechanism
+
+For Ethereum and EVM-compatible chains (Arbitrum, Optimism, Base, Polygon, etc.)
+
+```typescript
+import { EVMMechanism } from '@nirholas/x402'
+
+const mechanism = new EVMMechanism({
+  chain: 'arbitrum',
+  rpcUrl: process.env.ARBITRUM_RPC,
+  token: {
+    symbol: 'USDC',
+    address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    decimals: 6
+  }
+})
+
+// Create payment transaction
+const tx = await mechanism.createPayment({
+  to: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+  amount: '10000', // 0.01 USDC
+  nonce: 'req_abc123'
+})
+
+// Verify payment
+const isValid = await mechanism.verifyPayment(txHash, {
+  amount: '10000',
+  recipient: '0x742d...',
+  nonce: 'req_abc123'
+})
+```
+
+**Features**:
+- ERC-20 token transfers
+- Native ETH payments
+- Gas estimation
+- Multi-chain support (any EVM chain)
+
+#### SVM Mechanism (Solana)
+
+For Solana blockchain.
+
+```typescript
+import { SVMMechanism } from '@nirholas/x402'
+
+const mechanism = new SVMMechanism({
+  rpcUrl: process.env.SOLANA_RPC,
+  token: {
+    symbol: 'USDC',
+    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC on Solana
+    decimals: 6
+  }
+})
+
+// Create payment transaction
+const tx = await mechanism.createPayment({
+  to: 'DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK',
+  amount: '10000'
+})
+```
+
+**Features**:
+- SPL token transfers
+- SOL native payments
+- Fast finality (<1s)
+- Low fees (~$0.0001)
+
+### Custom Mechanisms
+
+You can create custom mechanisms for:
+- Other blockchains (Aptos, Near, Cosmos)
+- Layer 2 solutions
+- Payment channels
+- Custom logic
+
+```typescript
+import { PaymentMechanism } from '@nirholas/x402'
+
+class MyCustomMechanism implements PaymentMechanism {
+  async createPayment(params) {
+    // Your custom payment logic
+  }
+  
+  async verifyPayment(txHash, expected) {
+    // Your custom verification logic
+  }
+  
+  async estimateGas(params) {
+    // Your custom gas estimation
+  }
+}
+
+// Use custom mechanism
+const server = x402Server({
+  mechanism: new MyCustomMechanism()
+})
+```
+
+---
+
+## 3. Lifecycle Hooks
+
+Hooks allow customization at different stages of the payment process.
+
+### Available Hooks
+
+```typescript
+interface Lifecycle Hooks {
+  // Before payment verification
+  beforePayment?(req: Request): Promise<void>
+  
+  // After successful payment
+  afterPayment?(req: Request, payment: Payment): Promise<void>
+  
+  // Before returning 402 response
+  before402Response?(req: Request, payment: PaymentDetails): Promise<void>
+  
+  // On payment verification error
+  onError?(req: Request, error: Error): Promise<void>
+  
+  // On payment verification success
+  onSuccess?(req: Request, payment: Payment): Promise<void>
+}
+```
+
+### Common Use Cases
+
+#### 1. Rate Limiting
+
+```typescript
+const server = x402Server({
+  hooks: {
+    beforePayment: async (req) => {
+      const ip = req.ip
+      const count = await redis.incr(`requests:${ip}`)
+      
+      if (count > 100) {
+        throw new Error('Rate limit exceeded')
+      }
+    }
+  }
+})
+```
+
+#### 2. Revenue Tracking
+
+```typescript
+const server = x402Server({
+  hooks: {
+    afterPayment: async (req, payment) => {
+      await database.payments.insert({
+        txHash: payment.txHash,
+        amount: payment.amount,
+        user: req.user,
+        timestamp: Date.now(),
+        service: '/api/premium-data'
+      })
+      
+      console.log(`Revenue: +$${payment.amount}`)
+    }
+  }
+})
+```
+
+#### 3. User Credits
+
+```typescript
+const server = x402Server({
+  hooks: {
+    afterPayment: async (req, payment) => {
+      // Add credits instead of granting immediate access
+      await userCredits.add(req.user, payment.amount)
+    },
+    
+    beforePayment: async (req) => {
+      // Check if user has credits
+      const credits = await userCredits.get(req.user)
+      
+      if (credits >= requiredAmount) {
+        // Deduct credits and skip payment
+        await userCredits.deduct(req.user, requiredAmount)
+        req.skipPayment = true
+      }
+    }
+  }
+})
+```
+
+#### 4. Analytics
+
+```typescript
+const server = x402Server({
+  hooks: {
+    before402Response: async (req, paymentDetails) => {
+      await analytics.track('payment_required', {
+        endpoint: req.path,
+        amount: paymentDetails.amount,
+        user: req.user,
+        timestamp: Date.now()
+      })
+    },
+    
+    onSuccess: async (req, payment) => {
+      await analytics.track('payment_success', {
+        endpoint: req.path,
+        amount: payment.amount,
+        txHash: payment.txHash,
+        chain: payment.chain
+      })
+    },
+    
+    onError: async (req, error) => {
+      await analytics.track('payment_failed', {
+        endpoint: req.path,
+        error: error.message,
+        user: req.user
+      })
+    }
+  }
+})
+```
+
+#### 5. Discounts
+
+```typescript
+const server = x402Server({
+  hooks: {
+    before402Response: async (req, paymentDetails) => {
+      // Early bird discount
+      const hour = new Date().getHours()
+      if (hour >= 0 && hour < 6) {
+        paymentDetails.amount = (parseInt(paymentDetails.amount) * 0.5).toString()
+        paymentDetails.message = '50% night owl discount applied!'
+      }
+      
+      // Volume discount
+      const userVolume = await getUserVolume(req.user)
+      if (userVolume > 1000) {
+        paymentDetails.amount = (parseInt(paymentDetails.amount) * 0.8).toString()
+        paymentDetails.message = '20% volume discount applied!'
+      }
+    }
+  }
+})
+```
+
+---
+
+## 4. Payment Verification
+
+How servers verify payments on-chain.
+
+### Verification Process
+
+```typescript
+async function verifyPayment(
+  txHash: string,
+  expected: PaymentDetails
+): Promise<boolean> {
+  
+  // 1. Get transaction from blockchain
+  const tx = await blockchain.getTransaction(txHash)
+  
+  if (!tx) {
+    return false // Transaction doesn't exist
+  }
+  
+  // 2. Verify recipient
+  if (tx.to.toLowerCase() !== expected.recipient.toLowerCase()) {
+    return false // Wrong recipient
+  }
+  
+  // 3. Verify amount
+  if (BigInt(tx.value) < BigInt(expected.amount)) {
+    return false // Insufficient payment
+  }
+  
+  // 4. Verify nonce (check not reused)
+  if (await isNonceUsed(expected.nonce)) {
+    return false // Payment already used
+  }
+  
+  // 5. Verify not expired
+  if (Date.now() / 1000 > expected.deadline) {
+    return false // Payment expired
+  }
+  
+  // 6. Mark nonce as used
+  await markNonceUsed(expected.nonce)
+  
+  // 7. All checks passed
+  return true
+}
+```
+
+### Verification Timing
+
+**Synchronous** (default):
+```typescript
+app.get('/api/data', x402Middleware(), (req, res) => {
+  // Payment verified before reaching handler
+  res.json({ data: 'content' })
+})
+```
+
+- ✅ Secure (payment verified before access)
+- ❌ Slow (~2s for blockchain query)
+
+**Asynchronous** (optimistic):
+```typescript
+app.get('/api/data', x402Middleware({ async: true }), (req, res) => {
+  // Return immediately, verify in background
+  res.json({ data: 'content' })
+})
+```
+
+- ✅ Fast (<10ms response)
+- ⚠️ Risk: content delivered before verification
+- ✅ Mitigation: Revoke access if verification fails
+
+### Nonce Management
+
+Nonces prevent payment reuse:
+
+```typescript
+// Generate unique nonce
+const nonce = `req_${Date.now()}_${crypto.randomBytes(16).toString('hex')}`
+// Example: "req_1738368000_a3f2c9d4e8b1..."
+
+// Store used nonces
+const usedNonces = new Set<string>()
+
+// Check if nonce is used
+if (usedNonces.has(nonce)) {
+  throw new Error('Payment already used')
+}
+
+// Mark as used
+usedNonces.add(nonce)
+```
+
+**Production**: Use Redis or database:
+```typescript
+// Check and mark as used atomically
+const wasUsed = await redis.setnx(`nonce:${nonce}`, '1')
+
+if (!wasUsed) {
+  throw new Error('Payment already used')
+}
+
+// Set expiration (cleanup old nonces)
+await redis.expire(`nonce:${nonce}`, 86400) // 24 hours
+```
+
+---
+
+## 5. Token Standards
+
+Supported token standards across chains.
+
+### EVM Chains
+
+#### ERC-20 Tokens
+
+```solidity
+// Standard interface
+interface IERC20 {
+  function transfer(address to, uint256 amount) external returns (bool);
+  function balanceOf(address account) external view returns (uint256);
+  function decimals() external view returns (uint8);
+}
+```
+
+**Usage in x402**:
+```typescript
+// USDC on Arbitrum
+{
+  symbol: 'USDC',
+  address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  decimals: 6
+}
+
+// Payment: transfer 0.01 USDC
+await token.transfer(recipient, 10000) // 0.01 * 10^6
+```
+
+#### Native Tokens (ETH, MATIC, BNB)
+
+```typescript
+// Send ETH directly
+{
+  symbol: 'ETH',
+  address: '0x0000000000000000000000000000000000000000', // Native
+  decimals: 18
+}
+
+// Payment: send 0.001 ETH
+await signer.sendTransaction({
+  to: recipient,
+  value: parseEther('0.001')
+})
+```
+
+### Solana
+
+#### SPL Tokens
+
+```typescript
+// USDC on Solana
+{
+  symbol: 'USDC',
+  mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  decimals: 6
+}
+
+// Payment: transfer 0.01 USDC
+import { createTransferInstruction } from '@solana/spl-token'
+
+const tx = createTransferInstruction(
+  fromTokenAccount,
+  toTokenAccount,
+  authority,
+  10000 // 0.01 USDC
+)
+```
+
+### Multi-Chain Token Mapping
+
+Same tokens across chains:
+
+| Token | Ethereum | Arbitrum | Optimism | Base | Polygon | Solana |
+|-------|----------|----------|----------|------|---------|--------|
+| USDC  | 0xA0b... | 0xaf88... | 0x0b2... | 0x833... | 0x3c7... | EPjFWdd... |
+| USDT  | 0xdAC... | 0xFd08... | 0x94b... | - | 0xc2132... | Es9vM... |
+| DAI   | 0x6B17... | 0xDA10... | 0xDA10... | 0x50c... | 0x8f3... | - |
+
+x402 handles this automatically:
+```typescript
+// Specify chain, token symbol auto-resolved
+const payment = x402Payment({
+  chain: 'arbitrum',
+  token: 'USDC' // Resolves to 0xaf88...
+})
+```
+
+---
+
+## 6. Gas & Fees
+
+Understanding transaction costs.
+
+### Gas Cost Breakdown
+
+```
+Total Cost = Payment Amount + Gas Fee
+
+Example on Arbitrum:
+  Payment Amount: $0.01 USDC
+  Gas Fee:        $0.001  (ERC-20 transfer)
+  Total Cost:     $0.011
+```
+
+### Gas Optimization
+
+#### 1. Choose Low-Cost Chains
+
+| Chain      | USDC Transfer Gas | Total for $0.01 Payment |
+|------------|-------------------|-------------------------|
+| Ethereum   | ~$2-20            | $2.01 - $20.01          |
+| Arbitrum   | ~$0.001           | $0.011 ✅               |
+| Optimism   | ~$0.002           | $0.012                  |
+| Base       | ~$0.001           | $0.011 ✅               |
+| Polygon    | ~$0.001           | $0.011 ✅               |
+| Solana     | ~$0.0001          | $0.0101 ✅ (Cheapest)   |
+
+#### 2. Batch Payments
+
+Instead of paying per request:
+```typescript
+// Bad: 10 requests = 10 transactions
+for (let i = 0; i < 10; i++) {
+  await payForRequest(0.01) // $0.011 × 10 = $0.11
+}
+
+// Good: Buy credits in bulk
+await buyCredits(1.00) // $1.00 payment + $0.001 gas = $1.001
+// Use credits for 100 requests (no gas per request!)
+```
+
+#### 3. Payment Channels
+
+For high-frequency payments:
+```typescript
+// Open channel with $100
+await openPaymentChannel(service, 100)
+
+// Make 1000 micro-payments off-chain (no gas!)
+for (let i = 0; i < 1000; i++) {
+  await channelPay(0.01) // Off-chain, instant
+}
+
+// Close channel (1 transaction)
+await closePaymentChannel() // Settle on-chain
+```
+
+---
+
+## 7. Client Auto-Payment
+
+How AI agents automatically pay.
+
+### Auto-Payment Flow
+
+```typescript
+import { x402Client } from '@nirholas/x402'
+
+// Configure client
+const client = x402Client({
+  wallet: process.env.WALLET_KEY,
+  autoPayment: true,        // Automatically pay for 402s
+  maxPrice: '1.00',         // Don't pay more than $1
+  preferredChain: 'arbitrum' // Use Arbitrum when possible
+})
+
+// Make request
+const response = await client.get('https://premium-api.com/data')
+
+// Behind the scenes:
+// 1. GET /data → 402 Payment Required
+// 2. Parse payment details
+// 3. Check: price <= maxPrice ✓
+// 4. Check: wallet balance sufficient ✓
+// 5. Create & sign payment transaction
+// 6. Submit to blockchain
+// 7. Wait for confirmation
+// 8. Retry GET /data with payment proof
+// 9. Return 200 OK response
+```
+
+### Payment Prompts
+
+Optionally ask for user confirmation:
+
+```typescript
+const client = x402Client({
+  autoPayment: false, // Don't auto-pay
+  
+  onPaymentRequired: async (paymentDetails) => {
+    // Custom prompt
+    console.log(`API requires payment: $${paymentDetails.amount}`)
+    const proceed = await prompt('Pay? (y/n)')
+    
+    if (proceed === 'y') {
+      return client.pay(paymentDetails)
+    } else {
+      throw new Error('Payment declined by user')
+    }
+  }
+})
+```
+
+### Balance Management
+
+```typescript
+const client = x402Client({
+  wallet: process.env.WALLET_KEY,
+  
+  // Warn on low balance
+  minBalance: '10.00',
+  onLowBalance: async (balance) => {
+    console.warn(`Low balance: $${balance}`)
+    await sendTopUpAlert(balance)
+  },
+  
+  // Auto top-up
+  autoTopUp: {
+    enabled: true,
+    threshold: '5.00',
+    amount: '50.00',
+    source: 'stripe' // or 'coinbase', 'bank'
+  }
+})
+```
+
+---
+
+## Summary
+
+### Key Takeaways
+
+1. **402 Response**: HTTP status code indicating payment required
+2. **Mechanisms**: Handle blockchain-specific payment logic (EVM, SVM, custom)
+3. **Hooks**: Customize payment behavior at different lifecycle stages
+4. **Verification**: On-chain payment verification ensures security
+5. **Tokens**: Support for ERC-20, SPL, and native tokens
+6. **Gas**: Choose low-cost chains (Arbitrum, Solana) for micro-payments
+7. **Auto-Payment**: AI agents can automatically handle payments
+
+### Next Steps
+
+- [TypeScript SDK →](/docs/x402/typescript) - Build with TypeScript
+- [Python SDK →](/docs/x402/python) - Build with Python
+- [Advanced Hooks →](/docs/x402/advanced/hooks) - Deep dive into lifecycle
+- [Multi-Chain →](/docs/x402/advanced/multi-chain) - Cross-chain payments
+
+---
+
+*Master these core concepts to build powerful x402-enabled applications.*

@@ -1,0 +1,644 @@
+---
+title: x402 Architecture
+description: Complete architecture overview of the x402 payment protocol
+category: x402
+keywords: [x402, architecture, payment protocol, design, system]
+order: 2
+published: true
+---
+
+# x402 Architecture
+
+Complete architectural overview of the x402 payment protocol - enabling AI agents to automatically pay for APIs.
+
+## System Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        x402 Ecosystem                            │
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────────┐         ┌──────────────┐         ┌──────────────┐
+│  AI Agent    │         │ API Server   │         │ Facilitator  │
+│  (Client)    │◄───────►│  (Service)   │◄───────►│  (Payment)   │
+└───────┬──────┘         └───────┬──────┘         └───────┬──────┘
+        │                        │                        │
+        │                        │                        │
+        └────────────────────────┴────────────────────────┘
+                                 │
+                                 ▼
+                    ┌────────────────────────┐
+                    │    Blockchain Layer    │
+                    │  (EVM, Solana, etc.)   │
+                    └────────────────────────┘
+```
+
+## Core Components
+
+### 1. Client (AI Agent)
+
+**Purpose**: Initiate requests and handle payment requirements
+
+**Key Responsibilities**:
+- Detect 402 responses
+- Construct payment transactions
+- Sign and submit payments
+- Retry requests with payment proof
+
+**Implementation**:
+```typescript
+┌─────────────────────────┐
+│   x402Client            │
+├─────────────────────────┤
+│ - wallet: Wallet        │
+│ - httpClient: HTTP      │
+│ - mechanism: Mechanism  │
+├─────────────────────────┤
+│ + request()             │
+│ + handlePayment()       │
+│ + retryWithProof()      │
+└─────────────────────────┘
+```
+
+**Supported in**:
+- TypeScript (Axios, Fetch wrappers)
+- Python (httpx, requests)
+- Go (net/http)
+- Java (HttpClient)
+
+---
+
+### 2. Server (API Provider)
+
+**Purpose**: Serve content and require payment
+
+**Key Responsibilities**:
+- Return 402 for unpaid requests
+- Generate payment details (amount, recipient, nonce)
+- Verify payment on-chain
+- Grant access after payment
+
+**Implementation**:
+```typescript
+┌─────────────────────────┐
+│   x402Server            │
+├─────────────────────────┤
+│ - config: ServerConfig  │
+│ - mechanism: Mechanism  │
+│ - hooks: Lifecycle      │
+├─────────────────────────┤
+│ + middleware()          │
+│ + requirePayment()      │
+│ + verifyPayment()       │
+│ + grantAccess()         │
+└─────────────────────────┘
+```
+
+**HTTP Adapters**:
+- Express, Hono, Next.js (TypeScript)
+- FastAPI, Flask (Python)
+- Gin (Go)
+
+---
+
+### 3. Facilitator (Payment Infrastructure)
+
+**Purpose**: Monitor payments, route transactions, provide analytics
+
+**Key Responsibilities**:
+- Monitor payment channels
+- Aggregate payment data
+- Route multi-chain payments
+- Provide real-time analytics
+- Handle disputes and refunds
+
+**Implementation**:
+```typescript
+┌─────────────────────────┐
+│   Facilitator           │
+├─────────────────────────┤
+│ - monitors: Monitor[]   │
+│ - router: Router        │
+│ - analytics: Analytics  │
+├─────────────────────────┤
+│ + monitorPayments()     │
+│ + routeTransaction()    │
+│ + trackRevenue()        │
+│ + handleDispute()       │
+└─────────────────────────┘
+```
+
+**Features**:
+- Multi-chain monitoring
+- Revenue aggregation
+- Dispute resolution
+- Analytics dashboard
+
+---
+
+### 4. Mechanism (Payment Logic)
+
+**Purpose**: Handle blockchain-specific payment logic
+
+**Key Responsibilities**:
+- Construct payment transactions
+- Verify on-chain payments
+- Handle different token standards
+- Manage gas estimation
+
+**Implementations**:
+
+#### EVM Mechanism
+```typescript
+┌─────────────────────────┐
+│   EVMMechanism          │
+├─────────────────────────┤
+│ - chain: Chain          │
+│ - token: Token          │
+│ - signer: Signer        │
+├─────────────────────────┤
+│ + createPayment()       │
+│ + verifyPayment()       │
+│ + estimateGas()         │
+└─────────────────────────┘
+```
+
+Supports:
+- Ethereum, Arbitrum, Optimism, Base, Polygon, BNB Chain
+- USDC, USDT, native tokens
+- ERC-20 standard
+
+#### SVM Mechanism (Solana)
+```typescript
+┌─────────────────────────┐
+│   SVMMechanism          │
+├─────────────────────────┤
+│ - connection: Connection│
+│ - token: PublicKey      │
+│ - keypair: Keypair      │
+├─────────────────────────┤
+│ + createPayment()       │
+│ + verifyPayment()       │
+│ + estimateFees()        │
+└─────────────────────────┘
+```
+
+Supports:
+- Solana mainnet/devnet
+- USDC (SPL token)
+- SOL native payments
+
+---
+
+## Payment Flow
+
+### Complete Request-Response Cycle
+
+```
+   ┌─────────┐                          ┌─────────┐
+   │ Client  │                          │ Server  │
+   └────┬────┘                          └────┬────┘
+        │                                     │
+        │  1. GET /api/data                   │
+        ├────────────────────────────────────>│
+        │                                     │
+        │  2. 402 Payment Required            │
+        │     {                               │
+        │       amount: "0.01",               │
+        │       chain: "arbitrum",            │
+        │       token: "USDC",                │
+        │       recipient: "0x123...",        │
+        │       nonce: "abc123"               │
+        │     }                               │
+        │<────────────────────────────────────┤
+        │                                     │
+    ┌───┴───┐                                 │
+    │ Check │                                 │
+    │ wallet│                                 │
+    │balance│                                 │
+    └───┬───┘                                 │
+        │                                     │
+    ┌───┴────┐                                │
+    │ Create │                            ┌───┴────┐
+    │payment │                            │ Wait   │
+    │   TX   │                            │for     │
+    └───┬────┘                            │payment │
+        │                                 └───┬────┘
+        │  3. Submit to blockchain           │
+        ├────────────────────────────────────┤
+        │     (Blockchain Layer)             │
+        │       ▼ ▼ ▼ ▼ ▼                   │
+        │       Transfer 0.01 USDC           │
+        │       from client to server        │
+        │       ▲ ▲ ▲ ▲ ▲                   │
+        │                                    │
+        │  4. GET /api/data                  │
+        │     Headers:                       │
+        │       X-Payment-TX: 0xabc...       │
+        │       X-Payment-Nonce: abc123      │
+        ├───────────────────────────────────>│
+        │                                    │
+        │                                ┌───┴────┐
+        │                                │ Verify │
+        │                                │payment │
+        │                                │on-chain│
+        │                                └───┬────┘
+        │                                    │
+        │  5. 200 OK + Data                  │
+        │     { premium: "content" }         │
+        │<───────────────────────────────────┤
+        │                                    │
+        ▼                                    ▼
+```
+
+### Detailed Steps
+
+#### Step 1: Initial Request
+```http
+GET /api/premium-data HTTP/1.1
+Host: api.example.com
+```
+
+Client makes normal HTTP request without payment.
+
+#### Step 2: Payment Required Response
+```http
+HTTP/1.1 402 Payment Required
+Content-Type: application/json
+X-Payment-Required: true
+
+{
+  "error": "Payment Required",
+  "payment": {
+    "chain": "arbitrum",
+    "token": "USDC",
+    "amount": "10000", // 0.01 USDC (6 decimals)
+    "recipient": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "nonce": "req_20260131_abc123",
+    "deadline": 1738368000 // Unix timestamp
+  },
+  "message": "Pay 0.01 USDC to access this endpoint"
+}
+```
+
+Server indicates payment is required and provides payment details.
+
+#### Step 3: Client Processes Payment
+
+```typescript
+// Client automatically:
+1. Parses 402 response
+2. Checks wallet balance (>= 0.01 USDC)
+3. Constructs payment transaction
+4. Signs transaction
+5. Submits to blockchain
+6. Waits for confirmation
+```
+
+**Transaction Details**:
+```solidity
+// On Arbitrum
+transferFrom(
+  from: 0x...client,
+  to: 0x742d...recipient,
+  amount: 10000 // 0.01 USDC
+)
+
+// Returns transaction hash: 0xabcdef...
+```
+
+#### Step 4: Retry with Payment Proof
+```http
+GET /api/premium-data HTTP/1.1
+Host: api.example.com
+X-Payment-TX: 0xabcdef1234567890...
+X-Payment-Nonce: req_20260131_abc123
+```
+
+Client retries request with payment proof headers.
+
+#### Step 5: Server Verifies and Responds
+
+```typescript
+// Server automatically:
+1. Extracts payment proof headers
+2. Queries blockchain for transaction
+3. Verifies:
+   - Transaction exists
+   - Amount matches (0.01 USDC)
+   - Recipient matches
+   - Nonce matches
+   - Not expired
+   - Not previously used
+4. If valid: Grant access
+5. If invalid: Return 402 or 400
+```
+
+**Success Response**:
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "data": "Premium content here",
+  "payment": {
+    "verified": true,
+    "txHash": "0xabcdef...",
+    "amount": "0.01",
+    "timestamp": 1738368000
+  }
+}
+```
+
+---
+
+## Multi-Chain Architecture
+
+### Chain Selection
+
+x402 supports multiple blockchains for payment flexibility:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              Client Wallet Balance                      │
+├─────────────────────────────────────────────────────────┤
+│  Ethereum:  100 USDC   ✓ Available                     │
+│  Arbitrum:  500 USDC   ✓ Available (Cheapest gas)      │
+│  Optimism:   50 USDC   ✓ Available                     │
+│  Base:      200 USDC   ✓ Available                     │
+│  Polygon:    10 USDC   ✓ Available                     │
+│  Solana:    1000 USDC  ✓ Available (Fastest)           │
+└─────────────────────────────────────────────────────────┘
+                           ▼
+                  ┌────────────────┐
+                  │ Chain Selector │
+                  └────────┬───────┘
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+   Cost-based         Speed-based       User preference
+   Select Arbitrum    Select Solana     Select Ethereum
+   ($0.01 gas)        (<1s finality)    (Most secure)
+```
+
+### Chain Comparison
+
+| Chain      | Gas Cost | Finality | USDC Support | Recommended For |
+|------------|----------|----------|--------------|-----------------|
+| Ethereum   | ~$2-20   | 12-15s   | ✅           | High-value txs  |
+| Arbitrum   | ~$0.01   | 2-3s     | ✅           | **Default**     |
+| Optimism   | ~$0.02   | 2-3s     | ✅           | General use     |
+| Base       | ~$0.01   | 2s       | ✅           | Coinbase users  |
+| Polygon    | ~$0.01   | 2-5s     | ✅           | High volume     |
+| Solana     | ~$0.0001 | <1s      | ✅           | Micro-payments  |
+
+**Recommendation**: Arbitrum (best balance of cost, speed, liquidity)
+
+---
+
+## Security Architecture
+
+### Payment Verification
+
+```typescript
+┌────────────────────────────────────────┐
+│     Payment Verification Process       │
+└────────────────────────────────────────┘
+
+1. ┌─────────────────────┐
+   │ Extract TX Hash     │
+   └──────────┬──────────┘
+              │
+2. ┌──────────▼──────────┐
+   │ Query Blockchain    │ ← RPC call to verify on-chain
+   └──────────┬──────────┘
+              │
+3. ┌──────────▼──────────┐
+   │ Verify Amount       │ ← amount == expected
+   └──────────┬──────────┘
+              │
+4. ┌──────────▼──────────┐
+   │ Verify Recipient    │ ← to == server address
+   └──────────┬──────────┘
+              │
+5. ┌──────────▼──────────┐
+   │ Verify Nonce        │ ← nonce == request nonce
+   └──────────┬──────────┘
+              │
+6. ┌──────────▼──────────┐
+   │ Check Not Expired   │ ← timestamp < deadline
+   └──────────┬──────────┘
+              │
+7. ┌──────────▼──────────┐
+   │ Check Not Reused    │ ← nonce not in used_set
+   └──────────┬──────────┘
+              │
+8. ┌──────────▼──────────┐
+   │ Mark Nonce Used     │ ← prevent double-spending
+   └──────────┬──────────┘
+              │
+   ┌──────────▼──────────┐
+   │   Grant Access ✓    │
+   └─────────────────────┘
+```
+
+### Attack Prevention
+
+#### 1. Double-Spend Protection
+**Problem**: Attacker reuses same payment for multiple requests  
+**Solution**: Nonce tracking (each payment has unique nonce, tracked in database)
+
+```typescript
+const usedNonces = new Set<string>()
+
+function verifyPayment(tx: string, nonce: string) {
+  if (usedNonces.has(nonce)) {
+    throw new Error('Payment already used')
+  }
+  // ... verify transaction ...
+  usedNonces.add(nonce)
+}
+```
+
+#### 2. Replay Attack Protection
+**Problem**: Attacker captures and replays payment proof  
+**Solution**: Short expiration times (5-15 minutes)
+
+```typescript
+payment: {
+  deadline: Date.now() + 15 * 60 * 1000, // 15 minutes
+  nonce: `req_${Date.now()}_${randomBytes(16)}`
+}
+```
+
+#### 3. Amount Manipulation
+**Problem**: Attacker pays less than required  
+**Solution**: Strict on-chain amount verification
+
+```typescript
+const txAmount = await getTransactionAmount(txHash)
+if (txAmount < requiredAmount) {
+  throw new Error('Insufficient payment')
+}
+```
+
+#### 4. Front-Running
+**Problem**: MEV bot sees payment and extracts value  
+**Solution**: Private transaction submission (Flashbots, Eden, etc.)
+
+```typescript
+// Use private RPC for sensitive payments
+const provider = new FlashbotsProvider(rpcUrl)
+await provider.sendPrivateTransaction(signedTx)
+```
+
+---
+
+## Scalability Architecture
+
+### High-Throughput Design
+
+```
+┌──────────────────────────────────────────────────┐
+│           x402 Scalability Layers                │
+└──────────────────────────────────────────────────┘
+
+Layer 1: Load Balancing
+┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐
+│Server 1│  │Server 2│  │Server 3│  │Server N│
+└───┬────┘  └───┬────┘  └───┬────┘  └───┬────┘
+    │           │           │           │
+    └───────────┴───────────┴───────────┘
+                    │
+Layer 2: Shared Payment Cache
+         ┌──────────▼──────────┐
+         │   Redis Cluster     │
+         │  (Payment Proofs)   │
+         └─────────────────────┘
+
+Layer 3: Blockchain Read Replicas
+    ┌─────────┐  ┌─────────┐  ┌─────────┐
+    │ RPC  #1 │  │ RPC  #2 │  │ RPC  #N │
+    └────┬────┘  └────┬────┘  └────┬────┘
+         │            │            │
+         └────────────┴────────────┘
+                     │
+Layer 4: Blockchain Layer
+         ┌───────────▼────────────┐
+         │  Arbitrum / Solana     │
+         │  (On-chain Settlement) │
+         └────────────────────────┘
+```
+
+### Performance Optimizations
+
+#### 1. Payment Proof Caching
+```typescript
+// Cache verified payments for 1 hour
+const cache = new Redis()
+
+async function verifyPayment(txHash: string) {
+  const cached = await cache.get(`payment:${txHash}`)
+  if (cached) return JSON.parse(cached)
+  
+  const verified = await blockchainVerify(txHash)
+  await cache.setex(`payment:${txHash}`, 3600, JSON.stringify(verified))
+  
+  return verified
+}
+```
+
+**Benefit**: Reduce blockchain queries by 95%
+
+#### 2. Batch Verification
+```typescript
+// Verify multiple payments in single RPC call
+async function verifyBatch(txHashes: string[]) {
+  const requests = txHashes.map(hash => ({
+    method: 'eth_getTransactionReceipt',
+    params: [hash]
+  }))
+  
+  const results = await provider.batchRequest(requests)
+  return results.map(verifyReceipt)
+}
+```
+
+**Benefit**: 10x faster for high-volume APIs
+
+#### 3. Async Verification
+```typescript
+// Return immediately, verify in background
+app.post('/api/data', async (req, res) => {
+  const txHash = req.headers['x-payment-tx']
+  
+  // Return data immediately
+  res.json({ data: 'content' })
+  
+  // Verify asynchronously
+  verifyPaymentAsync(txHash).catch(err => {
+    // Revoke access if verification fails
+    revokeAccess(req.ip, txHash)
+  })
+})
+```
+
+**Benefit**: <10ms response time (vs 2000ms synchronous)
+
+---
+
+## Monitoring & Analytics
+
+### Facilitator Dashboard
+
+```
+┌─────────────────────────────────────────────┐
+│         x402 Facilitator Dashboard          │
+├─────────────────────────────────────────────┤
+│                                             │
+│  Revenue:  $12,450.23  ▲ 23%  (30d)        │
+│  Payments:    45,234   ▲ 18%  (30d)        │
+│  Avg Price:   $0.27    ▼  5%  (30d)        │
+│                                             │
+│  ┌──────────────────────────────────────┐  │
+│  │     Revenue Over Time                │  │
+│  │  $500 │                     ╱╲       │  │
+│  │       │                    ╱  ╲      │  │
+│  │  $250 │         ╱╲        ╱    ╲     │  │
+│  │       │        ╱  ╲──────╱      ╲    │  │
+│  │    $0 └──────────────────────────────│  │
+│  └──────────────────────────────────────┘  │
+│                                             │
+│  Top Services:                              │
+│  1. Premium Weather API    $2,340  (18.8%) │
+│  2. Crypto Price Feed      $1,890  (15.2%) │
+│  3. AI Model Inference     $1,650  (13.3%) │
+│                                             │
+│  Active Chains:                             │
+│  ⚫ Arbitrum: 78%                           │
+│  🔵 Solana:   15%                           │
+│  🟣 Base:      5%                           │
+│  🟠 Polygon:   2%                           │
+└─────────────────────────────────────────────┘
+```
+
+### Metrics Collected
+
+- **Revenue**: Total, per service, per chain
+- **Volume**: Requests, payments, unique users
+- **Performance**: Response time, verification time
+- **Success Rate**: Payment success, verification success
+- **Chain Stats**: Gas costs, finality time, failure rate
+
+---
+
+## Next Steps
+
+- [Payment Flows →](/docs/x402/architecture/payment-flows) - Detailed flow diagrams
+- [Lifecycle Hooks →](/docs/x402/advanced/hooks) - Customize payment behavior
+- [Multi-Chain Guide →](/docs/x402/advanced/multi-chain) - Cross-chain payments
+- [Security Best Practices →](/docs/x402/deployment/security) - Production security
+
+---
+
+*The x402 architecture is designed for scale, security, and multi-chain flexibility.*

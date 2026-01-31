@@ -210,3 +210,6 @@ api-docs/
 *.pid
 *.seed
 *.pid.lock
+
+# Nested git repositories (separate projects)
+x402-deploy/
