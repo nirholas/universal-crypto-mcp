@@ -425,3 +425,4 @@ Renames and re-exports [AgentAction](/docs/api/agents/defi-agents/src.md#agentac
 ### SpendingLimit
 
 Renames and re-exports [AgentAction](/docs/api/agents/defi-agents/src.md#agentaction)
+
