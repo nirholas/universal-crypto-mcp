@@ -278,3 +278,4 @@ case "${COMMAND:-backup}" in
         exit 1
         ;;
 esac
+
