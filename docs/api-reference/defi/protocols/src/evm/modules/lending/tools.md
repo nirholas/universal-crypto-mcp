@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/lending/tools.ts:114](https://github
 #### Returns
 
 `void`
+
