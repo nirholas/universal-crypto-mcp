@@ -351,3 +351,4 @@ function WarningIcon({ severity }: { severity: 'info' | 'warning' | 'danger' }) 
  */
 
 export default TransactionSummary;
+
