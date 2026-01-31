@@ -67,3 +67,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-image-results.sarif'
+
