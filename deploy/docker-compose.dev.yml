@@ -36,3 +36,4 @@ volumes:
   redis-data:
   prometheus-data:
   grafana-data:
+
