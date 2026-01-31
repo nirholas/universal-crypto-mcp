@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/events/index.ts:11](https://github.c
 #### Returns
 
 `void`
+
