@@ -1,0 +1,285 @@
+---
+title: Configuration
+description: Configure Universal Crypto MCP for your environment
+---
+
+# Configuration
+
+Learn how to configure Universal Crypto MCP for different environments and use cases.
+
+## Configuration File
+
+Universal Crypto MCP supports configuration through environment variables and a `config.json` file.
+
+### Environment Variables
+
+The most common way to configure the server:
+
+```bash
+# .env file
+# =====================
+# Blockchain RPC URLs
+# =====================
+
+# EVM Chains
+ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
+ARBITRUM_RPC_URL=https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY
+OPTIMISM_RPC_URL=https://opt-mainnet.g.alchemy.com/v2/YOUR_KEY
+POLYGON_RPC_URL=https://polygon-mainnet.g.alchemy.com/v2/YOUR_KEY
+LINEA_RPC_URL=https://linea-mainnet.g.alchemy.com/v2/YOUR_KEY
+SCROLL_RPC_URL=https://scroll-mainnet.g.alchemy.com/v2/YOUR_KEY
+ZKSYNC_RPC_URL=https://mainnet.era.zksync.io
+
+# Solana
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+
+# =====================
+# Wallet & Keys
+# =====================
+
+# Main wallet for transactions
+PRIVATE_KEY=0x...
+
+# x402 payment wallet (can be same as above)
+X402_PRIVATE_KEY=0x...
+
+# =====================
+# API Keys
+# =====================
+
+# CEX Trading
+BINANCE_API_KEY=your_api_key
+BINANCE_SECRET_KEY=your_secret
+
+# Market Data
+COINGECKO_API_KEY=your_api_key
+COINMARKETCAP_API_KEY=your_api_key
+
+# =====================
+# x402 Configuration
+# =====================
+
+FACILITATOR_URL=https://facilitator.x402.org
+FACILITATOR_API_KEY=your_api_key
+
+# =====================
+# Server Settings
+# =====================
+
+LOG_LEVEL=info
+PORT=3000
+```
+
+### Configuration File
+
+For more complex setups, use `config.json`:
+
+```json
+{
+  "server": {
+    "port": 3000,
+    "logLevel": "info",
+    "cors": {
+      "origins": ["http://localhost:3000"]
+    }
+  },
+  "chains": {
+    "ethereum": {
+      "rpcUrl": "https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY",
+      "chainId": 1,
+      "enabled": true
+    },
+    "base": {
+      "rpcUrl": "https://mainnet.base.org",
+      "chainId": 8453,
+      "enabled": true
+    },
+    "arbitrum": {
+      "rpcUrl": "https://arb1.arbitrum.io/rpc",
+      "chainId": 42161,
+      "enabled": true
+    }
+  },
+  "tools": {
+    "enabled": ["defi", "trading", "market-data", "wallets"],
+    "disabled": ["experimental"]
+  },
+  "security": {
+    "maxTransactionValue": "1000",
+    "requireConfirmation": true,
+    "allowedContracts": []
+  }
+}
+```
+
+## Chain Configuration
+
+### Supported EVM Chains
+
+| Chain | Chain ID | Default RPC |
+|-------|----------|-------------|
+| Ethereum | 1 | https://eth.llamarpc.com |
+| Base | 8453 | https://mainnet.base.org |
+| Arbitrum | 42161 | https://arb1.arbitrum.io/rpc |
+| Optimism | 10 | https://mainnet.optimism.io |
+| Polygon | 137 | https://polygon-rpc.com |
+| BNB Chain | 56 | https://bsc-dataseed.binance.org |
+| Avalanche | 43114 | https://api.avax.network/ext/bc/C/rpc |
+| Fantom | 250 | https://rpc.ftm.tools |
+| zkSync Era | 324 | https://mainnet.era.zksync.io |
+| Linea | 59144 | https://rpc.linea.build |
+| Scroll | 534352 | https://rpc.scroll.io |
+| Blast | 81457 | https://rpc.blast.io |
+
+### Adding Custom Chains
+
+```json
+{
+  "chains": {
+    "custom-chain": {
+      "rpcUrl": "https://your-rpc.example.com",
+      "chainId": 12345,
+      "name": "Custom Chain",
+      "nativeCurrency": {
+        "name": "Custom Token",
+        "symbol": "CTK",
+        "decimals": 18
+      },
+      "blockExplorer": "https://explorer.example.com"
+    }
+  }
+}
+```
+
+## Tool Configuration
+
+### Enable/Disable Tools
+
+Control which tools are available:
+
+```json
+{
+  "tools": {
+    "enabled": [
+      "defi",
+      "trading",
+      "market-data",
+      "wallets",
+      "nft",
+      "security"
+    ],
+    "disabled": [
+      "experimental",
+      "governance"
+    ]
+  }
+}
+```
+
+### Tool-Specific Settings
+
+```json
+{
+  "tools": {
+    "defi": {
+      "slippageTolerance": 0.5,
+      "defaultDex": "uniswap-v3",
+      "protocols": ["uniswap", "aave", "compound", "curve"]
+    },
+    "trading": {
+      "defaultExchange": "binance",
+      "enablePaperTrading": true
+    },
+    "market-data": {
+      "defaultProvider": "coingecko",
+      "cacheTtl": 60
+    }
+  }
+}
+```
+
+## Security Configuration
+
+### Transaction Limits
+
+```json
+{
+  "security": {
+    "maxTransactionValue": "1000",
+    "dailyLimit": "10000",
+    "requireConfirmation": true,
+    "confirmationThreshold": "100"
+  }
+}
+```
+
+### Contract Allowlists
+
+```json
+{
+  "security": {
+    "allowedContracts": [
+      "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+      "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45"
+    ],
+    "blockedContracts": [
+      "0x..."
+    ]
+  }
+}
+```
+
+## Claude Desktop Configuration
+
+Complete Claude Desktop configuration example:
+
+```json
+{
+  "mcpServers": {
+    "universal-crypto": {
+      "command": "npx",
+      "args": ["@nirholas/universal-crypto-mcp"],
+      "env": {
+        "ETHEREUM_RPC_URL": "https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY",
+        "BASE_RPC_URL": "https://base-mainnet.g.alchemy.com/v2/YOUR_KEY",
+        "PRIVATE_KEY": "0x...",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+## Development vs Production
+
+### Development
+
+```bash
+# .env.development
+LOG_LEVEL=debug
+ENABLE_HOT_RELOAD=true
+USE_TESTNET=true
+
+# Use testnets
+ETHEREUM_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+BASE_RPC_URL=https://base-sepolia.g.alchemy.com/v2/YOUR_KEY
+```
+
+### Production
+
+```bash
+# .env.production
+LOG_LEVEL=warn
+NODE_ENV=production
+
+# Use mainnets
+ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
+```
+
+## Next Steps
+
+- Try your [First Tool](/docs/getting-started/first-tool)
+- Learn about [Security Best Practices](/docs/security)
+- Explore [API Reference](/docs/api)

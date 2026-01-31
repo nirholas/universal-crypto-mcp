@@ -1,0 +1,279 @@
+---
+title: API Reference
+description: Complete API documentation for Universal Crypto MCP
+---
+
+# API Reference
+
+Complete reference documentation for all Universal Crypto MCP APIs and tools.
+
+## Overview
+
+Universal Crypto MCP provides 380+ tools organized into the following categories:
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <a href="/docs/api/core" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Core API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Chain clients, transactions, blocks, events, and fundamental blockchain operations.
+    </p>
+  </a>
+  
+  <a href="/docs/api/defi" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">DeFi API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Swaps, lending, staking, yield farming, and protocol integrations.
+    </p>
+  </a>
+  
+  <a href="/docs/api/trading" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Trading API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      CEX integrations, order management, portfolio tracking, and trading bots.
+    </p>
+  </a>
+  
+  <a href="/docs/api/wallets" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Wallet API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Wallet management, balances, transfers, and multi-sig support.
+    </p>
+  </a>
+  
+  <a href="/docs/api/market-data" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Market Data API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Prices, charts, indicators, sentiment, and market analytics.
+    </p>
+  </a>
+  
+  <a href="/docs/api/payments" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Payments API</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      x402 payments, credits, facilitator, and payment rails.
+    </p>
+  </a>
+</div>
+
+## Core API
+
+### Chain Operations
+
+| Tool | Description |
+|------|-------------|
+| `get_block` | Get block by number or hash |
+| `get_transaction` | Get transaction details |
+| `get_transaction_receipt` | Get transaction receipt |
+| `estimate_gas` | Estimate gas for transaction |
+| `get_gas_price` | Get current gas prices |
+| `get_chain_id` | Get chain ID |
+| `get_block_number` | Get latest block number |
+
+### Wallet Operations
+
+| Tool | Description |
+|------|-------------|
+| `get_balance` | Get native token balance |
+| `get_token_balance` | Get ERC20 token balance |
+| `get_all_balances` | Get all token balances |
+| `transfer` | Transfer native tokens |
+| `transfer_token` | Transfer ERC20 tokens |
+| `sign_message` | Sign a message |
+| `verify_signature` | Verify a signature |
+
+### Contract Operations
+
+| Tool | Description |
+|------|-------------|
+| `read_contract` | Read from contract |
+| `write_contract` | Write to contract |
+| `deploy_contract` | Deploy a contract |
+| `get_contract_abi` | Get contract ABI |
+| `verify_contract` | Verify contract source |
+| `get_events` | Get contract events |
+
+## DeFi API
+
+### Swaps
+
+```typescript
+// Swap tokens using Uniswap V3
+const result = await mcp.call('swap_tokens', {
+  fromToken: 'ETH',
+  toToken: 'USDC',
+  amount: '1.0',
+  slippage: 0.5,
+  chain: 'ethereum'
+});
+```
+
+| Tool | Description |
+|------|-------------|
+| `swap_tokens` | Execute a token swap |
+| `get_swap_quote` | Get swap price quote |
+| `get_swap_route` | Get optimal swap route |
+| `approve_token` | Approve token spending |
+
+### Lending
+
+```typescript
+// Deposit to Aave
+const result = await mcp.call('aave_deposit', {
+  asset: 'USDC',
+  amount: '1000',
+  chain: 'ethereum'
+});
+```
+
+| Tool | Description |
+|------|-------------|
+| `aave_deposit` | Deposit to Aave |
+| `aave_withdraw` | Withdraw from Aave |
+| `aave_borrow` | Borrow from Aave |
+| `aave_repay` | Repay Aave loan |
+| `compound_supply` | Supply to Compound |
+| `compound_borrow` | Borrow from Compound |
+
+### Staking
+
+| Tool | Description |
+|------|-------------|
+| `lido_stake` | Stake ETH with Lido |
+| `lido_unstake` | Unstake from Lido |
+| `rocket_pool_stake` | Stake with Rocket Pool |
+| `get_staking_apy` | Get staking APY |
+
+## Trading API
+
+### Exchange Operations
+
+```typescript
+// Place a limit order on Binance
+const result = await mcp.call('place_order', {
+  exchange: 'binance',
+  symbol: 'BTC/USDT',
+  side: 'buy',
+  type: 'limit',
+  amount: 0.1,
+  price: 40000
+});
+```
+
+| Tool | Description |
+|------|-------------|
+| `place_order` | Place an order |
+| `cancel_order` | Cancel an order |
+| `get_orders` | Get open orders |
+| `get_order_history` | Get order history |
+| `get_balance` | Get exchange balance |
+
+### Market Data
+
+| Tool | Description |
+|------|-------------|
+| `get_ticker` | Get current ticker |
+| `get_orderbook` | Get order book |
+| `get_trades` | Get recent trades |
+| `get_ohlcv` | Get candlestick data |
+
+## Market Data API
+
+### Price Feeds
+
+```typescript
+// Get current ETH price
+const result = await mcp.call('get_price', {
+  symbol: 'ETH',
+  currency: 'USD'
+});
+```
+
+| Tool | Description |
+|------|-------------|
+| `get_price` | Get current price |
+| `get_prices` | Get multiple prices |
+| `get_price_history` | Get price history |
+| `get_market_cap` | Get market cap |
+| `get_volume` | Get 24h volume |
+
+### Analytics
+
+| Tool | Description |
+|------|-------------|
+| `get_technical_indicators` | Get TA indicators |
+| `get_fear_greed_index` | Get Fear & Greed |
+| `get_sentiment` | Get market sentiment |
+| `get_token_metrics` | Get token metrics |
+
+## Payments API
+
+### x402 Operations
+
+```typescript
+// Create a payment
+const result = await mcp.call('x402_pay', {
+  to: '0x...',
+  amount: '0.001',
+  network: 'base'
+});
+```
+
+| Tool | Description |
+|------|-------------|
+| `x402_pay` | Make a payment |
+| `x402_verify` | Verify a payment |
+| `x402_create_invoice` | Create invoice |
+| `get_credits` | Get credit balance |
+| `buy_credits` | Purchase credits |
+
+## Error Handling
+
+All API calls return a consistent response format:
+
+```typescript
+// Success response
+{
+  success: true,
+  data: { /* result data */ },
+  metadata: {
+    chain: 'ethereum',
+    blockNumber: 12345678,
+    timestamp: 1706745600
+  }
+}
+
+// Error response
+{
+  success: false,
+  error: {
+    code: 'INSUFFICIENT_BALANCE',
+    message: 'Insufficient balance for transaction',
+    details: { /* additional info */ }
+  }
+}
+```
+
+### Common Error Codes
+
+| Code | Description |
+|------|-------------|
+| `INSUFFICIENT_BALANCE` | Not enough balance |
+| `INVALID_ADDRESS` | Invalid wallet address |
+| `SLIPPAGE_EXCEEDED` | Slippage tolerance exceeded |
+| `RATE_LIMITED` | API rate limit reached |
+| `NETWORK_ERROR` | Network connection error |
+| `UNAUTHORIZED` | Missing or invalid API key |
+
+## Rate Limits
+
+| Plan | Requests/min | Requests/day |
+|------|-------------|--------------|
+| Free | 60 | 10,000 |
+| Pro | 600 | 100,000 |
+| Enterprise | Unlimited | Unlimited |
+
+## Next Steps
+
+- Explore [DeFi API](/docs/api/defi) in detail
+- Learn about [Agent Wallets](/docs/agent-wallet)
+- See [Tutorials](/docs/tutorials) for examples

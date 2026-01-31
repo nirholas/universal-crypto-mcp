@@ -1,0 +1,244 @@
+---
+title: x402 Protocol
+description: HTTP 402 Payment Required - AI-native internet payments
+---
+
+# x402 Protocol
+
+x402 is an open standard for internet-native payments. It uses the HTTP 402 "Payment Required" status code to enable AI agents to autonomously pay for API access.
+
+## Why x402?
+
+Traditional API monetization requires:
+- ❌ User accounts and authentication
+- ❌ Credit card details
+- ❌ Monthly subscriptions
+- ❌ Human approval for each payment
+
+With x402:
+- ✅ No accounts needed
+- ✅ Pay-per-request with crypto
+- ✅ AI agents can pay autonomously
+- ✅ Micropayments from $0.001
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        x402 Flow                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. Client makes request                                     │
+│     GET /api/premium                                        │
+│                          ↓                                   │
+│  2. Server returns 402 with price                           │
+│     HTTP/1.1 402 Payment Required                           │
+│     X-Payment-Required: {"price": "$0.01", ...}            │
+│                          ↓                                   │
+│  3. Client signs payment                                     │
+│     Creates cryptographic payment proof                      │
+│                          ↓                                   │
+│  4. Client retries with payment                             │
+│     GET /api/premium                                        │
+│     X-Payment: <signed-payment>                             │
+│                          ↓                                   │
+│  5. Facilitator verifies & settles                          │
+│     On-chain transaction executed                            │
+│                          ↓                                   │
+│  6. Server returns content                                   │
+│     HTTP/1.1 200 OK                                         │
+│     X-Payment-Settlement: {"tx": "0x..."}                   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Key Concepts
+
+### Payment Required (402)
+
+When an endpoint requires payment, the server responds with:
+
+```http
+HTTP/1.1 402 Payment Required
+Content-Type: application/json
+X-Payment-Required: ...
+
+{
+  "accepts": [{
+    "scheme": "exact",
+    "network": "eip155:8453",
+    "payTo": "0x...",
+    "price": "$0.01"
+  }],
+  "description": "Premium API access",
+  "resource": "/api/premium"
+}
+```
+
+### Payment Schemes
+
+| Scheme | Description | Networks |
+|--------|-------------|----------|
+| `exact` | Pay exact amount | EVM, Solana |
+| `streaming` | Pay-per-byte (coming) | EVM |
+
+### Supported Networks
+
+| Network | CAIP-2 ID | Currency |
+|---------|-----------|----------|
+| Base | `eip155:8453` | USDC |
+| Ethereum | `eip155:1` | USDC |
+| Arbitrum | `eip155:42161` | USDC |
+| Optimism | `eip155:10` | USDC |
+| Polygon | `eip155:137` | USDC |
+| Solana | `solana:mainnet` | USDC |
+
+## Quick Start
+
+### Server (Express)
+
+Add payment requirements to your API:
+
+```typescript
+import express from 'express';
+import { paymentMiddleware } from '@x402/express';
+
+const app = express();
+
+app.use(paymentMiddleware({
+  facilitatorUrl: 'https://x402.org/facilitator',
+  routes: {
+    'GET /api/premium': {
+      accepts: {
+        scheme: 'exact',
+        network: 'eip155:8453',
+        payTo: '0xYourAddress',
+        price: '$0.01',
+      },
+    },
+  },
+}));
+
+app.get('/api/premium', (req, res) => {
+  res.json({ data: 'Premium content!' });
+});
+```
+
+### Client (MCP)
+
+With Universal Crypto MCP, payments are automatic:
+
+```typescript
+// Just ask Claude: "Make a paid request to https://api.example.com/premium"
+
+// Or use the x402 tools directly:
+const result = await mcp.call('x402_pay_request', {
+  url: 'https://api.example.com/premium',
+  maxPayment: '0.10', // Max $0.10
+});
+```
+
+## Integration Options
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <a href="/docs/x402/facilitator" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Facilitator</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      The payment settlement service that handles verification and on-chain transactions.
+    </p>
+  </a>
+  
+  <a href="/docs/x402/integration" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Integration Guide</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Step-by-step guide to add x402 payments to your API or application.
+    </p>
+  </a>
+  
+  <a href="/docs/x402/credits" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Credit System</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Allow fiat payments through pre-purchased credits.
+    </p>
+  </a>
+  
+  <a href="/docs/agent-wallet" className="block p-6 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+    <h3 className="text-lg font-semibold mb-2">Agent Wallets</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Pre-funded wallets for AI agents with spending controls.
+    </p>
+  </a>
+</div>
+
+## Use Cases
+
+### 1. API Monetization
+
+Charge per request for AI/ML APIs:
+
+```typescript
+routes: {
+  'POST /api/generate': {
+    accepts: {
+      price: async (req) => {
+        const tokens = req.body.maxTokens;
+        return `$${(tokens * 0.00001).toFixed(4)}`; // Dynamic pricing
+      },
+      network: 'eip155:8453',
+      payTo: '0xYourAddress',
+    },
+  },
+}
+```
+
+### 2. Premium Content
+
+Gate articles, videos, or datasets:
+
+```typescript
+routes: {
+  'GET /api/article/:id': {
+    accepts: {
+      price: '$0.10',
+      network: 'eip155:8453',
+      payTo: '0xYourAddress',
+    },
+  },
+}
+```
+
+### 3. Rate Limit Bypass
+
+Let users pay for higher limits:
+
+```typescript
+routes: {
+  'GET /api/data': {
+    accepts: {
+      price: '$0.001',
+      description: 'Skip rate limit',
+    },
+    // Free with rate limits, paid without
+    optional: true,
+  },
+}
+```
+
+## Tools & Libraries
+
+- **Server**: `@x402/express`, `@x402/hono`, `@x402/next`
+- **Client**: `@x402/client`, `axios-x402`
+- **MCP**: Built into Universal Crypto MCP
+
+## Security
+
+- Payments are cryptographically signed
+- Facilitator verifies all transactions
+- Automatic refunds on failure
+- Replay protection built-in
+
+## Next Steps
+
+- Read the [Facilitator Guide](/docs/x402/facilitator)
+- Learn about [Agent Wallets](/docs/agent-wallet)
+- See [Tutorials](/docs/tutorials) for examples

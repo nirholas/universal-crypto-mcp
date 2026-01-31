@@ -1,0 +1,170 @@
+---
+title: Chains
+description: Supported blockchain networks in Universal Crypto MCP
+---
+
+# Supported Chains
+
+Universal Crypto MCP supports 60+ blockchain networks across multiple ecosystems.
+
+## EVM Chains
+
+### Layer 1
+
+| Chain | Chain ID | Native Token | Status |
+|-------|----------|--------------|--------|
+| Ethereum | 1 | ETH | ✅ Full Support |
+| BNB Chain | 56 | BNB | ✅ Full Support |
+| Avalanche C-Chain | 43114 | AVAX | ✅ Full Support |
+| Fantom | 250 | FTM | ✅ Full Support |
+
+### Layer 2 / Rollups
+
+| Chain | Chain ID | Native Token | Status |
+|-------|----------|--------------|--------|
+| Arbitrum One | 42161 | ETH | ✅ Full Support |
+| Base | 8453 | ETH | ✅ Full Support |
+| Optimism | 10 | ETH | ✅ Full Support |
+| Polygon | 137 | MATIC | ✅ Full Support |
+| zkSync Era | 324 | ETH | ✅ Full Support |
+| Linea | 59144 | ETH | ✅ Full Support |
+| Scroll | 534352 | ETH | ✅ Full Support |
+| Blast | 81457 | ETH | ✅ Full Support |
+| Mode | 34443 | ETH | ✅ Full Support |
+| Mantle | 5000 | MNT | ✅ Full Support |
+| opBNB | 204 | BNB | ✅ Full Support |
+| Manta Pacific | 169 | ETH | ✅ Full Support |
+
+### Testnets
+
+| Chain | Chain ID | Native Token |
+|-------|----------|--------------|
+| Ethereum Sepolia | 11155111 | SepoliaETH |
+| Base Sepolia | 84532 | SepoliaETH |
+| Arbitrum Sepolia | 421614 | SepoliaETH |
+| Optimism Sepolia | 11155420 | SepoliaETH |
+
+## Non-EVM Chains
+
+| Chain | Ecosystem | Native Token | Status |
+|-------|-----------|--------------|--------|
+| Solana | Solana | SOL | ✅ Full Support |
+| TON | TON | TON | ✅ Full Support |
+| Sui | Move | SUI | ✅ Full Support |
+| Aptos | Move | APT | ✅ Full Support |
+| Near | Near | NEAR | ✅ Full Support |
+| Cosmos Hub | Cosmos | ATOM | ✅ Full Support |
+| Osmosis | Cosmos | OSMO | ✅ Full Support |
+
+## Chain Configuration
+
+### Default RPC URLs
+
+Each chain has a default public RPC, but for production use we recommend:
+
+- [Alchemy](https://alchemy.com) - Best for EVM chains
+- [QuickNode](https://quicknode.com) - Multi-chain support
+- [Infura](https://infura.io) - Ethereum-focused
+- [Helius](https://helius.dev) - Best for Solana
+
+### Adding Custom RPC
+
+Configure custom RPC URLs in your environment:
+
+```bash
+# .env
+ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
+ARBITRUM_RPC_URL=https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+```
+
+Or in `config.json`:
+
+```json
+{
+  "chains": {
+    "ethereum": {
+      "rpcUrl": "https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY",
+      "chainId": 1,
+      "enabled": true
+    }
+  }
+}
+```
+
+## Chain Features
+
+### DeFi Support by Chain
+
+| Chain | Swaps | Lending | Staking | NFTs |
+|-------|-------|---------|---------|------|
+| Ethereum | ✅ | ✅ | ✅ | ✅ |
+| Base | ✅ | ✅ | ✅ | ✅ |
+| Arbitrum | ✅ | ✅ | ✅ | ✅ |
+| Optimism | ✅ | ✅ | ✅ | ✅ |
+| Polygon | ✅ | ✅ | ✅ | ✅ |
+| BNB Chain | ✅ | ✅ | ✅ | ✅ |
+| Solana | ✅ | ✅ | ✅ | ✅ |
+| Avalanche | ✅ | ✅ | ✅ | ⚠️ |
+
+### Supported Protocols by Chain
+
+#### Ethereum
+- Uniswap V2/V3
+- Aave V2/V3
+- Compound V2/V3
+- Curve
+- Lido
+- Yearn
+
+#### Base
+- Aerodrome
+- BaseSwap
+- Aave V3
+- Seamless
+
+#### Arbitrum
+- Uniswap V3
+- Aave V3
+- GMX V2
+- Camelot
+
+#### Solana
+- Jupiter
+- Raydium
+- Marinade
+- Magic Eden
+
+## Bridge Support
+
+Cross-chain bridging supported via:
+
+- **Hop Protocol** - L2 ↔ L2
+- **Across Protocol** - Fast L2 bridges
+- **Stargate** - LayerZero bridges
+- **Wormhole** - Multi-chain
+
+```typescript
+// Get bridge quote
+const quote = await mcp.call('get_bridge_quote', {
+  fromChain: 'ethereum',
+  toChain: 'base',
+  token: 'USDC',
+  amount: '1000'
+});
+```
+
+## Adding New Chains
+
+We're constantly adding new chains. To request a new chain:
+
+1. Open an issue on [GitHub](https://github.com/nirholas/universal-crypto-mcp/issues)
+2. Include: Chain name, Chain ID, RPC URLs, block explorer
+3. We'll prioritize based on community demand
+
+## Next Steps
+
+- Learn about [DeFi Integrations](/docs/api/defi)
+- See [Configuration](/docs/getting-started/configuration) for setup
+- Browse [Tutorials](/docs/tutorials)

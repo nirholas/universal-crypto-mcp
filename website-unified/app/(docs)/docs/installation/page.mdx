@@ -1,0 +1,188 @@
+---
+title: Installation
+description: Install Universal Crypto MCP to start using 380+ crypto tools in your AI agents
+---
+
+# Installation
+
+Install Universal Crypto MCP to start using 380+ crypto tools in your AI agents.
+
+## Prerequisites
+
+Before installing, ensure you have:
+
+- **Node.js** 18.0 or higher
+- **npm**, **pnpm**, or **yarn** package manager
+- (Optional) **Claude Desktop** for MCP integration
+
+## Installation Methods
+
+### NPM Package
+
+Install the package globally or locally:
+
+```bash
+# Global installation
+npm install -g @nirholas/universal-crypto-mcp
+
+# Or in your project
+npm install @nirholas/universal-crypto-mcp
+
+# Using pnpm (recommended)
+pnpm add @nirholas/universal-crypto-mcp
+```
+
+### Claude Desktop Integration
+
+Add to your Claude Desktop configuration:
+
+<div className="my-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+    <strong>macOS:</strong> <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>
+  </p>
+  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+    <strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code>
+  </p>
+  <p className="text-sm text-gray-600 dark:text-gray-400">
+    <strong>Linux:</strong> <code>~/.config/Claude/claude_desktop_config.json</code>
+  </p>
+</div>
+
+```json
+{
+  "mcpServers": {
+    "universal-crypto": {
+      "command": "npx",
+      "args": ["@nirholas/universal-crypto-mcp"],
+      "env": {
+        "ETHEREUM_RPC_URL": "https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY",
+        "PRIVATE_KEY": "your_private_key_here"
+      }
+    }
+  }
+}
+```
+
+### From Source
+
+Clone and build from source for development:
+
+```bash
+git clone https://github.com/nirholas/universal-crypto-mcp.git
+cd universal-crypto-mcp
+pnpm install
+pnpm build
+```
+
+## Individual Packages
+
+Install only the packages you need:
+
+```bash
+# Trading packages
+npm install @universal-crypto-mcp/trading-binance
+npm install @universal-crypto-mcp/trading-coinbase
+
+# Market data
+npm install @universal-crypto-mcp/market-data-aggregator
+npm install @universal-crypto-mcp/market-data-coingecko
+
+# Wallet management
+npm install @universal-crypto-mcp/wallet-evm
+npm install @universal-crypto-mcp/wallet-solana
+
+# DeFi protocols
+npm install @universal-crypto-mcp/defi-aave
+npm install @universal-crypto-mcp/defi-uniswap
+
+# Payments
+npm install @universal-crypto-mcp/payments-x402
+```
+
+## Environment Variables
+
+Create a `.env` file with your configuration:
+
+```bash
+# Required - At least one RPC URL
+ETHEREUM_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+
+# Optional - Additional chains
+BASE_RPC_URL=https://mainnet.base.org
+ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+OPTIMISM_RPC_URL=https://mainnet.optimism.io
+POLYGON_RPC_URL=https://polygon-rpc.com
+
+# For transactions (optional)
+PRIVATE_KEY=your_private_key_here
+
+# Facilitator (if using x402 payments)
+FACILITATOR_URL=https://facilitator.x402.org
+FACILITATOR_API_KEY=your_api_key
+
+# CEX trading (optional)
+BINANCE_API_KEY=your_api_key
+BINANCE_SECRET_KEY=your_secret
+```
+
+### Get Free RPC URLs
+
+- [Alchemy](https://alchemy.com) - 300M requests/month free
+- [Infura](https://infura.io) - 100K requests/day free
+- [QuickNode](https://quicknode.com) - Free tier available
+- [Ankr](https://ankr.com) - Free public endpoints
+
+## Verify Installation
+
+Test your installation:
+
+```bash
+# Check version
+npx @nirholas/universal-crypto-mcp --version
+
+# List available tools
+npx @nirholas/universal-crypto-mcp --list-tools
+
+# Run health check
+npx @nirholas/universal-crypto-mcp --health-check
+```
+
+## Troubleshooting
+
+### "Module not found" Error
+
+Make sure you've installed all dependencies:
+
+```bash
+pnpm install
+```
+
+### RPC Connection Issues
+
+Verify your RPC URLs are accessible:
+
+```bash
+curl -X POST https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+
+### Claude Desktop Not Detecting MCP
+
+1. Restart Claude Desktop completely
+2. Check the config file path is correct for your OS
+3. Verify JSON syntax is valid (use a JSON validator)
+4. Check logs: `~/Library/Logs/Claude/mcp.log` (macOS)
+
+## Next Steps
+
+- Continue to [Configuration](/docs/getting-started/configuration)
+- Try your [First Tool](/docs/getting-started/first-tool)
+- Explore [available tools](/docs/mcp-server/tools)
+
+## Support
+
+Need help? Reach out:
+
+- [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues)
+- [Discord Community](https://discord.gg/universal-crypto-mcp)

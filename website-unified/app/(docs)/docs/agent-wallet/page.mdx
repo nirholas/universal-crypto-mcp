@@ -1,0 +1,267 @@
+---
+title: Agent Wallet
+description: Pre-funded wallets for AI agents with spending controls and policies
+---
+
+# Agent Wallet
+
+Agent Wallets are specialized wallets designed for AI agents, with built-in spending controls, service allowlists, and automatic top-up functionality.
+
+## Why Agent Wallets?
+
+AI agents need to make payments autonomously but require:
+
+- **Budget Controls**: Daily, monthly, and per-transaction limits
+- **Service Restrictions**: Allowlists/blocklists for approved services
+- **Owner Oversight**: Human control and monitoring
+- **Automatic Refills**: Top-up when balance runs low
+- **Audit Trail**: Complete activity history
+
+<div className="my-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+  <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+    💡 Key Concept
+  </h3>
+  <p className="text-blue-800 dark:text-blue-200">
+    Agent Wallets separate the <strong>owner</strong> (who controls and funds the wallet) from 
+    the <strong>agent</strong> (who uses the wallet for payments). This ensures human oversight 
+    while enabling autonomous operations.
+  </p>
+</div>
+
+## Key Features
+
+### 🔒 Spending Policies
+
+Set granular limits on agent spending:
+
+```typescript
+const spendingPolicy = {
+  dailyLimit: "10.00",         // Max $10/day
+  perTransactionLimit: "1.00",  // Max $1 per payment
+  monthlyLimit: "100.00",       // Max $100/month
+  cooldownSeconds: 60           // Min 60s between payments
+}
+```
+
+### ✅ Service Allowlists
+
+Control which services the agent can pay:
+
+```typescript
+const allowlist = {
+  mode: "allowlist",
+  services: [
+    "openai-*",        // All OpenAI services
+    "anthropic-*",     // All Anthropic services
+    "coingecko-api",   // Specific service
+    "specific-api-id"
+  ]
+}
+```
+
+### 🔄 Auto Top-Up
+
+Automatically refill the wallet when balance is low:
+
+```typescript
+const autoTopUp = {
+  enabled: true,
+  threshold: "10.00",    // Top up when below $10
+  amount: "50.00",       // Add $50
+  source: "credits",     // From credit balance
+  maxPerMonth: "200.00"  // Safety cap
+}
+```
+
+## How It Works
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│   Owner Creates Wallet  ──►  Sets Spending Limits           │
+│            │                        │                        │
+│            ▼                        ▼                        │
+│      Funds Wallet  ──────►  Agent Gets API Key              │
+│            │                        │                        │
+│            │                        ▼                        │
+│            │              Agent Makes Payment                │
+│            │                        │                        │
+│            │                        ▼                        │
+│            │              ┌─── Check Policy ───┐             │
+│            │              │                    │             │
+│            │          Allowed              Denied            │
+│            │              │                    │             │
+│            │              ▼                    ▼             │
+│            │       Process Payment         Reject            │
+│            │              │                                  │
+│            │              ▼                                  │
+│            │       Update Counters                           │
+│            │              │                                  │
+│            │              ▼                                  │
+│            └────── Low Balance? ───────────────────┐         │
+│                          │                         │         │
+│                         Yes                       No         │
+│                          │                         │         │
+│                          ▼                         ▼         │
+│                    Auto Top-Up               Continue        │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+## Quick Start
+
+### Owner Side: Create Wallet
+
+```typescript
+import { WalletManager } from '@nirholas/agent-wallet';
+
+const manager = new WalletManager();
+
+const { wallet, apiKey } = await manager.createWallet({
+  name: 'Research Agent',
+  owner: 'user_123',
+  network: 'base',
+  initialBalance: '50.00',
+  spendingPolicy: {
+    dailyLimit: '10.00',
+    perTransactionLimit: '1.00',
+    monthlyLimit: '100.00',
+  },
+  allowlist: {
+    mode: 'allowlist',
+    services: ['approved-api-*'],
+  },
+  autoTopUp: {
+    enabled: true,
+    threshold: '10.00',
+    amount: '50.00',
+    source: 'credits',
+    maxPerMonth: '200.00',
+  },
+});
+
+// Save these securely
+console.log(`Wallet ID: ${wallet.id}`);
+console.log(`API Key: ${apiKey}`);
+```
+
+### Agent Side: Use Wallet
+
+```typescript
+import { AgentWalletClient } from '@nirholas/agent-wallet';
+import axios from 'axios';
+
+const client = new AgentWalletClient({
+  walletId: process.env.AGENT_WALLET_ID,
+  apiKey: process.env.AGENT_WALLET_API_KEY,
+  facilitatorUrl: 'https://facilitator.x402.org',
+});
+
+// Check budget
+const budget = await client.getBudget();
+console.log(`Daily remaining: $${budget.dailyRemaining}`);
+
+// Wrap HTTP client for automatic payments
+const api = client.wrapAxios(axios.create({
+  baseURL: 'https://api.example.com'
+}));
+
+// Automatic payment on HTTP 402
+const data = await api.get('/paid-endpoint');
+```
+
+## Use Cases
+
+### Research Agent
+
+<div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg my-4">
+  <h4 className="font-semibold mb-2">Configuration</h4>
+  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+    <li>• Daily budget: $5</li>
+    <li>• Only approved data APIs</li>
+    <li>• Auto top-up from owner's credits</li>
+  </ul>
+</div>
+
+### Trading Bot
+
+<div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg my-4">
+  <h4 className="font-semibold mb-2">Configuration</h4>
+  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+    <li>• High transaction limits</li>
+    <li>• Specific DEX protocols only</li>
+    <li>• No auto top-up (manual control)</li>
+  </ul>
+</div>
+
+### Content Generator
+
+<div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg my-4">
+  <h4 className="font-semibold mb-2">Configuration</h4>
+  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+    <li>• Per-use payments for AI services</li>
+    <li>• Strict allowlist</li>
+    <li>• Low cooldown for rapid requests</li>
+  </ul>
+</div>
+
+## API Reference
+
+### WalletManager
+
+```typescript
+class WalletManager {
+  // Create a new agent wallet
+  createWallet(options: CreateWalletOptions): Promise<{ wallet: Wallet; apiKey: string }>
+  
+  // Get wallet by ID
+  getWallet(walletId: string): Promise<Wallet>
+  
+  // Update wallet settings
+  updateWallet(walletId: string, updates: WalletUpdates): Promise<Wallet>
+  
+  // Fund wallet
+  fundWallet(walletId: string, amount: string): Promise<Transaction>
+  
+  // Withdraw from wallet
+  withdraw(walletId: string, amount: string, to: string): Promise<Transaction>
+  
+  // Get wallet activity
+  getActivity(walletId: string, options?: ActivityOptions): Promise<Activity[]>
+  
+  // Rotate API key
+  rotateApiKey(walletId: string): Promise<string>
+}
+```
+
+### AgentWalletClient
+
+```typescript
+class AgentWalletClient {
+  // Get remaining budget
+  getBudget(): Promise<Budget>
+  
+  // Make a payment
+  pay(serviceId: string, amount: string): Promise<PaymentResult>
+  
+  // Wrap axios for automatic payments
+  wrapAxios(instance: AxiosInstance): AxiosInstance
+  
+  // Get payment history
+  getHistory(options?: HistoryOptions): Promise<Payment[]>
+}
+```
+
+## Security Considerations
+
+- **Never share API keys** - Treat them like passwords
+- **Use allowlists** - Explicitly define approved services
+- **Set reasonable limits** - Start low and increase as needed
+- **Monitor activity** - Review logs regularly
+- **Rotate keys** - Rotate API keys periodically
+
+## Next Steps
+
+- Learn about [x402 Payments](/docs/x402)
+- See [Tutorials](/docs/tutorials) for complete examples
+- Read the [Security Guide](/docs/security)
