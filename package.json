@@ -47,6 +47,9 @@
     "ci": "npm run lint && npm run test:coverage && npm run build",
     "docs": "typedoc --out docs/api src/index.ts",
     "docs:watch": "typedoc --watch --out docs/api src/index.ts",
+    "docs:api": "tsx scripts/generate-api-docs.ts",
+    "docs:api:watch": "tsx scripts/generate-api-docs.ts --watch",
+    "docs:monorepo": "typedoc --options typedoc.monorepo.json",
     "x402": "tsx src/x402/cli/index.ts",
     "x402:balance": "tsx src/x402/cli/index.ts balance",
     "x402:send": "tsx src/x402/cli/index.ts send",
@@ -176,6 +179,7 @@
     "tsup": "^8.0.0",
     "tsx": "^4.7.0",
     "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.2.18",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.17"

@@ -733,6 +733,111 @@ export const mainNavigation: NavSection[] = [
     ],
   },
   {
+    title: 'API Reference',
+    items: [
+      {
+        title: 'Overview',
+        href: '/docs/api',
+        description: 'Complete API documentation for all packages',
+      },
+      {
+        title: 'Core & Infrastructure',
+        items: [
+          {
+            title: 'Core Package',
+            href: '/docs/api/core',
+            description: 'MCP server core types and utilities',
+          },
+          {
+            title: 'Infrastructure',
+            href: '/docs/api/infrastructure',
+            description: 'Monitoring, logging, and health checks',
+          },
+        ],
+      },
+      {
+        title: 'DeFi & Trading',
+        items: [
+          {
+            title: 'DeFi Protocols',
+            href: '/docs/api/defi',
+            description: 'Uniswap, Aave, Curve, and 15+ protocols',
+          },
+          {
+            title: 'Trading & CEX',
+            href: '/docs/api/trading',
+            description: 'Binance, trading bots, and memecoin tools',
+          },
+        ],
+      },
+      {
+        title: 'Data & Analytics',
+        items: [
+          {
+            title: 'Market Data',
+            href: '/docs/api/market-data',
+            description: 'CoinGecko, DEXScreener, and analytics',
+          },
+          {
+            title: 'Wallets',
+            href: '/docs/api/wallets',
+            description: 'EVM, Solana, Safe, and wallet connectors',
+          },
+        ],
+      },
+      {
+        title: 'Advanced Features',
+        items: [
+          {
+            title: 'AI Agents',
+            href: '/docs/api/agents',
+            description: 'Agent framework and CDP integration',
+          },
+          {
+            title: 'NFT & Gaming',
+            href: '/docs/api/nft',
+            description: 'Minting, trading, and marketplace APIs',
+          },
+          {
+            title: 'Automation',
+            href: '/docs/api/automation',
+            description: 'Scheduler, workflows, and triggers',
+          },
+        ],
+      },
+      {
+        title: 'Payments & Services',
+        items: [
+          {
+            title: 'Payments (x402)',
+            href: '/docs/api/payments',
+            description: 'x402 protocol and credit system',
+          },
+          {
+            title: 'Marketplace',
+            href: '/docs/api/marketplace',
+            description: 'Service discovery and analytics',
+          },
+        ],
+      },
+      {
+        title: 'Security & Integrations',
+        items: [
+          {
+            title: 'Security',
+            href: '/docs/api/security',
+            description: 'Auditing, monitoring, and risk management',
+          },
+          {
+            title: 'Integrations',
+            href: '/docs/api/integrations',
+            description: 'Chain connectors and third-party APIs',
+          },
+        ],
+      },
+    ],
+  },
+  {
     title: 'Deployment',
     items: [
       {

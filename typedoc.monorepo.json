@@ -1,0 +1,58 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Universal Crypto MCP API Reference",
+  "entryPointStrategy": "packages",
+  "entryPoints": [
+    "packages/core",
+    "packages/shared/*"
+  ],
+  "out": "./docs/api-reference",
+  "json": "./docs/api-reference/api.json",
+  "readme": "./README.md",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "notDocumented": false
+  },
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Core",
+    "DeFi",
+    "Wallets",
+    "Trading",
+    "Market Data",
+    "Agents",
+    "Payments",
+    "NFT",
+    "Security",
+    "Novel",
+    "Automation",
+    "Infrastructure",
+    "*"
+  ],
+  "sort": [
+    "kind",
+    "alphabetical"
+  ],
+  "kindSortOrder": [
+    "Module",
+    "Namespace",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Function",
+    "Variable",
+    "Enum"
+  ]
+}
+  "hideBreadcrumbs": false,
+  "hideGroupHeadings": false,
+  "publicPath": "/docs/api/",
+  "anchorPrefix": ""
+}
