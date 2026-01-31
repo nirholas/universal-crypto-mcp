@@ -102,3 +102,4 @@ Get ERC721 token metadata
   `symbol`: `string`;
   `tokenURI`: `string`;
 \}\>
+
