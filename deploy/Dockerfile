@@ -76,3 +76,4 @@ USER gateway
 # Start with dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/deploy/src/gateway/index.js"]
+
