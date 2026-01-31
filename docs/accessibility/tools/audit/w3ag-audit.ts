@@ -607,3 +607,4 @@ function main(): void {
 
 // Run if executed directly
 main();
+
