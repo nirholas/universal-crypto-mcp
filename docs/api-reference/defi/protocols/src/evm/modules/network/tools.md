@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/network/tools.ts:17](https://github.
 #### Returns
 
 `void`
+
