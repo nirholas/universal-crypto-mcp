@@ -341,3 +341,4 @@ Focus:    ring-2 ring-black
 - ✅ Focus indicators visible
 - ✅ Color contrast sufficient
 - ✅ Reduced motion respected
+
