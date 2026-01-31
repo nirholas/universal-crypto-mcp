@@ -180,3 +180,4 @@ Checks if a token is a stablecoin
 #### Returns
 
 `boolean`
+
