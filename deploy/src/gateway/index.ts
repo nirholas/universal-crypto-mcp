@@ -13,6 +13,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import { rateLimit } from 'express-rate-limit';
 import Redis from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
 

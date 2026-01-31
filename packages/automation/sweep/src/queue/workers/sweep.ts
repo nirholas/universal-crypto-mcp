@@ -1,4 +1,7 @@
 import { Worker, Job } from "bullmq";
+import { createWalletClient, createPublicClient, http, parseUnits, formatUnits, type Address, type Hash } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { base, arbitrum, optimism, polygon } from "viem/chains";
 import { cacheSet, cacheGet } from "../../utils/redis.js";
 import { getDb, sweeps, dustTokens } from "../../db/index.js";
 import { eq } from "drizzle-orm";
@@ -29,6 +32,27 @@ export interface TrackWorkerResult {
  */
 function getRedisUrl(): string {
   return process.env.REDIS_URL || "redis://localhost:6379";
+}
+
+/**
+ * Get chain configuration by name
+ */
+function getChainConfig(chainName: string) {
+  const chains: Record<string, typeof base> = {
+    base,
+    arbitrum,
+    optimism,
+    polygon,
+    'base-sepolia': base, // Use base for testnet too
+    'arbitrum-sepolia': arbitrum,
+  };
+
+  const chain = chains[chainName.toLowerCase()];
+  if (!chain) {
+    throw new Error(`Unsupported chain: ${chainName}`);
+  }
+
+  return chain;
 }
 
 /**
@@ -101,31 +125,116 @@ export function createSweepWorker(): Worker<SweepExecuteJobData, SweepWorkerResu
             `[SweepWorker] Processing ${chainTokens.length} tokens on ${chain}`
           );
 
-          // TODO: Implement actual sweep execution using:
-          // 1. Smart Wallet / Account Abstraction
-          // 2. Paymaster for gas abstraction
-          // 3. DEX aggregator (1inch Fusion, Jupiter, CoW)
-          // 4. UserOperation building and signing
-          // 5. Bundler submission
-
-          // For now, simulate the transaction
-          const mockTxHash = `0x${Buffer.from(
-            `${sweepId}-${chain}-${Date.now()}`
-          ).toString("hex").slice(0, 64)}`;
-          const mockUserOpHash = `0x${Buffer.from(
-            `userop-${sweepId}-${chain}`
-          ).toString("hex").slice(0, 64)}`;
-
-          txHashes[chain] = mockTxHash;
-          userOpHashes[chain] = mockUserOpHash;
-
-          // Queue transaction tracking
-          await addSweepTrackJob({
-            sweepId,
-            txHash: mockTxHash,
-            chain,
-            userOpHash: mockUserOpHash,
+          // Get chain configuration
+          const chainConfig = getChainConfig(chain);
+          const publicClient = createPublicClient({
+            chain: chainConfig,
+            transport: http(),
           });
+
+          // Get wallet private key from environment
+          const privateKey = process.env.SWEEP_PRIVATE_KEY;
+          if (!privateKey) {
+            throw new Error("SWEEP_PRIVATE_KEY not configured");
+          }
+
+          const account = privateKeyToAccount(privateKey as `0x${string}`);
+          const walletClient = createWalletClient({
+            account,
+            chain: chainConfig,
+            transport: http(),
+          });
+
+          // Build swap transactions for each token using 1inch
+          const swaps = await Promise.all(
+            chainTokens.map(async (token) => {
+              try {
+                // Get 1inch swap quote
+                const chainId = chainConfig.id;
+                const fromToken = token.address;
+                const toToken = quote.destinationToken; // USDC or target token
+                const amount = parseUnits(token.balance, token.decimals);
+
+                const quoteUrl = `https://api.1inch.dev/swap/v6.0/${chainId}/swap?src=${fromToken}&dst=${toToken}&amount=${amount.toString()}&from=${account.address}&slippage=${quote.slippageBps / 100}`;
+                
+                const swapResponse = await fetch(quoteUrl, {
+                  headers: { 
+                    'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}`,
+                    'Accept': 'application/json'
+                  },
+                  signal: AbortSignal.timeout(15000),
+                });
+
+                if (!swapResponse.ok) {
+                  console.warn(`[SweepWorker] 1inch swap failed for ${token.symbol}:`, await swapResponse.text());
+                  return null;
+                }
+
+                const swapData = await swapResponse.json() as {
+                  tx: {
+                    to: string;
+                    data: string;
+                    value: string;
+                    gas: string;
+                  };
+                  toAmount: string;
+                };
+
+                return {
+                  token,
+                  tx: swapData.tx,
+                  expectedOutput: formatUnits(BigInt(swapData.toAmount), 6), // USDC decimals
+                };
+              } catch (error) {
+                console.error(`[SweepWorker] Error preparing swap for ${token.symbol}:`, error);
+                return null;
+              }
+            })
+          );
+
+          // Filter out failed swaps
+          const validSwaps = swaps.filter((s) => s !== null);
+          if (validSwaps.length === 0) {
+            console.warn(`[SweepWorker] No valid swaps for ${chain}, skipping`);
+            continue;
+          }
+
+          // Execute swaps sequentially (could be batched with multicall)
+          const txResults: Hash[] = [];
+          for (const swap of validSwaps) {
+            try {
+              const hash = await walletClient.sendTransaction({
+                to: swap.tx.to as Address,
+                data: swap.tx.data as `0x${string}`,
+                value: BigInt(swap.tx.value),
+                gas: BigInt(swap.tx.gas),
+              });
+
+              txResults.push(hash);
+              console.log(`[SweepWorker] Swapped ${swap.token.symbol}: ${hash}`);
+
+              // Wait for confirmation
+              await publicClient.waitForTransactionReceipt({ hash, confirmations: 1 });
+            } catch (error) {
+              console.error(`[SweepWorker] Transaction failed for ${swap.token.symbol}:`, error);
+            }
+          }
+
+          // Store the first successful tx hash
+          if (txResults.length > 0) {
+            txHashes[chain] = txResults[0];
+            userOpHashes[chain] = txResults[0]; // Same for EOA, different for AA
+          }
+
+          // Queue transaction tracking for all successful txs
+          for (const hash of txResults) {
+            await addSweepTrackJob({
+              sweepId,
+              txHash: hash,
+              chain,
+              userOpHash: hash,
+            });
+          }
         }
 
         await job.updateProgress(80);

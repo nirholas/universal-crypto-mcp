@@ -4,7 +4,9 @@ import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { getRedis } from "../utils/redis.js";
+import { parseUnits, formatUnits } from "viem";
+import { getRedis, cacheGet, cacheSet } from "../utils/redis.js";
+import { addSweepExecuteJob } from "../queue/index.js";
 
 import { scanAllChains, getWalletTokenBalancesAlchemy } from "../services/wallet.service.js";
 import { filterDustTokens } from "../services/validation.service.js";
@@ -28,6 +30,40 @@ import {
 import { getEndpointPrice } from "../services/payments/pricing.js";
 
 const app = new Hono();
+
+// ============================================================
+// Helper Functions
+// ============================================================
+
+/**
+ * Get chain ID for chain name
+ */
+function getChainId(chain: string): number {
+  const chainIds: Record<string, number> = {
+    'base': 8453,
+    'arbitrum': 42161,
+    'optimism': 10,
+    'polygon': 137,
+    'base-sepolia': 84532,
+    'arbitrum-sepolia': 421614,
+  };
+  return chainIds[chain.toLowerCase()] || 1;
+}
+
+/**
+ * Get USDC address for chain
+ */
+function getUsdcAddress(chain: string): string {
+  const usdcAddresses: Record<string, string> = {
+    'base': '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    'arbitrum': '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    'optimism': '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+    'polygon': '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+    'base-sepolia': '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+    'arbitrum-sepolia': '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
+  };
+  return usdcAddresses[chain.toLowerCase()] || usdcAddresses['base'];
+}
 
 // ============================================================
 // Middleware
@@ -215,14 +251,83 @@ if (x402Receiver) {
     "/api/sweep/quote",
     quotePaymentMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement sweep quote generation
-      // This will call 1inch/Jupiter/Li.Fi for swap quotes
-      return c.json({ message: "Not implemented yet" }, 501);
+      try {
+        const body = await c.req.json();
+        const { walletAddress, tokens, destinationToken = 'USDC', slippageBps = 100 } = body;
+
+        if (!walletAddress || !tokens || !Array.isArray(tokens)) {
+          return c.json({ error: "walletAddress and tokens array required" }, 400);
+        }
+
+        // Generate quotes for each token using 1inch
+        const quotes = await Promise.all(
+          tokens.map(async (token: any) => {
+            try {
+              const chainId = getChainId(token.chain);
+              const amount = parseUnits(token.balance, token.decimals);
+              const destToken = destinationToken === 'USDC' ? getUsdcAddress(token.chain) : destinationToken;
+
+              const quoteUrl = `https://api.1inch.dev/swap/v6.0/${chainId}/quote?src=${token.address}&dst=${destToken}&amount=${amount.toString()}`;
+              
+              const response = await fetch(quoteUrl, {
+                headers: { 'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}` },
+                signal: AbortSignal.timeout(10000),
+              });
+
+              if (!response.ok) {
+                return { token: token.address, error: 'Quote failed' };
+              }
+
+              const data = await response.json() as { toAmount: string; estimatedGas: string };
+              
+              return {
+                token: token.address,
+                symbol: token.symbol,
+                balance: token.balance,
+                expectedOutput: formatUnits(BigInt(data.toAmount), 6),
+                estimatedGas: data.estimatedGas,
+              };
+            } catch (error) {
+              return { token: token.address, error: String(error) };
+            }
+          })
+        );
+
+        const totalOutput = quotes
+          .filter(q => !q.error)
+          .reduce((sum, q) => sum + parseFloat(q.expectedOutput), 0);
+
+        const quoteId = `quote_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+        
+        // Cache quote for 5 minutes
+        await cacheSet(`quote:${quoteId}`, {
+          quoteId,
+          walletAddress,
+          tokens,
+          quotes,
+          destinationToken,
+          slippageBps,
+          totalOutput: totalOutput.toFixed(6),
+          expiresAt: Date.now() + 300000,
+          createdAt: Date.now(),
+        }, 300);
+
+        return c.json({
+          quoteId,
+          quotes,
+          totalOutput: totalOutput.toFixed(6),
+          destinationToken,
+          expiresAt: new Date(Date.now() + 300000).toISOString(),
+        });
+      } catch (error) {
+        console.error("Error generating sweep quote:", error);
+        return c.json({ error: "Failed to generate quote" }, 500);
+      }
     }
   );
 } else {
   app.post("/api/sweep/quote", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ error: "x402 payment receiver not configured" }, 503);
   });
 }
 
@@ -233,14 +338,43 @@ if (x402Receiver) {
     "/api/sweep/execute",
     sweepPaymentMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement sweep execution
-      // This will use the account abstraction layer
-      return c.json({ message: "Not implemented yet" }, 501);
+      try {
+        const body = await c.req.json();
+        const { quoteId } = body;
+
+        if (!quoteId) {
+          return c.json({ error: "quoteId required" }, 400);
+        }
+
+        // Get quote from cache
+        const quote = await cacheGet<any>(`quote:${quoteId}`);
+        if (!quote) {
+          return c.json({ error: "Quote not found or expired" }, 404);
+        }
+
+        // Create sweep job
+        const sweepId = await addSweepExecuteJob({
+          sweepId: `sweep_${Date.now()}`,
+          quoteId,
+          walletAddress: quote.walletAddress,
+          tokens: quote.tokens,
+        });
+
+        return c.json({
+          success: true,
+          sweepId,
+          status: "queued",
+          message: "Sweep execution queued - check /api/sweep/status for updates",
+        });
+      } catch (error) {
+        console.error("Error executing sweep:", error);
+        return c.json({ error: "Failed to execute sweep" }, 500);
+      }
     }
   );
 } else {
   app.post("/api/sweep/execute", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ error: "x402 payment receiver not configured" }, 503);
   });
 }
 
