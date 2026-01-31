@@ -387,3 +387,4 @@ kubectl -n ucm describe hpa ucm-gateway-hpa
 ## 📄 License
 
 MIT License - see [LICENSE](../LICENSE)
+
