@@ -337,3 +337,4 @@ npm run audit:licenses
 - Review: Check existing integrations as examples
 
 **Remember: Proper attribution isn't just legal compliance—it's being a good community member! 🤝**
+
