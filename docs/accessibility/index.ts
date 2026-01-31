@@ -7,3 +7,4 @@ export { GasEstimator, GasDisplay, GasWarning } from './GasEstimator';
 
 // Types
 export type { GasSpeed, GasEstimate } from './GasEstimator';
+
