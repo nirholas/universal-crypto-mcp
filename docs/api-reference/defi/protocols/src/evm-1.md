@@ -27,3 +27,4 @@ Register all EVM modules with the MCP server
 #### Returns
 
 `void`
+
