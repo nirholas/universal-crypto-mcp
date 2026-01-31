@@ -1,0 +1,214 @@
+# Universal Crypto MCP - Enterprise Production Stack
+# Full deployment with Redis, Prometheus, Grafana, and the Gateway
+
+version: '3.8'
+
+services:
+  # ===========================================================================
+  # x402 Payment Gateway
+  # ===========================================================================
+  gateway:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: ucm-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+      # Payment Configuration
+      - PAYMENT_WALLET=${PAYMENT_WALLET}
+      - PAYMENT_NETWORK=${PAYMENT_NETWORK:-eip155:8453}
+      - PAYMENT_TOKEN=${PAYMENT_TOKEN:-USDC}
+      - X402_FACILITATOR=${X402_FACILITATOR:-https://facilitator.x402.org}
+      # Rate Limiting
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_MAX=100
+      - RATE_LIMIT_WINDOW=60
+      - REDIS_URL=redis://redis:6379
+      # Database
+      - DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/ucm
+      # Monitoring
+      - PROMETHEUS_ENABLED=true
+      - ALERTS_ENABLED=true
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ucm-network
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=3000"
+      - "prometheus.path=/metrics"
+
+  # ===========================================================================
+  # Redis - Rate Limiting & Caching
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: ucm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # PostgreSQL - Persistent Storage
+  # ===========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: ucm-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
+      - POSTGRES_DB=ucm
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # Prometheus - Metrics Collection
+  # ===========================================================================
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: ucm-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # Grafana - Visualization
+  # ===========================================================================
+  grafana:
+    image: grafana/grafana:10.1.5
+    container_name: ucm-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # Alertmanager - Alert Routing
+  # ===========================================================================
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: ucm-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # Nginx - Reverse Proxy & SSL Termination
+  # ===========================================================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: ucm-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+      - nginx-cache:/var/cache/nginx
+    depends_on:
+      - gateway
+    networks:
+      - ucm-network
+
+  # ===========================================================================
+  # Jaeger - Distributed Tracing (Optional)
+  # ===========================================================================
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: ucm-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686"  # UI
+      - "4318:4318"    # OTLP HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - ucm-network
+    profiles:
+      - tracing
+
+# ===========================================================================
+# Networks
+# ===========================================================================
+networks:
+  ucm-network:
+    driver: bridge
+
+# ===========================================================================
+# Volumes
+# ===========================================================================
+volumes:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  alertmanager-data:
+  nginx-cache:

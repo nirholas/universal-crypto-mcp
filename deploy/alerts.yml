@@ -1,0 +1,165 @@
+# Prometheus Alert Rules for Universal Crypto MCP
+
+groups:
+  # ===========================================================================
+  # Gateway Alerts
+  # ===========================================================================
+  - name: gateway
+    interval: 30s
+    rules:
+      - alert: GatewayDown
+        expr: up{job="gateway"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Gateway is down"
+          description: "The x402 payment gateway has been down for more than 1 minute"
+
+      - alert: HighErrorRate
+        expr: |
+          rate(http_requests_total{status=~"5.."}[5m]) 
+          / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes"
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is above 2 seconds"
+
+      - alert: HighRateLimitRejections
+        expr: |
+          rate(rate_limit_rejections_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit rejections"
+          description: "More than 100 requests per second are being rate limited"
+
+  # ===========================================================================
+  # Payment Alerts
+  # ===========================================================================
+  - name: payments
+    interval: 30s
+    rules:
+      - alert: PaymentVerificationFailures
+        expr: |
+          rate(x402_payment_verification_failures_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High payment verification failure rate"
+          description: "Payment verification is failing frequently"
+
+      - alert: NoPaymentsReceived
+        expr: |
+          increase(x402_payments_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: info
+        annotations:
+          summary: "No payments received"
+          description: "No payments have been received in the last 2 hours"
+
+      - alert: LargePaymentReceived
+        expr: |
+          x402_payment_amount > 100
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: "Large payment received"
+          description: "A payment of ${{ $value }} was received"
+
+  # ===========================================================================
+  # Infrastructure Alerts
+  # ===========================================================================
+  - name: infrastructure
+    interval: 30s
+    rules:
+      - alert: HighMemoryUsage
+        expr: |
+          process_resident_memory_bytes / 1024 / 1024 > 512
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 512MB"
+
+      - alert: HighCPUUsage
+        expr: |
+          rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80%"
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute"
+
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL has been down for more than 1 minute"
+
+      - alert: DiskSpaceLow
+        expr: |
+          node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} 
+          / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Less than 10% disk space remaining"
+
+  # ===========================================================================
+  # MCP Tool Alerts
+  # ===========================================================================
+  - name: mcp_tools
+    interval: 30s
+    rules:
+      - alert: ToolExecutionFailures
+        expr: |
+          rate(mcp_tool_execution_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High tool execution failure rate"
+          description: "MCP tool {{ $labels.tool }} is failing frequently"
+
+      - alert: SlowToolExecution
+        expr: |
+          histogram_quantile(0.95, rate(mcp_tool_execution_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow tool execution"
+          description: "Tool {{ $labels.tool }} is taking more than 10 seconds to execute"

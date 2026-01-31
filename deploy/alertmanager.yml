@@ -1,0 +1,55 @@
+# Alertmanager Configuration
+
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@universal-crypto-mcp.com'
+  smtp_auth_username: ''
+  smtp_auth_password: ''
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'default'
+  
+  routes:
+    # Critical alerts go to PagerDuty
+    - match:
+        severity: critical
+      receiver: 'pagerduty'
+      continue: true
+
+    # All alerts go to Slack
+    - match_re:
+        severity: 'critical|warning'
+      receiver: 'slack'
+
+receivers:
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://gateway:3000/webhooks/alerts'
+
+  - name: 'slack'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK}'
+        channel: '#ucm-alerts'
+        title: '{{ .GroupLabels.alertname }}'
+        text: |
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Description:* {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
+        send_resolved: true
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+
+  - name: 'pagerduty'
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_KEY}'
+        severity: '{{ .CommonLabels.severity }}'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname']

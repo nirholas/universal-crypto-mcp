@@ -7,16 +7,66 @@
  * - Account management (balances, positions)
  * - WebSocket support for real-time data
  * 
+ * Features:
+ * - Rate limiting with token bucket algorithm
+ * - Exponential backoff retry with jitter
+ * - Circuit breaker for fault tolerance
+ * - Configurable timeouts
+ * - Structured error handling
+ * - Request/response logging
+ * 
  * @module bitget-api
  * @see https://www.bitget.com/api-doc/common/intro
  */
 
 import crypto from 'crypto';
+import {
+  RateLimiter,
+  retry,
+  CircuitBreaker,
+  withTimeout,
+  ApiError,
+  RateLimitError,
+  createLogger,
+  DEFAULT_TIMEOUTS,
+  type RetryConfig,
+  type Logger,
+} from '@universal-crypto-mcp/shared-utils';
 
 export const BITGET_API = {
   BASE_URL: 'https://api.bitget.com',
   WS_URL: 'wss://ws.bitget.com/v2/ws/public',
 } as const;
+
+// Rate limiter: Bitget allows 10 requests per second for most endpoints
+const rateLimiter = new RateLimiter({
+  maxTokens: 10,
+  refillRate: 10,
+  refillInterval: 1000,
+  maxWaitTime: 5000,
+});
+
+// Circuit breaker for fault tolerance
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+});
+
+// Logger
+const logger: Logger = createLogger({ name: 'bitget-api' });
+
+// Default retry config
+const defaultRetryConfig: Partial<RetryConfig> = {
+  maxRetries: 3,
+  initialDelay: 1000,
+  maxDelay: 10000,
+  jitter: true,
+  retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+  onRetry: (error, attempt, delay) => {
+    logger.warn(`Retry attempt ${attempt} after ${delay}ms`, { error: error.message });
+  },
+};
 
 export interface BitgetCredentials {
   apiKey: string;
@@ -116,6 +166,22 @@ async function authenticatedRequest<T>(
   params: Record<string, any> = {},
   body: any = null
 ): Promise<T> {
+  // Check circuit breaker
+  if (!circuitBreaker.canExecute()) {
+    throw new ApiError('Circuit breaker is open - Bitget API temporarily unavailable', {
+      code: 'CIRCUIT_BREAKER_OPEN',
+      endpoint: path,
+    });
+  }
+
+  // Rate limiting
+  const rateLimitResult = await rateLimiter.acquire('bitget-auth');
+  if (!rateLimitResult.allowed) {
+    throw new RateLimitError('Rate limit exceeded for Bitget API', {
+      retryAfter: rateLimitResult.retryAfter,
+    });
+  }
+
   const timestamp = Date.now().toString();
   const requestPath = path + (Object.keys(params).length > 0 ? `?${new URLSearchParams(params as any).toString()}` : '');
   const bodyString = body ? JSON.stringify(body) : '';
@@ -136,17 +202,62 @@ async function authenticatedRequest<T>(
     'Content-Type': 'application/json',
     'locale': 'en-US',
   };
+
+  const executeRequest = async (): Promise<T> => {
+    const startTime = Date.now();
+    
+    try {
+      const response = await withTimeout(
+        fetch(url, {
+          method,
+          headers,
+          ...(body && { body: bodyString }),
+        }),
+        { timeoutMs: DEFAULT_TIMEOUTS.HTTP_REQUEST, operation: `bitget:${method}:${path}` }
+      );
+      
+      const duration = Date.now() - startTime;
+      logger.debug('Bitget API request completed', { method, path, status: response.status, duration });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        circuitBreaker.recordFailure();
+        throw new ApiError(error.msg || `Bitget API error: ${response.status}`, {
+          code: 'BITGET_API_ERROR',
+          statusCode: response.status,
+          endpoint: path,
+          context: { response: error },
+        });
+      }
+      
+      const data = await response.json();
+      
+      if (data.code !== '00000') {
+        circuitBreaker.recordFailure();
+        throw new ApiError(data.msg || 'Bitget API error', {
+          code: `BITGET_${data.code}`,
+          endpoint: path,
+          context: { bitgetCode: data.code },
+        });
+      }
+      
+      circuitBreaker.recordSuccess();
+      return data.data;
+    } catch (error) {
+      circuitBreaker.recordFailure();
+      throw error;
+    }
+  };
+
+  // Execute with retry
+  const result = await retry(executeRequest, defaultRetryConfig);
   
-  const response = await fetch(url, {
-    method,
-    headers,
-    ...(body && { body: bodyString }),
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.msg || `Bitget API error: ${response.status}`);
+  if (!result.success) {
+    throw result.error;
   }
+  
+  return result.data as T;
+}
   
   const data = await response.json();
   
@@ -161,21 +272,75 @@ async function authenticatedRequest<T>(
  * Make public request to Bitget API
  */
 async function publicRequest<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  // Check circuit breaker
+  if (!circuitBreaker.canExecute()) {
+    throw new ApiError('Circuit breaker is open - Bitget API temporarily unavailable', {
+      code: 'CIRCUIT_BREAKER_OPEN',
+      endpoint,
+    });
+  }
+
+  // Rate limiting
+  const rateLimitResult = await rateLimiter.acquire('bitget-public');
+  if (!rateLimitResult.allowed) {
+    throw new RateLimitError('Rate limit exceeded for Bitget API', {
+      retryAfter: rateLimitResult.retryAfter,
+    });
+  }
+
   const queryString = params ? `?${new URLSearchParams(params as any).toString()}` : '';
-  const response = await fetch(`${BITGET_API.BASE_URL}${endpoint}${queryString}`);
+  const url = `${BITGET_API.BASE_URL}${endpoint}${queryString}`;
+
+  const executeRequest = async (): Promise<T> => {
+    const startTime = Date.now();
+    
+    try {
+      const response = await withTimeout(
+        fetch(url),
+        { timeoutMs: DEFAULT_TIMEOUTS.HTTP_REQUEST, operation: `bitget:GET:${endpoint}` }
+      );
+      
+      const duration = Date.now() - startTime;
+      logger.debug('Bitget public API request completed', { endpoint, status: response.status, duration });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        circuitBreaker.recordFailure();
+        throw new ApiError(error.msg || `Bitget API error: ${response.status}`, {
+          code: 'BITGET_API_ERROR',
+          statusCode: response.status,
+          endpoint,
+          context: { response: error },
+        });
+      }
+      
+      const data = await response.json();
+      
+      if (data.code !== '00000') {
+        circuitBreaker.recordFailure();
+        throw new ApiError(data.msg || 'Bitget API error', {
+          code: `BITGET_${data.code}`,
+          endpoint,
+          context: { bitgetCode: data.code },
+        });
+      }
+      
+      circuitBreaker.recordSuccess();
+      return data.data;
+    } catch (error) {
+      circuitBreaker.recordFailure();
+      throw error;
+    }
+  };
+
+  // Execute with retry
+  const result = await retry(executeRequest, defaultRetryConfig);
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.msg || `Bitget API error: ${response.status}`);
+  if (!result.success) {
+    throw result.error;
   }
   
-  const data = await response.json();
-  
-  if (data.code !== '00000') {
-    throw new Error(data.msg || 'Bitget API error');
-  }
-  
-  return data.data;
+  return result.data as T;
 }
 
 // =============================================================================

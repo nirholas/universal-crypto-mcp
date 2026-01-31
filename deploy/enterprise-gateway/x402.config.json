@@ -1,0 +1,85 @@
+{
+  "name": "universal-crypto-mcp",
+  "version": "1.0.0",
+  "description": "Enterprise x402 payment gateway for Universal Crypto MCP",
+  "payment": {
+    "wallet": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+    "network": "eip155:8453",
+    "token": "USDC",
+    "facilitator": "https://facilitator.x402.dev"
+  },
+  "pricing": {
+    "model": "per-request",
+    "currency": "USD",
+    "default": "$0.001",
+    "categories": {
+      "defi": {
+        "read": "$0.001",
+        "write": "$0.01"
+      },
+      "layer2": {
+        "read": "$0.0005",
+        "write": "$0.005"
+      },
+      "nft": {
+        "read": "$0.002",
+        "write": "$0.02"
+      },
+      "market-data": {
+        "read": "$0.001",
+        "query": "$0.05"
+      },
+      "wallets": {
+        "read": "$0.001",
+        "write": "$0.005"
+      }
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "instructions": "Universal Crypto MCP Gateway - 18+ MCP servers with 70+ tools for DeFi, L2, NFT, market data, and wallet operations. Pay per request with USDC on Base.",
+    "categories": ["defi", "layer2", "nft", "market-data", "wallets", "crypto", "blockchain"],
+    "tags": ["mcp", "crypto", "defi", "ethereum", "arbitrum", "base", "uniswap", "aave", "nft"]
+  },
+  "rateLimit": {
+    "free": {
+      "windowMs": 60000,
+      "max": 10
+    },
+    "paid": {
+      "windowMs": 60000,
+      "max": 1000
+    }
+  },
+  "servers": [
+    "aave-mcp",
+    "uniswap-v3-mcp",
+    "curve-mcp",
+    "compound-v3-mcp",
+    "lido-mcp",
+    "gmx-v2-mcp",
+    "yearn-mcp",
+    "arbitrum-mcp",
+    "optimism-mcp",
+    "polygon-zkevm-mcp",
+    "base-chain-mcp",
+    "opensea-mcp",
+    "blur-mcp",
+    "axie-infinity-mcp",
+    "dune-analytics-mcp",
+    "defillama-mcp",
+    "coingecko-pro-mcp",
+    "ens-domains-mcp",
+    "walletconnect-mcp",
+    "safe-gnosis-mcp"
+  ],
+  "deployment": {
+    "platform": "vercel",
+    "region": "iad1",
+    "env": {
+      "X402_WALLET": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+      "X402_NETWORK": "eip155:8453",
+      "NODE_ENV": "production"
+    }
+  }
+}

@@ -3,6 +3,14 @@
 /**
  * CoinGecko MCP Server
  * Provides market data, prices, and crypto information
+ * 
+ * Features:
+ * - Rate limiting (30 req/min for free tier, 500 req/min for pro)
+ * - Exponential backoff retry with jitter
+ * - Circuit breaker for fault tolerance
+ * - Configurable timeouts
+ * - Structured error handling
+ * 
  * @author nirholas (github.com/nirholas | x.com/nichxbt)
  * @license MIT
  */
@@ -13,7 +21,20 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import axios from 'axios';
+import {
+  HttpClient,
+  RateLimiter,
+  retry,
+  CircuitBreaker,
+  withTimeout,
+  ApiError,
+  RateLimitError,
+  TimeoutError,
+  createLogger,
+  DEFAULT_TIMEOUTS,
+  type Logger,
+  type RetryConfig,
+} from '@universal-crypto-mcp/shared-utils';
 
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
@@ -21,12 +42,53 @@ interface CoinGeckoConfig {
   apiKey?: string;
 }
 
+// Rate limiter: CoinGecko free tier allows 30 calls/min
+const rateLimiter = new RateLimiter({
+  maxTokens: 30,
+  refillRate: 30,
+  refillInterval: 60000, // 1 minute
+  maxWaitTime: 10000,
+});
+
+// Rate limiter for pro tier
+const proRateLimiter = new RateLimiter({
+  maxTokens: 500,
+  refillRate: 500,
+  refillInterval: 60000,
+  maxWaitTime: 5000,
+});
+
+// Circuit breaker
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 60000,
+  halfOpenRequests: 2,
+});
+
+// Logger
+const logger: Logger = createLogger({ name: 'coingecko-mcp' });
+
+// Default retry config
+const retryConfig: Partial<RetryConfig> = {
+  maxRetries: 3,
+  initialDelay: 1000,
+  maxDelay: 15000,
+  jitter: true,
+  retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+  onRetry: (error, attempt, delay) => {
+    logger.warn(`Retry attempt ${attempt} after ${delay}ms`, { error: error.message });
+  },
+};
+
 class CoinGeckoMCPServer {
   private server: Server;
   private apiKey?: string;
+  private isPro: boolean;
 
   constructor(config: CoinGeckoConfig = {}) {
     this.apiKey = config.apiKey || process.env.COINGECKO_API_KEY;
+    this.isPro = !!this.apiKey;
+    
     this.server = new Server(
       {
         name: 'coingecko-mcp',
@@ -40,20 +102,84 @@ class CoinGeckoMCPServer {
     );
 
     this.setupHandlers();
+    logger.info('CoinGecko MCP Server initialized', { isPro: this.isPro });
   }
 
   private async makeRequest(endpoint: string, params: Record<string, any> = {}) {
+    // Check circuit breaker
+    if (!circuitBreaker.canExecute()) {
+      throw new ApiError('Circuit breaker is open - CoinGecko API temporarily unavailable', {
+        code: 'CIRCUIT_BREAKER_OPEN',
+        endpoint,
+      });
+    }
+
+    // Rate limiting
+    const limiter = this.isPro ? proRateLimiter : rateLimiter;
+    const rateLimitResult = await limiter.acquire('coingecko');
+    if (!rateLimitResult.allowed) {
+      throw new RateLimitError('Rate limit exceeded for CoinGecko API', {
+        retryAfter: rateLimitResult.retryAfter,
+      });
+    }
+
     const headers: Record<string, string> = {};
     if (this.apiKey) {
       headers['x-cg-pro-api-key'] = this.apiKey;
     }
 
-    const response = await axios.get(`${COINGECKO_API}${endpoint}`, {
-      params,
-      headers,
-    });
+    const queryString = new URLSearchParams(
+      Object.entries(params).filter(([_, v]) => v !== undefined) as [string, string][]
+    ).toString();
+    const url = `${COINGECKO_API}${endpoint}${queryString ? '?' + queryString : ''}`;
 
-    return response.data;
+    const executeRequest = async () => {
+      const startTime = Date.now();
+      
+      try {
+        const response = await withTimeout(
+          fetch(url, { headers }),
+          { timeoutMs: DEFAULT_TIMEOUTS.HTTP_REQUEST, operation: `coingecko:${endpoint}` }
+        );
+
+        const duration = Date.now() - startTime;
+        logger.debug('CoinGecko API request completed', { endpoint, status: response.status, duration });
+
+        if (!response.ok) {
+          circuitBreaker.recordFailure();
+          
+          if (response.status === 429) {
+            throw new RateLimitError('CoinGecko rate limit exceeded', {
+              retryAfter: parseInt(response.headers.get('Retry-After') || '60') * 1000,
+            });
+          }
+          
+          const errorText = await response.text();
+          throw new ApiError(`CoinGecko API error: ${response.status}`, {
+            code: 'COINGECKO_API_ERROR',
+            statusCode: response.status,
+            endpoint,
+            context: { response: errorText },
+          });
+        }
+
+        const data = await response.json();
+        circuitBreaker.recordSuccess();
+        return data;
+      } catch (error) {
+        circuitBreaker.recordFailure();
+        throw error;
+      }
+    };
+
+    // Execute with retry
+    const result = await retry(executeRequest, retryConfig);
+    
+    if (!result.success) {
+      throw result.error;
+    }
+    
+    return result.data;
   }
 
   private setupHandlers() {

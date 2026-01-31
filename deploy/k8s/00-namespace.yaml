@@ -1,0 +1,41 @@
+# Universal Crypto MCP - Kubernetes Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ucm
+  labels:
+    name: ucm
+    app.kubernetes.io/name: universal-crypto-mcp
+    app.kubernetes.io/version: "1.0.0"
+---
+# Resource Quotas
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ucm-quota
+  namespace: ucm
+spec:
+  hard:
+    requests.cpu: "8"
+    requests.memory: 16Gi
+    limits.cpu: "16"
+    limits.memory: 32Gi
+    pods: "50"
+    services: "10"
+    persistentvolumeclaims: "10"
+---
+# Limit Range
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ucm-limits
+  namespace: ucm
+spec:
+  limits:
+    - default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      type: Container

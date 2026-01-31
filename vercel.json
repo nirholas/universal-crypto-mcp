@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "universal-crypto-mcp",
+  "builds": [
+    {
+      "src": "deploy/enterprise-gateway/src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "deploy/enterprise-gateway/src/index.ts"
+    }
+  ],
+  "env": {
+    "X402_WALLET": "0xB1314Ed50b273A9c1dA9a43860d853F179868296",
+    "X402_NETWORK": "eip155:8453",
+    "X402_FACILITATOR": "https://facilitator.x402.dev"
+  },
+  "regions": ["iad1", "sfo1", "dub1", "hnd1"],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Payment, X-Wallet-Address" }
+      ]
+    }
+  ]
+}
