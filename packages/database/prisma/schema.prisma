@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  wallets   Wallet[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Wallet {
+  id           String        @id @default(cuid())
+  address      String        @unique
+  network      String
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@map("wallets")
+}
+
+model Transaction {
+  id        String            @id @default(cuid())
+  hash      String            @unique
+  from      String
+  to        String
+  value     Decimal           @db.Decimal(78, 18)
+  network   String
+  status    TransactionStatus @default(PENDING)
+  walletId  String
+  wallet    Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([walletId])
+  @@index([hash])
+  @@map("transactions")
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  symbol    String
+  side      OrderSide
+  type      OrderType   @default(MARKET)
+  amount    Decimal     @db.Decimal(78, 18)
+  price     Decimal?    @db.Decimal(78, 18)
+  status    OrderStatus @default(PENDING)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([symbol])
+  @@map("orders")
+}
+
+model CryptoPrice {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  price       Decimal  @db.Decimal(78, 18)
+  change24h   Decimal  @db.Decimal(10, 4)
+  volume24h   Decimal  @db.Decimal(78, 18)
+  marketCap   Decimal  @db.Decimal(78, 0)
+  lastUpdated DateTime @default(now())
+
+  @@map("crypto_prices")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  FILLED
+  PARTIAL
+  CANCELLED
+}

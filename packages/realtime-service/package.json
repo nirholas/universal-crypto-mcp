@@ -1,0 +1,22 @@
+{
+  "name": "@universal-crypto-mcp/realtime-service",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.40.0",
+    "zod": "^3.23.8",
+    "pino": "^8.17.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.7.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

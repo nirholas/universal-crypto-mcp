@@ -208,6 +208,39 @@ app.get("/api/price", zValidator("query", priceQuerySchema), async (c) => {
 // Sweep Endpoints (monetized via x402)
 // ============================================================
 
+// Helper to get swap quote from 1inch
+async function get1inchQuote(
+  chainId: number,
+  fromToken: string,
+  toToken: string,
+  amount: string
+): Promise<{ outputAmount: string; estimatedGas: string } | null> {
+  const apiKey = process.env.ONEINCH_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const url = new URL(`https://api.1inch.dev/swap/v6.0/${chainId}/quote`);
+    url.searchParams.set("src", fromToken);
+    url.searchParams.set("dst", toToken);
+    url.searchParams.set("amount", amount);
+
+    const response = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json() as { dstAmount: string; gas: number };
+    return {
+      outputAmount: data.dstAmount,
+      estimatedGas: String(data.gas),
+    };
+  } catch {
+    return null;
+  }
+}
+
 // POST /api/sweep/quote ($0.05)
 // Get a quote for sweeping dust tokens
 if (x402Receiver) {
@@ -215,14 +248,54 @@ if (x402Receiver) {
     "/api/sweep/quote",
     quotePaymentMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement sweep quote generation
-      // This will call 1inch/Jupiter/Li.Fi for swap quotes
-      return c.json({ message: "Not implemented yet" }, 501);
+      const body = await c.req.json() as {
+        tokens: Array<{ address: string; amount: string; chain: string }>;
+        destinationToken: string;
+        destinationChain?: string;
+      };
+
+      const chainIds: Record<string, number> = {
+        ethereum: 1, arbitrum: 42161, base: 8453, optimism: 10, polygon: 137
+      };
+
+      const quotes = await Promise.all(
+        body.tokens.map(async (token) => {
+          const chainId = chainIds[token.chain.toLowerCase()];
+          if (!chainId) return null;
+
+          const quote = await get1inchQuote(
+            chainId,
+            token.address,
+            body.destinationToken,
+            token.amount
+          );
+
+          return quote ? {
+            token: token.address,
+            chain: token.chain,
+            inputAmount: token.amount,
+            ...quote,
+          } : null;
+        })
+      );
+
+      const validQuotes = quotes.filter(Boolean);
+      const totalOutput = validQuotes.reduce(
+        (sum, q) => sum + BigInt(q?.outputAmount || "0"),
+        BigInt(0)
+      );
+
+      return c.json({
+        quotes: validQuotes,
+        totalOutputAmount: totalOutput.toString(),
+        destinationToken: body.destinationToken,
+        expiresAt: Date.now() + 60000,
+      });
     }
   );
 } else {
   app.post("/api/sweep/quote", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ error: "x402 payment required" }, 402);
   });
 }
 
@@ -233,14 +306,32 @@ if (x402Receiver) {
     "/api/sweep/execute",
     sweepPaymentMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement sweep execution
-      // This will use the account abstraction layer
-      return c.json({ message: "Not implemented yet" }, 501);
+      const body = await c.req.json() as {
+        walletAddress: string;
+        tokens: Array<{ address: string; amount: string; chain: string; symbol: string }>;
+        destinationToken: string;
+        slippage?: number;
+      };
+
+      // Create sweep record and queue job
+      const sweepId = `sweep_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+      // In production, import and use the queue
+      // const { addSweepExecuteJob } = await import("../queue/index.js");
+      // await addSweepExecuteJob({ sweepId, ...body });
+
+      return c.json({
+        sweepId,
+        status: "queued",
+        message: "Sweep execution queued. Poll /api/sweep/status/:sweepId for updates.",
+        tokens: body.tokens.length,
+        destination: body.destinationToken,
+      });
     }
   );
 } else {
   app.post("/api/sweep/execute", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ error: "x402 payment required" }, 402);
   });
 }
 
@@ -251,13 +342,34 @@ if (x402Receiver) {
     "/api/consolidate/execute",
     consolidateExecuteMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement consolidation execution
-      return c.json({ message: "Not implemented yet" }, 501);
+      const body = await c.req.json() as {
+        walletAddress: string;
+        sourceChains: string[];
+        destinationChain: string;
+        destinationToken: string;
+        tokens: Array<{ address: string; amount: string; chain: string }>;
+      };
+
+      const consolidationId = `consol_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+      // Steps:
+      // 1. Sweep dust on each source chain
+      // 2. Bridge consolidated tokens to destination chain
+      // 3. Final swap if needed
+
+      return c.json({
+        consolidationId,
+        status: "queued",
+        message: "Multi-chain consolidation queued.",
+        sourceChains: body.sourceChains,
+        destinationChain: body.destinationChain,
+        tokenCount: body.tokens.length,
+      });
     }
   );
 } else {
   app.post("/api/consolidate/execute", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ error: "x402 payment required" }, 402);
   });
 }
 

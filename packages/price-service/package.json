@@ -1,0 +1,26 @@
+{
+  "name": "@universal-crypto-mcp/price-service",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js",
+    "deploy:vercel": "vercel deploy",
+    "deploy:cloudflare": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^3.12.0",
+    "@hono/node-server": "^1.4.1",
+    "@hono/zod-validator": "^0.1.11",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}

@@ -222,21 +222,95 @@ export class EndpointRegistry {
 
   /**
    * Stream MCP server response
+   * Implements Server-Sent Events for real-time MCP tool execution
    */
   streamMCP(req: Request, res: Response): void {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
 
-    // TODO: Implement actual MCP streaming
-    const interval = setInterval(() => {
-      res.write(`data: ${JSON.stringify({ message: 'Streaming data', timestamp: Date.now() })}\n\n`);
-    }, 1000);
+    const clientId = `client_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    this.logger.info(`SSE client connected: ${clientId}`);
 
+    // Send initial connection event
+    res.write(`event: connected\ndata: ${JSON.stringify({ clientId, timestamp: Date.now() })}\n\n`);
+
+    // Heartbeat to keep connection alive
+    const heartbeat = setInterval(() => {
+      res.write(`event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`);
+    }, 30000);
+
+    // Handle incoming tool execution requests via query params or body
+    const toolName = req.query.tool as string;
+    const params = req.query.params ? JSON.parse(req.query.params as string) : {};
+
+    if (toolName) {
+      this.executeToolWithStreaming(toolName, params, res, clientId).catch(error => {
+        res.write(`event: error\ndata: ${JSON.stringify({ error: (error as Error).message })}\n\n`);
+      });
+    }
+
+    // Handle client disconnect
     req.on('close', () => {
-      clearInterval(interval);
+      clearInterval(heartbeat);
+      this.logger.info(`SSE client disconnected: ${clientId}`);
       res.end();
     });
+  }
+
+  /**
+   * Execute MCP tool with streaming updates
+   */
+  private async executeToolWithStreaming(
+    toolName: string,
+    params: Record<string, unknown>,
+    res: Response,
+    clientId: string
+  ): Promise<void> {
+    try {
+      // Parse tool name (format: serverId.toolName)
+      const [serverId, ...toolParts] = toolName.split('.');
+      const actualToolName = toolParts.join('.');
+
+      // Send start event
+      res.write(`event: tool_start\ndata: ${JSON.stringify({ 
+        tool: toolName, 
+        params,
+        timestamp: Date.now() 
+      })}\n\n`);
+
+      // Execute the tool
+      const startTime = Date.now();
+      
+      if (this.mcpManager) {
+        // Get server and execute tool
+        const result = await this.mcpManager.callTool(serverId, actualToolName, params);
+        
+        // Send progress updates for long-running operations
+        if (result && typeof result === 'object' && 'progress' in result) {
+          for await (const progress of result.progress as AsyncIterable<{ percent: number; message: string }>) {
+            res.write(`event: progress\ndata: ${JSON.stringify(progress)}\n\n`);
+          }
+        }
+
+        // Send completion event
+        res.write(`event: tool_complete\ndata: ${JSON.stringify({
+          tool: toolName,
+          result,
+          duration: Date.now() - startTime,
+          timestamp: Date.now()
+        })}\n\n`);
+      } else {
+        throw new Error('MCP manager not initialized');
+      }
+    } catch (error) {
+      res.write(`event: tool_error\ndata: ${JSON.stringify({
+        tool: toolName,
+        error: (error as Error).message,
+        timestamp: Date.now()
+      })}\n\n`);
+    }
   }
 
   /**

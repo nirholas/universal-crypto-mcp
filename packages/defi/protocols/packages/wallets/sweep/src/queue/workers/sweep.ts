@@ -32,6 +32,36 @@ function getRedisUrl(): string {
 }
 
 /**
+ * Chain ID mapping
+ */
+function getChainId(chain: string): number | null {
+  const chains: Record<string, number> = {
+    ethereum: 1,
+    mainnet: 1,
+    arbitrum: 42161,
+    base: 8453,
+    optimism: 10,
+    polygon: 137,
+  };
+  return chains[chain.toLowerCase()] || null;
+}
+
+/**
+ * RPC URL mapping
+ */
+function getRpcUrl(chain: string): string | null {
+  const rpcs: Record<string, string> = {
+    ethereum: process.env.RPC_MAINNET || "https://eth.llamarpc.com",
+    mainnet: process.env.RPC_MAINNET || "https://eth.llamarpc.com",
+    arbitrum: process.env.RPC_ARBITRUM || "https://arb1.arbitrum.io/rpc",
+    base: process.env.RPC_BASE || "https://mainnet.base.org",
+    optimism: process.env.RPC_OPTIMISM || "https://mainnet.optimism.io",
+    polygon: process.env.RPC_POLYGON || "https://polygon-rpc.com",
+  };
+  return rpcs[chain.toLowerCase()] || null;
+}
+
+/**
  * Create the sweep execution worker
  */
 export function createSweepWorker(): Worker<SweepExecuteJobData, SweepWorkerResult> {
@@ -101,31 +131,116 @@ export function createSweepWorker(): Worker<SweepExecuteJobData, SweepWorkerResu
             `[SweepWorker] Processing ${chainTokens.length} tokens on ${chain}`
           );
 
-          // TODO: Implement actual sweep execution using:
-          // 1. Smart Wallet / Account Abstraction
-          // 2. Paymaster for gas abstraction
-          // 3. DEX aggregator (1inch Fusion, Jupiter, CoW)
-          // 4. UserOperation building and signing
-          // 5. Bundler submission
+          // Execute real sweep using 1inch API
+          const chainId = getChainId(chain);
+          const rpcUrl = getRpcUrl(chain);
+          
+          if (!chainId || !rpcUrl) {
+            console.warn(`[SweepWorker] Unsupported chain: ${chain}`);
+            continue;
+          }
 
-          // For now, simulate the transaction
-          const mockTxHash = `0x${Buffer.from(
-            `${sweepId}-${chain}-${Date.now()}`
-          ).toString("hex").slice(0, 64)}`;
-          const mockUserOpHash = `0x${Buffer.from(
-            `userop-${sweepId}-${chain}`
-          ).toString("hex").slice(0, 64)}`;
+          try {
+            // Get private key for sweep wallet
+            const privateKey = process.env.SWEEP_WALLET_PRIVATE_KEY;
+            if (!privateKey) {
+              throw new Error("SWEEP_WALLET_PRIVATE_KEY not configured");
+            }
 
-          txHashes[chain] = mockTxHash;
-          userOpHashes[chain] = mockUserOpHash;
+            // Create wallet client
+            const { createWalletClient, createPublicClient, http, parseAbi } = await import("viem");
+            const { privateKeyToAccount } = await import("viem/accounts");
+            const account = privateKeyToAccount(privateKey as `0x${string}`);
+            
+            const publicClient = createPublicClient({
+              transport: http(rpcUrl),
+            });
+
+            const walletClient = createWalletClient({
+              account,
+              transport: http(rpcUrl),
+            });
+
+            const swapResults: string[] = [];
+            const destinationToken = sweep.destinationTokenAddress || "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+            // Process each token
+            for (const token of chainTokens) {
+              try {
+                // Skip if already destination token
+                if (token.address.toLowerCase() === destinationToken.toLowerCase()) {
+                  continue;
+                }
+
+                // Get 1inch quote
+                const apiKey = process.env.ONEINCH_API_KEY;
+                if (!apiKey) {
+                  console.warn("[SweepWorker] 1inch API key not configured, skipping swap");
+                  continue;
+                }
+
+                const quoteUrl = new URL(`https://api.1inch.dev/swap/v6.0/${chainId}/swap`);
+                quoteUrl.searchParams.set("src", token.address);
+                quoteUrl.searchParams.set("dst", destinationToken);
+                quoteUrl.searchParams.set("amount", token.amount.toString());
+                quoteUrl.searchParams.set("from", account.address);
+                quoteUrl.searchParams.set("slippage", "1");
+
+                const quoteResponse = await fetch(quoteUrl.toString(), {
+                  headers: { Authorization: `Bearer ${apiKey}` },
+                });
+
+                if (!quoteResponse.ok) {
+                  console.warn(`[SweepWorker] Failed to get quote for ${token.symbol}: ${await quoteResponse.text()}`);
+                  continue;
+                }
+
+                const swapData = await quoteResponse.json() as { 
+                  tx: { to: string; data: string; value: string; gas: string }
+                };
+
+                // Execute swap transaction
+                const txHash = await walletClient.sendTransaction({
+                  to: swapData.tx.to as `0x${string}`,
+                  data: swapData.tx.data as `0x${string}`,
+                  value: BigInt(swapData.tx.value || "0"),
+                  gas: BigInt(swapData.tx.gas),
+                });
+
+                // Wait for confirmation
+                const receipt = await publicClient.waitForTransactionReceipt({
+                  hash: txHash,
+                  confirmations: 1,
+                });
+
+                if (receipt.status === "success") {
+                  swapResults.push(txHash);
+                  console.log(`[SweepWorker] Swapped ${token.symbol}: ${txHash}`);
+                } else {
+                  console.warn(`[SweepWorker] Swap reverted for ${token.symbol}: ${txHash}`);
+                }
+              } catch (tokenError) {
+                console.error(`[SweepWorker] Error swapping ${token.symbol}:`, tokenError);
+              }
+            }
+
+            if (swapResults.length > 0) {
+              txHashes[chain] = swapResults[0]; // Primary tx hash
+              userOpHashes[chain] = `batch-${swapResults.length}-txs`;
+            }
+          } catch (chainError) {
+            console.error(`[SweepWorker] Error on chain ${chain}:`, chainError);
+          }
 
           // Queue transaction tracking
-          await addSweepTrackJob({
-            sweepId,
-            txHash: mockTxHash,
-            chain,
-            userOpHash: mockUserOpHash,
-          });
+          if (txHashes[chain]) {
+            await addSweepTrackJob({
+              sweepId,
+              txHash: txHashes[chain],
+              chain,
+              userOpHash: userOpHashes[chain],
+            });
+          }
         }
 
         await job.updateProgress(80);
