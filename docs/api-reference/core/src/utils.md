@@ -489,3 +489,4 @@ parseUnits("1.5", 6); // 1500000n
 // Parse with many decimals
 parseUnits("0.001", 18); // 1000000000000000n
 ```
+
