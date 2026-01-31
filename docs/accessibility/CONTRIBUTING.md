@@ -50,3 +50,4 @@ If you've encountered an accessibility barrier in a Web3 application that isn't 
 ## Questions?
 
 Open a discussion or reach out to maintainers.
+
