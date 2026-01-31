@@ -618,3 +618,4 @@ export class mcpmanager {
 - **Discord:** https://discord.gg/universal-crypto
 - **GitHub Issues:** https://github.com/nirholas/universal-crypto-mcp/issues
 - **Email:** dev@universal-crypto-mcp.com
+
