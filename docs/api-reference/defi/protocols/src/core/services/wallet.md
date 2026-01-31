@@ -163,3 +163,4 @@ Sign typed data (EIP-712) using the configured wallet
 `Promise`\<`string`\>
 
 The signature as a hex string
+
