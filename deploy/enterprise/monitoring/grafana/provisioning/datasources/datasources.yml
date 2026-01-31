@@ -98,3 +98,4 @@ datasources:
       implementation: prometheus
     version: 1
     editable: false
+
