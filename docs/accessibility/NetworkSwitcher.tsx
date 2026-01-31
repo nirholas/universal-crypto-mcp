@@ -654,3 +654,4 @@ function NetworkSwitchConfirmation({
  */
 
 export default NetworkSwitcher;
+
