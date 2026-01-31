@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/multicall/tools.ts:161](https://gith
 #### Returns
 
 `void`
+
