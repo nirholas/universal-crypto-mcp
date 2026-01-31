@@ -10,3 +10,4 @@ resources:
 commonLabels:
   app.kubernetes.io/name: crypto-mcp
   app.kubernetes.io/managed-by: kustomize
+
