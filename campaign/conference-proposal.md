@@ -352,3 +352,4 @@ A: Open source infrastructure. No fees. Potential future: hosted services, enter
 ---
 
 *Talk ready to submit to any conference CFP.*
+
