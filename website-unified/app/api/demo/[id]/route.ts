@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'edge'
+export const maxDuration = 60
 
 interface RouteContext {
   params: {
@@ -8,106 +9,127 @@ interface RouteContext {
   }
 }
 
-// Mock data generators for demos
+// RPC endpoints for real blockchain data
+const RPC_ENDPOINTS: Record<string, string> = {
+  ethereum: process.env.ETH_RPC_URL || 'https://eth.llamarpc.com',
+  base: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
+  arbitrum: process.env.ARB_RPC_URL || 'https://arb1.arbitrum.io/rpc',
+  polygon: process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com',
+};
+
+async function jsonRpcCall(chain: string, method: string, params: unknown[]): Promise<unknown> {
+  const rpcUrl = RPC_ENDPOINTS[chain] || RPC_ENDPOINTS.ethereum;
+  const response = await fetch(rpcUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.result;
+}
+
+// Demo: Real multi-chain portfolio
 async function getPortfolioDemo() {
-  const address = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+  const address = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" // vitalik.eth
   const chains = ["ethereum", "base", "arbitrum", "polygon"]
   
-  const portfolio = await Promise.all(
-    chains.map(async (chain) => {
-      const balance = (Math.random() * 10).toFixed(4)
-      const ethPrice = 2500 + Math.random() * 100
-      const value = parseFloat(balance) * ethPrice
-      
-      return {
-        chain,
-        balance: `${balance} ETH`,
-        usdValue: `$${value.toFixed(2)}`,
+  const [portfolio, ethPrice] = await Promise.all([
+    Promise.all(chains.map(async (chain) => {
+      try {
+        const result = await jsonRpcCall(chain, 'eth_getBalance', [address, 'latest']);
+        const balanceWei = BigInt(result as string);
+        const balance = Number(balanceWei) / 1e18;
+        return { chain, balance: balance.toFixed(4), balanceWei: balanceWei.toString() };
+      } catch {
+        return { chain, balance: '0', balanceWei: '0' };
       }
-    })
-  )
+    })),
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+      .then(r => r.json())
+      .then(d => d.ethereum?.usd || 2500)
+      .catch(() => 2500)
+  ]);
   
-  const totalValue = portfolio.reduce(
-    (sum, item) => sum + parseFloat(item.usdValue.slice(1)),
-    0
-  )
+  const portfolioWithValue = portfolio.map(item => ({
+    chain: item.chain,
+    balance: `${item.balance} ETH`,
+    usdValue: `$${(parseFloat(item.balance) * ethPrice).toFixed(2)}`,
+  }));
   
-  return {
-    address,
-    portfolio,
-    totalValue: `$${totalValue.toFixed(2)}`,
-  }
+  const totalValue = portfolioWithValue.reduce(
+    (sum, item) => sum + parseFloat(item.usdValue.slice(1)), 0
+  );
+  
+  return { address, portfolio: portfolioWithValue, totalValue: `$${totalValue.toFixed(2)}`, ethPrice };
 }
 
+// Demo: Real DEX quotes (using price estimation)
 async function getSwapQuoteDemo() {
-  const dexes = ['Uniswap', '1inch', 'Paraswap', 'Cowswap']
+  const [ethPrice, usdcPrice] = await Promise.all([
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+      .then(r => r.json()).then(d => d.ethereum?.usd || 2500),
+    Promise.resolve(1.0),
+  ]);
   
-  const quotes = dexes.map((dex) => ({
-    dex,
-    amountOut: (2500 + Math.random() * 50).toFixed(2),
-    gasEstimate: (Math.random() * 100000 + 50000).toFixed(0),
-    priceImpact: (Math.random() * 0.5).toFixed(2) + '%',
-  }))
+  const baseRate = ethPrice / usdcPrice;
+  const dexes = ['Uniswap V3', '1inch', 'Paraswap', 'CoW Swap'];
   
-  // Sort by best rate
-  quotes.sort((a, b) => parseFloat(b.amountOut) - parseFloat(a.amountOut))
+  const quotes = dexes.map((dex) => {
+    const slippage = (Math.random() * 0.5 - 0.25) / 100; // ±0.25%
+    const rate = baseRate * (1 + slippage);
+    return {
+      dex,
+      amountOut: rate.toFixed(2),
+      gasEstimate: String(Math.floor(150000 + Math.random() * 50000)),
+      priceImpact: Math.abs(slippage * 100).toFixed(3) + '%',
+    };
+  }).sort((a, b) => parseFloat(b.amountOut) - parseFloat(a.amountOut));
   
-  return {
-    input: '1.0 ETH',
-    output: 'USDC',
-    quotes,
-    bestQuote: quotes[0],
-  }
+  return { input: '1.0 ETH', output: 'USDC', quotes, bestQuote: quotes[0], ethPrice };
 }
 
+// Demo: NFT gallery (placeholder - requires Alchemy/Moralis API)
 async function getNFTGalleryDemo() {
-  const address = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-  const chains = ["ethereum", "base", "polygon"]
+  const address = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
   
-  const nfts = chains.flatMap((chain) => {
-    const count = Math.floor(Math.random() * 5)
-    return Array.from({ length: count }, (_, i) => ({
-      chain,
-      contract: `0x${Math.random().toString(16).slice(2, 42)}`,
-      tokenId: String(i + 1),
-      name: `NFT #${i + 1}`,
-      collection: ['CryptoPunks', 'BAYC', 'Pudgy Penguins', 'Azuki'][Math.floor(Math.random() * 4)],
-      imageUrl: `https://via.placeholder.com/150?text=NFT+${i + 1}`,
-    }))
-  })
+  // Check address has activity
+  const txCount = await jsonRpcCall('ethereum', 'eth_getTransactionCount', [address, 'latest']) as string;
   
   return {
     address,
-    totalNFTs: nfts.length,
-    nfts: nfts.slice(0, 10), // Limit to first 10
-  }
+    transactionCount: parseInt(txCount, 16),
+    note: 'Full NFT data requires Alchemy or Moralis API integration',
+    timestamp: Date.now(),
+  };
 }
 
+// Demo: Real DeFi APY data from DeFiLlama
 async function getDeFiAPYDemo() {
-  const protocols = [
-    { name: 'Aave', chain: 'ethereum', token: 'USDC' },
-    { name: 'Compound', chain: 'ethereum', token: 'DAI' },
-    { name: 'Yearn', chain: 'ethereum', token: 'USDT' },
-    { name: 'Curve', chain: 'ethereum', token: '3pool' },
-    { name: 'Convex', chain: 'ethereum', token: 'cvxCRV' },
-    { name: 'Lido', chain: 'ethereum', token: 'stETH' },
-  ]
-  
-  const opportunities = protocols.map((protocol) => ({
-    ...protocol,
-    apy: (Math.random() * 15 + 2).toFixed(2) + '%',
-    tvl: `$${(Math.random() * 1000 + 100).toFixed(1)}M`,
-    risk: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)],
-  }))
-  
-  // Sort by APY
-  opportunities.sort((a, b) => 
-    parseFloat(b.apy) - parseFloat(a.apy)
-  )
-  
-  return {
-    opportunities,
-    bestYield: opportunities[0],
+  try {
+    const response = await fetch('https://yields.llama.fi/pools');
+    const data = await response.json();
+    
+    const topPools = data.data
+      .filter((p: any) => p.tvlUsd > 10000000 && p.apy > 0)
+      .sort((a: any, b: any) => b.apy - a.apy)
+      .slice(0, 10)
+      .map((p: any) => ({
+        protocol: p.project,
+        chain: p.chain,
+        token: p.symbol,
+        apy: p.apy.toFixed(2) + '%',
+        tvl: `$${(p.tvlUsd / 1000000).toFixed(1)}M`,
+        pool: p.pool,
+      }));
+    
+    return { opportunities: topPools, bestYield: topPools[0], source: 'DeFiLlama' };
+  } catch (error) {
+    return {
+      opportunities: [],
+      error: 'Failed to fetch DeFi data',
+      timestamp: Date.now(),
+    };
   }
 }
 

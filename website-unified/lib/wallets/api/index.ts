@@ -13,8 +13,6 @@ export {
   getTokenBalances,
   getNativeBalance,
   getTokenMetadata,
-  getTokenPrice,
-  getEthPrice,
   getNFTsForOwner,
   getAssetTransfers,
   getGasPrice,
@@ -99,14 +97,19 @@ export async function getNativeTokenBalance(
 export async function getNFTs(
   address: string,
   chainId: number,
-  options?: { page?: number; limit?: number }
-): Promise<{ nfts: NFT[]; total: number }> {
+  options?: { page?: number; limit?: number; pageKey?: string }
+): Promise<{ nfts: NFT[]; total: number; pageKey?: string }> {
   if (isSolanaChain(chainId)) {
     const cluster = chainId === 101 ? 'mainnet' : 'devnet';
     return helius.getSolanaNFTs(address, cluster, options?.page, options?.limit);
   }
   
-  return alchemy.getNFTsForOwner(address, chainId, options?.limit);
+  const result = await alchemy.getNFTsForOwner(address, chainId, options?.pageKey);
+  return {
+    nfts: result.nfts,
+    total: result.nfts.length,
+    pageKey: result.pageKey,
+  };
 }
 
 // ============================================
@@ -119,18 +122,22 @@ export async function getNFTs(
 export async function getTransactionHistory(
   address: string,
   chainId: number,
-  options?: { before?: string; limit?: number }
-): Promise<{ transactions: Transaction[]; hasMore: boolean }> {
+  options?: { before?: string; limit?: number; pageKey?: string }
+): Promise<{ transactions: Transaction[]; hasMore: boolean; pageKey?: string }> {
   if (isSolanaChain(chainId)) {
     const cluster = chainId === 101 ? 'mainnet' : 'devnet';
     return helius.getSolanaTransactionHistory(address, cluster, options);
   }
   
-  const transfers = await alchemy.getAssetTransfers(address, chainId, options?.limit);
+  const result = await alchemy.getAssetTransfers(address, chainId, {
+    maxCount: options?.limit,
+    pageKey: options?.pageKey,
+  });
   
   return {
-    transactions: transfers,
-    hasMore: transfers.length === (options?.limit || 100),
+    transactions: result.transfers,
+    hasMore: result.pageKey !== undefined,
+    pageKey: result.pageKey,
   };
 }
 
@@ -151,31 +158,24 @@ export async function getGasPrices(
     // Convert to GasEstimate format
     return {
       chainId,
-      gasLimit: BigInt(200000), // Compute units
-      gasPrices: {
-        slow: {
-          gwei: fees.low / 1e9,
-          estimatedSeconds: 60,
-        },
-        standard: {
-          gwei: fees.medium / 1e9,
-          estimatedSeconds: 30,
-        },
-        fast: {
-          gwei: fees.high / 1e9,
-          estimatedSeconds: 10,
-        },
-        instant: {
-          gwei: fees.veryHigh / 1e9,
-          estimatedSeconds: 5,
-        },
-      },
+      slow: BigInt(fees.low),
+      standard: BigInt(fees.medium),
+      fast: BigInt(fees.high),
+      instant: BigInt(fees.veryHigh),
       estimatedCost: BigInt(fees.medium),
       estimatedCostUsd: 0, // Would need SOL price
     };
   }
   
-  return alchemy.getGasPrice(chainId);
+  const gasPrices = await alchemy.getGasPrice(chainId);
+  return {
+    chainId,
+    slow: gasPrices.slow,
+    standard: gasPrices.standard,
+    fast: gasPrices.fast,
+    instant: gasPrices.instant,
+    baseFee: gasPrices.baseFee,
+  };
 }
 
 // ============================================

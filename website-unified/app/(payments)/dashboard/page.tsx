@@ -9,7 +9,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -17,13 +17,15 @@ import {
   CreditCard, 
   Users,
   Activity,
-  RefreshCw
+  RefreshCw,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { RevenueAnalytics } from '@/components/payments/RevenueAnalytics';
 import { FinancialReports } from '@/components/payments/FinancialReports';
 import { PaymentAlerts } from '@/components/payments/PaymentAlerts';
 import { PaymentHistory } from '@/components/payments/PaymentHistory';
-import type { PaymentAnalytics, PaymentSummary, Payment } from '@/lib/payments/types';
+import type { Payment } from '@/lib/payments/types';
 
 // ============================================
 // Types
@@ -43,55 +45,89 @@ interface DashboardStats {
   pendingPayouts: string;
 }
 
+interface ChainStats {
+  chain: string;
+  percentage: number;
+  color: string;
+  amount: number;
+}
+
 // ============================================
-// Mock Data (Replace with API calls)
+// Dashboard API Service
 // ============================================
 
-const mockStats: DashboardStats = {
-  totalRevenue: '125,430.50',
-  revenueChange: 12.5,
-  totalPayments: 3842,
-  paymentsChange: 8.2,
-  successRate: 98.7,
-  successRateChange: 0.5,
-  averagePayment: '32.65',
-  averageChange: -2.1,
-  activeSubscriptions: 847,
-  subscriptionsChange: 15.3,
-  pendingPayouts: '12,350.00',
-};
+class DashboardService {
+  private baseUrl = '/api/dashboard';
 
-const mockPayments: Payment[] = [];
+  async fetchStats(period: string): Promise<DashboardStats> {
+    const response = await fetch(`${this.baseUrl}/stats?period=${period}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+    return response.json();
+  }
+
+  async fetchPayments(options: { limit?: number; offset?: number; period?: string }): Promise<{ payments: Payment[]; total: number }> {
+    const params = new URLSearchParams({
+      limit: String(options.limit || 10),
+      offset: String(options.offset || 0),
+      ...(options.period && { period: options.period }),
+    });
+    const response = await fetch(`${this.baseUrl}/payments?${params}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch payments');
+    return response.json();
+  }
+
+  async fetchChainStats(period: string): Promise<ChainStats[]> {
+    const response = await fetch(`${this.baseUrl}/chains?period=${period}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch chain stats');
+    return response.json();
+  }
+}
+
+const dashboardService = new DashboardService();
 
 // ============================================
 // Component
 // ============================================
 
 export default function PaymentDashboard() {
-  const [stats, setStats] = useState<DashboardStats>(mockStats);
-  const [payments, setPayments] = useState<Payment[]>(mockPayments);
-  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [chainStats, setChainStats] = useState<ChainStats[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'revenue' | 'reports' | 'history'>('overview');
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
   // Fetch dashboard data
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      // In production, fetch from API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setStats(mockStats);
-      setPayments(mockPayments);
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      const [statsData, paymentsData, chainsData] = await Promise.all([
+        dashboardService.fetchStats(dateRange),
+        dashboardService.fetchPayments({ limit: 5, period: dateRange }),
+        dashboardService.fetchChainStats(dateRange),
+      ]);
+      setStats(statsData);
+      setPayments(paymentsData.payments);
+      setChainStats(chainsData);
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     fetchData();
-  }, [dateRange]);
+  }, [fetchData]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -152,8 +188,29 @@ export default function PaymentDashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Error State */}
+        {error && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500" />
+            <span className="text-red-400">{error}</span>
+            <button 
+              onClick={fetchData}
+              className="ml-auto text-red-400 hover:text-red-300"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && !stats && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          </div>
+        )}
+
         {/* Overview Tab */}
-        {activeTab === 'overview' && (
+        {activeTab === 'overview' && stats && (
           <div className="space-y-8">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -163,6 +220,7 @@ export default function PaymentDashboard() {
                 change={stats.revenueChange}
                 icon={DollarSign}
                 color="green"
+                loading={isLoading}
               />
               <StatCard
                 title="Total Payments"
@@ -170,6 +228,7 @@ export default function PaymentDashboard() {
                 change={stats.paymentsChange}
                 icon={CreditCard}
                 color="blue"
+                loading={isLoading}
               />
               <StatCard
                 title="Success Rate"
@@ -177,6 +236,7 @@ export default function PaymentDashboard() {
                 change={stats.successRateChange}
                 icon={Activity}
                 color="purple"
+                loading={isLoading}
               />
               <StatCard
                 title="Avg. Payment"
@@ -184,6 +244,7 @@ export default function PaymentDashboard() {
                 change={stats.averageChange}
                 icon={TrendingUp}
                 color="yellow"
+                loading={isLoading}
               />
               <StatCard
                 title="Active Subscriptions"
@@ -191,16 +252,17 @@ export default function PaymentDashboard() {
                 change={stats.subscriptionsChange}
                 icon={Users}
                 color="cyan"
+                loading={isLoading}
               />
             </div>
 
             {/* Alerts */}
-            <PaymentAlerts />
+            <PaymentAlerts compact autoRefresh />
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <RevenueAnalytics dateRange={dateRange} compact />
-              <PaymentsByChainChart />
+              <PaymentsByChainChart data={chainStats} loading={isLoading} />
             </div>
 
             {/* Recent Payments */}
@@ -244,9 +306,10 @@ interface StatCardProps {
   change: number;
   icon: React.ComponentType<{ className?: string }>;
   color: 'green' | 'blue' | 'purple' | 'yellow' | 'cyan';
+  loading?: boolean;
 }
 
-function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
+function StatCard({ title, value, change, icon: Icon, color, loading }: StatCardProps) {
   const colorClasses = {
     green: 'bg-green-500/20 text-green-400',
     blue: 'bg-blue-500/20 text-blue-400',
@@ -256,6 +319,19 @@ function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   };
 
   const isPositive = change >= 0;
+
+  if (loading) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-5 animate-pulse">
+        <div className="flex items-center justify-between mb-3">
+          <div className="h-4 bg-gray-800 rounded w-20" />
+          <div className="w-10 h-10 bg-gray-800 rounded-lg" />
+        </div>
+        <div className="h-8 bg-gray-800 rounded w-24 mb-1" />
+        <div className="h-4 bg-gray-800 rounded w-32" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
@@ -279,13 +355,37 @@ function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
 // Payments by Chain Chart
 // ============================================
 
-function PaymentsByChainChart() {
-  const data = [
-    { chain: 'Base', percentage: 45, color: '#3B82F6' },
-    { chain: 'Arbitrum', percentage: 25, color: '#28A0F0' },
-    { chain: 'Ethereum', percentage: 15, color: '#627EEA' },
-    { chain: 'Polygon', percentage: 10, color: '#8247E5' },
-    { chain: 'Optimism', percentage: 5, color: '#FF0420' },
+interface PaymentsByChainChartProps {
+  data: ChainStats[];
+  loading?: boolean;
+}
+
+function PaymentsByChainChart({ data, loading }: PaymentsByChainChartProps) {
+  if (loading) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 animate-pulse">
+        <div className="h-6 bg-gray-800 rounded w-40 mb-6" />
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i}>
+              <div className="flex justify-between mb-1">
+                <div className="h-4 bg-gray-800 rounded w-16" />
+                <div className="h-4 bg-gray-800 rounded w-8" />
+              </div>
+              <div className="h-2 bg-gray-800 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const defaultData: ChainStats[] = data.length > 0 ? data : [
+    { chain: 'Base', percentage: 45, color: '#3B82F6', amount: 0 },
+    { chain: 'Arbitrum', percentage: 25, color: '#28A0F0', amount: 0 },
+    { chain: 'Ethereum', percentage: 15, color: '#627EEA', amount: 0 },
+    { chain: 'Polygon', percentage: 10, color: '#8247E5', amount: 0 },
+    { chain: 'Optimism', percentage: 5, color: '#FF0420', amount: 0 },
   ];
 
   return (
@@ -293,11 +393,16 @@ function PaymentsByChainChart() {
       <h3 className="text-lg font-semibold text-white mb-6">Payments by Chain</h3>
       
       <div className="space-y-4">
-        {data.map((item) => (
+        {defaultData.map((item) => (
           <div key={item.chain}>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-300">{item.chain}</span>
-              <span className="text-gray-400">{item.percentage}%</span>
+              <div className="flex items-center gap-2">
+                {item.amount > 0 && (
+                  <span className="text-gray-500">${item.amount.toLocaleString()}</span>
+                )}
+                <span className="text-gray-400">{item.percentage}%</span>
+              </div>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div 

@@ -903,6 +903,9 @@ export const allNetworks: NetworkConfig[] = [
   solanaDevnet,
 ];
 
+// Alias for NETWORK_CONFIGS - commonly used import name
+export const NETWORK_CONFIGS = allNetworks;
+
 export const mainnetNetworks = allNetworks.filter(n => n.type === 'mainnet');
 export const l2Networks = allNetworks.filter(n => n.type === 'l2');
 export const testnetNetworks = allNetworks.filter(n => n.type === 'testnet');

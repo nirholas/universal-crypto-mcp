@@ -371,11 +371,11 @@ function ApprovalCard({ approval, onRevoke, isRevoking }: ApprovalCardProps) {
                     {formatDate(approval.approvedAt)}
                   </span>
                 </div>
-                {approval.lastUsed && (
+                {approval.lastUsedAt && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500">Last Used</span>
                     <span className="text-gray-700 dark:text-gray-300">
-                      {formatDate(approval.lastUsed)}
+                      {formatDate(approval.lastUsedAt)}
                     </span>
                   </div>
                 )}
@@ -454,21 +454,29 @@ export default function SecurityPage() {
     exposureScore: stats.totalValueAtRisk > 10000 ? 60 : stats.totalValueAtRisk > 1000 ? 80 : 95,
     recommendations: [
       ...(stats.highRisk > 0 ? [{
-        severity: 'critical' as const,
+        id: 'high-risk-approvals',
+        severity: 'critical',
+        priority: 'high' as const,
         title: `${stats.highRisk} high-risk approvals detected`,
         description: 'Consider revoking approvals to known risky contracts.',
       }] : []),
       ...(stats.unlimited > 3 ? [{
-        severity: 'warning' as const,
+        id: 'unlimited-approvals',
+        severity: 'warning',
+        priority: 'medium' as const,
         title: 'Too many unlimited approvals',
         description: 'Unlimited approvals expose your entire token balance to risk.',
       }] : []),
       ...(stats.totalValueAtRisk > 1000 ? [{
-        severity: 'info' as const,
+        id: 'value-at-risk',
+        severity: 'info',
+        priority: 'low' as const,
         title: `$${stats.totalValueAtRisk.toLocaleString()} at risk`,
         description: 'Review your approvals to reduce potential exposure.',
       }] : []),
     ],
+    factors: [],
+    lastUpdated: new Date(),
   };
 
   const handleRevoke = async (approval: TokenApproval) => {

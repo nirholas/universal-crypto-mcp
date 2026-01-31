@@ -4,13 +4,14 @@ import * as React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 import { useSubscriptions } from '@/lib/marketplace/hooks';
+import type { Subscription } from '@/lib/marketplace/types';
 
 export default function SubscriptionsPage() {
   const { subscriptions, loading, cancelSubscription } = useSubscriptions();
   const [filter, setFilter] = React.useState<'all' | 'active' | 'cancelled' | 'expired'>('all');
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
-  const filteredSubscriptions = subscriptions.filter((s) => {
+  const filteredSubscriptions = subscriptions.filter((s: { status: string }) => {
     if (filter === 'all') return true;
     return s.status === filter;
   });
@@ -49,22 +50,22 @@ export default function SubscriptionsPage() {
         <div className="rounded-2xl border-2 border-gray-200 bg-white p-4">
           <p className="text-sm text-gray-500">Active Subscriptions</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">
-            {subscriptions.filter((s) => s.status === 'active').length}
+            {subscriptions.filter((s: { status: string }) => s.status === 'active').length}
           </p>
         </div>
         <div className="rounded-2xl border-2 border-gray-200 bg-white p-4">
           <p className="text-sm text-gray-500">Monthly Spend</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">
             ${subscriptions
-              .filter((s) => s.status === 'active')
-              .reduce((sum, s) => sum + s.plan.price, 0)
+              .filter((s: { status: string }) => s.status === 'active')
+              .reduce((sum: number, s: { plan: { price: number } }) => sum + s.plan.price, 0)
               .toFixed(2)}
           </p>
         </div>
         <div className="rounded-2xl border-2 border-gray-200 bg-white p-4">
           <p className="text-sm text-gray-500">API Calls This Month</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">
-            {subscriptions.reduce((sum, s) => sum + s.usageThisMonth, 0).toLocaleString()}
+            {subscriptions.reduce((sum: number, s: { usageThisMonth: number }) => sum + s.usageThisMonth, 0).toLocaleString()}
           </p>
         </div>
         <div className="rounded-2xl border-2 border-gray-200 bg-white p-4">
@@ -96,7 +97,7 @@ export default function SubscriptionsPage() {
 
       {/* Subscriptions List */}
       <div className="space-y-4">
-        {filteredSubscriptions.map((subscription) => (
+        {filteredSubscriptions.map((subscription: Subscription) => (
           <div
             key={subscription.id}
             className="rounded-2xl border-2 border-gray-200 bg-white p-6 transition-all hover:border-gray-300"

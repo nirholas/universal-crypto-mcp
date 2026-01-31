@@ -38,12 +38,25 @@ const ServicesQuerySchema = z.object({
   rating: z.coerce.number().min(0).max(5).optional(),
   search: z.string().optional(),
   tag: z.string().optional(),
-  verified: z.enum(['true', 'false']).optional().transform((v) => v === 'true'),
-  featured: z.enum(['true', 'false']).optional().transform((v) => v === 'true'),
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(50).default(20),
-  sort: z.enum(['popularity', 'price', 'rating', 'newest']).default('popularity'),
+  verified: z.enum(['true', 'false']).optional(),
+  featured: z.enum(['true', 'false']).optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+  sort: z.enum(['popularity', 'price', 'rating', 'newest']).optional(),
 });
+
+type ServicesQuery = z.infer<typeof ServicesQuerySchema>;
+
+function parseServicesParams(query: ServicesQuery) {
+  return {
+    ...query,
+    verified: query.verified === 'true',
+    featured: query.featured === 'true',
+    page: query.page || 1,
+    limit: query.limit || 20,
+    sort: query.sort || 'popularity' as const,
+  };
+}
 
 // ============================================================================
 // Transform Functions
@@ -95,7 +108,8 @@ function transformService(service: any) {
 // ============================================================================
 
 async function handler(request: NextRequest, context: RequestContext) {
-  const query = parseQuery(request, ServicesQuerySchema);
+  const rawQuery = parseQuery(request, ServicesQuerySchema);
+  const query = parseServicesParams(rawQuery);
   
   try {
     // Build search parameters from query

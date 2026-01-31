@@ -382,12 +382,11 @@ export async function getSolanaNFTs(
         address: collection.group_value,
         isVerified: true,
       } : undefined,
-      attributes: asset.content.metadata.attributes?.map((attr) => ({
+      traits: asset.content.metadata.attributes?.map((attr) => ({
         traitType: attr.trait_type,
         value: String(attr.value),
       })),
-      tokenType: 'SPL',
-      balance: 1,
+      standard: 'SPL',
       isCompressed: asset.compression?.compressed || false,
     };
   });

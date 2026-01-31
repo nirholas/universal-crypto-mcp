@@ -21,6 +21,7 @@ import {
   TransactionRequest,
   TokenApproval,
   Token,
+  ConnectionData,
 } from './types';
 import { allNetworks, getNetworkByChainId } from './networks';
 
@@ -77,7 +78,7 @@ export const useWalletStore = create<WalletStore>()(
       // Connection Actions
       // ============================================
 
-      connect: async (provider: WalletProviderType, connectionData?: any) => {
+      connect: async (provider: WalletProviderType, connectionData?: ConnectionData) => {
         // This is now just a state setter - actual connection happens in WalletProvider
         // using wagmi hooks for EVM and Solana wallet adapter for Solana
         set({ isConnecting: true, error: undefined });
@@ -157,34 +158,28 @@ export const useWalletStore = create<WalletStore>()(
         }
       },
 
-      switchNetwork: async (chainId: number | string, newChainId?: number) => {
-        // State update only - actual switch happens in WalletProvider via wagmi
-        const network = getNetworkByChainId(chainId);
-        if (!network) {
+      switchNetwork: async (chainId: number | string, network?: NetworkConfig) => {
+        // State update - actual switch happens in WalletProvider via wagmi
+        const resolvedNetwork = network || getNetworkByChainId(chainId);
+        if (!resolvedNetwork) {
           throw new Error(`Network with chainId ${chainId} not found`);
         }
 
         const { activeWallet } = get();
-        const finalChainId = newChainId || Number(chainId);
+        const finalChainId = typeof chainId === 'number' ? chainId : chainId;
         
         // Update state
-        set(state => ({
-                  params: [{
-                    chainId: `0x${Number(chainId).toString(16)}`,
-                    chainName: network.name,
-                    nativeCurrency: network.nativeCurrency,
-                    rpcUrls: [network.rpcUrl],
-                    blockExplorerUrls: network.blockExplorer ? [network.blockExplorer] : undefined,
-                  }],
-                });
-              } else {
-                throw switchError;
-              }
-            }
-          }
+        if (activeWallet) {
+          set(state => ({
+            currentNetwork: resolvedNetwork,
+            wallets: state.wallets.map(w =>
+              w.id === activeWallet.id ? { ...w, chainId: finalChainId } : w
+            ),
+            activeWallet: { ...activeWallet, chainId: finalChainId },
+          }));
+        } else {
+          set({ currentNetwork: resolvedNetwork });
         }
-
-        set({ currentNetwork: network });
       },
 
       setActiveWallet: (walletId: string) => {

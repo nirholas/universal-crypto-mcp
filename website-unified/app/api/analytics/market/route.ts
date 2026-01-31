@@ -16,11 +16,9 @@ import {
   createErrorResponse,
   parseQuery,
   setCacheHeaders,
-  ErrorCodes,
 } from '@/lib/api';
-import { APIException, BadRequestError, NotFoundError, ValidationError } from '@/lib/api/errors';
+import { BadRequestError } from '@/lib/api/errors';
 import type { MarketOverview, TrendingToken, TokenMarketData, RequestContext } from '@/lib/api';
-import { APIException, BadRequestError, NotFoundError, ValidationError } from '@/lib/api/errors';
 
 export const runtime = 'edge';
 
@@ -217,31 +215,32 @@ async function fetchGainersAndLosers(limit: number): Promise<{
 
 async function handler(request: NextRequest, context: RequestContext) {
   const query = parseQuery(request, MarketQuerySchema);
+  const limit = query.limit || 20;
   
   try {
     let data: unknown;
     
     switch (query.section) {
       case 'trending': {
-        const trending = await fetchTrendingTokens(query.limit);
+        const trending = await fetchTrendingTokens(limit);
         data = { trending };
         break;
       }
       
       case 'gainers': {
-        const { gainers } = await fetchGainersAndLosers(query.limit);
+        const { gainers } = await fetchGainersAndLosers(limit);
         data = { gainers };
         break;
       }
       
       case 'losers': {
-        const { losers } = await fetchGainersAndLosers(query.limit);
+        const { losers } = await fetchGainersAndLosers(limit);
         data = { losers };
         break;
       }
       
       case 'prices': {
-        const coins = await fetchTopCoins(query.limit, 'market_cap_desc');
+        const coins = await fetchTopCoins(limit, 'market_cap_desc');
         data = {
           prices: coins.map((c) => ({
             id: c.id,
@@ -295,11 +294,7 @@ async function handler(request: NextRequest, context: RequestContext) {
     return response;
   } catch (error) {
     console.error('[API] Market data error:', error);
-    return createErrorResponse(
-      ErrorCodes.EXTERNAL_SERVICE_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch market data',
-      502
-    );
+    return createErrorResponse(error);
   }
 }
 

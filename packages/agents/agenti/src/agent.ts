@@ -1,7 +1,32 @@
 /**
+ * @module @universal-crypto-mcp/agenti
+ * 
  * Agenti Agent Implementation
  * 
  * Base agent framework with guardrails, observability, and human-in-the-loop support.
+ * This module provides the foundation for building AI agents that can safely execute
+ * crypto operations with proper safeguards.
+ * 
+ * @category Agents
+ * 
+ * @example
+ * ```typescript
+ * import { Agent, AgentConfig } from '@universal-crypto-mcp/agenti';
+ * 
+ * const config: AgentConfig = {
+ *   name: 'trading-agent',
+ *   description: 'Automated trading agent with guardrails',
+ *   enableMetrics: true,
+ * };
+ * 
+ * const agent = new Agent(config);
+ * 
+ * // Execute an action with guardrails
+ * const result = await agent.executeAction(
+ *   { type: 'swap', context: 'Token swap on Uniswap' },
+ *   async () => performSwap(params)
+ * );
+ * ```
  */
 
 import { VERSION } from '@universal-crypto-mcp/core';
@@ -20,22 +45,81 @@ import {
   Histogram,
 } from '@ucmcp/shared-utils';
 
+/**
+ * Configuration options for creating an Agent instance.
+ * 
+ * @interface AgentConfig
+ * @category Agents
+ * 
+ * @example
+ * ```typescript
+ * const config: AgentConfig = {
+ *   name: 'my-agent',
+ *   description: 'DeFi trading agent',
+ *   enableMetrics: true,
+ * };
+ * ```
+ */
 export interface AgentConfig {
+  /** Unique name identifier for the agent */
   name: string;
+  /** Human-readable description of the agent's purpose */
   description?: string;
+  /** Custom guardrails for action validation */
   guardrails?: AgentGuardrails;
+  /** Human-in-the-loop manager for approval workflows */
   hitl?: HITLManager;
+  /** Custom logger instance */
   logger?: Logger;
+  /** Enable Prometheus-compatible metrics collection */
   enableMetrics?: boolean;
 }
 
+/**
+ * Prometheus-compatible metrics for agent observability.
+ * 
+ * @interface AgentMetrics
+ * @category Agents
+ */
 export interface AgentMetrics {
+  /** Counter for total actions executed by the agent */
   actionsExecuted: Counter;
+  /** Counter for actions blocked by guardrails */
   actionsBlocked: Counter;
+  /** Histogram tracking action execution duration */
   actionDuration: Histogram;
+  /** Gauge tracking currently active operations */
   activeOperations: Gauge;
 }
 
+/**
+ * Base AI Agent class with built-in guardrails, observability, and HITL support.
+ * 
+ * The Agent class provides a foundation for building AI-powered crypto agents
+ * with enterprise-grade safety features:
+ * 
+ * - **Guardrails**: Validate actions before execution
+ * - **HITL**: Human-in-the-loop approval for sensitive operations  
+ * - **Metrics**: Prometheus-compatible observability
+ * - **Logging**: Structured logging for debugging
+ * 
+ * @class Agent
+ * @category Agents
+ * 
+ * @example
+ * ```typescript
+ * const agent = new Agent({
+ *   name: 'trading-bot',
+ *   enableMetrics: true,
+ * });
+ * 
+ * // Execute with automatic guardrail checking
+ * const result = await agent.executeAction(
+ *   { type: 'transfer', context: 'Send 1 ETH' },
+ *   async () => wallet.sendTransaction(tx)
+ * );
+ * ```
+ */
 export class Agent {
   private config: AgentConfig;
   private guardrails: AgentGuardrails;
@@ -76,24 +160,59 @@ export class Agent {
     }
   }
 
+  /**
+   * Gets the agent's unique name identifier.
+   * @returns The agent name string
+   */
   getName(): string {
     return this.config.name;
   }
 
+  /**
+   * Gets the agent's human-readable description.
+   * @returns The description or default fallback
+   */
   getDescription(): string {
     return this.config.description ?? 'No description';
   }
 
+  /**
+   * Gets the core library version the agent is using.
+   * @returns Semantic version string
+   */
   getCoreVersion(): string {
     return VERSION;
   }
 
+  /**
+   * Gets the guardrails instance used by this agent.
+   * @returns The AgentGuardrails instance
+   */
   getGuardrails(): AgentGuardrails {
     return this.guardrails;
   }
 
   /**
-   * Execute an action through guardrails
+   * Execute an action through guardrails with optional HITL approval.
+   * 
+   * This method provides the core execution pathway that:
+   * 1. Validates the action against guardrails
+   * 2. Optionally requests human approval (HITL)
+   * 3. Executes the action and records metrics
+   * 
+   * @template T - The return type of the action executor
+   * @param action - The action to execute with type and context
+   * @param executor - Async function that performs the actual action
+   * @returns Promise resolving to the action result
+   * @throws Error if guardrails block the action or execution fails
+   * 
+   * @example
+   * ```typescript
+   * const result = await agent.executeAction(
+   *   { type: 'swap', context: 'Swap 100 USDC for ETH' },
+   *   async () => uniswap.swap({ tokenIn: 'USDC', tokenOut: 'ETH', amount: 100 })
+   * );
+   * ```
    */
   async executeAction<T>(
     action: AgentAction,

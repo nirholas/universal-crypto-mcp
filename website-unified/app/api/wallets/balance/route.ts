@@ -78,10 +78,21 @@ const COMMON_TOKENS: Record<string, Array<{ address: string; symbol: string; nam
 
 const BalanceQuerySchema = z.object({
   address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid wallet address'),
-  chains: z.string().optional().transform((v) => v?.split(',') || ['ethereum']),
-  tokens: z.string().optional().transform((v) => v?.split(',') || []),
-  includeNfts: z.enum(['true', 'false']).optional().transform((v) => v === 'true'),
+  chains: z.string().optional(),
+  tokens: z.string().optional(),
+  includeNfts: z.enum(['true', 'false']).optional(),
 });
+
+type BalanceQuery = z.infer<typeof BalanceQuerySchema>;
+
+function parseBalanceParams(query: BalanceQuery) {
+  return {
+    address: query.address,
+    chains: query.chains?.split(',') || ['ethereum'],
+    tokens: query.tokens?.split(',') || [],
+    includeNfts: query.includeNfts === 'true',
+  };
+}
 
 // ============================================================================
 // RPC Helpers
@@ -244,18 +255,15 @@ async function fetchTokenBalances(
 // ============================================================================
 
 async function handler(request: NextRequest, context: RequestContext) {
-  const query = parseQuery(request, BalanceQuerySchema);
+  const rawQuery = parseQuery(request, BalanceQuerySchema);
+  const query = parseBalanceParams(rawQuery);
   
   // Validate chains
   const validChains = Object.keys(CHAIN_CONFIG);
   const requestedChains = query.chains.filter((c) => validChains.includes(c));
   
   if (requestedChains.length === 0) {
-    return createErrorResponse(
-      ErrorCodes.VALIDATION_ERROR,
-      `No valid chains specified. Valid chains: ${validChains.join(', ')}`,
-      400
-    );
+    throw new BadRequestError(`No valid chains specified. Valid chains: ${validChains.join(', ')}`);
   }
 
   try {
@@ -326,11 +334,7 @@ async function handler(request: NextRequest, context: RequestContext) {
     return response;
   } catch (error) {
     console.error('[API] Wallet balance error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch wallet balance',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 

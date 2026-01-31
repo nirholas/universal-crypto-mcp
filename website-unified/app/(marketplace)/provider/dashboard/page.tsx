@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils/cn';
 export default function ProviderDashboardPage() {
   const { stats, loading } = useProviderStats();
   const [period, setPeriod] = React.useState<'day' | 'week' | 'month' | 'year'>('week');
-  const { analytics } = useProviderAnalytics(period);
+  const { analytics } = useProviderAnalytics(undefined, period);
 
   if (loading) {
     return (
@@ -130,7 +130,7 @@ export default function ProviderDashboardPage() {
         <div className="rounded-2xl border-2 border-gray-200 bg-white p-6">
           <h3 className="mb-4 font-semibold text-gray-900">Top Consumers</h3>
           <div className="space-y-4">
-            {analytics?.topConsumers.map((consumer, index) => (
+            {analytics?.topConsumers.map((consumer: { wallet: string; calls: number; revenue: number }, index: number) => (
               <div key={consumer.wallet} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-sm font-medium">

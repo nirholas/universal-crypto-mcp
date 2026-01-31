@@ -134,7 +134,7 @@ function ContactCard({ contact, onEdit, onDelete, onToggleFavorite, onSend }: Co
           {/* Addresses */}
           <div className="mt-3 space-y-2">
             {contact.addresses.slice(0, 2).map((addr) => {
-              const network = NETWORK_CONFIGS.find(n => n.family === addr.chain);
+              const network = NETWORK_CONFIGS.find((n: { family: string }) => n.family === addr.chain);
               return (
                 <div key={addr.address} className="flex items-center gap-2 text-sm">
                   <span className="text-gray-500 capitalize">{addr.chain}:</span>
@@ -245,13 +245,13 @@ function ContactModal({ isOpen, onClose, contact, onSave }: ContactModalProps) {
   const [ensName, setEnsName] = useState(contact?.ensName || '');
   const [notes, setNotes] = useState(contact?.notes || '');
   const [addresses, setAddresses] = useState<ContactAddress[]>(
-    contact?.addresses || [{ address: '', chain: 'evm', isPrimary: true }]
+    contact?.addresses || [{ address: '', chain: 'evm', chainFamily: 'evm' as const, isPrimary: true, isVerified: false }]
   );
   const [tags, setTags] = useState<string[]>(contact?.tags || []);
   const [newTag, setNewTag] = useState('');
 
   const addAddress = () => {
-    setAddresses([...addresses, { address: '', chain: 'evm', isPrimary: false }]);
+    setAddresses([...addresses, { address: '', chain: 'evm', chainFamily: 'evm' as const, isPrimary: false, isVerified: false }]);
   };
 
   const removeAddress = (index: number) => {
@@ -300,12 +300,15 @@ function ContactModal({ isOpen, onClose, contact, onSave }: ContactModalProps) {
       tags,
       isFavorite: contact?.isFavorite || false,
       isVerified: false,
+      groups: [],
+      totalVolumeUsd: 0,
+      transactionCount: 0,
     });
     onClose();
   };
 
   // Validate addresses
-  const isValid = name && addresses.some(a => a.address && isValidAddress(a.address, a.chain));
+  const isValid = name && addresses.some(a => a.address && a.chainFamily && isValidAddress(a.address, a.chainFamily));
 
   return (
     <AnimatePresence>

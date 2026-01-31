@@ -128,11 +128,7 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
     });
   } catch (error) {
     console.error('[API] Subscriptions list error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch subscriptions',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 
@@ -147,29 +143,17 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     // Verify service exists and has subscription pricing
     const service = await getService(body.serviceId);
     if (!service) {
-      return createErrorResponse(
-        ErrorCodes.NOT_FOUND,
-        `Service not found: ${body.serviceId}`,
-        404
-      );
+      throw new NotFoundError('Service', body.serviceId);
     }
     
     const pricing = service.pricing?.subscription;
     if (!pricing) {
-      return createErrorResponse(
-        ErrorCodes.VALIDATION_ERROR,
-        'This service does not offer subscription pricing',
-        400
-      );
+      throw new BadRequestError('This service does not offer subscription pricing');
     }
     
     // For crypto payments, txHash is required
     if (body.paymentMethod === 'crypto' && !body.txHash) {
-      return createErrorResponse(
-        ErrorCodes.VALIDATION_ERROR,
-        'Transaction hash is required for crypto payments',
-        400
-      );
+      throw new BadRequestError('Transaction hash is required for crypto payments');
     }
     
     // Create subscription using SDK
@@ -192,11 +176,7 @@ async function createHandler(request: NextRequest, ctx: RequestContext) {
     });
   } catch (error) {
     console.error('[API] Subscription creation error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to create subscription',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 

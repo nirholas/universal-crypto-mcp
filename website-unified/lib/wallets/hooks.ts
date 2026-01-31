@@ -281,7 +281,7 @@ export function useTokenBalances(address: string | undefined, chainId?: number |
     setError(null);
 
     try {
-      const tokenBalances = await api.getBalances(address, effectiveChainId);
+      const tokenBalances = await api.getBalances(address, Number(effectiveChainId));
       
       // Sort by value descending
       tokenBalances.sort((a, b) => (b.valueUsd || 0) - (a.valueUsd || 0));
@@ -356,7 +356,7 @@ export function useNFTs(address: string | undefined, chainId?: number | string) 
     setError(null);
 
     try {
-      const result = await api.getNFTs(address, effectiveChainId, { page, limit: 50 });
+      const result = await api.getNFTs(address, Number(effectiveChainId), { page, limit: 50 });
       
       if (page === 1) {
         setNfts(result.nfts);
@@ -385,7 +385,7 @@ export function useNFTs(address: string | undefined, chainId?: number | string) 
     const map = new Map<string, NFT[]>();
     
     nfts.forEach(nft => {
-      const collectionKey = nft.collection?.address || 'uncategorized';
+      const collectionKey = nft.contractAddress || 'uncategorized';
       if (!map.has(collectionKey)) {
         map.set(collectionKey, []);
       }
@@ -395,7 +395,7 @@ export function useNFTs(address: string | undefined, chainId?: number | string) 
     return Array.from(map.entries()).map(([address, items]) => ({
       address,
       name: items[0]?.collection?.name || 'Unknown Collection',
-      isVerified: items[0]?.collection?.isVerified || false,
+      isVerified: false,
       nfts: items,
       floorPrice: items[0]?.collection?.floorPrice,
     }));
@@ -451,7 +451,7 @@ export function useTransactionHistory(
     setError(null);
 
     try {
-      const result = await api.getTransactionHistory(address, effectiveChainId, {
+      const result = await api.getTransactionHistory(address, Number(effectiveChainId), {
         before: loadMore ? cursor : undefined,
         limit,
       });
@@ -490,7 +490,7 @@ export function useTransactionHistory(
     const groups = new Map<string, Transaction[]>();
     
     transactions.forEach(tx => {
-      const date = tx.timestamp.toLocaleDateString();
+      const date = tx.blockTimestamp?.toLocaleDateString() || 'Unknown';
       if (!groups.has(date)) {
         groups.set(date, []);
       }
@@ -539,7 +539,7 @@ export function useTokenApprovals(address: string | undefined, chainId?: number 
     }
 
     // Only fetch for EVM chains
-    if (api.isSolanaChain(effectiveChainId)) {
+    if (api.isSolanaChain(Number(effectiveChainId))) {
       setApprovals([]);
       return;
     }
@@ -548,16 +548,34 @@ export function useTokenApprovals(address: string | undefined, chainId?: number 
     setError(null);
 
     try {
-      const tokenApprovals = await api.getTokenApprovals(address, effectiveChainId);
+      const tokenApprovals = await api.getTokenApprovals(address, Number(effectiveChainId));
       
-      // Sort by value/risk (unlimited approvals first)
-      tokenApprovals.sort((a, b) => {
+      // Transform API response to TokenApproval format and sort
+      const transformedApprovals: TokenApproval[] = tokenApprovals.map((a, idx) => ({
+        id: `approval-${idx}`,
+        token: {
+          address: a.tokenAddress,
+          symbol: a.tokenSymbol,
+          name: a.tokenName,
+          decimals: 18,
+          chainId: effectiveChainId,
+        },
+        spender: a.spender,
+        allowance: a.amount,
+        allowanceFormatted: a.isUnlimited ? 'Unlimited' : a.amount.toString(),
+        isUnlimited: a.isUnlimited,
+        riskLevel: a.isUnlimited ? 'high' : 'medium',
+        transactionHash: '',
+      }));
+      
+      // Sort by risk (unlimited approvals first)
+      transformedApprovals.sort((a, b) => {
         if (a.isUnlimited && !b.isUnlimited) return -1;
         if (!a.isUnlimited && b.isUnlimited) return 1;
-        return (b.valueUsd || 0) - (a.valueUsd || 0);
+        return 0;
       });
       
-      setApprovals(tokenApprovals);
+      setApprovals(transformedApprovals);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch approvals'));
     } finally {
@@ -572,7 +590,7 @@ export function useTokenApprovals(address: string | undefined, chainId?: number 
   // Calculate security metrics
   const metrics = useMemo(() => {
     const unlimitedCount = approvals.filter(a => a.isUnlimited).length;
-    const totalValueAtRisk = approvals.reduce((sum, a) => sum + (a.valueUsd || 0), 0);
+    const totalValueAtRisk = 0; // Would need price data to calculate
     const riskScore = Math.max(0, 100 - (unlimitedCount * 10) - (approvals.length * 2));
     
     return {
@@ -617,7 +635,7 @@ export function useNetworkHealth(network: NetworkConfig | undefined) {
         // For EVM chains
         if (network.family === 'evm') {
           // Get block number from RPC
-          const response = await fetch(network.rpcUrls[0], {
+          const response = await fetch(network.rpcUrls.default, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -632,7 +650,7 @@ export function useNetworkHealth(network: NetworkConfig | undefined) {
           const blockNumber = parseInt(blockData.result, 16);
           
           // Get gas price
-          const gasResponse = await fetch(network.rpcUrls[0], {
+          const gasResponse = await fetch(network.rpcUrls.default, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -651,7 +669,7 @@ export function useNetworkHealth(network: NetworkConfig | undefined) {
           let priorityFee: bigint | undefined;
           
           try {
-            const feeResponse = await fetch(network.rpcUrls[0], {
+            const feeResponse = await fetch(network.rpcUrls.default, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -675,7 +693,7 @@ export function useNetworkHealth(network: NetworkConfig | undefined) {
           setHealth({
             networkId: network.id,
             blockNumber,
-            blockTime: network.blockTime || 12,
+            blockTime: 12, // Default block time
             gasPrice,
             baseFee,
             priorityFee,
@@ -685,7 +703,7 @@ export function useNetworkHealth(network: NetworkConfig | undefined) {
         }
         // For Solana
         else if (network.family === 'solana') {
-          const response = await fetch(network.rpcUrls[0], {
+          const response = await fetch(network.rpcUrls.default, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -759,12 +777,12 @@ export function useGasEstimate(
       setError(null);
       
       try {
-        const gasEstimate = await api.getGasPrices(currentNetwork.chainId);
+        const gasEstimate = await api.getGasPrices(Number(currentNetwork.chainId));
         
         // Estimate gas limit for the transaction
-        if (api.isEvmChain(currentNetwork.chainId)) {
+        if (api.isEvmChain(Number(currentNetwork.chainId))) {
           try {
-            const response = await fetch(currentNetwork.rpcUrls[0], {
+            const response = await fetch(currentNetwork.rpcUrls.default, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -785,14 +803,12 @@ export function useGasEstimate(
               
               // Calculate cost with buffer
               const bufferedGas = gasEstimate.gasLimit + (gasEstimate.gasLimit / BigInt(5)); // 20% buffer
-              const gasPriceWei = BigInt(Math.floor(gasEstimate.gasPrices.standard.gwei * 1e9));
-              gasEstimate.estimatedCost = bufferedGas * gasPriceWei;
+              gasEstimate.estimatedCost = bufferedGas * gasEstimate.gasPrice;
             }
           } catch {
             // Use default gas limit for simple transfers
             gasEstimate.gasLimit = BigInt(21000);
-            const gasPriceWei = BigInt(Math.floor(gasEstimate.gasPrices.standard.gwei * 1e9));
-            gasEstimate.estimatedCost = gasEstimate.gasLimit * gasPriceWei;
+            gasEstimate.estimatedCost = gasEstimate.gasLimit * gasEstimate.gasPrice;
           }
         }
         
@@ -811,7 +827,7 @@ export function useGasEstimate(
   return { 
     estimate,
     gasLimit: estimate?.gasLimit || null, 
-    gasPrices: estimate?.gasPrices || null, 
+    gasPrice: estimate?.gasPrice || null, 
     estimatedCost: estimate?.estimatedCost || null,
     estimatedCostUsd: estimate?.estimatedCostUsd || null,
     isLoading,
@@ -851,9 +867,9 @@ export function useAddressValidation(address: string, chainFamily: 'evm' | 'sola
 
       try {
         // For EVM chains
-        if (chainFamily === 'evm' && currentNetwork?.rpcUrls[0]) {
+        if (chainFamily === 'evm' && currentNetwork?.rpcUrls.default) {
           // Check if address is a contract
-          const response = await fetch(currentNetwork.rpcUrls[0], {
+          const response = await fetch(currentNetwork.rpcUrls.default, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

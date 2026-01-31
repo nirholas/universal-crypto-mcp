@@ -1,15 +1,35 @@
 /**
- * MCP Tools for Trading Bot Integration
+ * @module @universal-crypto-mcp/trading-bots
  * 
- * @maintainer Nicholas (nirholas)
- * @github https://github.com/nirholas
- * @twitter https://x.com/nichxbt
+ * MCP Tools for Trading Bot Integration
  * 
  * These tools allow AI agents like Claude to interact with
  * popular open-source crypto trading bots through MCP protocol.
  * 
  * All integrated bots are MIT licensed and properly attributed
  * to their original authors.
+ * 
+ * @category Trading
+ * @maintainer Nicholas (nirholas)
+ * @see https://github.com/nirholas
+ * @see https://x.com/nichxbt
+ * 
+ * @example
+ * ```typescript
+ * import { tradingBotTools, handleTradingBotTool } from '@universal-crypto-mcp/trading-bots';
+ * 
+ * // Register tools with MCP server
+ * server.setRequestHandler(ListToolsRequestSchema, async () => ({
+ *   tools: tradingBotTools
+ * }));
+ * 
+ * // Handle tool execution
+ * server.setRequestHandler(CallToolRequestSchema, async (request) => {
+ *   if (request.params.name.startsWith('trading_')) {
+ *     return handleTradingBotTool(request.params.name, request.params.arguments);
+ *   }
+ * });
+ * ```
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
@@ -17,6 +37,17 @@ import { createTradingBotManager, AVAILABLE_BOTS } from './index.js'
 
 const manager = createTradingBotManager()
 
+/**
+ * Array of MCP Tool definitions for trading bot operations.
+ * 
+ * Includes tools for:
+ * - `list_trading_bots` - List all available trading bots
+ * - `get_bot_info` - Get detailed info about a specific bot
+ * - `execute_trading_bot` - Execute a trade using a bot
+ * 
+ * @category Trading
+ * @constant
+ */
 export const tradingBotTools: Tool[] = [
   {
     name: 'list_trading_bots',

@@ -95,10 +95,12 @@ export interface ConnectedWallet {
   chainFamily: ChainFamily;
   ensName?: string;
   snsName?: string;
-  isConnected: boolean;
-  isDefault: boolean;
-  connectedAt: Date;
-  lastActiveAt: Date;
+  label?: string;
+  isConnected?: boolean;
+  isDefault?: boolean;
+  isActive?: boolean;
+  connectedAt: Date | number;
+  lastActiveAt?: Date | number;
 }
 
 // ============================================
@@ -113,6 +115,7 @@ export interface Token {
   decimals: number;
   logoUri?: string;
   isNative?: boolean;
+  isVerified?: boolean;
   priceUsd?: number;
   priceChange24h?: number;
 }
@@ -130,6 +133,7 @@ export interface TokenBalance {
 // ============================================
 
 export interface NFT {
+  id?: string;
   tokenId: string;
   contractAddress: string;
   chainId: number | string;
@@ -139,12 +143,14 @@ export interface NFT {
   thumbnailUrl?: string;
   animationUrl?: string;
   externalUrl?: string;
-  collection: {
+  collection?: {
     name: string;
+    address?: string;
     slug?: string;
     imageUrl?: string;
     floorPrice?: number;
     floorPriceCurrency?: string;
+    isVerified?: boolean;
   };
   traits?: NFTTrait[];
   rarity?: {
@@ -154,6 +160,8 @@ export interface NFT {
   };
   lastSalePrice?: number;
   lastSaleCurrency?: string;
+  standard?: string;
+  isCompressed?: boolean;
 }
 
 export interface NFTTrait {
@@ -202,14 +210,17 @@ export interface Transaction {
   token?: Token;
   nft?: NFT;
   gasUsed?: bigint;
+  gasFee?: bigint;
   gasPrice?: bigint;
   gasCostUsd?: number;
-  nonce: number;
+  nonce?: number;
   blockNumber?: number;
   blockTimestamp?: Date;
+  timestamp?: Date;
   confirmations: number;
   data?: string;
   logs?: TransactionLog[];
+  description?: string;
 }
 
 export interface TransactionLog {
@@ -247,13 +258,19 @@ export interface TransactionRequest {
 }
 
 export interface GasEstimate {
-  gasLimit: bigint;
-  gasPrice: bigint;
+  chainId?: number | string;
+  gasLimit?: bigint;
+  gasPrice?: bigint;
   maxFeePerGas?: bigint;
   maxPriorityFeePerGas?: bigint;
-  estimatedCost: bigint;
-  estimatedCostUsd: number;
-  estimatedTime: number;
+  baseFee?: bigint;
+  slow?: bigint;
+  standard?: bigint;
+  fast?: bigint;
+  instant?: bigint;
+  estimatedCost?: bigint;
+  estimatedCostUsd?: number;
+  estimatedTime?: number;
 }
 
 export interface TransactionSimulation {
@@ -303,15 +320,22 @@ export interface Contact {
   transactionCount: number;
   createdAt: Date;
   updatedAt: Date;
+  // Optional properties used in UI
+  avatarUrl?: string;
+  isVerified?: boolean;
+  ensName?: string;
+  tags?: string[];
 }
 
 export interface ContactAddress {
   address: string;
   chainFamily: ChainFamily;
   chainId?: number | string;
+  chain?: string; // Alias for display purposes
   ensName?: string;
   snsName?: string;
   isVerified: boolean;
+  isPrimary?: boolean;
   label?: string;
 }
 
@@ -337,6 +361,7 @@ export interface TokenApproval {
   allowanceFormatted: string;
   isUnlimited: boolean;
   riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  valueAtRisk?: number;
   approvedAt?: Date;
   lastUsedAt?: Date;
   transactionHash: string;
@@ -344,6 +369,9 @@ export interface TokenApproval {
 
 export interface SecurityScore {
   overall: number;
+  approvalScore?: number;
+  contractRiskScore?: number;
+  exposureScore?: number;
   factors: SecurityFactor[];
   recommendations: SecurityRecommendation[];
   lastUpdated: Date;
@@ -359,6 +387,7 @@ export interface SecurityFactor {
 }
 
 export interface SecurityRecommendation {
+  severity: string;
   id: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
@@ -486,14 +515,23 @@ export interface WalletState {
 }
 
 // ============================================
+// Connection Data Types
+// ============================================
+
+export interface ConnectionData {
+  wallet: ConnectedWallet;
+  network?: NetworkConfig;
+}
+
+// ============================================
 // Action Types
 // ============================================
 
 export interface WalletActions {
   // Connection
-  connect: (provider: WalletProviderType) => Promise<void>;
+  connect: (provider: WalletProviderType, connectionData?: ConnectionData) => Promise<void>;
   disconnect: (walletId?: string) => Promise<void>;
-  switchNetwork: (chainId: number | string) => Promise<void>;
+  switchNetwork: (chainId: number | string, network?: NetworkConfig) => Promise<void>;
   setActiveWallet: (walletId: string) => void;
   
   // Portfolio

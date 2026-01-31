@@ -27,7 +27,7 @@ const mockRecentActivity = [
 ];
 
 export default function AdminDashboardPage() {
-  const { stats, isLoading } = usePlatformStats();
+  const { stats, loading: isLoading } = usePlatformStats();
   const [period, setPeriod] = React.useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
   return (

@@ -3,12 +3,12 @@
  * @module lib/playground/search
  */
 
-import Fuse from 'fuse.js';
+import Fuse, { IFuseOptions } from 'fuse.js';
 import { McpTool, ToolSearchQuery, ToolSearchResult, ToolCategoryId, ToolComplexity } from './types';
 import { SAMPLE_TOOLS } from './tools-data';
 
 // Fuse.js configuration for fuzzy search
-const fuseOptions: Fuse.IFuseOptions<McpTool> = {
+const fuseOptions: IFuseOptions<McpTool> = {
   keys: [
     { name: 'name', weight: 0.4 },
     { name: 'description', weight: 0.3 },

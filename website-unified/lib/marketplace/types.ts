@@ -157,7 +157,15 @@ export interface ProviderStats {
   totalApiCalls: number;
   revenueThisMonth: number;
   revenueAllTime: number;
+  totalRevenue: number;
   averageRating: number;
+  services?: Array<{
+    id: string;
+    name: string;
+    revenue: number;
+    subscribers: number;
+    apiCalls: number;
+  }>;
 }
 
 export interface ProviderAnalytics {
@@ -188,12 +196,18 @@ export interface Dispute {
 export interface PlatformStats {
   totalServices: number;
   activeProviders: number;
+  totalProviders: number;
   totalConsumers: number;
+  totalUsers: number;
   totalApiCalls: number;
   gmv: number;
+  totalVolume: number;
   platformRevenue: number;
   pendingVerifications: number;
   openDisputes: number;
+  averageUptime: number;
+  disputeResolutionRate: number;
+  averageRating: number;
 }
 
 export const SERVICE_CATEGORIES: { value: ServiceCategory; label: string; icon: string }[] = [

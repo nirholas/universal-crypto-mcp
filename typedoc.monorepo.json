@@ -1,14 +1,25 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "Universal Crypto MCP API Reference",
-  "entryPointStrategy": "packages",
+  "tsconfig": "./tsconfig.docs.json",
+  "entryPointStrategy": "expand",
   "entryPoints": [
-    "packages/core",
-    "packages/shared/*"
+    "packages/core/src",
+    "packages/shared/evm-utils/src",
+    "packages/shared/mcp-utils/src",
+    "packages/shared/utils/src",
+    "packages/agents/agenti/src",
+    "packages/agents/ucai/src",
+    "packages/agents/defi-agents/src",
+    "packages/defi/protocols/src",
+    "packages/trading/bots/src",
+    "packages/market-data/blockchain-analytics/src",
+    "packages/market-data/coinstats/src",
+    "packages/market-data/crypto-indicators/src"
   ],
   "out": "./docs/api-reference",
   "json": "./docs/api-reference/api.json",
-  "readme": "./README.md",
+  "readme": "none",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": false,
@@ -31,7 +42,6 @@
     "Payments",
     "NFT",
     "Security",
-    "Novel",
     "Automation",
     "Infrastructure",
     "*"
@@ -49,10 +59,30 @@
     "Function",
     "Variable",
     "Enum"
-  ]
-}
+  ],
+  "plugin": ["typedoc-plugin-markdown"],
+  "outputFileStrategy": "modules",
+  "entryFileName": "index",
+  "indexFormat": "table",
+  "parametersFormat": "table",
+  "interfacePropertiesFormat": "table",
+  "classPropertiesFormat": "table",
+  "enumMembersFormat": "table",
+  "propertyMembersFormat": "table",
+  "typeDeclarationFormat": "table",
+  "tableColumnSettings": {
+    "hideDefaults": false,
+    "hideInherited": false,
+    "hideModifiers": false,
+    "hideOverrides": false,
+    "hideSources": false,
+    "leftAlignHeaders": true
+  },
+  "useCodeBlocks": true,
+  "expandObjects": true,
+  "expandParameters": true,
   "hideBreadcrumbs": false,
-  "hideGroupHeadings": false,
-  "publicPath": "/docs/api/",
-  "anchorPrefix": ""
+  "hidePageHeader": false,
+  "hidePageTitle": false,
+  "publicPath": "/docs/api/"
 }

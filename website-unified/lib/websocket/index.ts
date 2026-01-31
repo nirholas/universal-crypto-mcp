@@ -40,6 +40,7 @@ export type {
   PriceSource,
   
   // Transaction types
+  Transaction,
   TransactionStatusType,
   TransactionStatus,
   BalanceChange,

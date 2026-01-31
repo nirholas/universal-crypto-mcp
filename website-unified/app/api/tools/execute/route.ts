@@ -463,7 +463,7 @@ function setCachedResult(key: string, result: unknown): void {
 
 async function handler(request: NextRequest, ctx: RequestContext) {
   const body = await parseBody(request, ExecuteRequestSchema);
-  const { toolId, parameters, options } = body;
+  const { toolId, parameters, options = {} } = body;
   
   // Check if tool exists
   const executor = TOOL_EXECUTORS[toolId];

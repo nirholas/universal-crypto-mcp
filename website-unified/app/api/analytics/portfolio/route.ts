@@ -16,11 +16,9 @@ import {
   createErrorResponse,
   parseQuery,
   setCacheHeaders,
-  ErrorCodes,
 } from '@/lib/api';
-import { APIException, BadRequestError, NotFoundError, ValidationError } from '@/lib/api/errors';
+import { BadRequestError } from '@/lib/api/errors';
 import type { PortfolioSummary, PortfolioHistory, RequestContext } from '@/lib/api';
-import { APIException, BadRequestError, NotFoundError, ValidationError } from '@/lib/api/errors';
 
 export const runtime = 'edge';
 
@@ -50,9 +48,19 @@ const CHAIN_CONFIG: Record<string, { symbol: string; coinGeckoId: string }> = {
 
 const PortfolioQuerySchema = z.object({
   address: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  chains: z.string().optional().transform((v) => v?.split(',') || ['ethereum', 'arbitrum', 'optimism', 'base']),
-  period: z.enum(['24h', '7d', '30d', '90d', '1y', 'all']).optional().default('30d'),
+  chains: z.string().optional(),
+  period: z.enum(['24h', '7d', '30d', '90d', '1y', 'all']).optional(),
 });
+
+type PortfolioQuery = z.infer<typeof PortfolioQuerySchema>;
+
+function parsePortfolioParams(query: PortfolioQuery) {
+  return {
+    address: query.address,
+    chains: query.chains?.split(',') || ['ethereum', 'arbitrum', 'optimism', 'base'],
+    period: query.period || '30d' as const,
+  };
+}
 
 // ============================================================================
 // RPC Helpers
@@ -258,23 +266,21 @@ async function calculatePortfolio(
 // ============================================================================
 
 async function handler(request: NextRequest, context: RequestContext) {
-  const query = parseQuery(request, PortfolioQuerySchema);
+  const rawQuery = parseQuery(request, PortfolioQuerySchema);
+  const query = parsePortfolioParams(rawQuery);
   
   try {
     const validChains = query.chains.filter((c) => CHAIN_CONFIG[c]);
     
     if (validChains.length === 0) {
-      return createErrorResponse(
-        ErrorCodes.VALIDATION_ERROR,
-        `No valid chains specified. Valid chains: ${Object.keys(CHAIN_CONFIG).join(', ')}`,
-        400
-      );
+      throw new BadRequestError(`No valid chains specified. Valid chains: ${Object.keys(CHAIN_CONFIG).join(', ')}`);
     }
     
+    const period = query.period || '7d';
     const { summary, history } = await calculatePortfolio(
       query.address,
       validChains,
-      query.period
+      period
     );
     
     const response = createResponse({
@@ -292,11 +298,7 @@ async function handler(request: NextRequest, context: RequestContext) {
     return response;
   } catch (error) {
     console.error('[API] Portfolio error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch portfolio data',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 

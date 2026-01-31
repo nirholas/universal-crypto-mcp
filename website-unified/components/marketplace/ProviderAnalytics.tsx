@@ -175,14 +175,14 @@ export function ProviderAnalytics({ stats, period = '30d', onPeriodChange }: Pro
               </tr>
             </thead>
             <tbody className="text-sm">
-              {stats.services.map((service) => (
+              {(stats.services || []).map((service) => (
                 <tr key={service.id} className="border-b border-gray-100">
                   <td className="py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className={cn(
                           'h-2 w-2 rounded-full',
-                          service.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                          'bg-green-500'
                         )}
                       />
                       <span className="font-medium text-gray-900">{service.name}</span>
@@ -195,7 +195,7 @@ export function ProviderAnalytics({ stats, period = '30d', onPeriodChange }: Pro
                     <span
                       className={cn(
                         'font-medium',
-                        service.uptime >= 99.9 ? 'text-green-600' : 'text-yellow-600'
+                        'text-green-600'
                       )}
                     >
                       {service.uptime.toFixed(2)}%

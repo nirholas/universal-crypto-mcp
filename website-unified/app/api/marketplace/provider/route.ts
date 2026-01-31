@@ -105,11 +105,7 @@ async function registerHandler(request: NextRequest, ctx: RequestContext) {
     });
   } catch (error) {
     console.error('[API] Provider registration error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to register provider',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 
@@ -123,19 +119,14 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
     new URL(request.url).searchParams.get('walletAddress');
   
   if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-    return createErrorResponse(
-      ErrorCodes.VALIDATION_ERROR,
-      'Valid wallet address is required (via x-wallet-address header or walletAddress query param)',
-      400
-    );
+    throw new BadRequestError('Valid wallet address is required (via x-wallet-address header or walletAddress query param)');
   }
   
   try {
     // Get provider's services
     const services = await getProviderServices(walletAddress as `0x${string}`);
     
-    // Get provider analytics
-    const analytics = await getProviderAnalytics(walletAddress as `0x${string}`);
+    // Calculate analytics from services
     
     // Calculate aggregate stats
     const totalRequests = services.reduce((sum, s) => sum + (s.stats?.totalRequests || 0), 0);
@@ -177,11 +168,11 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
       services: serviceList,
       analytics: {
         last30Days: {
-          requests: analytics?.last30Days?.requests || 0,
-          revenue: analytics?.last30Days?.revenue || '$0',
-          uniqueUsers: analytics?.last30Days?.uniqueUsers || 0,
+          requests: totalRequests,
+          revenue: `$${totalRevenue.toFixed(2)}`,
+          uniqueUsers: 0,
         },
-        topServices: analytics?.topServices || serviceList.slice(0, 5).map(s => ({
+        topServices: serviceList.slice(0, 5).map(s => ({
           id: s.id,
           name: s.name,
           requests: s.stats?.totalRequests || 0,
@@ -192,11 +183,7 @@ async function getHandler(request: NextRequest, ctx: RequestContext) {
     });
   } catch (error) {
     console.error('[API] Provider fetch error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch provider profile',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 

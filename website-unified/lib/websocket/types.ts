@@ -145,6 +145,7 @@ export interface PriceUpdate {
   change: number;
   changePercent: number;
   timestamp: number;
+  source?: string;
 }
 
 export interface PriceBatch {
@@ -225,6 +226,23 @@ export interface TransactionStatus {
   error?: string;
 }
 
+export interface Transaction {
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  chainId: number;
+  status: TransactionStatusType;
+  confirmations?: number;
+  blockNumber?: number;
+  timestamp?: number;
+  gasPrice?: string;
+  gasLimit?: string;
+  gasUsed?: string;
+  nonce?: number;
+  data?: string;
+}
+
 export interface BalanceChange {
   address: string;
   chain: number | string;
@@ -265,7 +283,8 @@ export interface WalletUpdate {
 export interface Block {
   number: number;
   hash: string;
-  chain: string;
+  chain: number;
+  chainId?: number;
   timestamp: number;
   transactionCount: number;
   gasUsed?: string | bigint;
@@ -368,7 +387,8 @@ export type WSEventType =
   | 'error'
   | 'message'
   | 'subscribe'
-  | 'unsubscribe';
+  | 'unsubscribe'
+  | 'quality';
 
 export type EventHandler = (data: unknown) => void;
 

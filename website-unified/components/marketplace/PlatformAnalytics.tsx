@@ -16,10 +16,10 @@ export function PlatformAnalytics({ stats, period = '30d', onPeriodChange }: Pla
   // Category breakdown with mock growth data
   const categoryData: { category: ServiceCategory; services: number; revenue: number; growth: number }[] = [
     { category: 'ai-models', services: 45, revenue: 125000, growth: 34 },
-    { category: 'trading', services: 32, revenue: 98000, growth: 28 },
+    { category: 'trading-signals', services: 32, revenue: 98000, growth: 28 },
     { category: 'market-data', services: 28, revenue: 76000, growth: 22 },
     { category: 'analytics', services: 25, revenue: 65000, growth: 18 },
-    { category: 'smart-contracts', services: 18, revenue: 42000, growth: 15 },
+    { category: 'blockchain-data', services: 18, revenue: 42000, growth: 15 },
   ];
 
   return (

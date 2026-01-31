@@ -18,6 +18,29 @@ import {
   Share2,
 } from 'lucide-react';
 
+// Helper component to render error details with proper type handling
+function ErrorDetails({ details }: { details: unknown }) {
+  if (!details || typeof details !== 'object' || Array.isArray(details)) {
+    return null;
+  }
+  
+  const entries = Object.entries(details as Record<string, unknown>);
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="mt-2 pt-2 border-t border-red-200">
+      <p className="text-xs font-medium text-red-700 mb-1">Details:</p>
+      <ul className="text-xs text-red-600 space-y-0.5">
+        {entries.map(([key, val]) => (
+          <li key={key}>
+            <span className="font-medium">{key}:</span> {String(val)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 interface ExecutionPanelProps {
   tool: McpTool;
   parameters: Record<string, unknown>;
@@ -309,18 +332,7 @@ export function ExecutionPanel({
             <div className="min-w-0 flex-1">
               <p className="font-medium text-red-800">{result.error.code}</p>
               <p className="text-sm text-red-600 mt-1">{result.error.message}</p>
-              {result.error.details && typeof result.error.details === 'object' && (
-                <div className="mt-2 pt-2 border-t border-red-200">
-                  <p className="text-xs font-medium text-red-700 mb-1">Details:</p>
-                  <ul className="text-xs text-red-600 space-y-0.5">
-                    {Object.entries(result.error.details as Record<string, unknown>).map(([key, value]) => (
-                      <li key={key}>
-                        <span className="font-medium">{key}:</span> {String(value)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <ErrorDetails details={result.error.details} />
             </div>
           </div>
         </div>

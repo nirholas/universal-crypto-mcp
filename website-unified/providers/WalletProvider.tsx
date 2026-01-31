@@ -1,8 +1,8 @@
 /**
  * Wallet Provider
  * 
- * Context provider for unified wallet state across EVM and Solana
- * Integrates with wagmi for EVM and Solana wallet adapter for Solana
+ * Enterprise-grade unified wallet management for EVM and Solana
+ * Uses wagmi v2 for EVM chains and Solana wallet adapter for Solana
  * 
  * @author Nich (@nichxbt)
  * @license Apache-2.0
@@ -10,8 +10,8 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { WagmiProvider } from 'wagmi';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
+import { WagmiProvider, useAccount, useConnect, useDisconnect, useSwitchChain, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useWalletStore } from '@/lib/wallets/store';
 import { 
@@ -19,10 +19,17 @@ import {
   ConnectedWallet,
   WalletProviderType,
 } from '@/lib/wallets/types';
-import { getNetworkByChainId } from '@/lib/wallets/networks';
+import { getNetworkByChainId, allNetworks } from '@/lib/wallets/networks';
 import { isWalletInstalled } from '@/lib/wallets/providers';
 import { wagmiConfig } from '@/lib/wallets/wagmi';
-import { detectSolanaWallets, isPhantomInstalled, isSolflareInstalled } from '@/lib/wallets/solana';
+import { 
+  detectSolanaWallets, 
+  isPhantomInstalled, 
+  isSolflareInstalled,
+  connectSolanaWallet,
+  disconnectSolanaWallet,
+  DetectedWallet as SolanaDetectedWallet,
+} from '@/lib/wallets/solana';
 
 // ============================================
 // Context Types
@@ -42,6 +49,12 @@ interface WalletContextValue {
   // Network
   currentNetwork: NetworkConfig | undefined;
   supportedNetworks: NetworkConfig[];
+  chainId: number | undefined;
+  
+  // EVM-specific (from wagmi)
+  evmAddress: `0x${string}` | undefined;
+  evmConnector: any;
+  evmConnectors: readonly any[];
   
   // Actions
   connect: (provider: WalletProviderType) => Promise<void>;
@@ -51,6 +64,7 @@ interface WalletContextValue {
   
   // Provider detection
   isProviderInstalled: (provider: WalletProviderType) => boolean;
+  getDetectedWallets: () => { evm: string[]; solana: string[] };
   
   // Modal controls
   openConnectModal: () => void;
@@ -108,97 +122,139 @@ function InternalWalletProvider({
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // ========================================
+  // Wagmi Hooks - Real EVM wallet connection
+  // ========================================
+  const { 
+    address: evmAddress, 
+    isConnected: evmIsConnected, 
+    isConnecting: evmIsConnecting,
+    isReconnecting: evmIsReconnecting,
+    connector: evmConnector,
+    chainId: evmChainId,
+  } = useAccount();
+  
+  const { 
+    connect: wagmiConnect, 
+    connectors: evmConnectors,
+    isPending: connectIsPending,
+    error: connectError,
+  } = useConnect();
+  
+  const { 
+    disconnect: wagmiDisconnect,
+    isPending: disconnectIsPending,
+  } = useDisconnect();
+  
+  const { 
+    switchChain, 
+    isPending: switchIsPending,
+    error: switchError,
+  } = useSwitchChain();
+
+  // Get current chain ID from wagmi
+  const currentChainId = useChainId();
+
   // Get store values
   const {
-    isConnected,
-    isConnecting,
-    isReconnecting,
-    error,
     wallets,
     activeWallet,
     currentNetwork,
     supportedNetworks,
-    connect,
-    disconnect,
-    switchNetwork,
+    connect: storeConnect,
+    disconnect: storeDisconnect,
+    switchNetwork: storeSwitchNetwork,
     setActiveWallet,
   } = useWalletStore();
 
+  // Derive connection states
+  const isConnecting = evmIsConnecting || connectIsPending;
+  const isReconnecting = evmIsReconnecting;
+  const error = (connectError || switchError) ? new Error(String(connectError || switchError)) : undefined;
+  const isConnected = evmIsConnected || wallets.some(w => w.chainFamily === 'solana');
+
+  // ========================================
+  // Sync wagmi state to Zustand store
+  // ========================================
+  useEffect(() => {
+    if (evmIsConnected && evmAddress && evmConnector) {
+      // Check if this wallet is already in store
+      const existingWallet = wallets.find(w => 
+        w.address.toLowerCase() === evmAddress.toLowerCase()
+      );
+
+      if (!existingWallet) {
+        // Determine provider type from connector name
+        let providerType: WalletProviderType = 'metamask';
+        const connectorName = evmConnector.name.toLowerCase();
+        
+        if (connectorName.includes('walletconnect')) providerType = 'walletconnect';
+        else if (connectorName.includes('coinbase')) providerType = 'coinbase';
+        else if (connectorName.includes('safe')) providerType = 'safe';
+        else if (connectorName.includes('phantom')) providerType = 'phantom';
+        else if (connectorName.includes('rainbow')) providerType = 'rainbow';
+        else if (connectorName.includes('trust')) providerType = 'trust';
+        else if (connectorName.includes('ledger')) providerType = 'ledger';
+        else if (connectorName.includes('trezor')) providerType = 'trezor';
+
+        // Create new wallet entry
+        const newWallet: ConnectedWallet = {
+          id: `evm-${evmAddress.slice(0, 10)}-${Date.now()}`,
+          address: evmAddress,
+          chainId: evmChainId || 1,
+          chainFamily: 'evm',
+          provider: providerType,
+          label: `${evmConnector.name} Wallet`,
+          isActive: true,
+          connectedAt: Date.now(),
+        };
+
+        // Get network config
+        const network = getNetworkByChainId(evmChainId || 1);
+
+        storeConnect(providerType, {
+          wallet: newWallet,
+          network: network || undefined,
+        });
+      }
+
+      // Update current network from wagmi chainId
+      if (evmChainId) {
+        const network = getNetworkByChainId(evmChainId);
+        if (network && (!currentNetwork || currentNetwork.chainId !== evmChainId)) {
+          storeSwitchNetwork(evmChainId, network);
+        }
+      }
+    } else if (!evmIsConnected && activeWallet?.chainFamily === 'evm') {
+      // EVM wallet disconnected
+      storeDisconnect(activeWallet.id);
+    }
+  }, [evmIsConnected, evmAddress, evmConnector, evmChainId]);
+
+  // ========================================
   // Initialize on mount
+  // ========================================
   useEffect(() => {
     if (isInitialized) return;
 
     const initialize = async () => {
       // Set default network if not set
-      if (!currentNetwork) {
+      if (!currentNetwork && defaultNetwork !== undefined && defaultNetwork !== undefined) {
         const defaultNet = getNetworkByChainId(defaultNetwork);
         if (defaultNet) {
           useWalletStore.setState({ currentNetwork: defaultNet });
         }
       }
 
-      // Auto-reconnect if enabled
-      if (autoConnect && wallets.length > 0) {
-        // In a real implementation, this would attempt to reconnect
-        // to previously connected wallets
-      }
-
       setIsInitialized(true);
     };
 
     initialize();
-  }, [isInitialized, autoConnect, defaultNetwork, currentNetwork, wallets.length]);
+  }, [isInitialized, defaultNetwork, currentNetwork]);
 
-  // Handle wallet events
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleAccountsChanged = (accounts: string[]) => {
-      if (accounts.length === 0) {
-        // User disconnected their wallet
-        disconnect();
-      } else if (activeWallet) {
-        // Account changed
-        useWalletStore.setState(state => ({
-          wallets: state.wallets.map(w =>
-            w.id === activeWallet.id ? { ...w, address: accounts[0] } : w
-          ),
-          activeWallet: { ...activeWallet, address: accounts[0] },
-        }));
-      }
-    };
-
-    const handleChainChanged = (chainIdHex: string) => {
-      const chainId = parseInt(chainIdHex, 16);
-      const network = getNetworkByChainId(chainId);
-      
-      if (network) {
-        useWalletStore.setState({ currentNetwork: network });
-        
-        if (activeWallet) {
-          useWalletStore.setState(state => ({
-            wallets: state.wallets.map(w =>
-              w.id === activeWallet.id ? { ...w, chainId } : w
-            ),
-            activeWallet: { ...activeWallet, chainId },
-          }));
-        }
-      }
-    };
-
-    const ethereum = (window as any).ethereum;
-    if (ethereum) {
-      ethereum.on('accountsChanged', handleAccountsChanged);
-      ethereum.on('chainChanged', handleChainChanged);
-
-      return () => {
-        ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        ethereum.removeListener('chainChanged', handleChainChanged);
-      };
-    }
-  }, [activeWallet, disconnect]);
-
+  // ========================================
   // Provider detection with enhanced checks
+  // ========================================
   const isProviderInstalled = useCallback((provider: WalletProviderType) => {
     // Check using our provider detection utilities
     if (provider === 'phantom') return isPhantomInstalled();
@@ -206,7 +262,27 @@ function InternalWalletProvider({
     return isWalletInstalled(provider);
   }, []);
 
+  // Get all detected wallets
+  const getDetectedWallets = useCallback(() => {
+    const evm: string[] = [];
+    const solana: string[] = [];
+
+    // Check EVM wallets
+    if (isWalletInstalled('metamask')) evm.push('metamask');
+    if (isWalletInstalled('coinbase')) evm.push('coinbase');
+    if (isWalletInstalled('trust')) evm.push('trust');
+    if (isWalletInstalled('rainbow')) evm.push('rainbow');
+    
+    // Check Solana wallets
+    if (isPhantomInstalled()) solana.push('phantom');
+    if (isSolflareInstalled()) solana.push('solflare');
+
+    return { evm, solana };
+  }, []);
+
+  // ========================================
   // Modal controls
+  // ========================================
   const openConnectModal = useCallback(() => {
     setIsConnectModalOpen(true);
   }, []);
@@ -215,31 +291,176 @@ function InternalWalletProvider({
     setIsConnectModalOpen(false);
   }, []);
 
-  // Enhanced connect that closes modal on success
+  // ========================================
+  // Connect handler - Real wallet connection
+  // ========================================
   const handleConnect = useCallback(async (provider: WalletProviderType) => {
     try {
-      await connect(provider);
+      // Determine if this is an EVM or Solana provider
+      const solanaProviders: WalletProviderType[] = ['phantom', 'solflare'];
+      const isSolanaProvider = solanaProviders.includes(provider);
+
+      if (isSolanaProvider) {
+        // Detect Solana wallets and find the one matching the provider
+        const detectedWallets = detectSolanaWallets();
+        const solanaWallet = detectedWallets.find(w => 
+          w.name.toLowerCase().includes(provider)
+        );
+        
+        if (!solanaWallet) {
+          throw new Error(`${provider} wallet not detected. Please install the wallet extension.`);
+        }
+        
+        // Connect Solana wallet using our Solana adapter
+        const result = await connectSolanaWallet(solanaWallet);
+        
+        if (result) {
+          const newWallet: ConnectedWallet = {
+            id: `solana-${result.publicKey.slice(0, 10)}-${Date.now()}`,
+            address: result.publicKey,
+            chainId: 'solana-mainnet',
+            chainFamily: 'solana',
+            provider: provider,
+            label: `${provider.charAt(0).toUpperCase() + provider.slice(1)} Wallet`,
+            isActive: true,
+            connectedAt: Date.now(),
+          };
+
+          const network = getNetworkByChainId('solana-mainnet');
+          storeConnect(provider, {
+            wallet: newWallet,
+            network: network || undefined,
+          });
+        }
+      } else {
+        // Connect EVM wallet using wagmi
+        // Find the appropriate connector
+        let connector = evmConnectors.find(c => {
+          const name = c.name.toLowerCase();
+          switch (provider) {
+            case 'metamask': return name.includes('metamask') || c.id === 'injected';
+            case 'walletconnect': return name.includes('walletconnect');
+            case 'coinbase': return name.includes('coinbase');
+            case 'safe': return name.includes('safe');
+            default: return name.includes(provider);
+          }
+        });
+
+        // Fallback to injected connector for unknown providers
+        if (!connector) {
+          connector = evmConnectors.find(c => c.id === 'injected');
+        }
+
+        if (connector) {
+          wagmiConnect({ connector });
+        } else {
+          throw new Error(`No connector found for provider: ${provider}`);
+        }
+      }
+
       closeConnectModal();
     } catch (err) {
       console.error('Connection failed:', err);
       throw err;
     }
-  }, [connect, closeConnectModal]);
+  }, [evmConnectors, wagmiConnect, storeConnect, closeConnectModal]);
 
+  // ========================================
+  // Disconnect handler
+  // ========================================
+  const handleDisconnect = useCallback(async (walletId?: string) => {
+    try {
+      const walletToDisconnect = walletId 
+        ? wallets.find(w => w.id === walletId)
+        : activeWallet;
+
+      if (!walletToDisconnect) return;
+
+      if (walletToDisconnect.chainFamily === 'solana') {
+        // Detect Solana wallets and find the one matching the provider
+        const detectedWallets = detectSolanaWallets();
+        const solanaWallet = detectedWallets.find(w => 
+          w.name.toLowerCase().includes(walletToDisconnect.provider)
+        );
+        
+        if (solanaWallet) {
+          await disconnectSolanaWallet(solanaWallet);
+        }
+        storeDisconnect(walletToDisconnect.id);
+      } else {
+        // Disconnect EVM wallet using wagmi
+        wagmiDisconnect();
+        storeDisconnect(walletToDisconnect.id);
+      }
+    } catch (err) {
+      console.error('Disconnect failed:', err);
+      throw err;
+    }
+  }, [wallets, activeWallet, wagmiDisconnect, storeDisconnect]);
+
+  // ========================================
+  // Switch network handler
+  // ========================================
+  const handleSwitchNetwork = useCallback(async (chainId: number | string) => {
+    try {
+      const network = getNetworkByChainId(chainId);
+      
+      if (!network) {
+        throw new Error(`Network not found for chainId: ${chainId}`);
+      }
+
+      if (network.family === 'evm' && typeof chainId === 'number') {
+        // Use wagmi to switch EVM chains
+        switchChain({ chainId });
+      } else if (network.family === 'solana') {
+        // Solana doesn't have network switching in the same way
+        // Just update the store
+        storeSwitchNetwork(chainId, network);
+      } else {
+        // For other chains, just update the store
+        storeSwitchNetwork(chainId, network);
+      }
+    } catch (err) {
+      console.error('Network switch failed:', err);
+      throw err;
+    }
+  }, [switchChain, storeSwitchNetwork]);
+
+  // ========================================
+  // Build context value
+  // ========================================
   const value: WalletContextValue = {
+    // Connection state
     isConnected,
     isConnecting,
     isReconnecting,
     error,
+    
+    // Wallets
     wallets,
     activeWallet,
+    
+    // Network
     currentNetwork,
     supportedNetworks,
+    chainId: evmChainId || currentChainId,
+    
+    // EVM-specific
+    evmAddress,
+    evmConnector,
+    evmConnectors,
+    
+    // Actions
     connect: handleConnect,
-    disconnect,
-    switchNetwork,
+    disconnect: handleDisconnect,
+    switchNetwork: handleSwitchNetwork,
     setActiveWallet,
+    
+    // Provider detection
     isProviderInstalled,
+    getDetectedWallets,
+    
+    // Modal controls
     openConnectModal,
     closeConnectModal,
     isConnectModalOpen,

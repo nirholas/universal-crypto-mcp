@@ -74,12 +74,25 @@ const CHAIN_IDS: Record<string, number> = {
 
 const TransactionsQuerySchema = z.object({
   address: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  chain: z.string().optional().default('ethereum'),
-  type: z.enum(['all', 'transfer', 'swap', 'approve', 'contract']).optional().default('all'),
-  status: z.enum(['all', 'pending', 'confirmed', 'failed']).optional().default('all'),
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  chain: z.string().optional(),
+  type: z.enum(['all', 'transfer', 'swap', 'approve', 'contract']).optional(),
+  status: z.enum(['all', 'pending', 'confirmed', 'failed']).optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
+
+type TransactionsQuery = z.infer<typeof TransactionsQuerySchema>;
+
+function parseTransactionsParams(query: TransactionsQuery) {
+  return {
+    address: query.address,
+    chain: query.chain || 'ethereum',
+    type: query.type || 'all' as const,
+    status: query.status || 'all' as const,
+    page: query.page || 1,
+    limit: query.limit || 20,
+  };
+}
 
 const BuildTransactionSchema = z.object({
   chain: z.string(),
@@ -265,7 +278,8 @@ async function estimateGas(chain: string, from: string, to: string, value?: stri
 // ============================================================================
 
 async function listHandler(request: NextRequest, ctx: RequestContext) {
-  const query = parseQuery(request, TransactionsQuerySchema);
+  const rawQuery = parseQuery(request, TransactionsQuerySchema);
+  const query = parseTransactionsParams(rawQuery);
   
   try {
     const { transactions, total } = await fetchTransactionHistory(
@@ -309,11 +323,7 @@ async function listHandler(request: NextRequest, ctx: RequestContext) {
     return response;
   } catch (error) {
     console.error('[API] Transaction list error:', error);
-    return createErrorResponse(
-      ErrorCodes.EXTERNAL_SERVICE_ERROR,
-      error instanceof Error ? error.message : 'Failed to fetch transaction history',
-      502
-    );
+    return createErrorResponse(error);
   }
 }
 
@@ -378,11 +388,7 @@ async function buildHandler(request: NextRequest, ctx: RequestContext) {
     });
   } catch (error) {
     console.error('[API] Transaction build error:', error);
-    return createErrorResponse(
-      ErrorCodes.INTERNAL_ERROR,
-      error instanceof Error ? error.message : 'Failed to build transaction',
-      500
-    );
+    return createErrorResponse(error);
   }
 }
 

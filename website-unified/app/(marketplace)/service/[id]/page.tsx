@@ -8,6 +8,7 @@ import { useService, useReviews } from '@/lib/marketplace/hooks';
 import { ReputationBadge, VerificationBadges, TrustIndicators } from '@/components/marketplace/ReputationBadge';
 import { StatusIndicator } from '@/components/marketplace/StatusIndicator';
 import { SubscriptionFlow } from '@/components/marketplace/SubscriptionFlow';
+import type { ServiceBadge, SubscriptionTier } from '@/lib/marketplace/types';
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -72,7 +73,7 @@ export default function ServiceDetailPage() {
                 <StatusIndicator online={service.isOnline} showLabel />
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                {service.badges.map((badge) => (
+                {service.badges.map((badge: ServiceBadge) => (
                   <span
                     key={badge.id}
                     className={cn(
@@ -135,7 +136,7 @@ export default function ServiceDetailPage() {
                   <p className="text-gray-600 whitespace-pre-line">{service.description}</p>
                   
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {service.tags.map((tag) => (
+                    {service.tags.map((tag: string) => (
                       <span key={tag} className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600">
                         {tag}
                       </span>
@@ -197,7 +198,7 @@ console.log(data);`}</code>
 
                 {service.pricing.subscription?.plans && (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {service.pricing.subscription.plans.map((plan, index) => (
+                    {service.pricing.subscription.plans.map((plan: SubscriptionTier, index: number) => (
                       <div
                         key={plan.name}
                         className={cn(
@@ -219,7 +220,7 @@ console.log(data);`}</code>
                           {plan.requestsIncluded.toLocaleString()} requests included
                         </p>
                         <ul className="mt-4 space-y-2">
-                          {plan.features.map((feature) => (
+                          {plan.features.map((feature: string) => (
                             <li key={feature} className="flex items-center gap-2 text-sm text-gray-600">
                               <span className="text-green-500">✓</span>
                               {feature}

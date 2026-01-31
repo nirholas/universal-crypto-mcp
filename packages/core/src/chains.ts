@@ -1,5 +1,23 @@
 /**
  * Chain configurations for Universal Crypto MCP
+ * 
+ * This module provides comprehensive chain configuration for all supported
+ * EVM-compatible networks. It uses CAIP-2 identifiers for chain addressing
+ * and integrates with viem for chain definitions.
+ * 
+ * @module @universal-crypto-mcp/core/chains
+ * @category Core
+ * 
+ * @example
+ * ```typescript
+ * import { getChain, getChainName, getTxExplorerUrl } from '@universal-crypto-mcp/core';
+ * 
+ * const base = getChain('eip155:8453');
+ * console.log(getChainName('eip155:8453')); // "Base"
+ * 
+ * const txUrl = getTxExplorerUrl('eip155:1', '0x1234...');
+ * console.log(txUrl); // "https://etherscan.io/tx/0x1234..."
+ * ```
  */
 
 import { defineChain } from "viem";
