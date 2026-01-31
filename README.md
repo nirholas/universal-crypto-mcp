@@ -87,10 +87,6 @@ Claude: 🔍 Checking x402 balance... $45.23 USDs
 
 > ⭐ **If you find this useful, please star the repo!** It helps others discover this project.
 
-<p align="center">
-  <a href="https://x.com/nichxbt"><img src="https://img.shields.io/badge/𝕏-Follow-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow on X"></a>
-</p>
-
 ---
 
 A Universal Model Context Protocol server for all EVM-compatible networks + Solana.
@@ -1759,6 +1755,9 @@ US-regulated exchange with:
 ## Credits
 
 Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github.com/nirholas))
+<p align="center">
+  <a href="https://x.com/nichxbt"><img src="https://img.shields.io/badge/𝕏-Follow-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow on X"></a>
+</p>
 
 ---
 
