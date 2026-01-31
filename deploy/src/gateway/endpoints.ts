@@ -2248,3 +2248,4 @@ export function generateApiDocs(registry: EndpointRegistry): object {
 }
 
 export default EndpointRegistry;
+
