@@ -177,3 +177,4 @@ Building at the intersection of AI and crypto? Let's chat.
 ```html
 <img src="https://github-readme-stats.vercel.app/api/wakatime?username=nirholas&theme=dark&hide_border=true" alt="Wakatime Stats" />
 ```
+
