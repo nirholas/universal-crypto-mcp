@@ -408,8 +408,6 @@ export class x402Gateway {
       const prefixedHash = crypto.createHash('sha256')
         .update(Buffer.concat([prefix, messageHash]))
         .digest();
-
-      // Parse signature components (remove 0x if present)
       const sigHex = signature.startsWith('0x') ? signature.slice(2) : signature;
       if (sigHex.length !== 130) {
         Logger.warn('Invalid signature length', { length: sigHex.length });
@@ -428,8 +426,6 @@ export class x402Gateway {
 
       // Use viem for proper signature recovery
       const { recoverMessageAddress } = await import('viem');
-
-      
       try {
         const recoveredAddress = await recoverMessageAddress({
           message: { raw: messageHash },
@@ -482,14 +478,14 @@ export class x402Gateway {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { message?: string };
         return { success: false, error: error.message || 'Settlement failed' };
       }
 
-      const result = await response.json();
+      const result = await response.json() as { transactionHash: string };
       return { success: true, txHash: result.transactionHash };
     } catch (error) {
-      Logger.error('Facilitator settlement error:', error);
+      Logger.error('Facilitator settlement error:', error as Error);
       // In production, we might still accept if facilitator is down
       // but payment was pre-verified on-chain
       return { success: true }; // Graceful degradation
