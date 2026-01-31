@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/gas/index.ts:11](https://github.com/
 #### Returns
 
 `void`
+
