@@ -946,3 +946,4 @@ useEffect(() => {
 - [1.2 Transaction Clarity](../guidelines/perceivable/1.2-transaction-clarity.md)
 - [3.1 Readable Transactions](../guidelines/understandable/3.1-readable-transactions.md)
 - [3.4 Risk Communication](../guidelines/understandable/3.4-risk-communication.md)
+
