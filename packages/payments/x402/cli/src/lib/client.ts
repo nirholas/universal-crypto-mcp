@@ -110,6 +110,46 @@ const ERC20_ABI = [
 ] as const;
 
 /**
+ * EIP-3009 ABI for gasless transfers
+ */
+const EIP3009_ABI = [
+  {
+    name: 'transferWithAuthorization',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'validAfter', type: 'uint256' },
+      { name: 'validBefore', type: 'uint256' },
+      { name: 'nonce', type: 'bytes32' },
+      { name: 'v', type: 'uint8' },
+      { name: 'r', type: 'bytes32' },
+      { name: 's', type: 'bytes32' },
+    ],
+    outputs: [],
+  },
+  {
+    name: 'authorizationState',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'authorizer', type: 'address' },
+      { name: 'nonce', type: 'bytes32' },
+    ],
+    outputs: [{ type: 'bool' }],
+  },
+  {
+    name: 'DOMAIN_SEPARATOR',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'bytes32' }],
+  },
+] as const;
+
+/**
  * X402 CLI Client
  */
 export class X402CLIClient {
@@ -275,13 +315,58 @@ export class X402CLIClient {
       let hash: Hash;
 
       if (options.gasless && token === 'USDs') {
-        // TODO: Implement EIP-3009 gasless transfer
-        // For now, fall back to regular transfer
+        // EIP-3009 gasless transfer using transferWithAuthorization
+        // This allows meta-transactions where a relayer pays gas
+        const validAfter = 0n;
+        const validBefore = BigInt(Math.floor(Date.now() / 1000) + 3600); // 1 hour validity
+        const nonce = `0x${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}` as `0x${string}`;
+        
+        // Sign the authorization
+        const domain = {
+          name: 'USDs',
+          version: '1',
+          chainId: this.network === 'arbitrum' ? 42161 : 421614,
+          verifyingContract: tokenConfig.address,
+        };
+
+        const types = {
+          TransferWithAuthorization: [
+            { name: 'from', type: 'address' },
+            { name: 'to', type: 'address' },
+            { name: 'value', type: 'uint256' },
+            { name: 'validAfter', type: 'uint256' },
+            { name: 'validBefore', type: 'uint256' },
+            { name: 'nonce', type: 'bytes32' },
+          ],
+        };
+
+        const message = {
+          from: this.walletAddress!,
+          to: recipient,
+          value: amount,
+          validAfter,
+          validBefore,
+          nonce,
+        };
+
+        const signature = await this.walletClient.signTypedData({
+          domain,
+          types,
+          primaryType: 'TransferWithAuthorization',
+          message,
+        });
+
+        // Parse signature components
+        const r = `0x${signature.slice(2, 66)}` as `0x${string}`;
+        const s = `0x${signature.slice(66, 130)}` as `0x${string}`;
+        const v = parseInt(signature.slice(130, 132), 16);
+
+        // Execute the gasless transfer (relayer would do this in production)
         hash = await this.walletClient.writeContract({
           address: tokenConfig.address,
-          abi: ERC20_ABI,
-          functionName: 'transfer',
-          args: [recipient, amount],
+          abi: EIP3009_ABI,
+          functionName: 'transferWithAuthorization',
+          args: [this.walletAddress!, recipient, amount, validAfter, validBefore, nonce, v, r, s],
         });
       } else {
         hash = await this.walletClient.writeContract({

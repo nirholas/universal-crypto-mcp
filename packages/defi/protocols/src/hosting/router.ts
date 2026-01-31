@@ -46,51 +46,85 @@ export interface ServerSession {
 }
 
 // ============================================================================
-// Database Interface (mock - replace with actual DB in production)
+// Database Interface (using PostgreSQL with Drizzle ORM)
 // ============================================================================
 
-// In-memory storage for development (replace with PostgreSQL/Prisma in production)
-const hostedServersDB = new Map<string, HostedMCPServer>()
-const usageLogsDB: UsageLog[] = []
+import { ServerRepository, ToolRepository, UsageLogRepository } from './db.js';
 
 /**
  * Get hosted server config by subdomain
- * In production, this queries the database
+ * Queries the PostgreSQL database
  */
 export async function getServerBySubdomain(subdomain: string): Promise<HostedMCPServer | null> {
-  // Database query via drizzle
-  // Example: return await prisma.hostedMCPServer.findUnique({ where: { subdomain } })
-  return hostedServersDB.get(subdomain) || null
+  const server = await ServerRepository.findBySubdomain(subdomain);
+  if (!server) return null;
+  
+  // Get tools for this server
+  const tools = await ToolRepository.findByServer(server.id);
+  
+  return {
+    id: server.id,
+    ownerId: server.ownerId,
+    name: server.name,
+    subdomain: server.subdomain,
+    description: server.description || undefined,
+    source: {
+      type: server.sourceType as 'github' | 'upload' | 'registry',
+      url: server.sourceUrl || undefined,
+      config: server.sourceConfig as Record<string, unknown> | undefined,
+    },
+    pricing: {
+      model: 'per-call',
+      payoutAddress: '0x0000000000000000000000000000000000000000', // TODO: Add to DB schema
+    },
+    tools: tools.map(t => ({
+      name: t.name,
+      description: t.description || '',
+      inputSchema: t.inputSchema as Record<string, unknown>,
+      price: t.price || '0',
+      isPaid: t.isPaid,
+      type: t.toolType as 'http' | 'proxy' | 'code',
+      endpoint: t.endpoint || undefined,
+      proxyTarget: t.proxyTarget || undefined,
+      code: t.code || undefined,
+    })),
+    isActive: server.isActive,
+    isPublic: server.isPublic,
+    totalCalls: server.totalCalls,
+    callsThisMonth: server.callsThisMonth,
+    createdAt: server.createdAt,
+    updatedAt: server.updatedAt,
+  };
 }
 
 /**
  * Increment call count for a server
  */
 export async function incrementCallCount(serverId: string): Promise<void> {
-  // Database update via drizzle
-  const server = Array.from(hostedServersDB.values()).find(s => s.id === serverId)
-  if (server) {
-    server.totalCalls++
-    server.callsThisMonth++
-    server.updatedAt = new Date()
-  }
+  await ServerRepository.incrementCallCount(serverId);
 }
 
 /**
  * Log usage to database
  */
 export async function logUsage(log: Omit<UsageLog, 'id'>): Promise<void> {
-  const usageLog: UsageLog = {
-    ...log,
-    id: randomUUID(),
-  }
-  usageLogsDB.push(usageLog)
+  await UsageLogRepository.create({
+    serverId: log.serverId,
+    toolName: log.toolName,
+    userId: log.userId,
+    callerAddress: log.walletAddress,
+    paymentAmount: log.paymentAmount,
+    paymentTxHash: log.paymentHash,
+    success: log.success,
+    errorMessage: log.error,
+    durationMs: log.durationMs,
+  });
   
   Logger.debug("Usage logged", {
     serverId: log.serverId,
     toolName: log.toolName,
     success: log.success,
-  })
+  });
 }
 
 // ============================================================================

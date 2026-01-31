@@ -186,18 +186,77 @@ function createAlert(
 
 /**
  * Send alert notification (webhook, email, etc.)
- * This is a placeholder - implement your notification method
+ * Supports Discord, Telegram, Slack, and custom webhooks
  */
 async function sendNotification(alert: Alert): Promise<void> {
-  // TODO: Implement notification sending
-  // Examples:
-  // - Discord webhook
-  // - Telegram bot
-  // - Email via SendGrid
-  // - Slack webhook
-  
-  if (alert.level === "critical") {
-    console.log(chalk.red(`[NOTIFICATION] Would send critical alert: ${alert.title}`))
+  const webhookUrl = process.env.ALERT_WEBHOOK_URL;
+  const discordWebhook = process.env.DISCORD_WEBHOOK_URL;
+  const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+  const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+
+  // Discord notification
+  if (discordWebhook) {
+    try {
+      const color = alert.level === 'critical' ? 0xff0000 : 
+                    alert.level === 'warning' ? 0xffa500 : 0x00ff00;
+      await fetch(discordWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          embeds: [{
+            title: `🚨 ${alert.title}`,
+            description: alert.message,
+            color,
+            fields: alert.data ? Object.entries(alert.data).map(([name, value]) => ({
+              name,
+              value: String(value),
+              inline: true,
+            })) : [],
+            timestamp: new Date(alert.timestamp).toISOString(),
+          }],
+        }),
+      });
+    } catch (err) {
+      console.error('Discord notification failed:', err);
+    }
+  }
+
+  // Telegram notification
+  if (telegramToken && telegramChatId) {
+    try {
+      const emoji = alert.level === 'critical' ? '🔴' : 
+                    alert.level === 'warning' ? '🟠' : '🟢';
+      const text = `${emoji} *${alert.title}*\n\n${alert.message}`;
+      await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: telegramChatId,
+          text,
+          parse_mode: 'Markdown',
+        }),
+      });
+    } catch (err) {
+      console.error('Telegram notification failed:', err);
+    }
+  }
+
+  // Generic webhook
+  if (webhookUrl) {
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alert),
+      });
+    } catch (err) {
+      console.error('Webhook notification failed:', err);
+    }
+  }
+
+  // Console fallback for critical alerts
+  if (alert.level === "critical" && !discordWebhook && !telegramToken && !webhookUrl) {
+    console.log(chalk.red(`[NOTIFICATION] Critical alert: ${alert.title}`));
   }
 }
 

@@ -13,6 +13,120 @@
 import Logger from "@/utils/logger.js"
 import { PLATFORM_FEE_PERCENTAGE, calculatePayout } from "./types.js"
 import type { SupportedChainId } from "@/x402/verify.js"
+import { createWalletClient, createPublicClient, http, parseUnits, encodeFunctionData } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
+import { base, mainnet, arbitrum, optimism, polygon } from "viem/chains"
+
+// USDC Contract addresses by chain
+const USDC_ADDRESSES: Record<number, `0x${string}`> = {
+  1: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",     // Ethereum Mainnet
+  8453: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",  // Base
+  42161: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // Arbitrum One
+  10: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",    // Optimism
+  137: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",   // Polygon
+}
+
+const CHAIN_CONFIGS: Record<number, { chain: typeof base; rpc: string }> = {
+  1: { chain: mainnet, rpc: process.env.RPC_ETHEREUM || "https://eth.llamarpc.com" },
+  8453: { chain: base, rpc: process.env.RPC_BASE || "https://mainnet.base.org" },
+  42161: { chain: arbitrum, rpc: process.env.RPC_ARBITRUM || "https://arb1.arbitrum.io/rpc" },
+  10: { chain: optimism, rpc: process.env.RPC_OPTIMISM || "https://mainnet.optimism.io" },
+  137: { chain: polygon, rpc: process.env.RPC_POLYGON || "https://polygon-rpc.com" },
+}
+
+// ERC20 Transfer ABI
+const ERC20_ABI = [
+  {
+    name: "transfer",
+    type: "function",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+] as const
+
+/**
+ * Execute USDC payout to a creator address
+ */
+async function executeUSDCPayout(
+  recipientAddress: `0x${string}`,
+  amountUSD: number,
+  chainId: SupportedChainId
+): Promise<string | null> {
+  try {
+    const chainConfig = CHAIN_CONFIGS[chainId]
+    const usdcAddress = USDC_ADDRESSES[chainId]
+    
+    if (!chainConfig || !usdcAddress) {
+      Logger.error("Revenue: Unsupported chain for payout", { chainId })
+      return null
+    }
+    
+    const payoutPrivateKey = process.env.PAYOUT_PRIVATE_KEY
+    if (!payoutPrivateKey) {
+      Logger.error("Revenue: PAYOUT_PRIVATE_KEY not configured")
+      return null
+    }
+    
+    const account = privateKeyToAccount(payoutPrivateKey as `0x${string}`)
+    
+    const publicClient = createPublicClient({
+      chain: chainConfig.chain,
+      transport: http(chainConfig.rpc),
+    })
+    
+    const walletClient = createWalletClient({
+      account,
+      chain: chainConfig.chain,
+      transport: http(chainConfig.rpc),
+    })
+    
+    // USDC has 6 decimals
+    const amount = parseUnits(amountUSD.toFixed(6), 6)
+    
+    // Encode transfer call
+    const data = encodeFunctionData({
+      abi: ERC20_ABI,
+      functionName: "transfer",
+      args: [recipientAddress, amount],
+    })
+    
+    // Send transaction
+    const hash = await walletClient.sendTransaction({
+      to: usdcAddress,
+      data,
+      value: 0n,
+    })
+    
+    // Wait for confirmation
+    const receipt = await publicClient.waitForTransactionReceipt({
+      hash,
+      confirmations: 1,
+    })
+    
+    if (receipt.status === "success") {
+      Logger.info("Revenue: USDC payout successful", {
+        recipient: recipientAddress,
+        amount: amountUSD,
+        txHash: hash,
+        chain: chainId,
+      })
+      return hash
+    }
+    
+    Logger.error("Revenue: USDC payout transaction reverted", { hash })
+    return null
+  } catch (error) {
+    Logger.error("Revenue: USDC payout failed", {
+      error: error instanceof Error ? error.message : String(error),
+      recipient: recipientAddress,
+      amount: amountUSD,
+    })
+    return null
+  }
+}
 
 // ============================================================================
 // Type Definitions
@@ -516,14 +630,24 @@ export async function processPayouts(
         continue
       }
       
-      // USDC transfer via processRefund()
-      // This would require a signer/wallet and proper transaction handling
-      // For now, we'll mark payments as paid out without sending
-      
-      Logger.warn(
-        `Revenue: Payout processing not fully implemented. ` +
-        `Would send $${payout.pendingAmount.toFixed(2)} to ${payout.payoutAddress}`
+      // Execute USDC transfer on-chain
+      const txHash = await executeUSDCPayout(
+        payout.payoutAddress as `0x${string}`,
+        payout.pendingAmount,
+        chain
       )
+      
+      if (!txHash) {
+        results.push({
+          userId: payout.userId,
+          amount: payout.pendingAmount,
+          txHash: "",
+          chain,
+          status: "failed",
+          error: "USDC transfer failed",
+        })
+        continue
+      }
       
       // Mark payments as paid out
       for (const payment of paymentRecords.values()) {
@@ -540,13 +664,13 @@ export async function processPayouts(
       results.push({
         userId: payout.userId,
         amount: payout.pendingAmount,
-        txHash: "0x" + "0".repeat(64), // Placeholder
+        txHash,
         chain,
         status: "success",
       })
       
       Logger.info(
-        `Revenue: Processed payout for user ${payout.userId} - $${payout.pendingAmount.toFixed(2)}`
+        `Revenue: Processed payout for user ${payout.userId} - $${payout.pendingAmount.toFixed(2)} - tx: ${txHash}`
       )
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)

@@ -177,10 +177,92 @@ async function executeHttpTool(endpoint: string, args: Record<string, unknown>):
 
 /**
  * Execute proxy tool - forward to another MCP server
+ * Implements MCP-to-MCP proxy for distributed tool execution
  */
 async function executeProxyTool(target: string, args: Record<string, unknown>): Promise<unknown> {
-  // TODO: Implement MCP-to-MCP proxy
-  throw new Error("Proxy tools not yet implemented")
+  // Parse target URL - format: mcp://server:port/tool or https://server/mcp
+  const targetUrl = new URL(target);
+  const isMcpProtocol = targetUrl.protocol === 'mcp:';
+  
+  // Build the JSON-RPC request for MCP
+  const mcpRequest = {
+    jsonrpc: '2.0',
+    id: crypto.randomUUID(),
+    method: 'tools/call',
+    params: {
+      name: targetUrl.pathname.slice(1), // Remove leading slash
+      arguments: args,
+    },
+  };
+
+  // For MCP protocol, use WebSocket; for HTTPS, use fetch
+  if (isMcpProtocol) {
+    return executeMcpWebSocketCall(targetUrl, mcpRequest);
+  }
+  
+  // HTTP-based MCP server
+  const response = await fetch(target, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(mcpRequest),
+    signal: AbortSignal.timeout(30000), // 30s timeout
+  });
+
+  if (!response.ok) {
+    throw new Error(`MCP proxy failed: ${response.status} ${response.statusText}`);
+  }
+
+  const result = await response.json() as { result?: unknown; error?: { message: string } };
+  
+  if (result.error) {
+    throw new Error(`MCP proxy error: ${result.error.message}`);
+  }
+
+  return result.result;
+}
+
+/**
+ * Execute MCP call over WebSocket for mcp:// protocol
+ */
+async function executeMcpWebSocketCall(
+  target: URL, 
+  request: { jsonrpc: string; id: string; method: string; params: unknown }
+): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    const wsUrl = `ws://${target.host}${target.pathname}`;
+    const ws = new WebSocket(wsUrl);
+    const timeout = setTimeout(() => {
+      ws.close();
+      reject(new Error('MCP WebSocket timeout'));
+    }, 30000);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify(request));
+    };
+
+    ws.onmessage = (event) => {
+      clearTimeout(timeout);
+      try {
+        const data = JSON.parse(event.data as string) as { result?: unknown; error?: { message: string } };
+        ws.close();
+        if (data.error) {
+          reject(new Error(`MCP error: ${data.error.message}`));
+        } else {
+          resolve(data.result);
+        }
+      } catch (e) {
+        reject(new Error(`Invalid MCP response: ${e}`));
+      }
+    };
+
+    ws.onerror = (error) => {
+      clearTimeout(timeout);
+      reject(new Error(`MCP WebSocket error: ${error}`));
+    };
+  });
 }
 
 /**
@@ -259,8 +341,65 @@ export async function routeToHostedServer(
     }
   }
   
-  // TODO: Route the request through the server
-  return { error: "Not implemented" }
+  // Extract request type and parameters
+  const req = request as { method?: string; params?: Record<string, unknown> };
+  const method = req.method || 'unknown';
+  const params = req.params || {};
+
+  try {
+    // Route based on MCP request type
+    switch (method) {
+      case 'tools/list':
+        // Return available tools from the server
+        const tools = server.getTools ? await server.getTools() : [];
+        return { tools };
+
+      case 'tools/call':
+        // Execute a tool on the server
+        const toolName = params.name as string;
+        const toolArgs = params.arguments as Record<string, unknown>;
+        
+        if (!toolName) {
+          return { error: "Tool name required", code: 400 };
+        }
+
+        // Find and execute the tool
+        const result = await server.callTool(toolName, toolArgs);
+        return { result };
+
+      case 'resources/list':
+        // Return available resources
+        const resources = server.getResources ? await server.getResources() : [];
+        return { resources };
+
+      case 'resources/read':
+        // Read a resource
+        const uri = params.uri as string;
+        if (!uri) {
+          return { error: "Resource URI required", code: 400 };
+        }
+        const resource = await server.readResource(uri);
+        return { resource };
+
+      case 'prompts/list':
+        // Return available prompts
+        const prompts = server.getPrompts ? await server.getPrompts() : [];
+        return { prompts };
+
+      default:
+        return {
+          error: "Unknown method",
+          code: 400,
+          message: `Method '${method}' is not supported`
+        };
+    }
+  } catch (error) {
+    return {
+      error: "Execution failed",
+      code: 500,
+      message: String(error)
+    };
+  }
 }
 
 export default {

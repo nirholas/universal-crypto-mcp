@@ -6,30 +6,15 @@
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import Logger from '@/utils/logger.js';
+import { UserRepository, ApiKeyRepository } from './db.js';
 import type { MCPHostingUser } from './types.js';
 
 // JWT configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'agenti-mcp-hosting-secret-change-in-production';
 const JWT_EXPIRES_IN = '7d';
 const BCRYPT_ROUNDS = 12;
-
-// Database storage via drizzle-orm
-// In-memory user storage for development
-const users = new Map<string, StoredUser>();
-const usersByEmail = new Map<string, string>(); // email -> id mapping
-
-interface StoredUser {
-  id: string;
-  email: string;
-  username: string;
-  passwordHash: string;
-  tier: 'free' | 'pro' | 'business' | 'enterprise';
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export interface AuthUser {
   id: string;
@@ -86,8 +71,9 @@ export async function signUp(
     throw new Error('Invalid email format');
   }
 
-  // Check if email already exists
-  if (usersByEmail.has(email.toLowerCase())) {
+  // Check if email already exists (database query)
+  const existingUser = await UserRepository.findByEmail(email);
+  if (existingUser) {
     throw new Error('Email already registered');
   }
 
@@ -99,32 +85,39 @@ export async function signUp(
   // Hash password
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  // Create user
-  const id = generateUserId();
+  // Generate username if not provided
   const finalUsername = username || generateUsername(email);
-  const now = new Date();
 
-  const user: StoredUser = {
-    id,
+  // Check username availability
+  const existingUsername = await UserRepository.findByUsername(finalUsername);
+  if (existingUsername) {
+    throw new Error('Username already taken');
+  }
+
+  // Create user in database
+  const user = await UserRepository.create({
     email: email.toLowerCase(),
     username: finalUsername,
     passwordHash,
     tier: 'free',
-    createdAt: now,
-    updatedAt: now,
-  };
+  });
 
-  // Store user
-  users.set(id, user);
-  usersByEmail.set(email.toLowerCase(), id);
-
-  Logger.info('User signed up', { userId: id, email: user.email });
+  Logger.info('User signed up', { userId: user.id, email: user.email });
 
   // Generate token
-  const token = generateToken(user);
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    tier: user.tier as 'free' | 'pro' | 'business' | 'enterprise',
+  });
 
   return {
-    user: sanitizeUser(user),
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      tier: user.tier as 'free' | 'pro' | 'business' | 'enterprise',
+    },
     token,
   };
 }
@@ -136,13 +129,11 @@ export async function signIn(
   email: string,
   password: string
 ): Promise<SignInResult> {
-  // Find user by email
-  const userId = usersByEmail.get(email.toLowerCase());
-  if (!userId) {
+  // Find user by email (database query)
+  const user = await UserRepository.findByEmail(email);
+  if (!user) {
     throw new Error('Invalid email or password');
   }
-
-  const user = users.get(userId);
   if (!user) {
     throw new Error('Invalid email or password');
   }

@@ -405,21 +405,107 @@ type CdpEvmNetwork =
   | "optimism";
 
 // ============================================================
-// UCM Expected Types (stub)
+// UCM AI Agent Types - Production Definitions
 // ============================================================
 
+/**
+ * Agent configuration
+ */
 export interface AgentConfig {
-  // TODO: Define based on vendor/ai-agents/ patterns
+  /** Agent identifier */
+  id: string;
+  /** Agent name */
+  name: string;
+  /** Agent description */
+  description?: string;
+  /** LLM model to use */
+  model: string;
+  /** System prompt */
+  systemPrompt: string;
+  /** Available tools */
+  tools: string[];
+  /** Maximum iterations */
+  maxIterations: number;
+  /** Temperature setting */
+  temperature?: number;
+  /** Maximum tokens per response */
+  maxTokens?: number;
+  /** Memory configuration */
+  memory?: {
+    type: 'buffer' | 'window' | 'summary' | 'vector';
+    maxSize?: number;
+  };
+  /** Guardrails configuration */
+  guardrails?: {
+    maxSpendingPerTx?: string;
+    dailySpendingLimit?: string;
+    requireApprovalAbove?: string;
+    blockedActions?: string[];
+  };
 }
 
+/**
+ * Agent execution context
+ */
 export interface AgentContext {
-  // TODO: Define based on vendor/ai-agents/ patterns
+  /** Current conversation ID */
+  conversationId: string;
+  /** User identifier */
+  userId?: string;
+  /** Wallet address if connected */
+  walletAddress?: string;
+  /** Current chain ID */
+  chainId?: number;
+  /** Environment variables */
+  env: Record<string, string>;
+  /** Message history */
+  messages: Array<{
+    role: 'user' | 'assistant' | 'system' | 'tool';
+    content: string;
+    timestamp: number;
+  }>;
+  /** Current state */
+  state: Record<string, unknown>;
+  /** Active subscriptions/listeners */
+  subscriptions?: string[];
 }
 
+/**
+ * Tool execution result
+ */
 export interface ToolResult {
-  // TODO: Define based on vendor/ai-agents/ patterns
+  /** Tool name that was executed */
+  tool: string;
+  /** Whether execution succeeded */
+  success: boolean;
+  /** Result data */
+  data?: unknown;
+  /** Error message if failed */
+  error?: string;
+  /** Execution duration in ms */
+  durationMs: number;
+  /** Metadata about the execution */
+  metadata?: {
+    gasUsed?: string;
+    txHash?: string;
+    blockNumber?: number;
+  };
 }
 
+/**
+ * Agent memory store interface
+ */
 export interface MemoryStore {
-  // TODO: Define based on vendor/ai-agents/ patterns
+  /** Store a memory entry */
+  store(key: string, value: unknown, metadata?: Record<string, unknown>): Promise<void>;
+  /** Retrieve a memory entry */
+  retrieve(key: string): Promise<unknown | null>;
+  /** Search memories by query */
+  search(query: string, limit?: number): Promise<Array<{ key: string; value: unknown; score: number }>>;
+  /** Delete a memory entry */
+  delete(key: string): Promise<boolean>;
+  /** Clear all memories */
+  clear(): Promise<void>;
+  /** Get memory statistics */
+  stats(): Promise<{ count: number; sizeBytes: number }>;
 }

@@ -127,21 +127,105 @@ type MarketConfig = {
   name: string;
 
 // ============================================================
-// UCM Expected Types (stub)
+// UCM DeFi Types - Production Definitions
 // ============================================================
 
+/**
+ * DeFi protocol definition
+ */
 export interface Protocol {
-  // TODO: Define based on vendor/defi/ patterns
+  /** Protocol identifier */
+  id: string;
+  /** Protocol name */
+  name: string;
+  /** Protocol type (DEX, lending, yield, etc.) */
+  type: 'dex' | 'lending' | 'yield' | 'derivatives' | 'bridge' | 'aggregator';
+  /** Supported chains */
+  chains: string[];
+  /** Protocol website */
+  website?: string;
+  /** TVL in USD */
+  tvl?: string;
+  /** Router/main contract address per chain */
+  contracts: Record<string, string>;
+  /** Is protocol active */
+  active: boolean;
 }
 
+/**
+ * Liquidity pool definition
+ */
 export interface Pool {
-  // TODO: Define based on vendor/defi/ patterns
+  /** Pool address */
+  address: string;
+  /** Pool name/identifier */
+  name: string;
+  /** Protocol this pool belongs to */
+  protocol: string;
+  /** Chain ID */
+  chainId: number;
+  /** Token addresses in the pool */
+  tokens: string[];
+  /** Token symbols */
+  tokenSymbols: string[];
+  /** Pool type (AMM, stable, concentrated, etc.) */
+  type: 'amm' | 'stable' | 'concentrated' | 'weighted';
+  /** Fee tier (in basis points) */
+  feeBps: number;
+  /** Total value locked */
+  tvl?: string;
+  /** 24h volume */
+  volume24h?: string;
+  /** APR if applicable */
+  apr?: string;
 }
 
+/**
+ * Swap parameters
+ */
 export interface SwapParams {
-  // TODO: Define based on vendor/defi/ patterns
+  /** Token to swap from */
+  tokenIn: string;
+  /** Token to swap to */
+  tokenOut: string;
+  /** Amount to swap (in wei) */
+  amountIn: string;
+  /** Minimum amount to receive (in wei) */
+  amountOutMin: string;
+  /** Recipient address */
+  recipient: string;
+  /** Deadline timestamp */
+  deadline: number;
+  /** Slippage tolerance in basis points */
+  slippageBps?: number;
+  /** Swap path (for multi-hop) */
+  path?: string[];
+  /** Use native ETH/MATIC/etc */
+  useNative?: boolean;
 }
 
+/**
+ * Pool statistics
+ */
 export interface PoolStats {
-  // TODO: Define based on vendor/defi/ patterns
+  /** Pool address */
+  pool: string;
+  /** Total value locked in USD */
+  tvlUsd: string;
+  /** 24h trading volume in USD */
+  volume24hUsd: string;
+  /** 7d trading volume in USD */
+  volume7dUsd: string;
+  /** Current APR */
+  apr: string;
+  /** Fee APR component */
+  feeApr: string;
+  /** Reward APR component (if any) */
+  rewardApr?: string;
+  /** Token reserves */
+  reserves: Record<string, string>;
+  /** Token prices in USD */
+  prices: Record<string, string>;
+  /** Last update timestamp */
+  updatedAt: number;
 }

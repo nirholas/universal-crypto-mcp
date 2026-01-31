@@ -66,4 +66,64 @@ export { ToastProvider, useToast } from './Toast';
 // Modals
 export { Modal, ConfirmModal, ModalProvider, useModal } from './Modal';
 
+// Form Elements
+export { 
+  Input, 
+  Textarea, 
+  Select, 
+  Checkbox, 
+  Switch, 
+  Slider, 
+  Button, 
+  RadioGroup 
+} from './FormElements';
 
+// Data Table
+export { DataTable, SimpleTable } from './DataTable';
+export type { Column, DataTableProps } from './DataTable';
+
+// Accordion
+export { Accordion, AccordionItem, FAQAccordion } from './Accordion';
+
+// Tooltips & Popovers
+export { Tooltip, InfoTooltip, Popover } from './Tooltip';
+
+// Progress Indicators
+export { 
+  ProgressBar, 
+  CircularProgress, 
+  StepProgress, 
+  Spinner, 
+  PulseLoader, 
+  SkeletonLoader 
+} from './Progress';
+
+// Badges & Tags
+export { Badge, StatusBadge, CounterBadge, TagInput, ChipGroup } from './Badge';
+
+// Avatars
+export { Avatar, AvatarGroup, CryptoAvatar, ProfileCard } from './Avatar';
+
+// Carousel & Sliders
+export { Carousel, CardSlider, Marquee, LogoCloud } from './Carousel';
+
+// File Upload
+export { Dropzone, FilePreview, FileUpload, ImageUpload } from './FileUpload';
+
+// Alerts & Notifications
+export { 
+  InlineAlert, 
+  BannerAlert, 
+  AlertDialog, 
+  AlertStackProvider, 
+  useAlertStack 
+} from './Alert';
+
+// Menus & Navigation
+export { DropdownMenu, ContextMenu, Breadcrumb, ActionButton, KebabMenu } from './Menu';
+
+// DeFi Components
+export { AdvancedSwapInterface, LiquidityPoolCard, YieldFarmCard } from './DeFiComponents';
+
+// Crypto Widgets
+export { TokenMetrics, TrendingTokens, WhaleActivity, FearGreedIndex, Leaderboard } from './CryptoWidgets';

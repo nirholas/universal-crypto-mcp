@@ -185,17 +185,126 @@ export type StakingRewardFormat = typeof StakingRewardFormat[keyof typeof Stakin
 export type TokenTransferType = typeof TokenTransferType[keyof typeof TokenTransferType];
 
 // ============================================================
-// UCM Expected Types (stub)
+// UCM Payment Types - Production Definitions
 // ============================================================
 
+/**
+ * Payment status enum
+ */
+export const PaymentStatus = {
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+  REFUNDED: 'refunded',
+  CANCELLED: 'cancelled',
+} as const;
+
+export type PaymentStatusType = typeof PaymentStatus[keyof typeof PaymentStatus];
+
+/**
+ * Payment method type
+ */
+export const PaymentMethod = {
+  CRYPTO: 'crypto',
+  CARD: 'card',
+  BANK: 'bank',
+  X402: 'x402',
+} as const;
+
+export type PaymentMethodType = typeof PaymentMethod[keyof typeof PaymentMethod];
+
+/**
+ * A payment transaction record
+ */
 export interface Payment {
-  // TODO: Define based on vendor/payments/ patterns
+  /** Unique payment identifier */
+  id: string;
+  /** Payment amount in smallest unit (wei, cents, etc.) */
+  amount: string;
+  /** Currency code (USD, ETH, USDC, etc.) */
+  currency: string;
+  /** Current payment status */
+  status: PaymentStatusType;
+  /** Payment method used */
+  method: PaymentMethodType;
+  /** Payer address or identifier */
+  from: string;
+  /** Recipient address or identifier */
+  to: string;
+  /** Associated transaction hash (if on-chain) */
+  txHash?: string;
+  /** Network ID for crypto payments */
+  network?: string;
+  /** Timestamp of creation */
+  createdAt: number;
+  /** Timestamp of last update */
+  updatedAt: number;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
 }
 
+/**
+ * Payment intent - a declared intention to make a payment
+ */
 export interface PaymentIntent {
-  // TODO: Define based on vendor/payments/ patterns
+  /** Unique intent identifier */
+  id: string;
+  /** Requested payment amount */
+  amount: string;
+  /** Currency for the payment */
+  currency: string;
+  /** Recipient address or identifier */
+  recipient: string;
+  /** Intent status */
+  status: 'created' | 'processing' | 'succeeded' | 'failed' | 'cancelled';
+  /** Preferred payment methods */
+  allowedMethods: PaymentMethodType[];
+  /** Associated network for crypto */
+  network?: string;
+  /** Expiration timestamp */
+  expiresAt?: number;
+  /** Client secret for frontend confirmation */
+  clientSecret?: string;
+  /** Resulting payment ID when completed */
+  paymentId?: string;
+  /** Timestamp of creation */
+  createdAt: number;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
 }
 
+/**
+ * Configuration for payment processing
+ */
 export interface PaymentConfig {
-  // TODO: Define based on vendor/payments/ patterns
+  /** Supported networks */
+  networks: string[];
+  /** Supported currencies per network */
+  currencies: Record<string, string[]>;
+  /** Fee configuration */
+  fees: {
+    /** Platform fee percentage (e.g., 0.01 = 1%) */
+    platformFeePercent: number;
+    /** Minimum fee in USD */
+    minFeeUsd: number;
+    /** Maximum fee in USD */
+    maxFeeUsd: number;
+  };
+  /** Payment limits */
+  limits: {
+    /** Minimum payment in USD */
+    minPaymentUsd: number;
+    /** Maximum single payment in USD */
+    maxPaymentUsd: number;
+    /** Daily limit per user in USD */
+    dailyLimitUsd: number;
+  };
+  /** x402 specific configuration */
+  x402?: {
+    /** Facilitator URL */
+    facilitatorUrl: string;
+    /** Supported payment kinds */
+    paymentKinds: string[];
+  };
 }
