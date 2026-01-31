@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/price-feeds/index.ts:11](https://git
 #### Returns
 
 `void`
+
