@@ -252,3 +252,4 @@ export const PRICING_TIERS = {
 };
 
 export default loadGatewayConfig;
+
