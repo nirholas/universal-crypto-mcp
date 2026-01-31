@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/governance/index.ts:11](https://gith
 #### Returns
 
 `void`
+
