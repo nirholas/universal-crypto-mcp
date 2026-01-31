@@ -95,3 +95,4 @@ Get the latest block for a specific network
 #### Returns
 
 `Promise`\<`Block`\>
+
