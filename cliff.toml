@@ -63,3 +63,4 @@ sort_commits = "oldest"
 [remote.github]
 owner = "nirholas"
 repo = "universal-crypto-mcp"
+
