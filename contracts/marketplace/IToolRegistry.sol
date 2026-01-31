@@ -217,3 +217,4 @@ interface IToolRegistry {
      */
     function totalTools() external view returns (uint256 count);
 }
+
