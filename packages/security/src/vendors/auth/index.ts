@@ -538,7 +538,7 @@ export class RemoteJWKSet {
   async getPublicKey(protectedHeader: JWSHeaderParameters): Promise<crypto.KeyObject> {
     if (!this.cache || Date.now() > this.cacheExpiry) {
       const response = await fetch(this.url);
-      this.cache = await response.json() as JSONWebKeySet;
+      this.cache = (await response.json()) as JSONWebKeySet;
       this.cacheExpiry = Date.now() + 600000; // 10 minute cache
     }
 
@@ -546,39 +546,468 @@ export class RemoteJWKSet {
     return getKey(protectedHeader);
   }
 }
-    // TODO: Implement - see vendor/auth/
-    throw new Error('Not implemented: RemoteJWKSet');
+
+// ============================================================
+// JWS Signing Classes
+// ============================================================
+
+interface Signature {
+  setProtectedHeader(header: Record<string, unknown>): this;
+  sign(key: crypto.KeyObject | Uint8Array): Promise<string>;
+}
+
+export class CompactSign implements Signature {
+  private payload: Uint8Array;
+  private protectedHeader: Record<string, unknown> = {};
+
+  constructor(payload: Uint8Array) {
+    this.payload = payload;
+  }
+
+  setProtectedHeader(header: Record<string, unknown>): this {
+    this.protectedHeader = header;
+    return this;
+  }
+
+  async sign(key: crypto.KeyObject | Uint8Array): Promise<string> {
+    const header = {
+      alg: 'HS256',
+      typ: 'JWT',
+      ...this.protectedHeader,
+    };
+
+    const headerB64 = Buffer.from(JSON.stringify(header)).toString('base64url');
+    const payloadB64 = Buffer.from(this.payload).toString('base64url');
+
+    const signingInput = `${headerB64}.${payloadB64}`;
+    const alg = (header.alg as string) || 'HS256';
+
+    let signature: string;
+
+    if (alg.startsWith('HS')) {
+      // HMAC signatures
+      const keyBuffer = key instanceof Uint8Array ? key : key.export() as Buffer;
+      const hashAlg = alg === 'HS384' ? 'sha384' : alg === 'HS512' ? 'sha512' : 'sha256';
+      signature = crypto.createHmac(hashAlg, keyBuffer).update(signingInput).digest('base64url');
+    } else if (alg.startsWith('RS') || alg.startsWith('PS')) {
+      // RSA signatures
+      const keyObj = key instanceof Uint8Array ? crypto.createPrivateKey(key) : key;
+      const hashAlg = alg.includes('384') ? 'sha384' : alg.includes('512') ? 'sha512' : 'sha256';
+      const signer = crypto.createSign(hashAlg);
+      signer.update(signingInput);
+      signature = signer.sign(keyObj, 'base64url');
+    } else if (alg.startsWith('ES')) {
+      // ECDSA signatures
+      const keyObj = key instanceof Uint8Array ? crypto.createPrivateKey(key) : key;
+      const hashAlg = alg === 'ES384' ? 'sha384' : alg === 'ES512' ? 'sha512' : 'sha256';
+      const signer = crypto.createSign(hashAlg);
+      signer.update(signingInput);
+      signature = signer.sign({ key: keyObj, dsaEncoding: 'ieee-p1363' }, 'base64url');
+    } else {
+      throw new Error(`Unsupported algorithm: ${alg}`);
+    }
+
+    return `${signingInput}.${signature}`;
   }
 }
 
-// From vendor code
-export export class CompactSign {
-  constructor() {
-    // TODO: Implement - see vendor/auth/
-    throw new Error('Not implemented: CompactSign');
+export class FlattenedSign extends CompactSign {
+  private unprotectedHeader: Record<string, unknown> = {};
+
+  setUnprotectedHeader(header: Record<string, unknown>): this {
+    this.unprotectedHeader = header;
+    return this;
+  }
+
+  async signFlattened(key: crypto.KeyObject | Uint8Array): Promise<FlattenedJWSInput & { header?: Record<string, unknown> }> {
+    const compact = await this.sign(key);
+    const [protectedB64, payloadB64, signatureB64] = compact.split('.');
+
+    return {
+      protected: protectedB64,
+      payload: payloadB64,
+      signature: signatureB64,
+      header: Object.keys(this.unprotectedHeader).length > 0 ? this.unprotectedHeader : undefined,
+    };
   }
 }
 
-// From vendor code
-export export class FlattenedSign {
-  constructor() {
-    // TODO: Implement - see vendor/auth/
-    throw new Error('Not implemented: FlattenedSign');
+export class IndividualSignature {
+  private protectedHeader: Record<string, unknown> = {};
+  private unprotectedHeader: Record<string, unknown> = {};
+  private key: crypto.KeyObject | Uint8Array | null = null;
+
+  setProtectedHeader(header: Record<string, unknown>): this {
+    this.protectedHeader = header;
+    return this;
+  }
+
+  setUnprotectedHeader(header: Record<string, unknown>): this {
+    this.unprotectedHeader = header;
+    return this;
+  }
+
+  setSigningKey(key: crypto.KeyObject | Uint8Array): this {
+    this.key = key;
+    return this;
+  }
+
+  getKey(): crypto.KeyObject | Uint8Array | null {
+    return this.key;
+  }
+
+  getProtectedHeader(): Record<string, unknown> {
+    return this.protectedHeader;
+  }
+
+  getUnprotectedHeader(): Record<string, unknown> {
+    return this.unprotectedHeader;
   }
 }
 
-// From vendor code
-export class IndividualSignature implements Signature {
-  constructor() {
-    // TODO: Implement - see vendor/auth/
-    throw new Error('Not implemented: IndividualSignature');
+interface GeneralJWS {
+  payload: string;
+  signatures: Array<{
+    protected: string;
+    header?: Record<string, unknown>;
+    signature: string;
+  }>;
+}
+
+export class GeneralSign {
+  private payload: Uint8Array;
+  private signatures: IndividualSignature[] = [];
+
+  constructor(payload: Uint8Array) {
+    this.payload = payload;
+  }
+
+  addSignature(key: crypto.KeyObject | Uint8Array): IndividualSignature {
+    const sig = new IndividualSignature();
+    sig.setSigningKey(key);
+    this.signatures.push(sig);
+    return sig;
+  }
+
+  async sign(): Promise<GeneralJWS> {
+    if (this.signatures.length === 0) {
+      throw new Error('At least one signature required');
+    }
+
+    const payloadB64 = Buffer.from(this.payload).toString('base64url');
+    const result: GeneralJWS = {
+      payload: payloadB64,
+      signatures: [],
+    };
+
+    for (const sig of this.signatures) {
+      const key = sig.getKey();
+      if (!key) {
+        throw new Error('Signature key not set');
+      }
+
+      const compactSign = new CompactSign(this.payload);
+      compactSign.setProtectedHeader(sig.getProtectedHeader());
+      const compact = await compactSign.sign(key);
+      const [protectedB64, , signatureB64] = compact.split('.');
+
+      result.signatures.push({
+        protected: protectedB64,
+        header: Object.keys(sig.getUnprotectedHeader()).length > 0 ? sig.getUnprotectedHeader() : undefined,
+        signature: signatureB64,
+      });
+    }
+
+    return result;
   }
 }
 
-// From vendor code
-export export class GeneralSign {
-  constructor() {
-    // TODO: Implement - see vendor/auth/
-    throw new Error('Not implemented: GeneralSign');
+// ============================================================
+// JWT Sign & Verify
+// ============================================================
+
+interface JWTPayload {
+  iss?: string;
+  sub?: string;
+  aud?: string | string[];
+  exp?: number;
+  nbf?: number;
+  iat?: number;
+  jti?: string;
+  [key: string]: unknown;
+}
+
+export class SignJWT {
+  private payload: JWTPayload;
+  private protectedHeader: Record<string, unknown> = {};
+
+  constructor(payload: JWTPayload) {
+    this.payload = payload;
   }
+
+  setProtectedHeader(header: Record<string, unknown>): this {
+    this.protectedHeader = header;
+    return this;
+  }
+
+  setIssuedAt(iat?: number): this {
+    this.payload.iat = iat ?? Math.floor(Date.now() / 1000);
+    return this;
+  }
+
+  setExpirationTime(exp: number | string): this {
+    if (typeof exp === 'string') {
+      // Parse duration string like "2h", "7d"
+      const match = exp.match(/^(\d+)([smhd])$/);
+      if (match) {
+        const value = parseInt(match[1], 10);
+        const unit = match[2];
+        const seconds = { s: 1, m: 60, h: 3600, d: 86400 }[unit] || 1;
+        this.payload.exp = Math.floor(Date.now() / 1000) + value * seconds;
+      }
+    } else {
+      this.payload.exp = exp;
+    }
+    return this;
+  }
+
+  setNotBefore(nbf: number): this {
+    this.payload.nbf = nbf;
+    return this;
+  }
+
+  setIssuer(iss: string): this {
+    this.payload.iss = iss;
+    return this;
+  }
+
+  setSubject(sub: string): this {
+    this.payload.sub = sub;
+    return this;
+  }
+
+  setAudience(aud: string | string[]): this {
+    this.payload.aud = aud;
+    return this;
+  }
+
+  setJti(jti: string): this {
+    this.payload.jti = jti;
+    return this;
+  }
+
+  async sign(key: crypto.KeyObject | Uint8Array): Promise<string> {
+    const signer = new CompactSign(Buffer.from(JSON.stringify(this.payload)));
+    signer.setProtectedHeader({ ...this.protectedHeader, typ: 'JWT' });
+    return signer.sign(key);
+  }
+}
+
+export async function jwtVerify(
+  jwt: string,
+  key: crypto.KeyObject | Uint8Array | ((header: JWSHeaderParameters) => Promise<crypto.KeyObject>)
+): Promise<{ payload: JWTPayload; protectedHeader: Record<string, unknown> }> {
+  const parts = jwt.split('.');
+  if (parts.length !== 3) {
+    throw new Error('Invalid JWT format');
+  }
+
+  const [headerB64, payloadB64, signatureB64] = parts;
+  const header = JSON.parse(Buffer.from(headerB64, 'base64url').toString());
+  const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
+
+  // Get key if it's a function
+  const verifyKey = typeof key === 'function' ? await key(header) : key;
+
+  // Verify signature
+  const signingInput = `${headerB64}.${payloadB64}`;
+  const alg = header.alg || 'HS256';
+
+  let valid = false;
+
+  if (alg.startsWith('HS')) {
+    const keyBuffer = verifyKey instanceof Uint8Array ? verifyKey : verifyKey.export() as Buffer;
+    const hashAlg = alg === 'HS384' ? 'sha384' : alg === 'HS512' ? 'sha512' : 'sha256';
+    const expected = crypto.createHmac(hashAlg, keyBuffer).update(signingInput).digest('base64url');
+    valid = crypto.timingSafeEqual(Buffer.from(signatureB64), Buffer.from(expected));
+  } else if (alg.startsWith('RS') || alg.startsWith('PS') || alg.startsWith('ES')) {
+    const keyObj = verifyKey instanceof Uint8Array ? crypto.createPublicKey(verifyKey) : verifyKey;
+    const hashAlg = alg.includes('384') ? 'sha384' : alg.includes('512') ? 'sha512' : 'sha256';
+    const verifier = crypto.createVerify(hashAlg);
+    verifier.update(signingInput);
+    const opts = alg.startsWith('ES') ? { key: keyObj, dsaEncoding: 'ieee-p1363' as const } : keyObj;
+    valid = verifier.verify(opts, signatureB64, 'base64url');
+  }
+
+  if (!valid) {
+    throw new Error('Invalid signature');
+  }
+
+  // Validate claims
+  const now = Math.floor(Date.now() / 1000);
+  if (payload.exp && payload.exp < now) {
+    throw new Error('Token expired');
+  }
+  if (payload.nbf && payload.nbf > now) {
+    throw new Error('Token not yet valid');
+  }
+
+  return { payload, protectedHeader: header };
+}
+
+// ============================================================
+// SIWE (Sign-In With Ethereum)
+// ============================================================
+
+export interface SiweMessage {
+  domain: string;
+  address: Address;
+  statement?: string;
+  uri: string;
+  version: string;
+  chainId: number;
+  nonce: string;
+  issuedAt: string;
+  expirationTime?: string;
+  notBefore?: string;
+  requestId?: string;
+  resources?: string[];
+}
+
+export function createSiweMessage(params: Omit<SiweMessage, 'version' | 'issuedAt'>): string {
+  const message: SiweMessage = {
+    ...params,
+    version: '1',
+    issuedAt: new Date().toISOString(),
+  };
+
+  let msg = `${message.domain} wants you to sign in with your Ethereum account:\n`;
+  msg += `${message.address}\n\n`;
+
+  if (message.statement) {
+    msg += `${message.statement}\n\n`;
+  }
+
+  msg += `URI: ${message.uri}\n`;
+  msg += `Version: ${message.version}\n`;
+  msg += `Chain ID: ${message.chainId}\n`;
+  msg += `Nonce: ${message.nonce}\n`;
+  msg += `Issued At: ${message.issuedAt}`;
+
+  if (message.expirationTime) {
+    msg += `\nExpiration Time: ${message.expirationTime}`;
+  }
+  if (message.notBefore) {
+    msg += `\nNot Before: ${message.notBefore}`;
+  }
+  if (message.requestId) {
+    msg += `\nRequest ID: ${message.requestId}`;
+  }
+  if (message.resources && message.resources.length > 0) {
+    msg += `\nResources:`;
+    for (const resource of message.resources) {
+      msg += `\n- ${resource}`;
+    }
+  }
+
+  return msg;
+}
+
+export function parseSiweMessage(message: string): SiweMessage {
+  const lines = message.split('\n');
+
+  const domainMatch = lines[0]?.match(/^(.+) wants you to sign in with your Ethereum account:$/);
+  const domain = domainMatch?.[1] || '';
+  const address = lines[1] as Address;
+
+  let statement: string | undefined;
+  let lineIndex = 2;
+
+  // Skip empty line after address
+  if (lines[lineIndex] === '') lineIndex++;
+
+  // Check for statement (everything until URI line)
+  const statementLines: string[] = [];
+  while (lineIndex < lines.length && !lines[lineIndex].startsWith('URI:')) {
+    if (lines[lineIndex] !== '') {
+      statementLines.push(lines[lineIndex]);
+    }
+    lineIndex++;
+  }
+  if (statementLines.length > 0) {
+    statement = statementLines.join('\n');
+  }
+
+  const getValue = (prefix: string): string | undefined => {
+    const line = lines.find(l => l.startsWith(prefix));
+    return line?.slice(prefix.length).trim();
+  };
+
+  const resources: string[] = [];
+  let inResources = false;
+  for (const line of lines) {
+    if (line === 'Resources:') {
+      inResources = true;
+      continue;
+    }
+    if (inResources && line.startsWith('- ')) {
+      resources.push(line.slice(2));
+    }
+  }
+
+  return {
+    domain,
+    address,
+    statement,
+    uri: getValue('URI:') || '',
+    version: getValue('Version:') || '1',
+    chainId: parseInt(getValue('Chain ID:') || '1', 10),
+    nonce: getValue('Nonce:') || '',
+    issuedAt: getValue('Issued At:') || '',
+    expirationTime: getValue('Expiration Time:'),
+    notBefore: getValue('Not Before:'),
+    requestId: getValue('Request ID:'),
+    resources: resources.length > 0 ? resources : undefined,
+  };
+}
+
+export async function verifySiweSignature(
+  message: string,
+  signature: `0x${string}`,
+  expectedAddress?: Address
+): Promise<{ valid: boolean; address: Address; siweMessage: SiweMessage }> {
+  const { recoverMessageAddress } = await import('viem');
+
+  const recoveredAddress = await recoverMessageAddress({
+    message,
+    signature,
+  });
+
+  const siweMessage = parseSiweMessage(message);
+
+  // Verify address matches
+  const addressToCheck = expectedAddress || siweMessage.address;
+  const valid = recoveredAddress.toLowerCase() === addressToCheck.toLowerCase();
+
+  // Check expiration
+  if (siweMessage.expirationTime) {
+    const expiry = new Date(siweMessage.expirationTime);
+    if (expiry < new Date()) {
+      return { valid: false, address: recoveredAddress, siweMessage };
+    }
+  }
+
+  // Check not before
+  if (siweMessage.notBefore) {
+    const notBefore = new Date(siweMessage.notBefore);
+    if (notBefore > new Date()) {
+      return { valid: false, address: recoveredAddress, siweMessage };
+    }
+  }
+
+  return { valid, address: recoveredAddress, siweMessage };
+}
+
+export function generateNonce(): string {
+  return crypto.randomBytes(16).toString('hex');
 }
