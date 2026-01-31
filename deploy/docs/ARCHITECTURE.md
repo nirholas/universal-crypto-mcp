@@ -451,3 +451,4 @@ Total Request Time: < 1000ms
 4. **Caching**
    - Response caching
    - Tool schema caching
+
