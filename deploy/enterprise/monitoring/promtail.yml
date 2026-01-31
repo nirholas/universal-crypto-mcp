@@ -251,3 +251,4 @@ scrape_configs:
       - labels:
           level:
           role:
+
