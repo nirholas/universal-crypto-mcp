@@ -663,3 +663,4 @@ const handleCopy = () => {
 - [1.1 Address Accessibility](../guidelines/perceivable/1.1-address-accessibility.md)
 - [1.2 Transaction Clarity](../guidelines/perceivable/1.2-transaction-clarity.md)
 - [4.1 Assistive Technology Compatibility](../guidelines/robust/4.1-assistive-technology.md)
+
