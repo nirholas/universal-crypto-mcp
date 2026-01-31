@@ -149,3 +149,4 @@ Resolves a chain identifier (number or string) to a chain ID
 `number`
 
 The resolved chain ID
+
