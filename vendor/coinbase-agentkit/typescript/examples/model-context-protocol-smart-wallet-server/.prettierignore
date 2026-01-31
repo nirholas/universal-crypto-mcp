@@ -1,8 +1,0 @@
-docs/
-dist/
-build/
-coverage/
-.github/
-src/client
-**/**/*.json
-*.md

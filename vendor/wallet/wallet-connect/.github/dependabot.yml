@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Single root-level configuration that scans entire monorepo
+  # Creates ONE PR per week that updates ALL dependencies (both production and dev)
+  # across ALL package.json files, keeping dependencies aligned across the monorepo
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    labels:
+      - 'chore: update dependencies'
+    groups:
+      # All dependencies grouped together - creates a single PR
+      # Updates both production and dev dependencies across all package.json files
+      'all-dependencies':
+        patterns:
+          - '*'
+    ignore:
+      # Ignore major version updates (breaking changes)
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      # Ignore workspace dependencies (handled internally via workspace:*)
+      - dependency-name: '@reown/*'
+        update-types:
+          [
+            'version-update:semver-major',
+            'version-update:semver-minor',
+            'version-update:semver-patch'
+          ]

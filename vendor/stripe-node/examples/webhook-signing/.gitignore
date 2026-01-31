@@ -1,6 +1,0 @@
-*/tsconfig.json
-**/.eslintrc.js
-**/package-lock.json
-.env
-express-ts.js
-deno.lock

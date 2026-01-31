@@ -1,0 +1,13 @@
+datasource db {
+  provider = "sqlserver"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id   Int     @id @default(autoincrement())
+  name String?
+  test BigInt
+}

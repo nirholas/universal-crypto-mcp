@@ -1,6 +1,0 @@
-{
-    "entryPoints": ["packages/core/*", "packages/ui/*", "packages/wallets/wallets"],
-    "entryPointStrategy": "packages",
-    "out": "docs",
-    "readme": "README.md"
-}

@@ -1,0 +1,11 @@
+{
+  "exclude": [
+    "vue",
+    "pretty-format"
+  ],
+  "packageMode": {
+    "vue": "minor",
+    "codemirror": "minor",
+    "rollup": "minor"
+  }
+}

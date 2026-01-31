@@ -1,0 +1,49 @@
+{
+  "name": "recharts.github.io",
+  "version": "3.0.0",
+  "description": "the website of recharts",
+  "private": true,
+  "scripts": {
+    "build": "vite build && npm run prerender && npm run postprocess-sitemap && npm run validate-sitemap",
+    "build:client": "vite build",
+    "prerender": "tsx scripts/prerender.tsx",
+    "postprocess-sitemap": "tsx scripts/postprocess-sitemap.tsx",
+    "validate-sitemap": "tsx scripts/validate-sitemap.tsx",
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recharts/recharts.git"
+  },
+  "author": "recharts group",
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@types/react-helmet": "^6.1.11",
+    "@types/sax": "^1.2.7",
+    "sax": "^1.4.3",
+    "tsx": "^4.20.6",
+    "vite": "^6.4.1",
+    "vite-plugin-sitemap": "^0.8.2"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.10.0",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/language": "^6.11.3",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.6",
+    "@lezer/highlight": "^1.2.3",
+    "@stackblitz/sdk": "^1.11.0",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^2.0.0",
+    "react-ga4": "^2.1.0",
+    "react-helmet": "^6.1.0",
+    "react-icons": "^5.5.0",
+    "react-router": "^7.9.5",
+    "react-router-dom": "^7.9.5",
+    "react-runner": "^1.0.5",
+    "recharts": "latest"
+  },
+  "license": "MIT"
+}

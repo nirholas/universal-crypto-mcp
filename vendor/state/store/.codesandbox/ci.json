@@ -1,0 +1,13 @@
+{
+  "packages": ["dist"],
+  "sandboxes": [
+    "new",
+    "react-typescript-react-ts",
+    "simple-react-browserify-x9yni",
+    "simple-snowpack-react-o1gmx",
+    "react-parcel-onewf",
+    "next-js-uo1h0",
+    "pavlobu-zustand-demo-frutec"
+  ],
+  "node": "18"
+}

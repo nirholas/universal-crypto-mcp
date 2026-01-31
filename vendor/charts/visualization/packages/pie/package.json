@@ -1,0 +1,54 @@
+{
+    "name": "@nivo/pie",
+    "version": "0.99.0",
+    "license": "MIT",
+    "author": {
+        "name": "Raphaël Benitte",
+        "url": "https://github.com/plouc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/plouc/nivo.git",
+        "directory": "packages/pie"
+    },
+    "keywords": [
+        "nivo",
+        "dataviz",
+        "react",
+        "d3",
+        "charts",
+        "pie-chart"
+    ],
+    "main": "./dist/nivo-pie.cjs.js",
+    "module": "./dist/nivo-pie.mjs",
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/nivo-pie.mjs",
+            "require": "./dist/nivo-pie.cjs.js"
+        }
+    },
+    "files": [
+        "README.md",
+        "LICENSE.md",
+        "dist/",
+        "!dist/tsconfig.tsbuildinfo"
+    ],
+    "dependencies": {
+        "@nivo/arcs": "workspace:*",
+        "@nivo/colors": "workspace:*",
+        "@nivo/core": "workspace:*",
+        "@nivo/legends": "workspace:*",
+        "@nivo/theming": "workspace:*",
+        "@nivo/tooltip": "workspace:*",
+        "@types/d3-shape": "^3.1.6",
+        "d3-shape": "^3.2.0"
+    },
+    "peerDependencies": {
+        "react": "^16.14 || ^17.0 || ^18.0 || ^19.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

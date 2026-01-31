@@ -1,0 +1,3 @@
+datasource my_db {
+  provider = "sqlite"
+}

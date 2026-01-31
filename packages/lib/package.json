@@ -1,0 +1,100 @@
+{
+  "name": "@ucm/lib",
+  "version": "1.0.0",
+  "description": "Unified library layer for Universal Crypto MCP",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./wallet": {
+      "import": "./dist/wallet/index.mjs",
+      "require": "./dist/wallet/index.js",
+      "types": "./dist/wallet/index.d.ts"
+    },
+    "./ui": {
+      "import": "./dist/ui/index.mjs",
+      "require": "./dist/ui/index.js",
+      "types": "./dist/ui/index.d.ts"
+    },
+    "./charts": {
+      "import": "./dist/charts/index.mjs",
+      "require": "./dist/charts/index.js",
+      "types": "./dist/charts/index.d.ts"
+    },
+    "./state": {
+      "import": "./dist/state/index.mjs",
+      "require": "./dist/state/index.js",
+      "types": "./dist/state/index.d.ts"
+    },
+    "./ai": {
+      "import": "./dist/ai/index.mjs",
+      "require": "./dist/ai/index.js",
+      "types": "./dist/ai/index.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth/index.mjs",
+      "require": "./dist/auth/index.js",
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./realtime": {
+      "import": "./dist/realtime/index.mjs",
+      "require": "./dist/realtime/index.js",
+      "types": "./dist/realtime/index.d.ts"
+    },
+    "./forms": {
+      "import": "./dist/forms/index.mjs",
+      "require": "./dist/forms/index.js",
+      "types": "./dist/forms/index.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api/index.mjs",
+      "require": "./dist/api/index.js",
+      "types": "./dist/api/index.d.ts"
+    },
+    "./database": {
+      "import": "./dist/database/index.mjs",
+      "require": "./dist/database/index.js",
+      "types": "./dist/database/index.d.ts"
+    },
+    "./contracts": {
+      "import": "./dist/contracts/index.mjs",
+      "require": "./dist/contracts/index.js",
+      "types": "./dist/contracts/index.d.ts"
+    },
+    "./payments": {
+      "import": "./dist/payments/index.mjs",
+      "require": "./dist/payments/index.js",
+      "types": "./dist/payments/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "immer": "^10.0.0",
+    "jose": "^5.0.0",
+    "viem": "^2.0.0",
+    "wagmi": "^2.0.0",
+    "zod": "^3.22.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

@@ -1,7 +1,0 @@
-.DS_Store
-.idea
-*.log*
-node_modules
-/lib
-/es
-/coverage

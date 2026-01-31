@@ -1,43 +1,37 @@
-# Third-Party Vendor Code
+# Vendor Dependencies (Organized by Function)
 
-This directory contains third-party open source projects integrated into Universal Crypto MCP.
+Enterprise-grade organization of open source dependencies with full attribution.
 
-## License Compliance
+## Categories
 
-All projects in this directory maintain their original:
-- Copyright notices
-- License files
-- Attribution requirements
-- Original author credits
+| Category | Description | Contents |
+|----------|-------------|----------|
+| `wallet/` | Web3 wallet connection & management | EVM hooks, Solana adapter, multisig |
+| `ui/` | Component libraries | shadcn, Radix primitives, Tremor |
+| `charts/` | Data visualization | Recharts, Nivo |
+| `editor/` | Code/text editors | Monaco, CodeMirror |
+| `workflow/` | Visual workflow builders | React Flow |
+| `forms/` | Form handling & validation | JSON Schema Form, Zod |
+| `api/` | API frameworks & tooling | tRPC, Hono, OpenAPI |
+| `auth/` | Authentication & authorization | NextAuth, iron-session, JWT |
+| `database/` | ORM & query builders | Prisma, Drizzle, Kysely |
+| `state/` | State management | Zustand, Jotai, TanStack Query |
+| `realtime/` | WebSocket & real-time | Socket.io, ws, Redis |
+| `testing/` | Test frameworks | Vitest, Playwright, MSW |
+| `docs/` | Documentation frameworks | Docusaurus, Nextra |
+| `ai-agents/` | AI/ML agent frameworks | LangChain, Eliza, CrewAI, AutoGPT |
+| `contracts/` | Smart contract tooling | Foundry, ABIType, Permit2 |
+| `payments/` | Payment processing | Stripe, Coinbase |
+| `simulation/` | Transaction simulation | Tenderly |
+| `account-abstraction/` | Smart accounts/AA | Alchemy AA SDK |
+| `defi/` | DeFi protocols | DefiLlama adapters |
+| `devops/` | Docker & deployment | Node.js Docker images |
 
-## Directory Structure
+## Attribution
 
-Each vendor project is in its own subdirectory with:
-- `LICENSE` - Original license file
-- `ATTRIBUTION.md` - Credits to original authors
-- `README.md` - Original or adapted documentation
-- Source code with original copyright notices preserved
+All packages maintain their original licenses and ATTRIBUTION.md files.
+See individual package directories for specific license information.
 
-## Integrated Projects
+## Maintainer
 
-| Project | License | Original Author | Repository |
-|---------|---------|----------------|------------|
-| ethers.js | MIT | Richard Moore | https://github.com/ethers-io/ethers.js |
-
-## Integration Guidelines
-
-When integrating third-party code:
-1. ✅ Keep all copyright notices intact
-2. ✅ Include original LICENSE file
-3. ✅ Credit original authors in ATTRIBUTION.md
-4. ✅ Link to original repository
-5. ✅ Document any modifications made
-6. ✅ Comply with all license terms
-
-## Universal Crypto MCP Integration
-
-These vendor projects are integrated into Universal Crypto MCP to provide enhanced functionality while respecting open source licenses and giving proper credit to the original creators.
-
-**Maintained by**: Nicholas (github.com/nirholas, x.com/nichxbt)  
-**Integration Layer**: Universal Crypto MCP  
-**Original Authors**: See individual project ATTRIBUTION.md files
+- **Nich** ([@nichxbt](https://x.com/nichxbt)) - [github.com/nirholas](https://github.com/nirholas)

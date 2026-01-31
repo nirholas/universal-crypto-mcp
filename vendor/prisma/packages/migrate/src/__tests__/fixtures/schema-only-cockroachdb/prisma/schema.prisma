@@ -1,8 +1,0 @@
-datasource db {
-  provider = "cockroachdb"
-}
-
-model Blog {
-  id          Int @id
-  viewCount20 Int
-}

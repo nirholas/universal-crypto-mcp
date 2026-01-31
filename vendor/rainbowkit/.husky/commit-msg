@@ -1,3 +1,0 @@
-#!/bin/bash
-
-pnpm commitlint --config commitlint.config.js --edit "$1"

@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://nodejs\\.org/"
+    },
+    {
+      "pattern": "^https://www\\.npmjs\\.com/"
+    },
+    {
+      "pattern": "^https://news\\.ycombinator\\.com/"
+    }
+  ]
+}

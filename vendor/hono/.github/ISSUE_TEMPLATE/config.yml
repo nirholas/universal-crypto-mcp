@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: ❓ Questions
-    url: https://github.com/orgs/honojs/discussions
-    about: Ask your questions on the GitHub Discussions.
-  - name: 🗣️ Discord
-    url: https://discord.gg/KMh2eNSdxV
-    about: Join our Discord server to chat.
