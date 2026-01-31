@@ -365,3 +365,4 @@ MIT License — see [LICENSE](LICENSE) for details.
   <strong>Web3 should be for everyone.</strong><br>
   Started by nich and built by the open source community.
 </p>
+
