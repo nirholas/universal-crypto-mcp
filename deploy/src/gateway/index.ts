@@ -476,3 +476,4 @@ export type { X402Config } from './config.js';
 export { default as x402Middleware } from './x402-gateway.js';
 
 export default UniversalCryptoGateway;
+
