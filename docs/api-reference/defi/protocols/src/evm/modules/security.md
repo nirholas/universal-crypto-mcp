@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/security/index.ts:11](https://github
 #### Returns
 
 `void`
+
