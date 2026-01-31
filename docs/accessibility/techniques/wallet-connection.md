@@ -846,3 +846,4 @@ useEffect(() => {
 
 - [2.1 Wallet Connection](../guidelines/operable/2.1-wallet-connection.md)
 - [4.1 Assistive Technology](../guidelines/robust/4.1-assistive-technology.md)
+
