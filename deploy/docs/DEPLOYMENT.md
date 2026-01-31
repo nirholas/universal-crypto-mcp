@@ -611,3 +611,4 @@ UV_THREADPOOL_SIZE=128
 - Documentation: https://docs.universal-crypto-mcp.com
 - Discord: https://discord.gg/universal-crypto
 - Email: support@universal-crypto-mcp.com
+
