@@ -251,3 +251,4 @@ Universal Crypto MCP is an open-source MCP server that gives AI assistants like 
 
 *Press kit last updated: January 2026*
 *For the latest information, visit the GitHub repository.*
+
