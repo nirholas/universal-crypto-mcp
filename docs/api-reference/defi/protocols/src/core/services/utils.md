@@ -37,3 +37,4 @@ Utility functions for formatting and parsing values
 | <a id="hextonumber"></a> `hexToNumber()` | (`hex`: `string`) => `number` | [defi/protocols/src/core/services/utils.ts:35](https://github.com/nirholas/universal-crypto-mcp/blob/2b24f56f5c1847dd14a50a618b98164e511a842f/packages/defi/protocols/src/core/services/utils.ts#L35) |
 | <a id="numbertohex"></a> `numberToHex()` | (`num`: `number`) => `string` | [defi/protocols/src/core/services/utils.ts:40](https://github.com/nirholas/universal-crypto-mcp/blob/2b24f56f5c1847dd14a50a618b98164e511a842f/packages/defi/protocols/src/core/services/utils.ts#L40) |
 | <a id="parseether"></a> `parseEther()` | (`ether`: `string`, `unit?`: `"wei"` \| `"gwei"`) => `bigint` | [defi/protocols/src/core/services/utils.ts:17](https://github.com/nirholas/universal-crypto-mcp/blob/2b24f56f5c1847dd14a50a618b98164e511a842f/packages/defi/protocols/src/core/services/utils.ts#L17) |
+
