@@ -77,3 +77,4 @@ compactor:
 # Analytics - query patterns
 analytics:
   reporting_enabled: false
+
