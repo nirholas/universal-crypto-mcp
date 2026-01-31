@@ -927,3 +927,4 @@ const [amount, setAmount] = useState(MaxUint256);
 - [3.4 Risk Communication](../guidelines/understandable/3.4-risk-communication.md)
 - [3.3 Error Prevention](../guidelines/understandable/3.3-error-prevention.md)
 - [2.2 Transaction Signing](../guidelines/operable/2.2-transaction-signing.md)
+
