@@ -216,11 +216,66 @@ export const RESERVED_SUBDOMAINS = [
   'mcp', 'x402', 'agenti', 'crypto', 'defi', 'swap', 'trade',
 ];
 
+// In-memory subdomain registry (would be database in production)
+const registeredSubdomains = new Set<string>();
+
+/**
+ * Check if a subdomain is available
+ * Validates format, checks reserved list, and queries registry
+ */
 export function isSubdomainAvailable(subdomain: string): boolean {
   if (!isValidSubdomain(subdomain)) return false;
   if (RESERVED_SUBDOMAINS.includes(subdomain)) return false;
-  // TODO: Check database for existing subdomains
+  
+  // Check against registered subdomains
+  if (registeredSubdomains.has(subdomain.toLowerCase())) return false;
+  
   return true;
+}
+
+/**
+ * Check subdomain availability with async database lookup
+ */
+export async function checkSubdomainAvailability(
+  subdomain: string,
+  dbQuery?: (subdomain: string) => Promise<boolean>
+): Promise<{ available: boolean; reason?: string }> {
+  if (!isValidSubdomain(subdomain)) {
+    return { available: false, reason: 'Invalid subdomain format. Use 3-32 lowercase alphanumeric characters and hyphens.' };
+  }
+  
+  if (RESERVED_SUBDOMAINS.includes(subdomain.toLowerCase())) {
+    return { available: false, reason: 'This subdomain is reserved.' };
+  }
+
+  // Check in-memory registry
+  if (registeredSubdomains.has(subdomain.toLowerCase())) {
+    return { available: false, reason: 'This subdomain is already taken.' };
+  }
+
+  // Optional database check for persistence
+  if (dbQuery) {
+    const exists = await dbQuery(subdomain.toLowerCase());
+    if (exists) {
+      return { available: false, reason: 'This subdomain is already registered.' };
+    }
+  }
+
+  return { available: true };
+}
+
+/**
+ * Register a subdomain (call after successful creation)
+ */
+export function registerSubdomain(subdomain: string): void {
+  registeredSubdomains.add(subdomain.toLowerCase());
+}
+
+/**
+ * Unregister a subdomain (call on deletion)
+ */
+export function unregisterSubdomain(subdomain: string): void {
+  registeredSubdomains.delete(subdomain.toLowerCase());
 }
 
 export default {
@@ -231,5 +286,8 @@ export default {
   getServerUrl,
   isValidSubdomain,
   isSubdomainAvailable,
+  checkSubdomainAvailability,
+  registerSubdomain,
+  unregisterSubdomain,
   RESERVED_SUBDOMAINS,
 };

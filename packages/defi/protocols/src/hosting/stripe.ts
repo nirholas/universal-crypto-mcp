@@ -158,7 +158,17 @@ export async function handleWebhook(
         customerId: invoice.customer,
         invoiceId: invoice.id,
       });
-      // TODO: Send email notification to user
+      
+      // Send email notification via configured email service
+      const customerEmail = invoice.customer_email;
+      if (customerEmail) {
+        await sendPaymentFailedEmail(customerEmail, {
+          invoiceId: invoice.id,
+          amount: invoice.amount_due,
+          currency: invoice.currency,
+          retryUrl: invoice.hosted_invoice_url || undefined,
+        });
+      }
       break;
     }
 
@@ -291,6 +301,75 @@ export function verifyWebhookSignature(
  */
 export function getStripeInstance(): Stripe {
   return stripe;
+}
+
+/**
+ * Send payment failed email notification
+ */
+async function sendPaymentFailedEmail(
+  email: string,
+  details: {
+    invoiceId: string;
+    amount: number;
+    currency: string;
+    retryUrl?: string;
+  }
+): Promise<void> {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+  const fromEmail = process.env.EMAIL_FROM || 'noreply@agenti.cash';
+
+  const subject = 'Payment Failed - Action Required';
+  const body = `
+    Your payment of ${(details.amount / 100).toFixed(2)} ${details.currency.toUpperCase()} has failed.
+    
+    Invoice ID: ${details.invoiceId}
+    
+    ${details.retryUrl ? `Please update your payment method: ${details.retryUrl}` : 'Please update your payment method in your account settings.'}
+    
+    If you need assistance, please contact support.
+  `.trim();
+
+  try {
+    if (resendApiKey) {
+      // Use Resend
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: email,
+          subject,
+          text: body,
+        }),
+      });
+      Logger.info('Payment failed email sent via Resend', { email });
+    } else if (sendgridApiKey) {
+      // Use SendGrid
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sendgridApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email }] }],
+          from: { email: fromEmail },
+          subject,
+          content: [{ type: 'text/plain', value: body }],
+        }),
+      });
+      Logger.info('Payment failed email sent via SendGrid', { email });
+    } else {
+      // Log warning if no email service configured
+      Logger.warn('No email service configured, payment failure email not sent', { email });
+    }
+  } catch (error) {
+    Logger.error('Failed to send payment failed email', { email, error });
+  }
 }
 
 export default {

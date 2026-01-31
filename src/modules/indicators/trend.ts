@@ -21,7 +21,6 @@ import {
   movingMax,
   movingMin,
   movingSum,
-  parabolicSar,
   qstick,
   kdj,
   rollingMovingAverage,
@@ -35,6 +34,55 @@ import {
   vortex,
 } from "indicatorts";
 import { fetchOhlcvData } from "./utils/fetchOhlcv.js";
+
+// Local parabolicSar implementation (not exported from indicatorts in all versions)
+function parabolicSar(high: number[], low: number[], close: number[], options?: { step?: number; max?: number }): number[] {
+  const step = options?.step ?? 0.02;
+  const max = options?.max ?? 0.2;
+  const n = close.length;
+  const sar = new Array<number>(n).fill(0);
+  
+  if (n < 2) return sar;
+  
+  let af = step;
+  let isUptrend = close[1] > close[0];
+  let ep = isUptrend ? high[0] : low[0];
+  sar[0] = isUptrend ? low[0] : high[0];
+  
+  for (let i = 1; i < n; i++) {
+    sar[i] = sar[i - 1] + af * (ep - sar[i - 1]);
+    
+    if (isUptrend) {
+      if (low[i] < sar[i]) {
+        isUptrend = false;
+        sar[i] = ep;
+        af = step;
+        ep = low[i];
+      } else {
+        if (high[i] > ep) {
+          ep = high[i];
+          af = Math.min(af + step, max);
+        }
+        sar[i] = Math.min(sar[i], low[i - 1], i > 1 ? low[i - 2] : low[i - 1]);
+      }
+    } else {
+      if (high[i] > sar[i]) {
+        isUptrend = true;
+        sar[i] = ep;
+        af = step;
+        ep = high[i];
+      } else {
+        if (low[i] < ep) {
+          ep = low[i];
+          af = Math.min(af + step, max);
+        }
+        sar[i] = Math.max(sar[i], high[i - 1], i > 1 ? high[i - 2] : high[i - 1]);
+      }
+    }
+  }
+  
+  return sar;
+}
 
 const symbolSchema = z.string().describe("Trading pair, e.g., 'BTC/USDT'");
 const timeframeSchema = z.string().default("1h").describe("Timeframe, e.g., '1m', '1h', '1d'");

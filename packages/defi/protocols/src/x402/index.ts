@@ -364,11 +364,21 @@ export function registerX402(server: McpServer): void {
   // Register client-side tools (making payments)
   registerX402Tools(server)
   
-  // TODO: Register server-side tools (receiving payments)
-  // registerX402ServerTools(server)
+  // Register server-side tools (receiving payments)
+  try {
+    registerX402ServerTools(server)
+    Logger.info("x402: Server-side payment receiving tools registered")
+  } catch (err) {
+    Logger.warn("x402: Server-side tools not available - missing configuration")
+  }
   
-  // TODO: Register UCAI tools (smart contract AI payments)
-  // registerUCAITools(server)
+  // Register UCAI tools (smart contract AI payments)
+  try {
+    registerUCAITools(server)
+    Logger.info("x402: UCAI smart contract AI tools registered")
+  } catch (err) {
+    Logger.warn("x402: UCAI tools not available - missing configuration")
+  }
   
   Logger.info("x402: Payment protocol ready 💰")
 }
