@@ -82,7 +82,7 @@ function createApp(): express.Application {
     const start = Date.now();
     res.on("finish", () => {
       const duration = Date.now() - start;
-      console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+      Logger.info('HTTP Request', { method: req.method, path: req.path, status: res.statusCode, duration: `${duration}ms` });
     });
     next();
   });
@@ -341,16 +341,16 @@ function startSessionCleanup() {
 
 // Main entry point
 async function main() {
-  console.log("═══════════════════════════════════════════════════════════");
-  console.log("  Universal Crypto MCP - Enterprise Gateway");
-  console.log("  x402 Payment-Enabled API Platform");
-  console.log("═══════════════════════════════════════════════════════════");
-  console.log(`  Name: ${config.server.name}`);
-  console.log(`  Version: ${config.server.version}`);
-  console.log(`  Network: ${config.payment.network}`);
-  console.log(`  Wallet: ${config.payment.wallet.slice(0, 10)}...`);
-  console.log(`  Test Mode: ${config.server.testMode}`);
-  console.log("═══════════════════════════════════════════════════════════");
+  Logger.info('═══════════════════════════════════════════════════════════');
+  Logger.info('  Universal Crypto MCP - Enterprise Gateway');
+  Logger.info('  x402 Payment-Enabled API Platform');
+  Logger.info('═══════════════════════════════════════════════════════════');
+  Logger.info(`  Name: ${config.server.name}`);
+  Logger.info(`  Version: ${config.server.version}`);
+  Logger.info(`  Network: ${config.payment.network}`);
+  Logger.info(`  Wallet: ${config.payment.wallet.slice(0, 10)}...`);
+  Logger.info(`  Test Mode: ${config.server.testMode}`);
+  Logger.info('═══════════════════════════════════════════════════════════');
 
   const app = createApp();
   const port = config.server.port;
@@ -358,12 +358,12 @@ async function main() {
   startSessionCleanup();
 
   app.listen(port, () => {
-    console.log(`\n🚀 Server running on http://localhost:${port}`);
-    console.log(`📊 Metrics: http://localhost:${port}/metrics`);
-    console.log(`💰 Pricing: http://localhost:${port}/pricing`);
-    console.log(`📋 Discovery: http://localhost:${port}/.well-known/x402`);
-    console.log(`🔌 MCP Endpoint: http://localhost:${port}/mcp`);
-    console.log("\n✅ Ready to accept x402 payments!");
+    Logger.info(`🚀 Server running on http://localhost:${port}`);
+    Logger.info(`📊 Metrics: http://localhost:${port}/metrics`);
+    Logger.info(`💰 Pricing: http://localhost:${port}/pricing`);
+    Logger.info(`📋 Discovery: http://localhost:${port}/.well-known/x402`);
+    Logger.info(`🔌 MCP Endpoint: http://localhost:${port}/mcp`);
+    Logger.info('✅ Ready to accept x402 payments!');
   });
 }
 

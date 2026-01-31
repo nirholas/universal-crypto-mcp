@@ -32,7 +32,7 @@ const toolRegistry: Map<string, ToolDefinition> = new Map();
  * Register all tools from all packages
  */
 export function registerAllTools(server: Server): void {
-  console.log("[Tools] Registering all MCP tools...");
+  Logger.info('[Tools] Registering all MCP tools');
 
   // DeFi Tools
   registerDeFiTools(server);
@@ -52,7 +52,7 @@ export function registerAllTools(server: Server): void {
   // Security Tools
   registerSecurityTools(server);
 
-  console.log(`[Tools] Registered ${toolRegistry.size} tools`);
+  Logger.info(`[Tools] Registered ${toolRegistry.size} tools`);
 }
 
 /**

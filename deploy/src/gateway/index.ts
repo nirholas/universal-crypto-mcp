@@ -13,17 +13,13 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { rateLimit } from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
 import Redis from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
 
 import { x402Gateway } from './x402-gateway.js';
-import { rateLimitMiddleware } from './rate-limiter.js';
 import { metricsMiddleware, metricsEndpoint } from './metrics.js';
 import { healthCheck, readinessCheck, livenessCheck } from './health.js';
 import { requestLogger, errorLogger } from './logging.js';
-import { apiKeyAuth, x402Auth } from './auth.js';
 import { loadGatewayConfig, GatewayConfig } from './config.js';
 import { EndpointRegistry } from './endpoints.js';
 import { logger as Logger } from './logger.js';
@@ -57,8 +53,11 @@ export class UniversalCryptoGateway {
         port: this.config.redis.port,
         password: this.config.redis.password,
         db: this.config.redis.db,
-        retryDelayOnFailover: 100,
         maxRetriesPerRequest: 3,
+        retryStrategy: (times: number) => {
+          const delay = Math.min(times * 50, 2000);
+          return delay;
+        },
       });
 
       this.redis.on('error', (err) => {
@@ -147,7 +146,13 @@ export class UniversalCryptoGateway {
         version: '1.0.0',
         description: 'Enterprise x402 payment gateway for crypto MCP services',
         endpoints: this.endpoints.getPublicEndpoints(),
-        pricing: PRICING_TIERS,
+        pricing: {
+          free: 'Limited free access (10 req/min)',
+          basic: 'Basic tier ($10/month, 100 req/min)',
+          pro: 'Pro tier ($50/month, 1000 req/min)',
+          enterprise: 'Enterprise tier (custom)',
+          x402: 'Pay-per-request with crypto',
+        },
         documentation: 'https://docs.universal-crypto-mcp.com',
         support: 'support@universal-crypto-mcp.com',
       });
@@ -321,7 +326,10 @@ export class UniversalCryptoGateway {
       const tools = await this.endpoints.listMCPTools();
       res.json({
         tools,
-        pricing: PRICING_TIERS,
+        pricing: {
+          free: 'Limited free access',
+          x402: 'Pay-per-use with crypto',
+        },
       });
     });
 

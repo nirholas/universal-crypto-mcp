@@ -405,7 +405,8 @@ export class x402Gateway {
     try {
       // Ethereum signed message prefix
       const prefix = Buffer.from(`\x19Ethereum Signed Message:\n${messageHash.length}`);
-      const prefixedHash = crypto.createHash('sha256')
+      // Prefixed hash for EIP-191 compliance (not currently used, but kept for reference)
+      const _prefixedHash = crypto.createHash('sha256')
         .update(Buffer.concat([prefix, messageHash]))
         .digest();
       const sigHex = signature.startsWith('0x') ? signature.slice(2) : signature;
