@@ -21,6 +21,7 @@ import { createStargateProvider } from "./stargate.js";
 import { createHopProvider } from "./hop.js";
 import { createCbridgeProvider } from "./cbridge.js";
 import { createSocketProvider } from "./socket.js";
+import { createSynapseProvider } from "./synapse.js";
 
 /**
  * Default configuration
@@ -116,8 +117,10 @@ export class BridgeAggregator {
           );
           break;
         case BridgeProvider.SYNAPSE:
-          // TODO: Implement Synapse protocol
-          console.warn("[BridgeAggregator] Synapse protocol not yet implemented");
+          this.providers.set(
+            BridgeProvider.SYNAPSE,
+            createSynapseProvider()
+          );
           break;
       }
     }

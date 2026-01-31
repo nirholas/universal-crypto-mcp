@@ -8,7 +8,7 @@
  */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { Logger } from "../utils/logger.js";
+import Logger from "../../utils/logger.js"
 
 // Simple in-memory storage for research sessions
 const researchStorage = new Map<string, ResearchSession>();

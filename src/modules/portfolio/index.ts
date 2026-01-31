@@ -10,7 +10,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
 import { createPublicClient, http, formatEther } from "viem"
 import { mainnet, bsc, polygon, arbitrum, avalanche, optimism } from "viem/chains"
-import { Logger } from "../utils/logger.js"
+import Logger from "../../utils/logger.js"
 
 // In-memory portfolio storage (would use database in production)
 const portfolios = new Map<

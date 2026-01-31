@@ -93,10 +93,33 @@ const priceUpdateWorker = new Worker(
     console.log(`[PriceUpdate] Updating prices for ${tokens.length} tokens`);
 
     try {
-      // TODO: Implement price fetching from CoinGecko/DeFiLlama
-      // Update cached prices in Redis
+      // Fetch prices from CoinGecko
+      const tokenIds = tokens.join(',');
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${tokenIds}&vs_currencies=usd`,
+        { signal: AbortSignal.timeout(10000) }
+      );
+
+      if (!response.ok) {
+        throw new Error(`CoinGecko API error: ${response.status}`);
+      }
+
+      const prices = await response.json();
       
-      return { updated: tokens.length };
+      // Update cached prices in Redis
+      const redis = connection;
+      const pipeline = redis.pipeline();
+      
+      for (const [tokenId, data] of Object.entries(prices)) {
+        if (data && typeof data === 'object' && 'usd' in data) {
+          const price = (data as { usd: number }).usd;
+          pipeline.setex(`price:${tokenId}`, 300, price.toString()); // 5 min TTL
+        }
+      }
+      
+      await pipeline.exec();
+      
+      return { updated: Object.keys(prices).length };
     } catch (error) {
       console.error('[PriceUpdate] Error:', error);
       throw error;
@@ -119,11 +142,47 @@ const healthCheckWorker = new Worker(
     console.log(`[HealthCheck] Checking ${protocol}`);
 
     try {
-      // TODO: Implement health checks for each protocol
-      // - Check API endpoints are responding
-      // - Check contract state
+      // Implement health checks for each protocol
+      let healthy = false;
       
-      const healthy = true; // Placeholder
+      if (protocol === '1inch') {
+        // Check 1inch API endpoint
+        const response = await fetch(
+          'https://api.1inch.dev/swap/v6.0/1/healthcheck',
+          { 
+            signal: AbortSignal.timeout(5000),
+            headers: {
+              'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}`,
+            }
+          }
+        );
+        healthy = response.ok;
+      } else if (protocol === 'paraswap') {
+        // Check ParaSwap API
+        const response = await fetch(
+          'https://api.paraswap.io/prices',
+          { signal: AbortSignal.timeout(5000) }
+        );
+        healthy = response.ok;
+      } else if (protocol === 'uniswap') {
+        // Check Uniswap subgraph
+        const response = await fetch(
+          'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: '{ factories(first: 1) { id } }'
+            }),
+            signal: AbortSignal.timeout(5000)
+          }
+        );
+        healthy = response.ok;
+      } else {
+        // Default: assume healthy
+        healthy = true;
+      }
+      
       setProtocolHealth(protocol, healthy);
 
       return { protocol, healthy };

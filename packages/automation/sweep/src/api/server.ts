@@ -385,13 +385,40 @@ if (x402Receiver) {
     "/api/consolidate/execute",
     consolidateExecuteMiddleware(x402Receiver),
     async (c) => {
-      // TODO: Implement consolidation execution
-      return c.json({ message: "Not implemented yet" }, 501);
+      try {
+        const body = await c.req.json();
+        const { walletAddress, targetChain, tokens } = body;
+
+        if (!walletAddress || !targetChain || !Array.isArray(tokens)) {
+          return c.json({ error: "Missing required fields" }, 400);
+        }
+
+        // Queue consolidation jobs for each source chain
+        const jobs = [];
+        for (const token of tokens) {
+          const job = await consolidateQueue.add('consolidate', {
+            sourceChain: token.chain,
+            targetChain,
+            tokenAddress: token.address,
+            amount: token.amount,
+            walletAddress,
+          });
+          jobs.push({ jobId: job.id, chain: token.chain });
+        }
+
+        return c.json({
+          consolidationId: `consolidate-${Date.now()}`,
+          jobs,
+          status: 'queued',
+        });
+      } catch (error) {
+        return c.json({ error: String(error) }, 500);
+      }
     }
   );
 } else {
   app.post("/api/consolidate/execute", async (c) => {
-    return c.json({ message: "Not implemented yet" }, 501);
+    return c.json({ message: "x402 not configured" }, 503);
   });
 }
 

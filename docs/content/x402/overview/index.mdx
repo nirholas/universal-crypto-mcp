@@ -1,0 +1,366 @@
+---
+title: x402 Protocol - AI Agents That Pay for APIs
+description: Enable AI agents to automatically pay for premium APIs and services using cryptocurrency
+category: x402
+keywords: [x402, payment protocol, AI payments, HTTP 402, cryptocurrency, micro-payments]
+order: 1
+published: true
+---
+
+# x402 Payment Protocol
+
+**AI agents can now pay for things on the internet!** 💸
+
+The x402 protocol enables AI agents to automatically pay for premium APIs, services, and data using cryptocurrency. It's HTTP 402 "Payment Required" - but actually implemented.
+
+## What is x402?
+
+x402 is a protocol that allows:
+- 🤖 **AI agents** to automatically pay for API calls
+- 💰 **API providers** to monetize their services with pay-per-use pricing
+- ⚡ **Instant micropayments** using EVM and Solana
+- 🔄 **Agent-to-agent commerce** - AI agents selling to other AI agents
+
+### Example Flow
+
+```typescript
+// AI agent (Claude) wants premium weather data
+User: "Get premium weather forecast for Tokyo"
+
+Claude: 🔍 Checking x402 balance... $45.23 USDC on Arbitrum
+        💳 Paying $0.01 for premium API access...
+        ✅ Payment confirmed! Transaction: 0x1234...
+        
+        🌤️ Tokyo Weather (7-day premium forecast):
+        - Monday: 75°F, Sunny, 0% rain
+        - Tuesday: 72°F, Partly cloudy...
+```
+
+The agent automatically:
+1. Detected the API requires payment (402 response)
+2. Checked wallet balance
+3. Paid the required amount
+4. Retried the request with payment proof
+5. Got the premium data
+
+## Why x402?
+
+### Traditional APIs
+- ❌ Require manual sign-up
+- ❌ Monthly subscriptions (pay even if not used)
+- ❌ Complex API key management
+- ❌ No agent-to-agent payments
+
+### x402 Protocol
+- ✅ Pay-per-use (only pay for what you use)
+- ✅ No sign-up or API keys needed
+- ✅ Automatic payment by AI agents
+- ✅ Agent-to-agent commerce enabled
+- ✅ Instant settlement
+- ✅ Multi-chain support (EVM + Solana)
+
+## Quick Start
+
+### For API Providers (Servers)
+
+Make your API x402-enabled in 3 lines:
+
+```typescript
+import { x402Middleware } from '@nirholas/x402'
+
+// Add x402 middleware to your Express/Hono/Next.js API
+app.use(x402Middleware({
+  price: '0.01', // $0.01 per request
+  chain: 'arbitrum',
+  token: 'USDC'
+}))
+```
+
+Now your API automatically:
+- Returns 402 for unpaid requests
+- Accepts crypto payments
+- Verifies payments on-chain
+- Grants access after payment
+
+### For AI Agents (Clients)
+
+Enable your agent to pay for APIs:
+
+```typescript
+import { x402Client } from '@nirholas/x402'
+
+// Wrap your HTTP client with x402
+const client = x402Client({
+  wallet: process.env.AGENT_WALLET_KEY,
+  autoPayment: true, // Automatically pay for 402 responses
+  maxPrice: '1.00', // Don't spend more than $1 per request
+})
+
+// Agent automatically pays if API requires payment
+const data = await client.get('https://premium-api.com/data')
+```
+
+## Language Support
+
+x402 is available in 4 languages:
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+
+### [TypeScript](/docs/x402/typescript)
+16 packages covering:
+- Core SDK
+- EVM & Solana mechanisms
+- HTTP adapters (Express, Hono, Next.js, Axios, Fetch)
+- 30+ examples
+
+### [Python](/docs/x402/python)
+Complete implementation:
+- Core SDK
+- FastAPI & Flask middleware
+- httpx & requests clients
+- Examples
+
+### [Go](/docs/x402/go)
+Production-ready:
+- Core package
+- Gin HTTP integration
+- Efficient implementation
+
+### [Java](/docs/x402/java)
+Basic implementation:
+- Core package
+- HTTP client
+
+</div>
+
+## Architecture
+
+```
+┌─────────────────┐         ┌─────────────────┐
+│   AI Agent      │         │   API Server    │
+│  (Claude, GPT)  │         │  (Your Service) │
+└────────┬────────┘         └────────┬────────┘
+         │                           │
+         │  1. GET /api/data         │
+         ├──────────────────────────>│
+         │                           │
+         │  2. 402 Payment Required  │
+         │<──────────────────────────┤
+         │     + Payment details     │
+         │                           │
+         │  3. Pay on-chain          │
+         ├──────────────────────────>│ Blockchain
+         │                           ├──────────>
+         │  4. GET with proof        │
+         ├──────────────────────────>│
+         │                           │  Verify payment
+         │  5. 200 OK + Data         │  on-chain
+         │<──────────────────────────┤
+         │                           │
+         └───────────────────────────┘
+```
+
+## Key Concepts
+
+### 1. Payment Required (402 Response)
+
+When an API requires payment, it returns HTTP 402 with payment details:
+
+```json
+{
+  "error": "Payment Required",
+  "payment": {
+    "chain": "arbitrum",
+    "token": "USDC",
+    "amount": "0.01",
+    "recipient": "0x1234...",
+    "nonce": "abc123"
+  }
+}
+```
+
+### 2. Payment Mechanisms
+
+x402 supports multiple payment mechanisms:
+
+- **EVM Mechanism**: USDC/USDT on Ethereum, Arbitrum, Optimism, Base, Polygon
+- **SVM Mechanism**: USDC on Solana
+- **Custom Mechanisms**: Build your own payment logic
+
+### 3. Lifecycle Hooks
+
+Customize payment behavior with hooks:
+
+```typescript
+const server = x402Server({
+  hooks: {
+    beforePayment: async (req) => {
+      // Custom validation before accepting payment
+    },
+    afterPayment: async (req, payment) => {
+      // Track revenue, update database, etc.
+    },
+    onError: async (req, error) => {
+      // Handle payment errors
+    }
+  }
+})
+```
+
+### 4. Facilitator
+
+The facilitator manages payment infrastructure:
+- Monitors payment channels
+- Routes payments efficiently
+- Handles multi-chain complexity
+- Provides analytics
+
+## Use Cases
+
+### 1. Premium API Access
+Pay-per-use access to premium data:
+- Weather forecasts
+- Financial data
+- AI model inference
+- Real-time analytics
+
+### 2. Agent Marketplace
+AI agents selling services to other agents:
+- Data processing
+- Content generation
+- Code analysis
+- Trading strategies
+
+### 3. Micro-transactions
+Tiny payments that were previously impossible:
+- $0.001 per image generation
+- $0.0001 per API call
+- $0.01 per minute of compute
+
+### 4. No-Sign-Up APIs
+APIs anyone can use without registration:
+- Just pay and access
+- No accounts needed
+- No monthly subscriptions
+
+## Multi-Chain Support
+
+x402 works on multiple blockchains:
+
+**EVM Chains**:
+- Ethereum (mainnet, Sepolia)
+- Arbitrum
+- Optimism
+- Base
+- Polygon
+- BNB Chain
+
+**Non-EVM**:
+- Solana
+
+Each chain has optimal configuration for speed and cost:
+- Arbitrum: ~$0.01 gas, 2-second finality
+- Solana: ~$0.0001 gas, <1-second finality
+
+## Integration Examples
+
+### Express Server
+```typescript
+import express from 'express'
+import { x402Express } from '@nirholas/x402'
+
+const app = express()
+app.use(x402Express({ price: '0.01', chain: 'arbitrum' }))
+
+app.get('/premium-data', (req, res) => {
+  res.json({ data: 'This cost $0.01 to access!' })
+})
+```
+
+### Next.js API Route
+```typescript
+import { x402Next } from '@nirholas/x402'
+
+export default x402Next(
+  async (req, res) => {
+    res.json({ premium: 'content' })
+  },
+  { price: '0.05', chain: 'base' }
+)
+```
+
+### Python FastAPI
+```python
+from fastapi import FastAPI
+from x402 import x402_middleware
+
+app = FastAPI()
+app.add_middleware(x402_middleware(price="0.01", chain="arbitrum"))
+
+@app.get("/premium")
+async def premium_data():
+    return {"data": "Paid content"}
+```
+
+## Getting Started
+
+Choose your path:
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+### [Build a Payment Server](/docs/x402/getting-started/server)
+Accept payments for your API
+
+### [Build a Payment Client](/docs/x402/getting-started/client)
+Enable your agent to pay
+
+### [Run a Facilitator](/docs/x402/getting-started/facilitator)
+Manage payment infrastructure
+
+</div>
+
+## Documentation Structure
+
+### Overview
+- [What is x402?](/docs/x402/overview) (You are here)
+- [Architecture](/docs/x402/architecture)
+- [Use Cases](/docs/x402/use-cases)
+
+### Getting Started
+- [Quick Start](/docs/x402/getting-started/quick-start)
+- [Server Setup](/docs/x402/getting-started/server)
+- [Client Setup](/docs/x402/getting-started/client)
+- [Facilitator Setup](/docs/x402/getting-started/facilitator)
+
+### Language SDKs
+- [TypeScript](/docs/x402/typescript) (16 packages)
+- [Python](/docs/x402/python)
+- [Go](/docs/x402/go)
+- [Java](/docs/x402/java)
+
+### Advanced
+- [Custom Mechanisms](/docs/x402/advanced/mechanisms)
+- [Lifecycle Hooks](/docs/x402/advanced/hooks)
+- [Multi-Chain Payments](/docs/x402/advanced/multi-chain)
+
+### Deployment
+- [x402-deploy](/docs/x402/deployment/x402-deploy)
+- [Monitoring](/docs/x402/deployment/monitoring)
+- [Scaling](/docs/x402/deployment/scaling)
+
+## Community & Support
+
+- 📚 [Full Documentation](/docs/x402)
+- 💬 [Discord](https://discord.gg/universal-crypto-mcp)
+- 🐛 [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues)
+- 𝕏 [Follow Updates](https://x.com/nichxbt)
+
+## What's Next?
+
+- [Quick Start Guide →](/docs/x402/getting-started/quick-start)
+- [Architecture Overview →](/docs/x402/architecture)
+- [TypeScript SDK →](/docs/x402/typescript)
+
+---
+
+**Ready to monetize your API or let your agent spend money?** 🚀

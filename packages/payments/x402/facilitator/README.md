@@ -2,6 +2,23 @@
 
 **Multi-chain payment facilitator with 0.1% fee collection** for the X402 protocol. Supports Arbitrum, Base, Optimism, and Polygon with built-in revenue tracking and Prometheus metrics.
 
+---
+
+## 📚 Documentation Navigation
+
+**New to this project?** Start here: **[START_HERE.md](START_HERE.md)** or **[PROJECT_INDEX.md](PROJECT_INDEX.md)**
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **[START_HERE.md](START_HERE.md)** | Quick orientation & links | Everyone |
+| **[PROJECT_INDEX.md](PROJECT_INDEX.md)** | Complete project reference | Developers |
+| **[README.md](README.md)** | API documentation (this file) | Users/Integrators |
+| **[SETTLEMENT_GUIDE.md](SETTLEMENT_GUIDE.md)** | Fee management & withdrawal | Operators |
+| **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** | Production deployment | DevOps |
+| **[AGENT_COORDINATION.md](AGENT_COORDINATION.md)** | Multi-agent coordination | Developers |
+
+---
+
 ## 🚀 Features
 
 ### Core Payment Features
