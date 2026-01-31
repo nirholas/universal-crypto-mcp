@@ -180,6 +180,29 @@ function createApp(config: ServerConfig) {
     quoteValiditySeconds: 300, // 5 minutes
   }));
   app.use('/payments', createPaymentsRouter(arbitrumClient, paymentCache));
+  
+  // Fee management routes (revenue tracking)
+  app.use('/fees', createFeesRouter(feeService));
+
+  // Networks info endpoint
+  app.get('/networks', (_req: Request, res: Response) => {
+    const networks = config.enabledNetworks.map(id => {
+      const net = getNetworkById(id);
+      return net ? {
+        id: net.id,
+        name: net.name,
+        displayName: net.displayName,
+        isTestnet: net.isTestnet,
+        tokens: Object.keys(net.tokens),
+      } : null;
+    }).filter(Boolean);
+    
+    res.json({
+      success: true,
+      data: networks,
+      timestamp: Date.now(),
+    });
+  });
 
   // Legacy endpoint aliases
   app.get('/payment/:txHash', (req: Request, res: Response) => {
