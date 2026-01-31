@@ -144,7 +144,7 @@ class RedisStore {
 
   async increment(key: string, windowMs: number): Promise<{ count: number; resetTime: number }> {
     const fullKey = this.keyPrefix + key;
-    const windowSeconds = Math.ceil(windowMs / 1000);
+
     const now = Date.now();
 
     // Use Redis MULTI for atomic operation
@@ -264,7 +264,7 @@ export class RateLimiter {
 
         next();
       } catch (error) {
-        Logger.error('Rate limiter error:', error);
+        Logger.error('Rate limiter error:', error as Error);
         // Fail open - allow request on error
         next();
       }

@@ -170,8 +170,8 @@ function createApp(config: ServerConfig) {
   });
 
   // Mount routes
-  app.use('/verify', createVerifyRouter(arbitrumClient, paymentCache));
-  app.use('/settle', createSettleRouter(usdsService, paymentCache));
+  app.use('/verify', createVerifyRouter(arbitrumClient, paymentCache, feeService));
+  app.use('/settle', createSettleRouter(usdsService, paymentCache, feeService));
   app.use('/quote', createQuoteRouter({
     recipientAddress: config.recipientAddress,
     network: config.network,
@@ -245,25 +245,39 @@ async function main() {
   const server = app.listen(config.port, config.host, () => {
     console.log('');
     console.log('🚀 X402 Payment Facilitator Started');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`📍 URL: http://${config.host}:${config.port}`);
-    console.log(`🔗 Network: ${config.network}`);
-    console.log(`💰 Recipient: ${config.recipientAddress}`);
+    console.log(`🔗 Networks: ${config.enabledNetworks.join(', ')}`);
+    console.log(`💰 Fee Recipient: ${config.feeRecipient}`);
+    console.log(`💎 Platform Fee: 0.10% (tiered discounts available)`);
     console.log('');
-    console.log('📌 Endpoints:');
+    console.log('📌 Core Endpoints:');
     console.log(`   POST   /verify          - Verify payment transaction`);
     console.log(`   POST   /settle          - Settle gasless payment`);
     console.log(`   POST   /quote           - Generate payment quote (402)`);
     console.log(`   GET    /payments/:tx    - Query payment status`);
     console.log(`   GET    /payments        - List cached payments`);
+    console.log('');
+    console.log('💵 Fee Endpoints:');
+    console.log(`   GET    /fees/stats      - Fee statistics`);
+    console.log(`   GET    /fees/tiers      - Available fee tiers`);
+    console.log(`   GET    /fees/tier/:addr - Payer tier info`);
+    console.log(`   GET    /fees/calculate  - Calculate fee for amount`);
+    console.log('');
+    console.log('📊 Monitoring:');
     console.log(`   GET    /health          - Health check`);
+    console.log(`   GET    /metrics         - Prometheus metrics`);
+    console.log(`   GET    /networks        - Supported networks`);
     console.log('');
     console.log('💡 Environment Variables:');
     console.log(`   NETWORK=${config.network}`);
-    console.log(`   RPC_URL=${config.rpcUrl.slice(0, 40)}...`);
+    console.log(`   FEE_RECIPIENT=${config.feeRecipient.slice(0, 10)}...`);
     console.log(`   PRIVATE_KEY=${config.privateKey ? '****' : 'Not set (read-only mode)'}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');
+    
+    // Update health status
+    updateHealth(true);
   });
 
   // Graceful shutdown

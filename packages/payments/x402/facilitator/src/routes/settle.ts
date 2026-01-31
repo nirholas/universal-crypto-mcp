@@ -6,11 +6,14 @@
 
 import { Router, type Request, type Response } from 'express';
 import type { Address } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import type { USdsService } from '../services/usds.js';
 import type { PaymentCache } from '../services/cache.js';
+import type { FeeService } from '../services/fees.js';
 import type { SettleRequest, SettleResponse, ErrorResponse, EIP3009Authorization } from '../types.js';
 import { logger } from '../middleware/logger.js';
 import { createSettlementRateLimiter } from '../middleware/rateLimit.js';
+import { recordSettlement } from '../services/metrics.js';
 
 /**
  * Required fields for EIP-3009 authorization
@@ -32,7 +35,8 @@ const REQUIRED_AUTH_FIELDS = [
  */
 export function createSettleRouter(
   usdsService: USdsService,
-  paymentCache: PaymentCache
+  paymentCache: PaymentCache,
+  feeService: FeeService
 ): Router {
   const router = Router();
 
@@ -115,13 +119,33 @@ export function createSettleRouter(
       nonce: authorization.nonce,
     });
 
+    const startTime = Date.now();
+
     try {
+      // Calculate fee BEFORE settlement (0.1% platform fee)
+      const decimals = paymentRequest.token === 'USDC' || paymentRequest.token === 'USDT' ? 6 : 18;
+      const amountBigInt = BigInt(authorization.value);
+      const feeCalc = feeService.calculateFee(amountBigInt, authorization.from as Address, decimals);
+      
       // Execute the settlement
       const result = await usdsService.executeTransferWithAuthorization(
         authorization as EIP3009Authorization
       );
 
       if (result.success && result.txHash) {
+        // Record the fee
+        const feeRecord = feeService.recordFee({
+          paymentId: result.txHash,
+          payer: authorization.from as Address,
+          payee: authorization.to as Address,
+          grossAmount: feeCalc.grossAmount,
+          feeAmount: feeCalc.feeAmount,
+          network: paymentRequest.chain || 'arbitrum',
+          token: paymentRequest.token,
+          txHash: result.txHash,
+          decimals,
+        });
+
         // Cache the settled payment
         paymentCache.set(result.txHash, {
           txHash: result.txHash,
@@ -131,12 +155,24 @@ export function createSettleRouter(
           token: paymentRequest.token,
           from: authorization.from as Address,
           to: authorization.to as Address,
+          feeRecordId: feeRecord.id,
           timestamp: Date.now(),
         });
 
-        logger.info('Gasless settlement successful', {
+        logger.info('Gasless settlement successful with fee', {
           txHash: result.txHash,
           gasUsed: result.gasUsed,
+          feeAmount: feeRecord.feeAmount,
+          feePercent: feeRecord.feePercent,
+        });
+
+        recordSettlement({
+          network: paymentRequest.chain || 'arbitrum',
+          token: paymentRequest.token,
+          success: true,
+          amount: parseFloat(formatUnits(feeCalc.grossAmount, decimals)),
+          fee: parseFloat(formatUnits(feeCalc.feeAmount, decimals)),
+          durationMs: Date.now() - startTime,
         });
 
         return res.json({
@@ -155,6 +191,15 @@ export function createSettleRouter(
         to: authorization.to,
       });
 
+      recordSettlement({
+        network: paymentRequest.chain || 'arbitrum',
+        token: paymentRequest.token,
+        success: false,
+        amount: 0,
+        fee: 0,
+        durationMs: Date.now() - startTime,
+      });
+
       return res.status(400).json({
         success: false,
         txHash: '',
@@ -163,6 +208,14 @@ export function createSettleRouter(
       } satisfies SettleResponse);
     } catch (error) {
       logger.error('Error during settlement', { error });
+      recordSettlement({
+        network: paymentRequest.chain || 'arbitrum',
+        token: paymentRequest.token,
+        success: false,
+        amount: 0,
+        fee: 0,
+        durationMs: Date.now() - startTime,
+      });
       return res.status(500).json({
         error: 'Internal server error during settlement',
         code: 'SETTLEMENT_ERROR',

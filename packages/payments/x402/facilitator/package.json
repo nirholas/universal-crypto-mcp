@@ -1,23 +1,29 @@
 {
   "name": "@nirholas/x402-facilitator",
-  "version": "1.0.0",
-  "description": "Universal Crypto MCP - Production X402 Payment Facilitator Server for Arbitrum",
+  "version": "1.1.0",
+  "description": "Universal Crypto MCP - Production X402 Payment Facilitator with Fee Collection & Multi-Chain Support",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint src/**/*.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "x402",
     "payment",
     "facilitator",
     "arbitrum",
-    "usds",
-    "sperax",
-    "eip-3009"
+    "base",
+    "optimism",
+    "polygon",
+    "usdc",
+    "eip-3009",
+    "multi-chain",
+    "mcp"
   ],
   "author": {
     "name": "nich",
@@ -31,6 +37,7 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
     "lru-cache": "^10.1.0",
+    "prom-client": "^15.1.0",
     "viem": "^2.21.0",
     "winston": "^3.11.0",
     "dotenv": "^16.3.1"
@@ -41,7 +48,8 @@
     "@types/node": "^20.10.0",
     "eslint": "^8.55.0",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

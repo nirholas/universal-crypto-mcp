@@ -1,37 +1,41 @@
 # X402 Payment Facilitator Docker Image
-# Multi-stage build for production deployment
+# Multi-stage build for production deployment with multi-chain support
 
 # ============================================
-# Stage 1: Build
+# Stage 1: Base with pnpm
 # ============================================
-FROM node:20-alpine AS builder
-
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+# ============================================
+# Stage 2: Dependencies
+# ============================================
+FROM base AS deps
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile --prod
 
-# Copy source files
+# ============================================
+# Stage 3: Build
+# ============================================
+FROM base AS builder
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
 COPY tsconfig.json ./
 COPY src/ ./src/
-
-# Build TypeScript
-RUN npm run build
-
-# Prune dev dependencies
-RUN npm prune --production
+RUN pnpm run build
 
 # ============================================
-# Stage 2: Production
+# Stage 4: Production
 # ============================================
 FROM node:20-alpine AS production
 
 # Add labels
 LABEL org.opencontainers.image.title="X402 Payment Facilitator"
-LABEL org.opencontainers.image.description="Production payment facilitator for X402 protocol on Arbitrum"
-LABEL org.opencontainers.image.version="1.0.0"
-LABEL org.opencontainers.image.source="https://github.com/nirholas/x402"
+LABEL org.opencontainers.image.description="Multi-chain payment facilitator with 0.1% fee collection"
+LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.source="https://github.com/nirholas/universal-crypto-mcp"
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -39,8 +43,10 @@ RUN addgroup -g 1001 -S nodejs && \
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 # Copy production files
-COPY --from=builder --chown=facilitator:nodejs /app/node_modules ./node_modules
+COPY --from=deps --chown=facilitator:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=facilitator:nodejs /app/dist ./dist
 COPY --from=builder --chown=facilitator:nodejs /app/package.json ./
 

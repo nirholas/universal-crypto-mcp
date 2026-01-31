@@ -287,7 +287,7 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
       );
     }
 
-    return originalEnd.apply(this, args);
+    return originalEnd.apply(this as any, args);
   } as typeof originalEnd;
 
   next();
@@ -324,7 +324,7 @@ updateSystemMetrics();
 // Metrics Endpoint
 // ============================================================================
 
-export function metricsEndpoint(req: Request, res: Response): void {
+export function metricsEndpoint(_req: Request, res: Response): void {
   const lines: string[] = [];
 
   // Add all metrics

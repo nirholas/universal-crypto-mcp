@@ -11,10 +11,21 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { createPublicClient, http, parseAbi, type Address, type Hex, formatUnits } from "viem"
+import { base } from "viem/chains"
 import Logger from "@/utils/logger.js"
 
 // Fee recipient address - UPDATE THIS TO YOUR ADDRESS
 export const FEE_RECIPIENT = process.env.X402_FEE_RECIPIENT || "0x742d35Cc6634C0532925a3b844Bc9e7595f5bB0D"
+
+// USDC contract on Base
+const BASE_USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as Address
+
+// ERC20 ABI for balance/transfer verification
+const ERC20_ABI = parseAbi([
+  "function balanceOf(address account) view returns (uint256)",
+  "event Transfer(address indexed from, address indexed to, uint256 value)",
+])
 
 // Tool pricing tiers (in USD)
 export const TOOL_PRICING: Record<string, number> = {
@@ -132,7 +143,7 @@ export function generatePaymentHeader(toolName: string): Record<string, string> 
 
 /**
  * Verify x402 payment was made
- * In production, this would verify the transaction on-chain
+ * Verifies the transaction on-chain by checking the transaction receipt
  */
 export async function verifyPayment(
   toolName: string,
@@ -145,8 +156,7 @@ export async function verifyPayment(
     return { valid: true }
   }
   
-  // TODO: Implement actual on-chain verification
-  // For now, accept any non-empty proof
+  // Payment proof required
   if (!paymentProof) {
     return { 
       valid: false, 
@@ -158,9 +168,73 @@ export async function verifyPayment(
   if (!/^0x[a-fA-F0-9]{64}$/.test(paymentProof)) {
     return { valid: false, error: "Invalid payment proof format" }
   }
-  
-  Logger.info("Payment verified", { toolName, paymentProof, amount: requirement.amount })
-  return { valid: true }
+
+  try {
+    // Create client for Base mainnet
+    const publicClient = createPublicClient({
+      chain: base,
+      transport: http(process.env.RPC_BASE || "https://mainnet.base.org"),
+    })
+
+    // Get transaction receipt
+    const receipt = await publicClient.getTransactionReceipt({
+      hash: paymentProof as Hex,
+    })
+
+    if (!receipt) {
+      return { valid: false, error: "Transaction not found on-chain" }
+    }
+
+    if (receipt.status !== "success") {
+      return { valid: false, error: "Transaction failed on-chain" }
+    }
+
+    // Parse Transfer events from the receipt
+    const transferEvents = receipt.logs.filter(log => {
+      // ERC20 Transfer event signature
+      const transferTopic = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      return log.topics[0] === transferTopic && 
+             log.address.toLowerCase() === BASE_USDC_ADDRESS.toLowerCase()
+    })
+
+    if (transferEvents.length === 0) {
+      return { valid: false, error: "No USDC transfer found in transaction" }
+    }
+
+    // Find transfer to our recipient
+    const validTransfer = transferEvents.find(log => {
+      // Topic 2 is the 'to' address (padded to 32 bytes)
+      const toAddress = "0x" + log.topics[2]?.slice(-40).toLowerCase()
+      return toAddress === requirement.recipient.toLowerCase()
+    })
+
+    if (!validTransfer) {
+      return { valid: false, error: `No transfer to recipient ${requirement.recipient} found` }
+    }
+
+    // Verify amount (USDC has 6 decimals)
+    const transferAmount = BigInt(validTransfer.data)
+    const requiredAmount = BigInt(Math.floor(requirement.amount * 1_000_000)) // USDC has 6 decimals
+    
+    // Allow 1% variance for gas/slippage
+    if (transferAmount < (requiredAmount * 99n) / 100n) {
+      return { 
+        valid: false, 
+        error: `Insufficient payment: got ${formatUnits(transferAmount, 6)} USDC, need ${requirement.amount} USDC` 
+      }
+    }
+
+    Logger.info("Payment verified on-chain", { 
+      toolName, 
+      paymentProof, 
+      amount: formatUnits(transferAmount, 6),
+      required: requirement.amount 
+    })
+    return { valid: true }
+  } catch (error) {
+    Logger.error("On-chain verification failed:", error)
+    return { valid: false, error: `Verification failed: ${(error as Error).message}` }
+  }
 }
 
 /**

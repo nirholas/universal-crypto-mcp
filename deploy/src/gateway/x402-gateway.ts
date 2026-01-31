@@ -8,9 +8,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { createPrivateKeyAccount } from 'viem/accounts';
-import { parseEther, parseUnits, formatUnits } from 'viem';
-import { base, arbitrum, mainnet } from 'viem/chains';
+
 import crypto from 'crypto';
 
 import Logger from './logger.js';
@@ -219,7 +217,7 @@ export class x402Gateway {
 
         res.status(402).json(paymentRequest);
       } catch (error) {
-        Logger.error('x402 paywall error:', error);
+        Logger.error('x402 paywall error:', error as Error);
         res.status(500).json({ error: 'Payment processing error' });
       }
     };
@@ -390,7 +388,7 @@ export class x402Gateway {
         signature,
       };
     } catch (error) {
-      Logger.error('Payment verification error:', error);
+      Logger.error('Payment verification error:', error as Error);
       return { valid: false, error: 'Verification failed' };
     }
   }
@@ -418,8 +416,6 @@ export class x402Gateway {
         return false;
       }
 
-      const r = Buffer.from(sigHex.slice(0, 64), 'hex');
-      const s = Buffer.from(sigHex.slice(64, 128), 'hex');
       const v = parseInt(sigHex.slice(128, 130), 16);
 
       // Recover public key using secp256k1
@@ -432,7 +428,7 @@ export class x402Gateway {
 
       // Use viem for proper signature recovery
       const { recoverMessageAddress } = await import('viem');
-      const message = messageHash.toString('hex');
+
       
       try {
         const recoveredAddress = await recoverMessageAddress({
@@ -449,11 +445,11 @@ export class x402Gateway {
         }
         return isValid;
       } catch (viemError) {
-        Logger.error('Viem signature recovery failed:', viemError);
+        Logger.error('Viem signature recovery failed:', viemError as Error);
         return false;
       }
     } catch (error) {
-      Logger.error('Signature verification error:', error);
+      Logger.error('Signature verification error:', error as Error);
       return false;
     }
   }

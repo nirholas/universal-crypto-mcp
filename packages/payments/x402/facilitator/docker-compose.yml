@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # X402 Facilitator
+  facilitator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: x402-facilitator
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+      - ENABLED_NETWORKS=${ENABLED_NETWORKS:-eip155:42161,eip155:8453,eip155:10}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - RECIPIENT_ADDRESS=${RECIPIENT_ADDRESS}
+      - FEE_RECIPIENT=${FEE_RECIPIENT}
+      - ARBITRUM_RPC_URL=${ARBITRUM_RPC_URL}
+      - BASE_RPC_URL=${BASE_RPC_URL}
+      - OPTIMISM_RPC_URL=${OPTIMISM_RPC_URL}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+    networks:
+      - x402-net
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: x402-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - x402-net
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: x402-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - x402-net
+    depends_on:
+      - prometheus
+
+  # Optional: Redis for distributed caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: x402-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - x402-net
+
+networks:
+  x402-net:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  # redis-data:

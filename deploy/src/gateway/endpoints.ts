@@ -16,7 +16,7 @@ export interface EndpointConfig {
   id: string;
   name: string;
   description: string;
-  category: 'defi' | 'trading' | 'market-data' | 'nft' | 'payments' | 'wallets' | 'security' | 'novel';
+  category: 'defi' | 'trading' | 'market-data' | 'nft' | 'payments' | 'wallets' | 'security' | 'novel' | 'layer2' | 'analytics' | 'agents' | 'automation' | 'mcp' | 'infrastructure' | 'generators' | 'blockchain-explorers' | 'bridges';
   path: string;
   methods: ('GET' | 'POST' | 'PUT' | 'DELETE')[];
   pricing: {
@@ -128,6 +128,78 @@ export class EndpointRegistry {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Get public endpoints for API documentation
+   */
+  getPublicEndpoints(): EndpointConfig[] {
+    return this.getAll().map(e => ({
+      ...e,
+      handler: undefined, // Don't expose handlers
+    }));
+  }
+
+  /**
+   * Forward request to MCP server
+   */
+  async forwardTo(server: string, method: string, params: Record<string, unknown>): Promise<unknown> {
+    this.logger.info(`Forwarding to ${server}.${method}`, params);
+    
+    // TODO: Implement actual MCP server forwarding
+    // For now, return mock data
+    return {
+      server,
+      method,
+      params,
+      result: { success: true, data: 'Mock response - implement MCP forwarding' },
+    };
+  }
+
+  /**
+   * Execute MCP tool by name
+   */
+  async executeMCPTool(method: string, params: Record<string, unknown>): Promise<unknown> {
+    this.logger.info(`Executing MCP tool: ${method}`, params);
+    
+    // TODO: Implement actual MCP tool execution
+    return {
+      method,
+      params,
+      result: { success: true, data: 'Mock response - implement MCP tool execution' },
+    };
+  }
+
+  /**
+   * List available MCP tools
+   */
+  async listMCPTools(): Promise<unknown[]> {
+    // TODO: Implement actual MCP tool listing
+    return this.getAll().map(e => ({
+      name: e.id,
+      description: e.description,
+      category: e.category,
+      parameters: e.parameters,
+    }));
+  }
+
+  /**
+   * Stream MCP server response
+   */
+  streamMCP(req: Request, res: Response): void {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    // TODO: Implement actual MCP streaming
+    const interval = setInterval(() => {
+      res.write(`data: ${JSON.stringify({ message: 'Streaming data', timestamp: Date.now() })}\n\n`);
+    }, 1000);
+
+    req.on('close', () => {
+      clearInterval(interval);
+      res.end();
+    });
   }
 
   /**
@@ -906,6 +978,538 @@ export class EndpointRegistry {
       methods: ['GET'],
       pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
       rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // Blockchain Explorer Endpoints
+    // ========================================
+
+    this.register({
+      id: 'explorer.etherscan',
+      name: 'Etherscan Advanced',
+      description: 'Advanced Etherscan API queries',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/etherscan/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.bscscan',
+      name: 'BSCScan',
+      description: 'BNB Chain block explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/bscscan/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.basescan',
+      name: 'BaseScan',
+      description: 'Base network explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/basescan/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.arbiscan',
+      name: 'ArbiScan',
+      description: 'Arbitrum block explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/arbiscan/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.optimism',
+      name: 'Optimism Explorer',
+      description: 'Optimism block explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/optimism/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.polygonscan',
+      name: 'PolygonScan',
+      description: 'Polygon block explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/polygonscan/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'explorer.avalanche',
+      name: 'Avalanche Explorer',
+      description: 'Avalanche C-Chain explorer',
+      category: 'blockchain-explorers',
+      path: '/api/v1/explorer/avalanche/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Alternative Blockchain Endpoints
+    // ========================================
+
+    this.register({
+      id: 'blockchain.solana',
+      name: 'Solana Network',
+      description: 'Solana blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/solana/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.aptos',
+      name: 'Aptos Network',
+      description: 'Aptos blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/aptos/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.sui',
+      name: 'Sui Network',
+      description: 'Sui blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/sui/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.cardano',
+      name: 'Cardano Network',
+      description: 'Cardano blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/cardano/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.polkadot',
+      name: 'Polkadot Network',
+      description: 'Polkadot blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/polkadot/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.cosmos',
+      name: 'Cosmos Hub',
+      description: 'Cosmos blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/cosmos/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'blockchain.near',
+      name: 'NEAR Protocol',
+      description: 'NEAR blockchain queries',
+      category: 'wallets',
+      path: '/api/v1/blockchain/near/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // NFT Marketplace Endpoints
+    // ========================================
+
+    this.register({
+      id: 'nft.opensea.collection',
+      name: 'OpenSea Collection',
+      description: 'Get OpenSea collection data',
+      category: 'nft',
+      path: '/api/v1/nft/opensea/collection/:slug',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'nft.blur.collection',
+      name: 'Blur Collection',
+      description: 'Get Blur marketplace collection data',
+      category: 'nft',
+      path: '/api/v1/nft/blur/collection/:slug',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'nft.axie.stats',
+      name: 'Axie Infinity Stats',
+      description: 'Get Axie Infinity game stats',
+      category: 'nft',
+      path: '/api/v1/nft/axie/stats',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Wallet Services
+    // ========================================
+
+    this.register({
+      id: 'wallet.ens.resolve',
+      name: 'ENS Resolve',
+      description: 'Resolve ENS domain to address',
+      category: 'wallets',
+      path: '/api/v1/wallet/ens/resolve/:name',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'wallet.ens.reverse',
+      name: 'ENS Reverse Lookup',
+      description: 'Get ENS name from address',
+      category: 'wallets',
+      path: '/api/v1/wallet/ens/reverse/:address',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'wallet.safe.info',
+      name: 'Safe Wallet Info',
+      description: 'Get Gnosis Safe wallet information',
+      category: 'wallets',
+      path: '/api/v1/wallet/safe/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'wallet.walletconnect.session',
+      name: 'WalletConnect Session',
+      description: 'Manage WalletConnect sessions',
+      category: 'wallets',
+      path: '/api/v1/wallet/walletconnect/session',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // Intelligence & Analytics
+    // ========================================
+
+    this.register({
+      id: 'intelligence.nansen',
+      name: 'Nansen Intelligence',
+      description: 'Nansen on-chain intelligence',
+      category: 'analytics',
+      path: '/api/v1/intelligence/nansen/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'intelligence.arkham',
+      name: 'Arkham Intelligence',
+      description: 'Arkham entity tracking',
+      category: 'analytics',
+      path: '/api/v1/intelligence/arkham/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.30', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'intelligence.whale-watcher',
+      name: 'Whale Watcher',
+      description: 'Track whale wallet movements',
+      category: 'analytics',
+      path: '/api/v1/intelligence/whales',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // Novel/Advanced Features
+    // ========================================
+
+    this.register({
+      id: 'novel.intent-solver',
+      name: 'Intent Solver',
+      description: 'Solve user intents with optimal execution',
+      category: 'novel',
+      path: '/api/v1/novel/intent-solver',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'novel.privacy-pools',
+      name: 'Privacy Pools',
+      description: 'Private transaction pools',
+      category: 'novel',
+      path: '/api/v1/novel/privacy-pools',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '1.00', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 20 },
+    });
+
+    this.register({
+      id: 'novel.temporal-oracles',
+      name: 'Temporal Oracles',
+      description: 'Time-based oracle data',
+      category: 'novel',
+      path: '/api/v1/novel/temporal-oracles/:query',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'novel.quantum-resistant',
+      name: 'Quantum Resistant Signatures',
+      description: 'Post-quantum cryptography',
+      category: 'novel',
+      path: '/api/v1/novel/quantum/sign',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'novel.reputation-graphs',
+      name: 'Reputation Graphs',
+      description: 'On-chain reputation scoring',
+      category: 'novel',
+      path: '/api/v1/novel/reputation/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.15', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'novel.verbwire',
+      name: 'Verbwire API',
+      description: 'Verbwire NFT infrastructure',
+      category: 'novel',
+      path: '/api/v1/novel/verbwire/:action',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // Generator Tools
+    // ========================================
+
+    this.register({
+      id: 'generators.repo-to-mcp',
+      name: 'Repo to MCP',
+      description: 'Convert GitHub repo to MCP server',
+      category: 'generators',
+      path: '/api/v1/generators/repo-to-mcp',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'generators.abi-to-mcp',
+      name: 'ABI to MCP',
+      description: 'Generate MCP from contract ABI',
+      category: 'generators',
+      path: '/api/v1/generators/abi-to-mcp',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'generators.discovery',
+      name: 'MCP Discovery',
+      description: 'Discover and index MCP servers',
+      category: 'generators',
+      path: '/api/v1/generators/discovery',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    // ========================================
+    // Security (Additional)
+    // ========================================
+
+    this.register({
+      id: 'security.mev-protection',
+      name: 'MEV Protection',
+      description: 'MEV-protected transaction submission',
+      category: 'security',
+      path: '/api/v1/security/mev-protect',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.20', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'security.chainaware',
+      name: 'ChainAware Security',
+      description: 'Multi-chain security monitoring',
+      category: 'security',
+      path: '/api/v1/security/chainaware/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // Payments (Additional x402)
+    // ========================================
+
+    this.register({
+      id: 'payments.x402.create',
+      name: 'Create x402 Invoice',
+      description: 'Create payment invoice',
+      category: 'payments',
+      path: '/api/v1/payments/x402/invoice',
+      methods: ['POST'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'payments.lightning',
+      name: 'Lightning Network',
+      description: 'Bitcoin Lightning payments',
+      category: 'payments',
+      path: '/api/v1/payments/lightning/invoice',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Aggregators & Oracles
+    // ========================================
+
+    this.register({
+      id: 'oracle.price',
+      name: 'Price Oracle',
+      description: 'Aggregated price oracle data',
+      category: 'market-data',
+      path: '/api/v1/oracle/price/:token',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'aggregator.dex',
+      name: 'DEX Aggregator',
+      description: 'Best swap routes across DEXes',
+      category: 'defi',
+      path: '/api/v1/aggregator/dex/quote',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'tracker.token',
+      name: 'Token Tracker',
+      description: 'Track token across chains',
+      category: 'market-data',
+      path: '/api/v1/tracker/token/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Infrastructure
+    // ========================================
+
+    this.register({
+      id: 'infra.proxy',
+      name: 'RPC Proxy',
+      description: 'Managed RPC proxy service',
+      category: 'infrastructure',
+      path: '/api/v1/infra/proxy/:network',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.001', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 50000 },
+    });
+
+    this.register({
+      id: 'infra.ipfs',
+      name: 'IPFS Gateway',
+      description: 'IPFS upload and retrieval',
+      category: 'infrastructure',
+      path: '/api/v1/infra/ipfs/upload',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // Marketplace
+    // ========================================
+
+    this.register({
+      id: 'marketplace.tools.list',
+      name: 'Marketplace Tools',
+      description: 'List all marketplace MCP tools',
+      category: 'mcp',
+      path: '/api/v1/marketplace/tools',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'marketplace.tools.install',
+      name: 'Install Marketplace Tool',
+      description: 'Install tool from marketplace',
+      category: 'mcp',
+      path: '/api/v1/marketplace/tools/:toolId/install',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
     });
   }
 }

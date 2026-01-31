@@ -52,7 +52,7 @@ export function setMcpServerUrl(url: string): void {
 /**
  * Basic health check - just returns if server is running
  */
-export async function healthCheck(req: Request, res: Response): Promise<void> {
+export async function healthCheck(_req: Request, res: Response): Promise<void> {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),

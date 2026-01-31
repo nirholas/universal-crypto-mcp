@@ -394,16 +394,68 @@ export class UCAIPaymentService {
    * Refund a payment (in case of service failure)
    */
   async refundPayment(paymentId: string): Promise<boolean> {
-    // In a real implementation, this would interact with the payment channel
-    // to return funds for failed services
     Logger.info(`Refund requested for payment ${paymentId}`)
     
+    // Simulated payments don't need refunds
     if (paymentId.startsWith("sim_")) {
-      return true // Simulated payments don't need refunds
+      Logger.info(`Simulated payment ${paymentId} - no refund needed`)
+      return true
     }
 
-    // TODO: Implement actual refund logic
-    return true
+    const { publicClient, walletClient, account } = this.getClients()
+
+    if (!walletClient || !account) {
+      Logger.error("Cannot process refund - no wallet configured")
+      return false
+    }
+
+    try {
+      // For channel-based payments, close the channel and return remaining funds
+      if (this.channelId) {
+        // Get remaining channel balance
+        const balance = await publicClient.readContract({
+          address: this.contracts.paymentChannel,
+          abi: PAYMENT_CHANNEL_ABI,
+          functionName: "getChannelBalance",
+          args: [this.channelId],
+        })
+
+        if (balance > 0n) {
+          // Close channel to return funds
+          const hash = await walletClient.writeContract({
+            address: this.contracts.paymentChannel,
+            abi: PAYMENT_CHANNEL_ABI,
+            functionName: "closeChannel",
+            args: [this.channelId],
+            account,
+            chain: this.network === "arbitrum" ? arbitrum : arbitrumSepolia,
+          })
+
+          const receipt = await publicClient.waitForTransactionReceipt({ hash })
+          
+          if (receipt.status === "success") {
+            Logger.info(`Refund processed via channel close: ${hash}`, {
+              paymentId,
+              channelId: this.channelId,
+              refundedAmount: formatUnits(balance, 18),
+            })
+            this.channelId = undefined // Clear channel
+            return true
+          } else {
+            Logger.error(`Refund transaction reverted: ${hash}`)
+            return false
+          }
+        }
+      }
+
+      // For direct payments, we would need the original tx to refund
+      // This requires the payment contract to support refunds
+      Logger.warn(`Direct payment refund not implemented for ${paymentId}`)
+      return false
+    } catch (error) {
+      Logger.error("Refund failed:", error)
+      return false
+    }
   }
 
   /**

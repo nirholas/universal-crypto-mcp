@@ -25,7 +25,7 @@ import { healthCheck, readinessCheck, livenessCheck } from './health.js';
 import { requestLogger, errorLogger } from './logging.js';
 import { apiKeyAuth, x402Auth } from './auth.js';
 import { loadGatewayConfig, GatewayConfig } from './config.js';
-import { EndpointRegistry, PRICING_TIERS } from './endpoints.js';
+import { EndpointRegistry } from './endpoints.js';
 import { logger as Logger } from './logger.js';
 
 // ============================================================================
@@ -120,7 +120,9 @@ export class UniversalCryptoGateway {
     // Request ID
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       req.id = req.headers['x-request-id'] as string || uuidv4();
-      res.setHeader('X-Request-ID', req.id);
+      if (req.id) {
+        res.setHeader('X-Request-ID', req.id);
+      }
       next();
     });
 
@@ -139,7 +141,7 @@ export class UniversalCryptoGateway {
     this.app.get('/metrics', metricsEndpoint);
 
     // API documentation
-    this.app.get('/api', (req, res) => {
+    this.app.get('/api', (_req, res) => {
       res.json({
         name: 'Universal Crypto MCP Gateway',
         version: '1.0.0',
@@ -315,7 +317,7 @@ export class UniversalCryptoGateway {
     );
 
     // List available MCP tools
-    this.app.get('/mcp/tools', async (req, res) => {
+    this.app.get('/mcp/tools', async (_req, res) => {
       const tools = await this.endpoints.listMCPTools();
       res.json({
         tools,
@@ -357,7 +359,7 @@ export class UniversalCryptoGateway {
     });
 
     // Global error handler
-    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       Logger.error('Unhandled error:', err);
 
       // Don't leak error details in production

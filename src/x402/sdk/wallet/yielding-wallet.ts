@@ -598,7 +598,7 @@ export class YieldingWallet {
 
     // Get swap quote from 1inch API
     try {
-      const chainId = this.#chain === 'arbitrum' ? 42161 : 421614; // arbitrum mainnet or sepolia
+      const chainId = this.chain === 'arbitrum' ? 42161 : 421614; // arbitrum mainnet or sepolia
       const fromTokenAddress = this.getTokenAddress(fromToken);
       const toTokenAddress = this.config.usdsAddress;
       const amountWei = parseUnits(amount, 18);
