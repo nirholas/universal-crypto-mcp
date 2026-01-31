@@ -131,7 +131,11 @@ export default function InteractiveSandbox() {
     const htmlFile = workspace.files.find(f => f.name.endsWith('.html'))?.content || '<div id="root"></div>';
     const css = workspace.files.filter(f => f.name.endsWith('.css')).map(f => f.content).join('\n');
     const js = workspace.files.filter(f => f.name.endsWith('.js')).map(f => f.content).join('\n');
-    const consoleBridge = `\n<script>;(function(){const origConsole={log:console.log,warn:console.warn,error:console.error,info:console.info};function send(type,args){try{parent.postMessage({__lyra_preview_console:true,type,entries:args.map(a=>String(a))},'*')}catch(e){}}['log','warn','error','info'].forEach(function(m){console[m]=function(){send(m,Array.from(arguments));try{origConsole[m].apply(console,arguments);}catch(e){}}});})();</script>`;
+    const consoleBridge = `\n<script>;(function(){const origConsole={log:console.log,warn:console.warn,error:console.error,info:console.info};function send(type,args){try{parent.postMessage({__lyra_preview_console:true,type,entries:args.map(a=>String(a))},'*')}catch (e) {
+    console.error("[e]", e instanceof Error ? e.message : String(e));
+  }}['log','warn','error','info'].forEach(function(m){console[m]=function(){send(m,Array.from(arguments));try{origConsole[m].apply(console,arguments);}catch (e) {
+    console.error("[e]", e instanceof Error ? e.message : String(e));
+  }}});})();</script>`;
     return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1" /><style>${css}</style></head><body>${htmlFile}${consoleBridge}<script>${js}</script></body></html>`;
   };
 

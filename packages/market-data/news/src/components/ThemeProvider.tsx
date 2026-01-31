@@ -210,7 +210,9 @@ export function ThemeScript() {
           resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         document.documentElement.classList.add(resolved);
-      } catch (e) {}
+      } catch (e) {
+    console.error("[e]", e instanceof Error ? e.message : String(e));
+  }
     })();
   `;
 
