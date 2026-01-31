@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/contracts/tools.ts:15](https://githu
 #### Returns
 
 `void`
+
