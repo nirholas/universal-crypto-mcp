@@ -1,0 +1,47 @@
+{
+  "name": "@nirholas/credits",
+  "version": "1.0.0",
+  "description": "Credit purchase system bridging fiat payments to x402 crypto payments",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "uuid": "^9.0.0",
+    "ioredis": "^5.3.0",
+    "axios": "^1.6.0",
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@nirholas/x402-facilitator": "^1.0.0"
+  },
+  "keywords": [
+    "credits",
+    "stripe",
+    "x402",
+    "payments",
+    "crypto"
+  ],
+  "author": "nirholas",
+  "license": "Apache-2.0"
+}

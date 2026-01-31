@@ -336,8 +336,16 @@ export class x402Gateway {
         return { valid: false, error: 'Invalid payment chain' };
       }
 
-      // TODO: Verify signature cryptographically
-      // For now, we'll trust the facilitator's verification
+      // Verify signature cryptographically
+      const message = `${payer}:${amount}:${token}:${chain}:${nonce}:${timestamp}`;
+      const messageHash = crypto.createHash('sha256').update(message).digest();
+      
+      // Recover signer from signature and verify it matches the payer
+      const signatureValid = await this.verifyEthereumSignature(messageHash, signature, payer);
+      if (!signatureValid) {
+        Logger.warn('Invalid payment signature', { payer, message });
+        return { valid: false, error: 'Invalid payment signature' };
+      }
 
       // Call facilitator to verify and settle
       const settlementResult = await this.settleWithFacilitator({
@@ -384,6 +392,69 @@ export class x402Gateway {
     } catch (error) {
       Logger.error('Payment verification error:', error);
       return { valid: false, error: 'Verification failed' };
+    }
+  }
+
+  /**
+   * Verify Ethereum signature
+   * Recovers signer from signature and compares to expected payer
+   */
+  private async verifyEthereumSignature(
+    messageHash: Buffer,
+    signature: string,
+    expectedSigner: string
+  ): Promise<boolean> {
+    try {
+      // Ethereum signed message prefix
+      const prefix = Buffer.from(`\x19Ethereum Signed Message:\n${messageHash.length}`);
+      const prefixedHash = crypto.createHash('sha256')
+        .update(Buffer.concat([prefix, messageHash]))
+        .digest();
+
+      // Parse signature components (remove 0x if present)
+      const sigHex = signature.startsWith('0x') ? signature.slice(2) : signature;
+      if (sigHex.length !== 130) {
+        Logger.warn('Invalid signature length', { length: sigHex.length });
+        return false;
+      }
+
+      const r = Buffer.from(sigHex.slice(0, 64), 'hex');
+      const s = Buffer.from(sigHex.slice(64, 128), 'hex');
+      const v = parseInt(sigHex.slice(128, 130), 16);
+
+      // Recover public key using secp256k1
+      // Note: In production, use viem's verifyMessage or ethers for full EIP-191 compliance
+      const recoveryId = v - 27;
+      if (recoveryId !== 0 && recoveryId !== 1) {
+        Logger.warn('Invalid recovery id', { v, recoveryId });
+        return false;
+      }
+
+      // Use viem for proper signature recovery
+      const { recoverMessageAddress } = await import('viem');
+      const message = messageHash.toString('hex');
+      
+      try {
+        const recoveredAddress = await recoverMessageAddress({
+          message: { raw: messageHash },
+          signature: `0x${sigHex}` as `0x${string}`,
+        });
+        
+        const isValid = recoveredAddress.toLowerCase() === expectedSigner.toLowerCase();
+        if (!isValid) {
+          Logger.warn('Signature signer mismatch', { 
+            recovered: recoveredAddress, 
+            expected: expectedSigner 
+          });
+        }
+        return isValid;
+      } catch (viemError) {
+        Logger.error('Viem signature recovery failed:', viemError);
+        return false;
+      }
+    } catch (error) {
+      Logger.error('Signature verification error:', error);
+      return false;
     }
   }
 

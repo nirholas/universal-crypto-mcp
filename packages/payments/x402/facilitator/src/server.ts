@@ -18,24 +18,37 @@ import type { Address } from 'viem';
 import { createArbitrumClient } from './services/arbitrum.js';
 import { createUSdsService } from './services/usds.js';
 import { createPaymentCache } from './services/cache.js';
+import { createFeeService } from './services/fees.js';
+import { createMultiChainClient } from './services/multichain.js';
+import { type NetworkId, DEFAULT_NETWORKS, getNetworkById } from './services/networks.js';
+import { metricsMiddleware, getMetrics, getMetricsContentType, updateHealth, healthStatus } from './services/metrics.js';
 import { logger, requestLogger, errorLogger } from './middleware/logger.js';
 import { createRateLimiter } from './middleware/rateLimit.js';
 import { createVerifyRouter } from './routes/verify.js';
 import { createSettleRouter } from './routes/settle.js';
 import { createQuoteRouter } from './routes/quote.js';
 import { createPaymentsRouter } from './routes/payments.js';
+import { createFeesRouter } from './routes/fees.js';
 import type { Network, ServerConfig, HealthResponse, ErrorResponse } from './types.js';
 
 /**
  * Load configuration from environment
  */
-function loadConfig(): ServerConfig {
+function loadConfig(): ServerConfig & { 
+  feeRecipient: Address;
+  enabledNetworks: NetworkId[];
+} {
   const network = (process.env.NETWORK || 'arbitrum-sepolia') as Network;
   
   const defaultRpcUrls: Record<Network, string> = {
     'arbitrum': 'https://arb1.arbitrum.io/rpc',
     'arbitrum-sepolia': 'https://sepolia-rollup.arbitrum.io/rpc',
   };
+
+  // Parse enabled networks from env or use defaults
+  const enabledNetworks = process.env.ENABLED_NETWORKS
+    ? process.env.ENABLED_NETWORKS.split(',') as NetworkId[]
+    : DEFAULT_NETWORKS;
 
   return {
     port: parseInt(process.env.PORT || '3002', 10),
@@ -44,6 +57,8 @@ function loadConfig(): ServerConfig {
     rpcUrl: process.env.RPC_URL || defaultRpcUrls[network],
     privateKey: process.env.PRIVATE_KEY as `0x${string}` | undefined,
     recipientAddress: (process.env.RECIPIENT_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0') as Address,
+    feeRecipient: (process.env.FEE_RECIPIENT || process.env.RECIPIENT_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0') as Address,
+    enabledNetworks,
     corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['*'],
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10),
     rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
@@ -97,6 +112,29 @@ function createApp(config: ServerConfig) {
 
   const paymentCache = createPaymentCache({
     ttlMs: config.paymentCacheTtlMs,
+  });
+
+  // Initialize fee service (0.1% platform fee)
+  const feeService = createFeeService({
+    feeRecipient: config.feeRecipient,
+  });
+
+  // Initialize multi-chain client
+  const multiChainClient = createMultiChainClient({
+    privateKey: config.privateKey,
+    networks: config.enabledNetworks,
+  });
+
+  // Prometheus metrics endpoint
+  app.get('/metrics', async (_req: Request, res: Response) => {
+    try {
+      const metrics = await getMetrics();
+      res.set('Content-Type', getMetricsContentType());
+      res.send(metrics);
+    } catch (error) {
+      logger.error('Error generating metrics', { error });
+      res.status(500).send('Error generating metrics');
+    }
   });
 
   // Health check endpoint

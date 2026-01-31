@@ -440,6 +440,473 @@ export class EndpointRegistry {
       pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
       rateLimit: { free: 100, paid: 10000 },
     });
+
+    // ========================================
+    // Layer 2 Endpoints
+    // ========================================
+
+    this.register({
+      id: 'layer2.arbitrum.bridge',
+      name: 'Arbitrum Bridge',
+      description: 'Bridge assets to/from Arbitrum',
+      category: 'layer2',
+      path: '/api/v1/layer2/arbitrum/bridge',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'layer2.base.info',
+      name: 'Base Chain Info',
+      description: 'Get Base chain information and stats',
+      category: 'layer2',
+      path: '/api/v1/layer2/base/info',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'layer2.optimism.bridge',
+      name: 'Optimism Bridge',
+      description: 'Bridge assets to/from Optimism',
+      category: 'layer2',
+      path: '/api/v1/layer2/optimism/bridge',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'layer2.polygon-zkevm.bridge',
+      name: 'Polygon zkEVM Bridge',
+      description: 'Bridge assets to/from Polygon zkEVM',
+      category: 'layer2',
+      path: '/api/v1/layer2/polygon-zkevm/bridge',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // Binance Trading Endpoints
+    // ========================================
+
+    this.register({
+      id: 'binance.ticker',
+      name: 'Binance Ticker',
+      description: 'Get Binance price ticker',
+      category: 'trading',
+      path: '/api/v1/binance/ticker/:symbol',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'binance.orderbook',
+      name: 'Binance Order Book',
+      description: 'Get Binance order book depth',
+      category: 'trading',
+      path: '/api/v1/binance/orderbook/:symbol',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.005', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'binance.klines',
+      name: 'Binance Klines',
+      description: 'Get Binance candlestick data',
+      category: 'trading',
+      path: '/api/v1/binance/klines/:symbol',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // CoinGecko Pro Endpoints
+    // ========================================
+
+    this.register({
+      id: 'coingecko.coins.list',
+      name: 'CoinGecko Coins List',
+      description: 'Get list of all coins on CoinGecko',
+      category: 'market-data',
+      path: '/api/v1/coingecko/coins',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 20, paid: 2000 },
+    });
+
+    this.register({
+      id: 'coingecko.coin.detail',
+      name: 'CoinGecko Coin Detail',
+      description: 'Get detailed coin information',
+      category: 'market-data',
+      path: '/api/v1/coingecko/coins/:id',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'coingecko.global',
+      name: 'CoinGecko Global Data',
+      description: 'Get global crypto market data',
+      category: 'market-data',
+      path: '/api/v1/coingecko/global',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    // ========================================
+    // DeFiLlama Endpoints
+    // ========================================
+
+    this.register({
+      id: 'defillama.tvl',
+      name: 'DefiLlama TVL',
+      description: 'Get TVL data for protocols',
+      category: 'market-data',
+      path: '/api/v1/defillama/tvl/:protocol',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'defillama.yields',
+      name: 'DefiLlama Yields',
+      description: 'Get DeFi yield data',
+      category: 'market-data',
+      path: '/api/v1/defillama/yields',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    this.register({
+      id: 'defillama.chains',
+      name: 'DefiLlama Chains',
+      description: 'Get chain TVL rankings',
+      category: 'market-data',
+      path: '/api/v1/defillama/chains',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    // ========================================
+    // Dune Analytics Endpoints
+    // ========================================
+
+    this.register({
+      id: 'dune.query.execute',
+      name: 'Dune Execute Query',
+      description: 'Execute a Dune Analytics query',
+      category: 'analytics',
+      path: '/api/v1/dune/query/:queryId/execute',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'dune.query.results',
+      name: 'Dune Query Results',
+      description: 'Get Dune Analytics query results',
+      category: 'analytics',
+      path: '/api/v1/dune/query/:queryId/results',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    // ========================================
+    // Agent Endpoints
+    // ========================================
+
+    this.register({
+      id: 'agents.defi.execute',
+      name: 'DeFi Agent Execute',
+      description: 'Execute DeFi strategy via AI agent',
+      category: 'agents',
+      path: '/api/v1/agents/defi/execute',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '1.00', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 20 },
+    });
+
+    this.register({
+      id: 'agents.trading.analyze',
+      name: 'Trading Agent Analyze',
+      description: 'AI agent trading analysis',
+      category: 'agents',
+      path: '/api/v1/agents/trading/analyze',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    this.register({
+      id: 'agents.ucai.chat',
+      name: 'UCAI Chat',
+      description: 'Universal Crypto AI assistant',
+      category: 'agents',
+      path: '/api/v1/agents/ucai/chat',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 200 },
+    });
+
+    // ========================================
+    // Automation Endpoints
+    // ========================================
+
+    this.register({
+      id: 'automation.social.post',
+      name: 'Social Media Post',
+      description: 'Automated social media posting',
+      category: 'automation',
+      path: '/api/v1/automation/social/post',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'automation.sweep.execute',
+      name: 'Token Sweep',
+      description: 'Sweep tokens to consolidation wallet',
+      category: 'automation',
+      path: '/api/v1/automation/sweep',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.50', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 20 },
+    });
+
+    this.register({
+      id: 'automation.volume.create',
+      name: 'Volume Bot',
+      description: 'Create trading volume strategy',
+      category: 'automation',
+      path: '/api/v1/automation/volume',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '2.00', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 10 },
+    });
+
+    // ========================================
+    // GMX Endpoints
+    // ========================================
+
+    this.register({
+      id: 'defi.gmx.positions',
+      name: 'GMX Positions',
+      description: 'Get GMX perpetual positions',
+      category: 'defi',
+      path: '/api/v1/defi/gmx/positions/:address',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    this.register({
+      id: 'defi.gmx.markets',
+      name: 'GMX Markets',
+      description: 'Get GMX V2 markets data',
+      category: 'defi',
+      path: '/api/v1/defi/gmx/markets',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Lido Endpoints
+    // ========================================
+
+    this.register({
+      id: 'defi.lido.stats',
+      name: 'Lido Stats',
+      description: 'Get Lido staking statistics',
+      category: 'defi',
+      path: '/api/v1/defi/lido/stats',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'defi.lido.stake',
+      name: 'Lido Stake',
+      description: 'Stake ETH via Lido',
+      category: 'defi',
+      path: '/api/v1/defi/lido/stake',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 50 },
+    });
+
+    // ========================================
+    // Yearn Endpoints
+    // ========================================
+
+    this.register({
+      id: 'defi.yearn.vaults',
+      name: 'Yearn Vaults',
+      description: 'Get Yearn vault data',
+      category: 'defi',
+      path: '/api/v1/defi/yearn/vaults',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Fear & Greed / Sentiment
+    // ========================================
+
+    this.register({
+      id: 'market.feargreed',
+      name: 'Fear & Greed Index',
+      description: 'Get crypto fear and greed index',
+      category: 'market-data',
+      path: '/api/v1/market/feargreed',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'market.sentiment',
+      name: 'Market Sentiment',
+      description: 'Get aggregated market sentiment',
+      category: 'market-data',
+      path: '/api/v1/market/sentiment/:token',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // News Endpoints
+    // ========================================
+
+    this.register({
+      id: 'market.news',
+      name: 'Crypto News',
+      description: 'Get latest crypto news',
+      category: 'market-data',
+      path: '/api/v1/market/news',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'market.news.token',
+      name: 'Token News',
+      description: 'Get news for specific token',
+      category: 'market-data',
+      path: '/api/v1/market/news/:token',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // Indicators Endpoints
+    // ========================================
+
+    this.register({
+      id: 'market.indicators',
+      name: 'Technical Indicators',
+      description: 'Get technical indicators (RSI, MACD, etc)',
+      category: 'market-data',
+      path: '/api/v1/market/indicators/:symbol',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.02', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
+
+    // ========================================
+    // BNB Chain Endpoints
+    // ========================================
+
+    this.register({
+      id: 'bnbchain.info',
+      name: 'BNB Chain Info',
+      description: 'Get BNB Chain information',
+      category: 'defi',
+      path: '/api/v1/bnbchain/info',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 50, paid: 5000 },
+    });
+
+    this.register({
+      id: 'bnbchain.tokens',
+      name: 'BNB Chain Tokens',
+      description: 'Get BEP-20 token list',
+      category: 'defi',
+      path: '/api/v1/bnbchain/tokens',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.01', token: 'USDC', network: 'base' },
+      rateLimit: { free: 10, paid: 1000 },
+    });
+
+    // ========================================
+    // MCP Server Endpoints (Generic)
+    // ========================================
+
+    this.register({
+      id: 'mcp.tools.list',
+      name: 'List MCP Tools',
+      description: 'List all available MCP tools',
+      category: 'mcp',
+      path: '/api/v1/mcp/tools',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'mcp.tools.call',
+      name: 'Call MCP Tool',
+      description: 'Execute any MCP tool',
+      category: 'mcp',
+      path: '/api/v1/mcp/tools/:toolName/call',
+      methods: ['POST'],
+      pricing: { free: false, priceUsd: '0.10', token: 'USDC', network: 'base' },
+      rateLimit: { free: 0, paid: 100 },
+    });
+
+    this.register({
+      id: 'mcp.resources.list',
+      name: 'List MCP Resources',
+      description: 'List all available MCP resources',
+      category: 'mcp',
+      path: '/api/v1/mcp/resources',
+      methods: ['GET'],
+      pricing: { free: true, priceUsd: '0', token: 'USDC', network: 'base' },
+      rateLimit: { free: 100, paid: 10000 },
+    });
+
+    this.register({
+      id: 'mcp.resources.read',
+      name: 'Read MCP Resource',
+      description: 'Read an MCP resource',
+      category: 'mcp',
+      path: '/api/v1/mcp/resources/:resourceUri',
+      methods: ['GET'],
+      pricing: { free: false, priceUsd: '0.05', token: 'USDC', network: 'base' },
+      rateLimit: { free: 5, paid: 500 },
+    });
   }
 }
 

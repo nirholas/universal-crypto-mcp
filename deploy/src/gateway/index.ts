@@ -375,7 +375,7 @@ export class UniversalCryptoGateway {
   async start(): Promise<void> {
     await this.initRedis();
     await this.x402.initialize();
-    await this.endpoints.initialize();
+    // Endpoints are initialized in constructor
 
     const port = this.config.port;
     

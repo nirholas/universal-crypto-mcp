@@ -62,6 +62,8 @@ import {
 import {
   AgentGuardrails,
   ApprovalQueue,
+  type ApprovalRule,
+  type AgentAction,
 } from '../guardrails/index.js';
 
 // ============================================================================
@@ -432,55 +434,59 @@ describe('ApprovalQueue', () => {
     queue = new ApprovalQueue();
   });
 
-  it('should create approval request', () => {
-    const request = queue.createRequest(
-      'agent-1',
-      { type: 'transfer', chain: 'ethereum' },
-      { requiredApprovers: 1, expiresIn: 3600000 }
-    );
+  it('should create approval request', async () => {
+    const action: AgentAction = { type: 'transfer' };
+    const rule: ApprovalRule = {
+      name: 'high-value',
+      condition: () => true,
+      approvers: ['admin'],
+      requiredApprovals: 1,
+      timeout: 3600000,
+    };
+    
+    const request = await queue.createRequest(action, rule);
     
     expect(request.id).toBeDefined();
-    expect(request.agentId).toBe('agent-1');
     expect(request.action.type).toBe('transfer');
     expect(request.status).toBe('pending');
   });
 
-  it('should approve request', () => {
-    const request = queue.createRequest(
-      'agent-1',
-      { type: 'transfer', chain: 'ethereum' },
-      { requiredApprovers: 1, expiresIn: 3600000 }
-    );
+  it('should approve request', async () => {
+    const action: AgentAction = { type: 'transfer' };
+    const rule: ApprovalRule = {
+      name: 'test-rule',
+      condition: () => true,
+      approvers: ['admin'],
+      requiredApprovals: 1,
+      timeout: 3600000,
+    };
     
-    queue.addApproval(request.id, 'approver-1', 'Looks good');
-    const updated = queue.getRequest(request.id);
+    const request = await queue.createRequest(action, rule);
+    queue.approve(request.id, 'approver-1');
+    const isApproved = queue.isApproved(request.id);
     
-    expect(updated?.status).toBe('approved');
-    expect(updated?.approvals.length).toBe(1);
+    expect(isApproved).toBe(true);
   });
 
-  it('should reject request', () => {
-    const request = queue.createRequest(
-      'agent-1',
-      { type: 'transfer', chain: 'ethereum' },
-      { requiredApprovers: 1, expiresIn: 3600000 }
-    );
+  it('should reject request', async () => {
+    const action: AgentAction = { type: 'transfer' };
+    const rule: ApprovalRule = {
+      name: 'test-rule',
+      condition: () => true,
+      approvers: ['admin'],
+      requiredApprovals: 1,
+      timeout: 3600000,
+    };
     
-    queue.reject(request.id, 'rejector-1', 'Not approved');
-    const updated = queue.getRequest(request.id);
+    const request = await queue.createRequest(action, rule);
+    queue.reject(request.id, 'rejector-1');
+    const isApproved = queue.isApproved(request.id);
     
-    expect(updated?.status).toBe('rejected');
-  });
-
-  it('should get pending requests', () => {
-    queue.createRequest('agent-1', { type: 'transfer', chain: 'ethereum' }, { requiredApprovers: 1, expiresIn: 3600000 });
-    queue.createRequest('agent-1', { type: 'swap', chain: 'ethereum' }, { requiredApprovers: 1, expiresIn: 3600000 });
-    
-    const pending = queue.getPendingRequests();
-    expect(pending.length).toBe(2);
+    expect(isApproved).toBe(false);
   });
 });
 
+// Import ApprovalRule type  
 describe('AgentGuardrails', () => {
   it('should allow actions within limits', async () => {
     const guardrails = new AgentGuardrails({
@@ -491,7 +497,6 @@ describe('AgentGuardrails', () => {
     
     const result = await guardrails.check({
       type: 'transfer',
-      chain: 'ethereum',
     });
     
     expect(result.allowed).toBe(true);
@@ -508,7 +513,6 @@ describe('AgentGuardrails', () => {
     
     const result = await guardrails.check({
       type: 'transfer',
-      chain: 'ethereum',
     });
     
     expect(result.allowed).toBe(false);

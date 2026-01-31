@@ -454,8 +454,56 @@ export async function resolveDispute(
 
   // If approved and refund requested, process refund
   if (approved) {
-    // TODO: Implement refund logic
-    console.log("[Facilitator] Refund approved for dispute:", disputeId);
+    try {
+      // Get original payment from database
+      const db = getDb();
+      const [payment] = await db
+        .select()
+        .from(apiPayments)
+        .where(eq(apiPayments.receiptId, dispute.receiptId))
+        .limit(1);
+
+      if (!payment) {
+        throw new Error(`Payment not found for receipt: ${dispute.receiptId}`);
+      }
+
+      if (payment.status === "refunded") {
+        throw new Error("Payment already refunded");
+      }
+
+      // Process the refund
+      const refundResult = await processRefund(
+        payment.payerAddress as Address,
+        payment.amountUsdc,
+        `Dispute ${disputeId} approved: ${resolution}`
+      );
+
+      if (refundResult.success) {
+        dispute.refundTxHash = refundResult.txHash;
+        
+        // Update payment status to refunded
+        await db
+          .update(apiPayments)
+          .set({ 
+            status: "refunded",
+            updatedAt: new Date() 
+          } as any)
+          .where(eq(apiPayments.receiptId, dispute.receiptId));
+
+        console.log("[Facilitator] Refund processed for dispute:", {
+          disputeId,
+          refundTxHash: refundResult.txHash,
+          amount: payment.amountUsdc,
+          to: payment.payerAddress,
+        });
+      } else {
+        console.error("[Facilitator] Refund failed for dispute:", disputeId, refundResult.error);
+        dispute.resolution = `${resolution} (Refund failed: ${refundResult.error})`;
+      }
+    } catch (refundError) {
+      console.error("[Facilitator] Refund error for dispute:", disputeId, refundError);
+      dispute.resolution = `${resolution} (Refund error: ${(refundError as Error).message})`;
+    }
   }
 
   await redis.setex(cacheKey, 604800, JSON.stringify(dispute));
