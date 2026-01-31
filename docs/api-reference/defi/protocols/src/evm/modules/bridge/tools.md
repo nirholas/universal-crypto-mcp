@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/bridge/tools.ts:115](https://github.
 #### Returns
 
 `void`
+
