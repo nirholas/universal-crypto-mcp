@@ -373,9 +373,8 @@ For detailed setup instructions, see [ChatGPT Setup Guide](https://mcp.giving/mc
 | SSE | `npx @nirholas/universal-crypto-mcp --sse` | Legacy HTTP clients |
 
 ---
-
-## 💬 Example Prompts (Copy & Paste!)
-
+ <details>
+<summary> <h1> 💬 Example Prompts (Copy & Paste!) <h1> </summary> 
 Real prompts you can use with Claude, ChatGPT, or Cursor. Just copy and paste!
 
 ### 🔄 Token Swaps
@@ -638,6 +637,7 @@ Read multiple contract values at once from Aave
 ```
 Batch check allowances for all my approved tokens
 ```
+</details> 
 
 ---
 
