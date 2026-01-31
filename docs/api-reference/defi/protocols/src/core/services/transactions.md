@@ -139,3 +139,4 @@ Get a transaction receipt by hash for a specific network
 #### Returns
 
 `Promise`\<`TransactionReceipt`\>
+
