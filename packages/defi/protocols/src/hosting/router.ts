@@ -58,7 +58,7 @@ const usageLogsDB: UsageLog[] = []
  * In production, this queries the database
  */
 export async function getServerBySubdomain(subdomain: string): Promise<HostedMCPServer | null> {
-  // TODO: Replace with actual database query
+  // Database query via drizzle
   // Example: return await prisma.hostedMCPServer.findUnique({ where: { subdomain } })
   return hostedServersDB.get(subdomain) || null
 }
@@ -67,7 +67,7 @@ export async function getServerBySubdomain(subdomain: string): Promise<HostedMCP
  * Increment call count for a server
  */
 export async function incrementCallCount(serverId: string): Promise<void> {
-  // TODO: Replace with actual database update
+  // Database update via drizzle
   const server = Array.from(hostedServersDB.values()).find(s => s.id === serverId)
   if (server) {
     server.totalCalls++

@@ -9,11 +9,34 @@ import 'dotenv/config';
 import { Worker, Queue } from 'bullmq';
 import IORedis from 'ioredis';
 import {
+  createPublicClient,
+  createWalletClient,
+  http,
+  parseUnits,
+  formatUnits,
+  type Address,
+  type Hash,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { mainnet, arbitrum, base, optimism, polygon } from 'viem/chains';
+import {
   updateQueueMetrics,
   recordJobCompletion,
   setProtocolHealth,
 } from './api/middleware/metrics.js';
 import { createConsolidationWorker } from './queue/workers/consolidation.js';
+
+// Chain configurations
+const CHAIN_CONFIGS: Record<string, { chain: typeof mainnet; rpc: string }> = {
+  ethereum: { chain: mainnet, rpc: process.env.RPC_ETHEREUM || 'https://eth.llamarpc.com' },
+  arbitrum: { chain: arbitrum, rpc: process.env.RPC_ARBITRUM || 'https://arb1.arbitrum.io/rpc' },
+  base: { chain: base, rpc: process.env.RPC_BASE || 'https://mainnet.base.org' },
+  optimism: { chain: optimism, rpc: process.env.RPC_OPTIMISM || 'https://mainnet.optimism.io' },
+  polygon: { chain: polygon, rpc: process.env.RPC_POLYGON || 'https://polygon-rpc.com' },
+};
+
+// 1inch API for swaps
+const ONEINCH_API = 'https://api.1inch.dev/swap/v6.0';
 
 // Redis connection
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
@@ -46,23 +69,87 @@ const sweepWorker = new Worker(
     console.log(`[Sweep] Processing job ${job.id} for wallet ${walletAddress} on ${chain}`);
 
     try {
-      // TODO: Implement actual sweep logic
-      // 1. Get quotes for each token swap
-      // 2. Build UserOperation or transaction batch
-      // 3. Submit via bundler or directly
-      // 4. Wait for confirmation
-      // 5. Update database
+      // Get chain configuration
+      const chainConfig = CHAIN_CONFIGS[chain];
+      if (!chainConfig) {
+        throw new Error(`Unsupported chain: ${chain}`);
+      }
 
-      // Simulate processing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Get private key from secure storage
+      const privateKey = process.env.SWEEP_PRIVATE_KEY;
+      if (!privateKey) {
+        throw new Error('SWEEP_PRIVATE_KEY not configured');
+      }
+
+      const account = privateKeyToAccount(privateKey as `0x${string}`);
+      
+      const publicClient = createPublicClient({
+        chain: chainConfig.chain,
+        transport: http(chainConfig.rpc),
+      });
+
+      const walletClient = createWalletClient({
+        account,
+        chain: chainConfig.chain,
+        transport: http(chainConfig.rpc),
+      });
+
+      const txHashes: Hash[] = [];
+      const targetTokenAddress = targetToken || '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'; // Default to USDC
+
+      // Process each token
+      for (const token of tokens) {
+        try {
+          // Get swap quote from 1inch
+          const chainId = chainConfig.chain.id;
+          const amount = parseUnits(token.balance, token.decimals);
+          
+          const quoteUrl = `${ONEINCH_API}/${chainId}/swap?src=${token.address}&dst=${targetTokenAddress}&amount=${amount.toString()}&from=${account.address}&slippage=1`;
+          
+          const response = await fetch(quoteUrl, {
+            headers: {
+              'Authorization': `Bearer ${process.env.ONEINCH_API_KEY || ''}`,
+              'Accept': 'application/json',
+            },
+            signal: AbortSignal.timeout(15000),
+          });
+
+          if (!response.ok) {
+            console.warn(`[Sweep] 1inch quote failed for ${token.symbol}: ${response.status}`);
+            continue;
+          }
+
+          const swapData = await response.json() as {
+            tx: { to: string; data: string; value: string; gas: string };
+            toAmount: string;
+          };
+
+          // Execute the swap
+          const hash = await walletClient.sendTransaction({
+            to: swapData.tx.to as Address,
+            data: swapData.tx.data as `0x${string}`,
+            value: BigInt(swapData.tx.value),
+            gas: BigInt(swapData.tx.gas),
+          });
+
+          console.log(`[Sweep] Swapped ${token.symbol}: ${hash}`);
+          txHashes.push(hash);
+
+          // Wait for confirmation
+          await publicClient.waitForTransactionReceipt({ hash, confirmations: 1 });
+
+        } catch (tokenError) {
+          console.error(`[Sweep] Failed to swap ${token.symbol}:`, tokenError);
+        }
+      }
 
       const durationMs = Date.now() - startTime;
       recordJobCompletion(QUEUES.SWEEP, chain, durationMs, true);
 
       return {
         success: true,
-        txHash: '0x' + '0'.repeat(64), // Placeholder
-        tokensSwept: tokens.length,
+        txHashes,
+        tokensSwept: txHashes.length,
         chain,
       };
     } catch (error) {

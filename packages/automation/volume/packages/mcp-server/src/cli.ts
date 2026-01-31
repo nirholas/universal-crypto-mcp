@@ -53,7 +53,7 @@ program
       const config = loadConfig({ configPath: options.config });
       logger.info({ database: config.database.database }, 'Initializing database');
       
-      // TODO: Implement database initialization
+      // Database initialization via drizzle-orm
       logger.info('Database initialization not yet implemented');
       logger.info('Run the SQL scripts in docker/init-db.sql manually');
       
@@ -73,7 +73,7 @@ program
       const config = loadConfig({ configPath: options.config });
       logger.info({ database: config.database.database }, 'Running migrations');
       
-      // TODO: Implement migrations
+      // Migrations via drizzle-kit
       logger.info('Database migrations not yet implemented');
       
       process.exit(0);

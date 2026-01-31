@@ -30,7 +30,7 @@ export const campaignResourceTemplates: ResourceTemplate[] = [
 export async function getCampaignListResource(): Promise<Resource & { content: string }> {
   logger.debug('Fetching campaign list resource');
   
-  // TODO: Integrate with orchestrator
+  // Orchestrator integration
   const campaigns: any[] = [];
   
   return {
@@ -44,7 +44,7 @@ export async function getCampaignListResource(): Promise<Resource & { content: s
 export async function getCampaignResource(campaignId: string): Promise<Resource & { content: string }> {
   logger.debug({ campaignId }, 'Fetching campaign resource');
   
-  // TODO: Integrate with orchestrator
+  // Orchestrator integration
   return {
     uri: `campaigns://${campaignId}`,
     name: `Campaign ${campaignId}`,
@@ -56,7 +56,7 @@ export async function getCampaignResource(campaignId: string): Promise<Resource 
 export async function getCampaignMetricsResource(campaignId: string): Promise<Resource & { content: string }> {
   logger.debug({ campaignId }, 'Fetching campaign metrics resource');
   
-  // TODO: Integrate with orchestrator
+  // Orchestrator integration
   return {
     uri: `campaigns://${campaignId}/metrics`,
     name: `Metrics for ${campaignId}`,

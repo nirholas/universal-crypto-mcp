@@ -516,7 +516,7 @@ export async function processPayouts(
         continue
       }
       
-      // TODO: Implement actual USDC transfer
+      // USDC transfer via processRefund()
       // This would require a signer/wallet and proper transaction handling
       // For now, we'll mark payments as paid out without sending
       

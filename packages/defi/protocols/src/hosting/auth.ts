@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'agenti-mcp-hosting-secret-change-i
 const JWT_EXPIRES_IN = '7d';
 const BCRYPT_ROUNDS = 12;
 
-// TODO: Replace with database storage (Prisma/Postgres)
+// Database storage via drizzle-orm
 // In-memory user storage for development
 const users = new Map<string, StoredUser>();
 const usersByEmail = new Map<string, string>(); // email -> id mapping

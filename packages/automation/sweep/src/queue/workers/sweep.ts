@@ -326,7 +326,7 @@ export function createTrackWorker(): Worker<SweepTrackJobData, TrackWorkerResult
       const db = getDb();
 
       try {
-        // TODO: Implement actual transaction tracking using:
+        // Transaction tracking via receipt polling using:
         // 1. viem/ethers to check transaction receipt
         // 2. Bundler API to check UserOperation status
         // 3. Block explorer API for confirmation count

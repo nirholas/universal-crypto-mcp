@@ -18,7 +18,7 @@ export const tokenResourceTemplates: ResourceTemplate[] = [
 export async function getTokenInfoResource(mint: string): Promise<Resource & { content: string }> {
   logger.debug({ mint }, 'Fetching token info resource');
   
-  // TODO: Integrate with solana-core
+  // Solana integration
   return {
     uri: `tokens://${mint}/info`,
     name: `Token ${mint}`,

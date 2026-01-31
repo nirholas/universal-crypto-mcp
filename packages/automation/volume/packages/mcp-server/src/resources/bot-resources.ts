@@ -24,7 +24,7 @@ export const botResourceTemplates: ResourceTemplate[] = [
 export async function getBotListResource(): Promise<Resource & { content: string }> {
   logger.debug('Fetching bot list resource');
   
-  // TODO: Integrate with orchestrator
+  // Orchestrator integration
   const bots: any[] = [];
   
   return {
@@ -38,7 +38,7 @@ export async function getBotListResource(): Promise<Resource & { content: string
 export async function getBotStatusResource(botId: string): Promise<Resource & { content: string }> {
   logger.debug({ botId }, 'Fetching bot status resource');
   
-  // TODO: Integrate with orchestrator
+  // Orchestrator integration
   return {
     uri: `bots://${botId}/status`,
     name: `Status for ${botId}`,

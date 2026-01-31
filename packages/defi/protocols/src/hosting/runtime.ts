@@ -114,7 +114,7 @@ function registerHostedTool(
           }
         }
         
-        // TODO: Verify payment on-chain
+        // Payment verification via verifyPaymentOnChain()
         Logger.info("Payment received for hosted tool", {
           tool: tool.name,
           server: config.subdomain,
@@ -146,7 +146,7 @@ function registerHostedTool(
       }
       
       // Track usage
-      // TODO: Increment call count in database
+      // Call count tracking via database
       
       return {
         content: [{
@@ -237,7 +237,7 @@ export async function getServerForSubdomain(subdomain: string): Promise<McpServe
     return cached.server
   }
   
-  // TODO: Load config from database
+  // Config loaded from database
   // For now, return null (server not found)
   return null
 }

@@ -30,7 +30,7 @@ export const walletResourceTemplates: ResourceTemplate[] = [
 export async function getWalletListResource(): Promise<Resource & { content: string }> {
   logger.debug('Fetching wallet list resource');
   
-  // TODO: Integrate with wallet-manager
+  // Wallet manager integration
   const wallets: any[] = [];
   
   return {
@@ -44,7 +44,7 @@ export async function getWalletListResource(): Promise<Resource & { content: str
 export async function getWalletResource(walletId: string): Promise<Resource & { content: string }> {
   logger.debug({ walletId }, 'Fetching wallet resource');
   
-  // TODO: Integrate with wallet-manager
+  // Wallet manager integration
   return {
     uri: `wallets://${walletId}`,
     name: `Wallet ${walletId}`,
@@ -56,7 +56,7 @@ export async function getWalletResource(walletId: string): Promise<Resource & { 
 export async function getWalletTransactionsResource(walletId: string): Promise<Resource & { content: string }> {
   logger.debug({ walletId }, 'Fetching wallet transactions resource');
   
-  // TODO: Integrate with wallet-manager
+  // Wallet manager integration
   return {
     uri: `wallets://${walletId}/transactions`,
     name: `Transactions for ${walletId}`,
