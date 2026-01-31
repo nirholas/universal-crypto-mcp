@@ -90,3 +90,4 @@ ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start gateway
 CMD ["node", "gateway/server.js"]
+
