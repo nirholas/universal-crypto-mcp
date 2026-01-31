@@ -25,3 +25,4 @@ Defined in: [defi/protocols/src/evm/modules/contracts/prompts.ts:12](https://git
 #### Returns
 
 `void`
+
