@@ -241,3 +241,4 @@ Edit `w3ag-audit.ts` and add to the `RULES` array:
 ## License
 
 MIT
+
