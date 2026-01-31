@@ -238,3 +238,4 @@ export function getServersByCategory(category: string): MCPServerConfig[] {
 export function getAllServerIds(): string[] {
   return MCP_SERVERS.map(server => server.id);
 }
+
