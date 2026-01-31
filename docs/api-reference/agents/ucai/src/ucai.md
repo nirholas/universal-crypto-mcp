@@ -265,3 +265,4 @@ Defined in: [agents/ucai/src/ucai.ts:301](https://github.com/nirholas/universal-
 #### Returns
 
 [`UCAIAgent`](/docs/api/agents/ucai/src/ucai.md#ucaiagent)
+
