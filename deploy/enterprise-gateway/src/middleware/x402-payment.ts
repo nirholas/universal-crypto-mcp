@@ -270,3 +270,4 @@ export function x402DiscoveryMiddleware(req: Request, res: Response) {
     documentation: "https://github.com/nirholas/universal-crypto-mcp"
   });
 }
+
