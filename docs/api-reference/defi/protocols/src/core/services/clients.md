@@ -82,3 +82,4 @@ Create a wallet client for a specific network and private key
 {
 }
 ```
+
