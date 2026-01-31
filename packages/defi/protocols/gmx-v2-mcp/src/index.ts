@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * GMX V2 MCP Server
  * 
@@ -9,8 +10,6 @@
  * @github github.com/nirholas
  * @license MIT
  */
-
-#!/usr/bin/env node
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"

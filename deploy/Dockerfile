@@ -12,20 +12,14 @@ WORKDIR /app
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy package files
+# Copy all package files (monorepo structure)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/defi/package.json ./packages/defi/
-COPY packages/trading/package.json ./packages/trading/
-COPY packages/market-data/package.json ./packages/market-data/
-COPY packages/wallets/package.json ./packages/wallets/
-COPY packages/nft/package.json ./packages/nft/
-COPY packages/security/package.json ./packages/security/
-COPY packages/payments/package.json ./packages/payments/
+COPY packages ./packages
 COPY deploy/package.json ./deploy/
-COPY x402-deploy/package.json ./x402-deploy/
+COPY x402-deploy ./x402-deploy
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile || pnpm install
 
 # ==============================================================================
 # Stage 2: Builder
@@ -39,8 +33,6 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/*/node_modules ./packages/*/node_modules
-COPY --from=deps /app/deploy/node_modules ./deploy/node_modules
 
 # Copy source
 COPY . .

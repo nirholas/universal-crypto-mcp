@@ -1,0 +1,60 @@
+{
+  "name": "@universal-crypto-mcp/deploy",
+  "version": "1.0.0",
+  "description": "Enterprise deployment for Universal Crypto MCP with x402 payments",
+  "main": "dist/src/gateway/index.js",
+  "types": "dist/src/gateway/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/gateway/index.js",
+    "dev": "tsx watch src/gateway/index.ts",
+    "docker:build": "docker build -t ucm-gateway .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env ucm-gateway",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f gateway",
+    "k8s:apply": "kubectl apply -f k8s/",
+    "k8s:delete": "kubectl delete -f k8s/",
+    "k8s:logs": "kubectl -n ucm logs -f deployment/ucm-gateway",
+    "k8s:status": "kubectl -n ucm get pods,svc,ingress,hpa",
+    "test": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "ioredis": "^5.3.2",
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1",
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "x402": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2",
+    "tsx": "^4.6.2",
+    "vitest": "^1.0.0",
+    "eslint": "^8.54.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "x402",
+    "crypto",
+    "payments",
+    "api-gateway"
+  ],
+  "author": "Universal Crypto MCP Team",
+  "license": "MIT"
+}

@@ -364,7 +364,7 @@ export function requireFeature(flagName: string, fallbackValue?: unknown) {
   ): TypedPropertyDescriptor<T> {
     const originalMethod = descriptor.value!;
 
-    descriptor.value = function (...args: Parameters<T>): ReturnType<T> {
+    descriptor.value = function (this: unknown, ...args: Parameters<T>): ReturnType<T> {
       if (!featureFlags.isEnabled(flagName)) {
         if (fallbackValue !== undefined) {
           return fallbackValue as ReturnType<T>;

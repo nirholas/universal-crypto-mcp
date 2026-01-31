@@ -149,7 +149,7 @@ class SlackNotificationAdapter implements NotificationAdapter {
     this.channel = config.channel;
   }
 
-  async send(request: HITLRequest, message: string): Promise<void> {
+  async send(request: HITLRequest, _message: string): Promise<void> {
     const riskEmoji = {
       low: '🟢',
       medium: '🟡',

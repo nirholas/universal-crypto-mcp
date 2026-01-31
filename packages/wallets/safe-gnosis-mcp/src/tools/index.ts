@@ -53,7 +53,15 @@ export function registerSafeGnosisTools(server: McpServer) {
           throw new Error(`HTTP ${response.status}`)
         }
         
-        const safe = await response.json()
+        const safe = await response.json() as {
+          address: string;
+          nonce: number;
+          threshold: number;
+          owners: string[];
+          modules: string[];
+          fallbackHandler: string;
+          version: string;
+        }
         
         return {
           content: [{
@@ -91,7 +99,7 @@ export function registerSafeGnosisTools(server: McpServer) {
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const data = await response.json()
+        const data = await response.json() as { results?: any[] }
         
         const transactions = data.results?.map((tx: any) => ({
           safeTxHash: tx.safeTxHash,
@@ -138,7 +146,7 @@ export function registerSafeGnosisTools(server: McpServer) {
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const data = await response.json()
+        const data = await response.json() as { results?: any[] }
         
         const transactions = data.results?.map((tx: any) => ({
           safeTxHash: tx.safeTxHash,
@@ -182,7 +190,7 @@ export function registerSafeGnosisTools(server: McpServer) {
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const balances = await response.json()
+        const balances = await response.json() as any[]
         
         const formatted = balances.map((b: any) => ({
           token: b.token?.symbol || "ETH",

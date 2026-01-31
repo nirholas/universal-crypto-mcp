@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@aave/protocol-js": "^5.1.0",
+    "@aave/protocol-js": "^4.3.0",
     "@aave/contract-helpers": "^1.29.10",
     "ethers": "^6.13.4",
     "zod": "^3.23.8"

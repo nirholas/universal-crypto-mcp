@@ -12,6 +12,37 @@
  */
 
 import crypto from 'crypto';
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  TimeoutError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for Gate.io API (300 requests per minute)
+const rateLimiter = new RateLimiter({
+  maxRequests: 300,
+  windowMs: 60000,
+  name: 'gateio-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'gateio-api',
+});
+
+// Logger for Gate.io integration
+const logger = new Logger({
+  context: { service: 'gateio-api' },
+  redactPaths: ['apiKey', 'apiSecret', 'SIGN', 'KEY'],
+});
 
 export const GATEIO_API = {
   BASE_URL: 'https://api.gateio.ws',
@@ -121,53 +152,124 @@ async function authenticatedRequest<T>(
   params: Record<string, any> = {},
   body: any = null
 ): Promise<T> {
-  const timestamp = Math.floor(Date.now() / 1000).toString();
-  const queryString = Object.keys(params).length > 0 
-    ? '?' + new URLSearchParams(params as any).toString()
-    : '';
+  await rateLimiter.acquire();
   
-  const bodyString = body ? JSON.stringify(body) : '';
-  const signature = createSignature(credentials, method, path, queryString.slice(1), bodyString, timestamp);
-  
-  const url = `${GATEIO_API.BASE_URL}${path}${queryString}`;
-  
-  const headers: Record<string, string> = {
-    'KEY': credentials.apiKey,
-    'Timestamp': timestamp,
-    'SIGN': signature,
-  };
-  
-  if (body) {
-    headers['Content-Type'] = 'application/json';
-  }
-  
-  const response = await fetch(url, {
-    method,
-    headers,
-    ...(body && { body: bodyString }),
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const timestamp = Math.floor(Date.now() / 1000).toString();
+        const queryString = Object.keys(params).length > 0 
+          ? '?' + new URLSearchParams(params as any).toString()
+          : '';
+        
+        const bodyString = body ? JSON.stringify(body) : '';
+        const signature = createSignature(credentials, method, path, queryString.slice(1), bodyString, timestamp);
+        
+        const url = `${GATEIO_API.BASE_URL}${path}${queryString}`;
+        
+        const headers: Record<string, string> = {
+          'KEY': credentials.apiKey,
+          'Timestamp': timestamp,
+          'SIGN': signature,
+        };
+        
+        if (body) {
+          headers['Content-Type'] = 'application/json';
+        }
+        
+        logger.debug('Gate.io authenticated request', { method, path });
+        
+        const response = await withTimeout(
+          fetch(url, {
+            method,
+            headers,
+            ...(body && { body: bodyString }),
+          }),
+          15000,
+          `Gate.io API request timeout: ${path}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('Gate.io API rate limit exceeded', 'gateio-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.message || `Gate.io API error: ${response.status}`,
+            response.status,
+            'gateio-api',
+            path,
+            error
+          );
+        }
+        
+        return response.json();
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
   });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || `Gate.io API error: ${response.status}`);
-  }
-  
-  return response.json();
 }
 
 /**
  * Make public request to Gate.io API
  */
 async function publicRequest<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-  const queryString = params ? `?${new URLSearchParams(params as any).toString()}` : '';
-  const response = await fetch(`${GATEIO_API.BASE_URL}${endpoint}${queryString}`);
+  await rateLimiter.acquire();
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || `Gate.io API error: ${response.status}`);
-  }
-  
-  return response.json();
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const queryString = params ? `?${new URLSearchParams(params as any).toString()}` : '';
+        
+        logger.debug('Gate.io public request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(`${GATEIO_API.BASE_URL}${endpoint}${queryString}`),
+          15000,
+          `Gate.io API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('Gate.io API rate limit exceeded', 'gateio-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.message || `Gate.io API error: ${response.status}`,
+            response.status,
+            'gateio-api',
+            endpoint,
+            error
+          );
+        }
+        
+        return response.json();
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================

@@ -94,7 +94,7 @@ async function verifyWithFacilitator(
       return { valid: false, error: `Facilitator error: ${response.status}` };
     }
     
-    const result = await response.json();
+    const result = await response.json() as { valid: boolean; error?: string };
     return { valid: result.valid, error: result.error };
   } catch (error: any) {
     console.error("Facilitator verification failed:", error);

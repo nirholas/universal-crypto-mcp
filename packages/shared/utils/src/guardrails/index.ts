@@ -122,11 +122,6 @@ interface SpendingRecord {
  */
 class SpendingTracker {
   private records: Map<string, SpendingRecord[]> = new Map();
-  private logger: Logger;
-
-  constructor() {
-    this.logger = createLogger({ name: 'spending-tracker' });
-  }
 
   /**
    * Record a spending event
@@ -484,11 +479,15 @@ export class AgentGuardrails {
       if (checkResult.requiresApproval && checkResult.approvalRequest) {
         throw new GuardrailError(
           `Action requires approval: ${checkResult.reason}`,
-          { approvalId: checkResult.approvalRequest.id }
+          { 
+            guardrail: 'approval_required',
+            context: { approvalId: checkResult.approvalRequest.id }
+          }
         );
       }
       throw new GuardrailError(
-        `Action blocked by guardrails: ${checkResult.reason}`
+        `Action blocked by guardrails: ${checkResult.reason}`,
+        { guardrail: 'action_blocked' }
       );
     }
 

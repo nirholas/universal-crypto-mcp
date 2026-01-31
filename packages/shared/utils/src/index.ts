@@ -22,12 +22,14 @@ export {
 export {
   retry,
   CircuitBreaker,
+  CircuitState,
   ResilientExecutor,
   createResilientExecutor,
+  CircuitOpenError,
   type RetryConfig,
   type RetryResult,
   type CircuitBreakerConfig,
-  type CircuitBreakerState,
+  type CircuitBreakerStats,
 } from './retry/index.js';
 
 // Error Handling
@@ -44,22 +46,28 @@ export {
   BlockchainError,
   AgentError,
   GuardrailError,
-  isUCMCPError,
   isRetryableError,
+  isErrorCode,
   createErrorFromResponse,
-  type ErrorContext,
+  getErrorMessage,
+  toUCMCPError,
+  withErrorHandling,
 } from './errors/index.js';
 
 // Logging
 export {
-  ConsoleLogger,
   createLogger,
+  getLogger,
+  setGlobalLogLevel,
+  logger,
+  moduleLogger,
   redactSensitive,
   withLogging,
-  DEFAULT_REDACT_PATTERNS,
+  LOG_LEVELS,
   type Logger,
   type LogLevel,
   type LoggerConfig,
+  type LogContext,
 } from './logger/index.js';
 
 // Timeout
@@ -77,12 +85,16 @@ export {
   FileSecretProvider,
   MemorySecretProvider,
   SecretsManager,
-  createSecretsManager,
+  createEnvSecretsManager,
+  createFileSecretsManager,
+  createTestSecretsManager,
+  secrets,
   getApiCredentials,
   getBlockchainCredentials,
   type SecretProvider,
-  type SecretValue,
   type SecretsConfig,
+  type CachedSecret,
+  type ApiCredentials,
 } from './secrets/index.js';
 
 // HTTP Client
@@ -115,9 +127,11 @@ export {
   isFeatureEnabled,
   requireFeature,
   DEFAULT_FLAGS,
+  featureFlags,
+  withFeature,
   type FeatureFlag,
   type FeatureFlagConfig,
-  type FeatureContext,
+  type EvaluationContext,
 } from './feature-flags/index.js';
 
 // Guardrails

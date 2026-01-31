@@ -7,7 +7,7 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 
 // Rate limit tiers
 export interface RateLimitTier {
@@ -55,36 +55,36 @@ export function getClientId(req: Request): string {
 }
 
 // Create rate limiter for free tier
-export const freeTierLimiter: RateLimitRequestHandler = rateLimit({
+export const freeTierLimiter = rateLimit({
   windowMs: RATE_LIMIT_TIERS.free.windowMs,
   max: RATE_LIMIT_TIERS.free.max,
   message: { error: RATE_LIMIT_TIERS.free.message, code: 429 },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: getClientId,
-  skip: isPaidRequest // Skip rate limit for paid requests
+  keyGenerator: (req: any) => getClientId(req),
+  skip: (req: any) => isPaidRequest(req) // Skip rate limit for paid requests
 });
 
 // Create rate limiter for paid tier
-export const paidTierLimiter: RateLimitRequestHandler = rateLimit({
+export const paidTierLimiter = rateLimit({
   windowMs: RATE_LIMIT_TIERS.paid.windowMs,
   max: RATE_LIMIT_TIERS.paid.max,
   message: { error: RATE_LIMIT_TIERS.paid.message, code: 429 },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: getClientId
+  keyGenerator: (req: any) => getClientId(req)
 });
 
 // Combined middleware that applies appropriate rate limit
 export function adaptiveRateLimiter(req: Request, res: Response, next: NextFunction) {
   if (isPaidRequest(req)) {
-    return paidTierLimiter(req, res, next);
+    return (paidTierLimiter as any)(req, res, next);
   }
-  return freeTierLimiter(req, res, next);
+  return (freeTierLimiter as any)(req, res, next);
 }
 
 // DDoS protection - very strict global limit
-export const ddosProtection: RateLimitRequestHandler = rateLimit({
+export const ddosProtection = rateLimit({
   windowMs: 1000, // 1 second
   max: 100, // 100 requests per second per IP
   message: { error: "Too many requests", code: 429 },

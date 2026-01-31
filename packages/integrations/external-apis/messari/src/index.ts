@@ -12,6 +12,37 @@
  * @see https://messari.io/api/docs
  */
 
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for Messari API (20 requests per minute for free tier)
+const rateLimiter = new RateLimiter({
+  maxRequests: 20,
+  windowMs: 60000,
+  name: 'messari-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'messari-api',
+});
+
+// Logger for Messari integration
+const logger = new Logger({
+  context: { service: 'messari-api' },
+  redactPaths: ['apiKey', 'x-messari-api-key'],
+});
+
 export const MESSARI_API = {
   BASE_URL: 'https://data.messari.io/api',
   V1: 'https://data.messari.io/api/v1',
@@ -106,26 +137,61 @@ async function makeRequest<T>(
   credentials?: MessariCredentials,
   params: Record<string, any> = {}
 ): Promise<T> {
-  const queryParams = new URLSearchParams(params as any);
-  const url = `${MESSARI_API.V1}${endpoint}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+  await rateLimiter.acquire();
   
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  
-  if (credentials?.apiKey) {
-    headers['x-messari-api-key'] = credentials.apiKey;
-  }
-  
-  const response = await fetch(url, { headers });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.status?.error_message || `Messari API error: ${response.status}`);
-  }
-  
-  const data = await response.json();
-  return data.data;
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const queryParams = new URLSearchParams(params as any);
+        const url = `${MESSARI_API.V1}${endpoint}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        
+        if (credentials?.apiKey) {
+          headers['x-messari-api-key'] = credentials.apiKey;
+        }
+        
+        logger.debug('Messari request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(url, { headers }),
+          15000,
+          `Messari API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('Messari API rate limit exceeded', 'messari-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.status?.error_message || `Messari API error: ${response.status}`,
+            response.status,
+            'messari-api',
+            endpoint,
+            error
+          );
+        }
+        
+        const data = await response.json();
+        return data.data;
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================

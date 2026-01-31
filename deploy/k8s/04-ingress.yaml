@@ -1,0 +1,87 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ucm-gateway
+  namespace: ucm
+  labels:
+    app: ucm-gateway
+  annotations:
+    # SSL/TLS
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    
+    # NGINX Ingress Controller
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    
+    # Rate limiting at ingress level
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
+    
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-Frame-Options "DENY" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" always;
+    
+    # x402 payment header passthrough
+    nginx.ingress.kubernetes.io/proxy-set-headers: "ucm/x402-headers"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.universal-crypto.io
+        - mcp.universal-crypto.io
+      secretName: ucm-tls
+  rules:
+    - host: api.universal-crypto.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ucm-gateway
+                port:
+                  name: http
+    - host: mcp.universal-crypto.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ucm-gateway
+                port:
+                  name: http
+---
+# ConfigMap for x402 header passthrough
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: x402-headers
+  namespace: ucm
+data:
+  X-Payment: "$http_x_payment"
+  X-Payment-Response: "$http_x_payment_response"
+---
+# Certificate (if using cert-manager)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ucm-tls
+  namespace: ucm
+spec:
+  secretName: ucm-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - api.universal-crypto.io
+    - mcp.universal-crypto.io

@@ -1,5 +1,5 @@
 {
-  "name": "@universal-crypto-mcp/shared-utils",
+  "name": "@ucmcp/shared-utils",
   "version": "1.0.0",
   "description": "Shared utilities for Universal Crypto MCP - rate limiting, retry logic, error handling, observability",
   "type": "module",
@@ -45,6 +45,14 @@
     "./feature-flags": {
       "types": "./dist/feature-flags/index.d.ts",
       "import": "./dist/feature-flags/index.js"
+    },
+    "./guardrails": {
+      "types": "./dist/guardrails/index.d.ts",
+      "import": "./dist/guardrails/index.js"
+    },
+    "./hitl": {
+      "types": "./dist/hitl/index.d.ts",
+      "import": "./dist/hitl/index.js"
     }
   },
   "scripts": {

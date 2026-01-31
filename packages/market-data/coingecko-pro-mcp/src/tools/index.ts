@@ -71,7 +71,7 @@ export function registerCoinGeckoProTools(server: McpServer) {
         const response = await fetch(url.toString())
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const coins = await response.json()
+        const coins = await response.json() as any[]
         
         const formatted = coins.map((c: any) => ({
           rank: c.market_cap_rank,
@@ -109,7 +109,7 @@ export function registerCoinGeckoProTools(server: McpServer) {
         const response = await fetch(`${COINGECKO_API}/search/trending`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const data = await response.json()
+        const data = await response.json() as { coins?: any[] }
         
         const trending = data.coins?.map((c: any) => ({
           rank: c.item.market_cap_rank,
@@ -147,7 +147,7 @@ export function registerCoinGeckoProTools(server: McpServer) {
         const response = await fetch(`${COINGECKO_API}/coins/${params.coinId}?localization=false&tickers=false&community_data=false&developer_data=false`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const coin = await response.json()
+        const coin = await response.json() as any
         
         return {
           content: [{

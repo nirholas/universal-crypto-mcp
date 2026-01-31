@@ -9,8 +9,8 @@
 
 import { RateLimiter, RateLimiterConfig, API_RATE_LIMITS } from '../rate-limiter/index.js';
 import { retry, RetryConfig, CircuitBreaker, CircuitBreakerConfig } from '../retry/index.js';
-import { withTimeout, DEFAULT_TIMEOUTS } from '../timeout/index.js';
-import { ApiError, RateLimitError, TimeoutError, createErrorFromResponse } from '../errors/index.js';
+import { DEFAULT_TIMEOUTS } from '../timeout/index.js';
+import { RateLimitError, TimeoutError, createErrorFromResponse } from '../errors/index.js';
 import { Logger, createLogger } from '../logger/index.js';
 import { Histogram, Counter } from '../metrics/index.js';
 
@@ -80,11 +80,12 @@ export interface HttpResponse<T = unknown> {
  * ```
  */
 export class HttpClient {
-  private config: Required<Omit<HttpClientConfig, 'rateLimit' | 'retry' | 'circuitBreaker'>> & {
-    rateLimit?: RateLimiterConfig;
-    retry?: Partial<RetryConfig>;
-    circuitBreaker?: CircuitBreakerConfig;
-  };
+  private baseUrl: string;
+  private headers: Record<string, string>;
+  private timeout: number;
+  private retryConfig?: Partial<RetryConfig>;
+  private logging: boolean;
+  private logLevel: 'debug' | 'info';
   private rateLimiter?: RateLimiter;
   private circuitBreaker?: CircuitBreaker;
   private logger: Logger;
@@ -95,18 +96,17 @@ export class HttpClient {
   private errorCounter: Counter;
 
   constructor(config: HttpClientConfig) {
-    this.config = {
-      ...config,
-      headers: config.headers ?? {},
-      timeout: config.timeout ?? DEFAULT_TIMEOUTS.HTTP_REQUEST,
-      logging: config.logging ?? true,
-      logLevel: config.logLevel ?? 'debug',
-    };
+    this.baseUrl = config.baseUrl;
+    this.headers = config.headers ?? {};
+    this.timeout = config.timeout ?? DEFAULT_TIMEOUTS.HTTP_REQUEST;
+    this.retryConfig = config.retry;
+    this.logging = config.logging ?? true;
+    this.logLevel = config.logLevel ?? 'debug';
 
     // Setup rate limiter
     if (config.rateLimit) {
       const rateLimitConfig = typeof config.rateLimit === 'string'
-        ? API_RATE_LIMITS[config.rateLimit]
+        ? API_RATE_LIMITS[config.rateLimit as keyof typeof API_RATE_LIMITS]
         : config.rateLimit;
       this.rateLimiter = new RateLimiter(rateLimitConfig);
     }
@@ -175,13 +175,13 @@ export class HttpClient {
   async request<T = unknown>(path: string, options: RequestOptions = {}): Promise<HttpResponse<T>> {
     const method = options.method ?? 'GET';
     const url = this.buildUrl(path, options.params);
-    const timeout = options.timeout ?? this.config.timeout;
+    const requestTimeout = options.timeout ?? this.timeout;
     const startTime = Date.now();
 
     // Log request
-    if (this.config.logging) {
-      this.logger[this.config.logLevel](`${method} ${url}`, {
-        timeout,
+    if (this.logging) {
+      this.logger[this.logLevel](`${method} ${url}`, {
+        timeout: requestTimeout,
         hasBody: !!options.body,
       });
     }
@@ -203,19 +203,19 @@ export class HttpClient {
     // The actual request function
     const makeRequest = async (): Promise<HttpResponse<T>> => {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
 
       try {
-        const headers: Record<string, string> = {
+        const reqHeaders: Record<string, string> = {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          ...this.config.headers,
+          ...this.headers,
           ...options.headers,
         };
 
         const response = await fetch(url, {
           method,
-          headers,
+          headers: reqHeaders,
           body: options.body ? JSON.stringify(options.body) : undefined,
           signal: controller.signal,
         });
@@ -233,8 +233,8 @@ export class HttpClient {
         }
 
         // Log response
-        if (this.config.logging) {
-          this.logger[this.config.logLevel](`${method} ${url} -> ${response.status}`, {
+        if (this.logging) {
+          this.logger[this.logLevel](`${method} ${url} -> ${response.status}`, {
             durationMs: duration,
           });
         }
@@ -254,8 +254,8 @@ export class HttpClient {
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
           this.errorCounter.inc({ method, path, error: 'timeout' });
-          throw new TimeoutError(`Request timed out after ${timeout}ms`, {
-            timeoutMs: timeout,
+          throw new TimeoutError(`Request timed out after ${requestTimeout}ms`, {
+            timeoutMs: requestTimeout,
             operation: `${method} ${url}`,
           });
         }
@@ -272,9 +272,9 @@ export class HttpClient {
     }
 
     // Apply retry logic
-    if (!options.skipRetry && this.config.retry) {
+    if (!options.skipRetry && this.retryConfig) {
       const result = await retry(requestFn, {
-        ...this.config.retry,
+        ...this.retryConfig,
         onRetry: (error, attempt, delay) => {
           this.logger.warn(`Retry attempt ${attempt} for ${method} ${url}`, {
             error: error.message,
@@ -296,9 +296,9 @@ export class HttpClient {
    * Build URL with query parameters
    */
   private buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const base = this.config.baseUrl.endsWith('/')
-      ? this.config.baseUrl.slice(0, -1)
-      : this.config.baseUrl;
+    const base = this.baseUrl.endsWith('/')
+      ? this.baseUrl.slice(0, -1)
+      : this.baseUrl;
     const fullPath = path.startsWith('/') ? path : `/${path}`;
     const url = new URL(base + fullPath);
 

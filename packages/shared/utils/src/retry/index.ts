@@ -176,7 +176,7 @@ export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
   ): TypedPropertyDescriptor<T> {
     const originalMethod = descriptor.value!;
 
-    descriptor.value = async function (...args: Parameters<T>): Promise<ReturnType<T>> {
+    descriptor.value = async function (this: unknown, ...args: Parameters<T>): Promise<ReturnType<T>> {
       const result = await retry(() => originalMethod.apply(this, args), config);
       if (result.success) {
         return result.data as ReturnType<T>;

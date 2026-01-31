@@ -12,6 +12,37 @@
  */
 
 import crypto from 'crypto';
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  TimeoutError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for HTX API (10 requests per second for market data)
+const rateLimiter = new RateLimiter({
+  maxRequests: 10,
+  windowMs: 1000,
+  name: 'htx-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'htx-api',
+});
+
+// Logger for HTX integration
+const logger = new Logger({
+  context: { service: 'htx-api' },
+  redactPaths: ['apiKey', 'apiSecret', 'Signature', 'AccessKeyId'],
+});
 
 export const HTX_API = {
   BASE_URL: 'https://api.huobi.pro',
@@ -113,61 +144,131 @@ async function authenticatedRequest<T>(
   path: string,
   params: Record<string, any> = {}
 ): Promise<T> {
-  const timestamp = new Date().toISOString().slice(0, -5);
-  const host = 'api.huobi.pro';
+  await rateLimiter.acquire();
   
-  const authParams = {
-    AccessKeyId: credentials.apiKey,
-    SignatureMethod: 'HmacSHA256',
-    SignatureVersion: '2',
-    Timestamp: timestamp,
-    ...params,
-  };
-  
-  const signature = createSignature(credentials, method, host, path, authParams);
-  authParams['Signature'] = signature;
-  
-  const url = `${HTX_API.BASE_URL}${path}?${new URLSearchParams(authParams as any).toString()}`;
-  
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const timestamp = new Date().toISOString().slice(0, -5);
+        const host = 'api.huobi.pro';
+        
+        const authParams = {
+          AccessKeyId: credentials.apiKey,
+          SignatureMethod: 'HmacSHA256',
+          SignatureVersion: '2',
+          Timestamp: timestamp,
+          ...params,
+        };
+        
+        const signature = createSignature(credentials, method, host, path, authParams);
+        authParams['Signature'] = signature;
+        
+        const url = `${HTX_API.BASE_URL}${path}?${new URLSearchParams(authParams as any).toString()}`;
+        
+        logger.debug('HTX authenticated request', { method, path });
+        
+        const response = await withTimeout(
+          fetch(url, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
+          15000,
+          `HTX API request timeout: ${path}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('HTX API rate limit exceeded', 'htx-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error['err-msg'] || `HTX API error: ${response.status}`,
+            response.status,
+            'htx-api',
+            path,
+            error
+          );
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+          throw new ApiError(data['err-msg'] || 'HTX API error', 400, 'htx-api', path, data);
+        }
+        
+        return data.data || data;
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
   });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error['err-msg'] || `HTX API error: ${response.status}`);
-  }
-  
-  const data = await response.json();
-  
-  if (data.status === 'error') {
-    throw new Error(data['err-msg'] || 'HTX API error');
-  }
-  
-  return data.data || data;
 }
 
 /**
  * Make public request to HTX API
  */
 async function publicRequest<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${HTX_API.BASE_URL}${endpoint}`);
+  await rateLimiter.acquire();
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error['err-msg'] || `HTX API error: ${response.status}`);
-  }
-  
-  const data = await response.json();
-  
-  if (data.status === 'error') {
-    throw new Error(data['err-msg'] || 'HTX API error');
-  }
-  
-  return data.data || data;
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        logger.debug('HTX public request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(`${HTX_API.BASE_URL}${endpoint}`),
+          15000,
+          `HTX API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('HTX API rate limit exceeded', 'htx-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error['err-msg'] || `HTX API error: ${response.status}`,
+            response.status,
+            'htx-api',
+            endpoint,
+            error
+          );
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+          throw new ApiError(data['err-msg'] || 'HTX API error', 400, 'htx-api', endpoint, data);
+        }
+        
+        return data.data || data;
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================

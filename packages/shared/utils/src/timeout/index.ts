@@ -121,7 +121,7 @@ export function timeout(config: TimeoutConfig) {
   ): TypedPropertyDescriptor<T> {
     const originalMethod = descriptor.value!;
 
-    descriptor.value = async function (...args: Parameters<T>): Promise<ReturnType<T>> {
+    descriptor.value = async function (this: unknown, ...args: Parameters<T>): Promise<ReturnType<T>> {
       return withTimeout(
         originalMethod.apply(this, args),
         { ...config, operation: config.operation ?? propertyKey }

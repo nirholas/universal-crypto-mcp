@@ -13,6 +13,37 @@
  * @see https://docs.glassnode.com/api/
  */
 
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for Glassnode API (10 requests per minute for free tier)
+const rateLimiter = new RateLimiter({
+  maxRequests: 10,
+  windowMs: 60000,
+  name: 'glassnode-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'glassnode-api',
+});
+
+// Logger for Glassnode integration
+const logger = new Logger({
+  context: { service: 'glassnode-api' },
+  redactPaths: ['apiKey', 'api_key'],
+});
+
 export const GLASSNODE_API = {
   BASE_URL: 'https://api.glassnode.com',
   V1: 'https://api.glassnode.com/v1',
@@ -42,21 +73,56 @@ async function makeRequest<T>(
   credentials: GlassnodeCredentials,
   params: Record<string, any> = {}
 ): Promise<T> {
-  const queryParams = new URLSearchParams({
-    ...params,
-    api_key: credentials.apiKey,
-  } as any);
+  await rateLimiter.acquire();
   
-  const url = `${GLASSNODE_API.V1}${endpoint}?${queryParams.toString()}`;
-  
-  const response = await fetch(url);
-  
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Glassnode API error: ${response.status} - ${error}`);
-  }
-  
-  return response.json();
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const queryParams = new URLSearchParams({
+          ...params,
+          api_key: credentials.apiKey,
+        } as any);
+        
+        const url = `${GLASSNODE_API.V1}${endpoint}?${queryParams.toString()}`;
+        
+        logger.debug('Glassnode request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(url),
+          15000,
+          `Glassnode API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('Glassnode API rate limit exceeded', 'glassnode-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.text();
+          throw new ApiError(
+            `Glassnode API error: ${response.status} - ${error}`,
+            response.status,
+            'glassnode-api',
+            endpoint,
+            { error }
+          );
+        }
+        
+        return response.json();
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================

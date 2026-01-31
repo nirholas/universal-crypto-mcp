@@ -46,7 +46,7 @@
     "nichxbt"
   ],
   "dependencies": {
-    "@binance/connector-typescript": "^1.4.0",
+    "@binance/connector-typescript": "^0.3.16",
     "@modelcontextprotocol/sdk": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

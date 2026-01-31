@@ -26,7 +26,7 @@ import { requestLogger, errorLogger } from './logging.js';
 import { apiKeyAuth, x402Auth } from './auth.js';
 import { loadGatewayConfig, GatewayConfig } from './config.js';
 import { EndpointRegistry, PRICING_TIERS } from './endpoints.js';
-import Logger from './logger.js';
+import { logger as Logger } from './logger.js';
 
 // ============================================================================
 // Gateway Server
@@ -42,7 +42,7 @@ export class UniversalCryptoGateway {
   constructor() {
     this.app = express();
     this.config = loadGatewayConfig();
-    this.endpoints = new EndpointRegistry();
+    this.endpoints = new EndpointRegistry(Logger);
     this.x402 = new x402Gateway(this.config);
     
     this.setupMiddleware();
@@ -408,5 +408,12 @@ declare global {
     }
   }
 }
+
+// Start the gateway if this is the main module
+const gateway = new UniversalCryptoGateway();
+gateway.start().catch((err) => {
+  console.error('Failed to start gateway:', err);
+  process.exit(1);
+});
 
 export default UniversalCryptoGateway;

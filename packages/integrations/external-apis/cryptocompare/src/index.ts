@@ -12,6 +12,37 @@
  * @see https://min-api.cryptocompare.com/documentation
  */
 
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for CryptoCompare API (50 requests per second for free tier)
+const rateLimiter = new RateLimiter({
+  maxRequests: 50,
+  windowMs: 1000,
+  name: 'cryptocompare-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'cryptocompare-api',
+});
+
+// Logger for CryptoCompare integration
+const logger = new Logger({
+  context: { service: 'cryptocompare-api' },
+  redactPaths: ['apiKey', 'Authorization'],
+});
+
 export const CRYPTOCOMPARE_API = {
   BASE_URL: 'https://min-api.cryptocompare.com',
   DATA_API: 'https://data-api.cryptocompare.com',
@@ -91,31 +122,66 @@ async function makeRequest<T>(
   params: Record<string, any> = {},
   credentials?: CryptoCompareCredentials
 ): Promise<T> {
-  const queryString = new URLSearchParams(params as any).toString();
-  const url = `${CRYPTOCOMPARE_API.BASE_URL}${endpoint}${queryString ? `?${queryString}` : ''}`;
+  await rateLimiter.acquire();
   
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  
-  if (credentials?.apiKey) {
-    headers['Authorization'] = `Apikey ${credentials.apiKey}`;
-  }
-  
-  const response = await fetch(url, { headers });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.Message || `CryptoCompare API error: ${response.status}`);
-  }
-  
-  const data = await response.json();
-  
-  if (data.Response === 'Error') {
-    throw new Error(data.Message || 'CryptoCompare API error');
-  }
-  
-  return data;
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const queryString = new URLSearchParams(params as any).toString();
+        const url = `${CRYPTOCOMPARE_API.BASE_URL}${endpoint}${queryString ? `?${queryString}` : ''}`;
+        
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        
+        if (credentials?.apiKey) {
+          headers['Authorization'] = `Apikey ${credentials.apiKey}`;
+        }
+        
+        logger.debug('CryptoCompare request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(url, { headers }),
+          15000,
+          `CryptoCompare API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('CryptoCompare API rate limit exceeded', 'cryptocompare-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.Message || `CryptoCompare API error: ${response.status}`,
+            response.status,
+            'cryptocompare-api',
+            endpoint,
+            error
+          );
+        }
+        
+        const data = await response.json();
+        
+        if (data.Response === 'Error') {
+          throw new ApiError(data.Message || 'CryptoCompare API error', 400, 'cryptocompare-api', endpoint, data);
+        }
+        
+        return data;
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================

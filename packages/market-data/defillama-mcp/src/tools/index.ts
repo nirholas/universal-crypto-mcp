@@ -25,7 +25,7 @@ export function registerDefiLlamaTools(server: McpServer) {
         const response = await fetch(`${DEFILLAMA_API}/protocol/${params.protocol}`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const data = await response.json()
+        const data = await response.json() as any
         
         return {
           content: [{
@@ -62,7 +62,7 @@ export function registerDefiLlamaTools(server: McpServer) {
         const response = await fetch(`${DEFILLAMA_API}/protocols`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const protocols = await response.json()
+        const protocols = await response.json() as any[]
         const limit = params.limit || 10
         
         const top = protocols.slice(0, limit).map((p: any) => ({
@@ -102,7 +102,7 @@ export function registerDefiLlamaTools(server: McpServer) {
         const response = await fetch(`${DEFILLAMA_API}/v2/chains`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const chains = await response.json()
+        const chains = await response.json() as any[]
         const chain = chains.find((c: any) => 
           c.name.toLowerCase() === params.chain.toLowerCase() ||
           c.gecko_id?.toLowerCase() === params.chain.toLowerCase()
@@ -151,7 +151,7 @@ export function registerDefiLlamaTools(server: McpServer) {
         const response = await fetch(`${YIELDS_API}/pools`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         
-        const data = await response.json()
+        const data = await response.json() as { data?: any[] }
         let pools = data.data || []
         
         if (params.chain) {

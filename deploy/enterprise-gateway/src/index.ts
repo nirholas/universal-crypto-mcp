@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 
@@ -32,7 +32,7 @@ import {
   getToolPrice 
 } from "./config/pricing.js";
 
-const app = express();
+const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
@@ -50,7 +50,7 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 
 // DDoS protection
-app.use(ddosProtection);
+app.use(ddosProtection as any);
 
 // Cost tracking for analytics
 app.use(costTracker);

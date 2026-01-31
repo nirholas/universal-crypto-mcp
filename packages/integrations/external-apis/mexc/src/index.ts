@@ -12,6 +12,37 @@
  */
 
 import crypto from 'crypto';
+import {
+  RateLimiter,
+  retry,
+  withTimeout,
+  CircuitBreaker,
+  ApiError,
+  RateLimitError,
+  TimeoutError,
+  Logger,
+} from '@ucmcp/shared-utils';
+
+// Initialize rate limiter for MEXC API (20 requests per second)
+const rateLimiter = new RateLimiter({
+  maxRequests: 20,
+  windowMs: 1000,
+  name: 'mexc-api',
+});
+
+// Circuit breaker for API health monitoring
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 30000,
+  halfOpenRequests: 2,
+  name: 'mexc-api',
+});
+
+// Logger for MEXC integration
+const logger = new Logger({
+  context: { service: 'mexc-api' },
+  redactPaths: ['apiKey', 'apiSecret', 'signature', 'X-MEXC-APIKEY'],
+});
 
 export const MEXC_API = {
   BASE_URL: 'https://api.mexc.com',
@@ -104,51 +135,122 @@ async function authenticatedRequest<T>(
   endpoint: string,
   params: Record<string, any> = {}
 ): Promise<T> {
-  const timestamp = Date.now();
-  const allParams = {
-    ...params,
-    timestamp,
-    recvWindow: 5000,
-  };
+  await rateLimiter.acquire();
   
-  const queryString = Object.entries(allParams)
-    .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
-    .join('&');
-  
-  const signature = createSignature(credentials, queryString);
-  const finalQuery = `${queryString}&signature=${signature}`;
-  
-  const url = `${MEXC_API.BASE_URL}${endpoint}?${finalQuery}`;
-  
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'X-MEXC-APIKEY': credentials.apiKey,
-      'Content-Type': 'application/json',
-    },
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const timestamp = Date.now();
+        const allParams = {
+          ...params,
+          timestamp,
+          recvWindow: 5000,
+        };
+        
+        const queryString = Object.entries(allParams)
+          .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+          .join('&');
+        
+        const signature = createSignature(credentials, queryString);
+        const finalQuery = `${queryString}&signature=${signature}`;
+        
+        const url = `${MEXC_API.BASE_URL}${endpoint}?${finalQuery}`;
+        
+        logger.debug('MEXC authenticated request', { method, endpoint });
+        
+        const response = await withTimeout(
+          fetch(url, {
+            method,
+            headers: {
+              'X-MEXC-APIKEY': credentials.apiKey,
+              'Content-Type': 'application/json',
+            },
+          }),
+          15000,
+          `MEXC API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('MEXC API rate limit exceeded', 'mexc-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.msg || `MEXC API error: ${response.status}`,
+            response.status,
+            'mexc-api',
+            endpoint,
+            error
+          );
+        }
+        
+        return response.json();
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
   });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.msg || `MEXC API error: ${response.status}`);
-  }
-  
-  return response.json();
 }
 
 /**
  * Make public request to MEXC API
  */
 async function publicRequest<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-  const queryString = params ? `?${new URLSearchParams(params as any).toString()}` : '';
-  const response = await fetch(`${MEXC_API.BASE_URL}${endpoint}${queryString}`);
+  await rateLimiter.acquire();
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.msg || `MEXC API error: ${response.status}`);
-  }
-  
-  return response.json();
+  return circuitBreaker.execute(async () => {
+    return retry(
+      async () => {
+        const queryString = params ? `?${new URLSearchParams(params as any).toString()}` : '';
+        
+        logger.debug('MEXC public request', { endpoint });
+        
+        const response = await withTimeout(
+          fetch(`${MEXC_API.BASE_URL}${endpoint}${queryString}`),
+          15000,
+          `MEXC API request timeout: ${endpoint}`
+        );
+        
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('retry-after') || '60', 10);
+          throw new RateLimitError('MEXC API rate limit exceeded', 'mexc-api', retryAfter * 1000);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new ApiError(
+            error.msg || `MEXC API error: ${response.status}`,
+            response.status,
+            'mexc-api',
+            endpoint,
+            error
+          );
+        }
+        
+        return response.json();
+      },
+      {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 10000,
+        shouldRetry: (error) => {
+          if (error instanceof RateLimitError) return true;
+          if (error instanceof ApiError && error.statusCode >= 500) return true;
+          return false;
+        },
+      }
+    );
+  });
 }
 
 // =============================================================================
