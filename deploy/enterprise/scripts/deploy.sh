@@ -375,3 +375,4 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     trap 'log_error "Deployment failed at line $LINENO"' ERR
     main "$@"
 fi
+
