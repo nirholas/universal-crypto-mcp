@@ -124,3 +124,4 @@ volumes:
 networks:
   crypto-mcp:
     driver: bridge
+
