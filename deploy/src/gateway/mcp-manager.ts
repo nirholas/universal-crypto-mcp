@@ -338,3 +338,4 @@ export class MCPManager {
 }
 
 export default MCPManager;
+
