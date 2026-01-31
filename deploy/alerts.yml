@@ -163,3 +163,4 @@ groups:
         annotations:
           summary: "Slow tool execution"
           description: "Tool {{ $labels.tool }} is taking more than 10 seconds to execute"
+
