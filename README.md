@@ -23,11 +23,6 @@
 </pre>
 </p>
 
-<h3 align="center">
-  🚀 <strong>Give Claude Money!</strong> 🚀<br/>
-  <em>The first MCP server that lets AI agents send and receive crypto payments.</em>
-</h3>
-
 ```bash
 npx @nirholas/universal-crypto-mcp
 ```
