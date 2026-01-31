@@ -30,3 +30,4 @@ Resolves an ENS name to an Ethereum address or returns the original address if i
 `Promise`\<`` `0x${string}` ``\>
 
 The resolved Ethereum address
+
