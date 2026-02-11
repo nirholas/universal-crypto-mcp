@@ -1,5 +1,5 @@
 ---
-name: "\U0001F41B Bug Report"
+name: "🐛 Bug Report"
 about: Something isn't working as expected
 title: "[bug] "
 labels: bug
