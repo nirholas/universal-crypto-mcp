@@ -1841,3 +1841,84 @@ Apache-2.0 © [nich](https://github.com/nirholas)
     <img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=social" alt="Star on GitHub">
   </a>
 </p>
+
+
+---
+
+## 🌐 Live HTTP Deployment
+
+**Universal Crypto MCP** is deployed and accessible over HTTP via [MCP Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) transport — no local installation required.
+
+**Endpoint:**
+```
+https://modelcontextprotocol.name/mcp/universal-crypto-mcp
+```
+
+### Connect from any MCP Client
+
+Add to your MCP client configuration (Claude Desktop, Cursor, SperaxOS, etc.):
+
+```json
+{
+  "mcpServers": {
+    "universal-crypto-mcp": {
+      "type": "http",
+      "url": "https://modelcontextprotocol.name/mcp/universal-crypto-mcp"
+    }
+  }
+}
+```
+
+### Available Tools (11)
+
+| Tool | Description |
+|------|-------------|
+| `get_price` | Get crypto prices |
+| `get_market_overview` | Market overview |
+| `get_trending` | Trending coins |
+| `search_coins` | Search coins |
+| `get_coin_detail` | Coin details |
+| `get_global_stats` | Global stats |
+| `get_defi_protocols` | DeFi protocols |
+| `get_protocol_detail` | Protocol detail |
+| `get_chain_tvl` | Chain TVL |
+| `get_gas_prices` | Ethereum gas prices |
+| `get_token_info` | Token by contract |
+
+### Example Requests
+
+**Get crypto prices:**
+```bash
+curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_price","arguments":{"ids":"bitcoin","vs_currencies":"usd"}}}'
+```
+
+**Market overview:**
+```bash
+curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_market_overview","arguments":{"limit":10}}}'
+```
+
+**Trending coins:**
+```bash
+curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_trending","arguments":{}}}'
+```
+
+### List All Tools
+
+```bash
+curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+### Also Available On
+
+- **[SperaxOS](https://speraxos.vercel.app)** — Browse and install from the [MCP marketplace](https://speraxos.vercel.app/community/mcp)
+- **All 27 MCP servers** — See the full catalog at [modelcontextprotocol.name](https://modelcontextprotocol.name)
+
+> Powered by [modelcontextprotocol.name](https://modelcontextprotocol.name) — the open MCP HTTP gateway
