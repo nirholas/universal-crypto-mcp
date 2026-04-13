@@ -18,7 +18,7 @@
     "X402_NETWORK": "eip155:8453",
     "X402_FACILITATOR": "https://facilitator.x402.dev"
   },
-  "regions": ["iad1", "sfo1", "dub1", "hnd1"],
+  "regions": ["iad1", "sfo1"],
   "headers": [
     {
       "source": "/(.*)",
