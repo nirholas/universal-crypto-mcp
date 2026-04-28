@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/nirholas-universal-crypto-mcp-badge.png)](https://mseep.ai/app/nirholas-universal-crypto-mcp)
+
 # 🤖💰 Universal Crypto MCP    
 
 <p align="center">
