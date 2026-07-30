@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@universal-crypto-mcp/payments-shared": "workspace:*",
-    "@universal-crypto-mcp/defi-sperax": "workspace:*",
+    "@universal-crypto-mcp/defi-stablecoin-protocol": "workspace:*",
     "viem": "^2.0.0",
     "zod": "^3.22.0"
   },

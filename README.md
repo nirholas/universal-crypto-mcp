@@ -1700,12 +1700,12 @@ This MCP server integrates with the following APIs:
 
 ## Related MCP Servers
 
-Additional specialized MCP servers in this workspace:
+Additional specialized MCP servers, maintained in their own repositories:
 
 | Server | Description | Tools |
 |--------|-------------|-------|
-| [binance-mcp-server](./binance-mcp-server/) | Binance.com global exchange API | 156+ tools |
-| [binance-us-mcp-server](./binance-us-mcp-server/) | Binance.US exchange API | 71+ tools |
+| [Binance-MCP](https://github.com/nirholas/Binance-MCP) | Binance.com global exchange API | 156+ tools |
+| [Binance-US-MCP](https://github.com/nirholas/Binance-US-MCP) | Binance.US exchange API | 71+ tools |
 
 ### Binance.com Server
 Full Binance global API coverage including:

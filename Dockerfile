@@ -3,15 +3,20 @@ FROM node:25-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm ci --legacy-peer-deps
+# Enable pnpm (this is a pnpm workspace; npm cannot install it)
+RUN corepack enable
 
-# Copy source
+# Copy source (workspace installs need every package manifest)
 COPY . .
 
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
 # Build
-RUN npm run build
+RUN pnpm run build
+
+# Drop dev dependencies so the production stage can copy a lean node_modules
+RUN pnpm prune --prod
 
 # Production image
 FROM node:25-alpine AS production
@@ -21,11 +26,9 @@ WORKDIR /app
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Copy package files
-COPY package*.json ./
-
-# Install production dependencies only
-RUN npm ci --legacy-peer-deps --omit=dev
+# Copy package manifest and pruned production dependencies
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built files
 COPY --from=builder /app/dist ./dist
@@ -52,4 +55,3 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
 
 # Start server
 CMD ["node", "dist/index.js"]
-

@@ -13,5 +13,6 @@ packages:
   - "packages/defi/layer2/*"
   - "packages/nft/*"
   - "packages/payments/*"
+  - "packages/payments/x402/facilitator"
   - "deploy/*"
   - "x402-deploy"

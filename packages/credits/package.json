@@ -33,7 +33,7 @@
     "vitest": "^1.0.0"
   },
   "peerDependencies": {
-    "@nirholas/x402-facilitator": "^1.0.0"
+    "@nirholas/x402-facilitator": "workspace:^"
   },
   "keywords": [
     "credits",

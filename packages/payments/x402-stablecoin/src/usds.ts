@@ -4,7 +4,7 @@
  * Wraps Sperax USDs for yield-bearing payments.
  */
 
-import { USDsClient, USDsYieldTracker } from "@universal-crypto-mcp/defi-sperax";
+import { USDsClient, USDsYieldTracker } from "@universal-crypto-mcp/defi-stablecoin-protocol";
 
 /**
  * USDs configuration for payments
