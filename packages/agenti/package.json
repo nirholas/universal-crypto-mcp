@@ -1,0 +1,26 @@
+{
+  "name": "@nirholas/agenti",
+  "version": "0.1.1",
+  "description": "Agenti MCP server. This package is the universal-crypto-mcp server under its earlier name; it now delegates to @nirholas/universal-crypto-mcp so both names stay patched from one source.",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/nirholas/universal-crypto-mcp",
+  "author": "nirholas",
+  "main": "./index.js",
+  "bin": {
+    "agenti": "./bin/agenti.js",
+    "x402": "./bin/x402.js"
+  },
+  "files": [
+    "bin",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@nirholas/universal-crypto-mcp": "^1.1.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module"
+}
