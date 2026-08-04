@@ -1,4 +1,6 @@
 # 🤖💰 Universal Crypto MCP     
+
+[![MCP Toplist](https://mcptoplist.com/badge/io.github.nirholas%2Funiversal-crypto-mcp.svg)](https://mcptoplist.com/server/io.github.nirholas%2Funiversal-crypto-mcp)
   
 <p align="center">
 <pre align="center">
