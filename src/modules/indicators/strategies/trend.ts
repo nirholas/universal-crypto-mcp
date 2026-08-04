@@ -15,7 +15,7 @@ import {
   chandeForecastOscillatorStrategy,
   kdjStrategy,
   macdStrategy,
-  parabolicSarStrategy,
+  parabolicSARStrategy,
   typicalPriceStrategy,
   volumeWeightedMovingAverageStrategy,
   vortexStrategy,
@@ -165,7 +165,7 @@ export function registerTrendStrategies(server: McpServer): void {
     async ({ symbol, timeframe, accelerationFactorStep, accelerationFactorMax, limit }) => {
       try {
         const asset = await fetchOhlcvData(symbol, timeframe, limit);
-        const result = parabolicSarStrategy(asset, { accelerationFactorStep, accelerationFactorMax });
+        const result = parabolicSARStrategy(asset, { accelerationFactorStep, accelerationFactorMax });
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } catch (error) {
         return { content: [{ type: "text", text: `Error: ${(error as Error).message}` }] };

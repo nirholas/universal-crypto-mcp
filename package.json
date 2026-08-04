@@ -1,20 +1,8 @@
 {
   "name": "@nirholas/universal-crypto-mcp",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "The most extensive crypto MCP repository - 60+ networks, 100+ tools, DEX/CEX, DeFi, wallets, market data, automation, and x402 payments",
   "type": "module",
-  "workspaces": [
-    "packages/core",
-    "packages/shared/*",
-    "packages/agents/*",
-    "packages/market-data/*",
-    "packages/defi/*",
-    "packages/wallets/*",
-    "packages/payments/*",
-    "packages/automation/*",
-    "packages/generators/*",
-    "x402-deploy"
-  ],
   "main": "./dist/lib.js",
   "exports": {
     ".": {
@@ -118,7 +106,9 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@solana/kit": "^5.5.1",
     "@solana/spl-token": "^0.4.15",
+    "@solana/sysvars": "^5.5.1",
     "@solana/web3.js": "^1.98.4",
     "@ton/core": "^0.59.1",
     "@ton/crypto": "^3.3.0",
@@ -198,5 +188,17 @@
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/nirholas"
-  }
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/shared/*",
+    "packages/agents/*",
+    "packages/market-data/*",
+    "packages/defi/*",
+    "packages/wallets/*",
+    "packages/payments/*",
+    "packages/automation/*",
+    "packages/generators/*",
+    "x402-deploy"
+  ]
 }

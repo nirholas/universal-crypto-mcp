@@ -26,8 +26,18 @@ import { registerSwap } from "./modules/swap/index.js"
 import { registerTokens } from "./modules/tokens/index.js"
 import { registerTransactions } from "./modules/transactions/index.js"
 import { registerWallet } from "./modules/wallet/index.js"
+import { withDedupedTools } from "@/utils/dedupe-tools.js"
 
-export function registerEVM(server: McpServer) {
+export function registerEVM(rawServer: McpServer) {
+  // Several modules legitimately claim the same tool name (wallet and tokens
+  // both offer approve_token_spending, security and transactions both offer
+  // simulate_transaction, and so on). Registering a name twice throws, which
+  // stopped this server booting at all, so registration is deduped here: the
+  // first module to claim a name keeps it, in the order below.
+  const server = withDedupedTools(rawServer, (name) =>
+    console.error(`[registerEVM] tool "${name}" already registered; keeping the first registration`)
+  )
+
   // Core modules
   registerNetwork(server)
   registerBlocks(server)

@@ -191,7 +191,7 @@ export function registerScreenerTools(server: McpServer): void {
     {
       exchange: z.string().default("binance").describe("Exchange name (binance, kucoin, bybit, etc.)"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("15m").describe("Timeframe for analysis"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by (USDT, BTC, etc.)"),
     },
     async ({ exchange, timeframe, limit, quoteAsset }) => {
@@ -245,7 +245,7 @@ export function registerScreenerTools(server: McpServer): void {
     {
       exchange: z.string().default("binance").describe("Exchange name (binance, kucoin, bybit, etc.)"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("15m").describe("Timeframe for analysis"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by (USDT, BTC, etc.)"),
     },
     async ({ exchange, timeframe, limit, quoteAsset }) => {
@@ -299,7 +299,7 @@ export function registerScreenerTools(server: McpServer): void {
       exchange: z.string().default("binance").describe("Exchange name"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("4h").describe("Timeframe for analysis"),
       maxBbWidth: z.number().default(5).describe("Maximum BB width percentage to filter"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by"),
     },
     async ({ exchange, timeframe, maxBbWidth, limit, quoteAsset }) => {
@@ -356,7 +356,7 @@ export function registerScreenerTools(server: McpServer): void {
       exchange: z.string().default("binance").describe("Exchange name"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("1h").describe("Timeframe for analysis"),
       maxRsi: z.number().default(30).describe("Maximum RSI value to filter"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by"),
     },
     async ({ exchange, timeframe, maxRsi, limit, quoteAsset }) => {
@@ -412,7 +412,7 @@ export function registerScreenerTools(server: McpServer): void {
       exchange: z.string().default("binance").describe("Exchange name"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("1h").describe("Timeframe for analysis"),
       minRsi: z.number().default(70).describe("Minimum RSI value to filter"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by"),
     },
     async ({ exchange, timeframe, minRsi, limit, quoteAsset }) => {
@@ -512,7 +512,7 @@ export function registerScreenerTools(server: McpServer): void {
       exchange: z.string().default("binance").describe("Exchange name"),
       timeframe: z.enum(["5m", "15m", "1h", "4h", "1d", "1w"]).default("1h").describe("Timeframe for analysis"),
       minVolumeMultiplier: z.number().default(2).describe("Minimum volume multiplier vs average"),
-      limit: z.number().default(25).min(1).max(100).describe("Number of results to return"),
+      limit: z.number().min(1).max(100).default(25).describe("Number of results to return"),
       quoteAsset: z.string().default("USDT").describe("Quote asset to filter by"),
     },
     async ({ exchange, timeframe, minVolumeMultiplier, limit, quoteAsset }) => {

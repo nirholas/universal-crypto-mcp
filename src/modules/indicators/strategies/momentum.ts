@@ -9,14 +9,37 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import {
-  momentumStrategy,
+  Action,
   awesomeOscillatorStrategy,
   ichimokuCloudStrategy,
   rsi2Strategy,
   stochasticOscillatorStrategy,
   williamsRStrategy,
 } from "indicatorts";
+import type { Asset } from "indicatorts";
 import { fetchOhlcvData } from "../utils/fetchOhlcv.js";
+
+/**
+ * Momentum strategy: BUY while price is above where it was `period` bars ago,
+ * SELL while it is below, HOLD before enough history exists.
+ *
+ * indicatorts exported `momentumStrategy` up to v1 and dropped it in v2, which
+ * is one of the three imports that made this package fail to build (and so
+ * ship without any `dist/` at all). It is defined here rather than pinned to
+ * the old major because the rest of the module already uses the v2 API.
+ * Returns the same -1 / 0 / 1 Action series as every other strategy here.
+ */
+function momentumStrategy(asset: Asset, config: { period: number }): Action[] {
+  const { closings } = asset;
+  const period = Math.max(1, Math.trunc(config.period));
+  return closings.map((close, i) => {
+    if (i < period) return Action.HOLD;
+    const momentum = close - closings[i - period];
+    if (momentum > 0) return Action.BUY;
+    if (momentum < 0) return Action.SELL;
+    return Action.HOLD;
+  });
+}
 
 const symbolSchema = z.string().describe("Trading pair, e.g., 'BTC/USDT'");
 const timeframeSchema = z.string().default("1h").describe("Timeframe, e.g., '1m', '1h', '1d'");

@@ -36,45 +36,13 @@ export function registerTransactionTools(server: McpServer) {
     }
   )
 
-  // Estimate gas
-  server.tool(
-    "estimate_gas",
-    "Estimate the gas cost for a transaction",
-    {
-      to: z.string().describe("The recipient address"),
-      value: z
-        .string()
-        .optional()
-        .describe("The amount of ETH to send in ether (e.g., '0.1')"),
-      data: z
-        .string()
-        .optional()
-        .describe("The transaction data as a hex string"),
-      network: defaultNetworkParam
-    },
-    async ({ to, value, data, network }) => {
-      try {
-        const params: any = { to: to as Address }
-
-        if (value) {
-          params.value = services.helpers.parseEther(value)
-        }
-
-        if (data) {
-          params.data = data as `0x${string}`
-        }
-
-        const gas = await services.estimateGas(params, network)
-
-        return mcpToolRes.success({
-          network,
-          estimatedGas: gas.toString()
-        })
-      } catch (error) {
-        return mcpToolRes.error(error, "estimating gas")
-      }
-    }
-  )
+  // estimate_gas is registered by the gas module (src/evm/modules/gas/tools.ts).
+  // It was registered here as well, and registering one tool name twice makes
+  // the MCP server throw during startup ("Tool estimate_gas is already
+  // registered"), so no build of this server has ever reached a listening
+  // state. The gas-module version is a superset of what stood here: the same
+  // to/value/data/network inputs, an optional sender, and the gas-price and
+  // cost breakdown alongside the estimate.
 
   // Speed up transaction (replace with higher gas)
   server.tool(

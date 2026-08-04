@@ -25,7 +25,7 @@ import {
   kdj,
   rollingMovingAverage,
   simpleMovingAverage,
-  sinceChange,
+  since,
   tripleExponentialMovingAverage,
   triangularMovingAverage,
   tripleExponentialAverage,
@@ -445,7 +445,7 @@ export function registerTrendIndicators(server: McpServer): void {
     async ({ symbol, timeframe, limit }) => {
       try {
         const asset = await fetchOhlcvData(symbol, timeframe, limit);
-        const result = sinceChange(asset.closings);
+        const result = since(asset.closings);
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } catch (error) {
         return { content: [{ type: "text", text: `Error: ${(error as Error).message}` }] };

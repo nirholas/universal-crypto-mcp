@@ -13,16 +13,26 @@ import { registerToolMarketplace } from "@/modules/tool-marketplace/index.js"
 import { registerAIPredictions } from "@/modules/ai-predictions/index.js"
 import { registerUnlockTools } from "@/modules/token-unlocks/index.js"
 import Logger from "@/utils/logger.js"
+import { withDedupedTools } from "@/utils/dedupe-tools.js"
 
 // Create and start the MCP server
 export const startServer = async () => {
   try {
     // Create a new MCP server instance
-    const server = new McpServer({
+    const mcpServer = new McpServer({
       name: "Universal Crypto MCP",
       version: "1.1.0",
       description: "Universal MCP server for all EVM-compatible networks with x402 payment protocol"
     })
+
+    // Registration is deduped across every module group below, not just within
+    // registerEVM: names are also claimed twice across the EVM and top-level
+    // module trees (governance, utils). A duplicate throws inside McpServer and
+    // took the whole startup with it, so the first claim wins and the rest are
+    // logged.
+    const server = withDedupedTools(mcpServer, (name) =>
+      Logger.warn(`Tool "${name}" was registered twice; keeping the first registration`)
+    )
 
     // Initialize x402 payment integration first
     // This must happen before registering tools

@@ -31,6 +31,12 @@
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { registerX402Tools } from "./tools.js"
+// These two are re-exported further down, but a re-export creates no local
+// binding, so registerX402() called them as undefined identifiers and the
+// server threw "registerX402ServerTools is not defined" during startup. They
+// need real imports to be callable here.
+import { registerX402ServerTools } from "./server/index.js"
+import { registerUCAITools } from "./ucai/tools.js"
 import {
   loadX402Config,
   loadLegacyX402Config,

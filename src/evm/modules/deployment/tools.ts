@@ -44,12 +44,12 @@ const TRANSPARENT_PROXY_ABI = parseAbi([
   "function implementation() view returns (address)",
   "function changeAdmin(address newAdmin) external",
   "function upgradeTo(address newImplementation) external",
-  "function upgradeToAndCall(address newImplementation, bytes data) payable external"
+  "function upgradeToAndCall(address newImplementation, bytes data) external payable"
 ])
 
 const UUPS_PROXY_ABI = parseAbi([
   "function upgradeTo(address newImplementation) external",
-  "function upgradeToAndCall(address newImplementation, bytes data) payable external",
+  "function upgradeToAndCall(address newImplementation, bytes data) external payable",
   "function proxiableUUID() view returns (bytes32)"
 ])
 
@@ -57,7 +57,7 @@ const PROXY_ADMIN_ABI = parseAbi([
   "function getProxyAdmin(address proxy) view returns (address)",
   "function getProxyImplementation(address proxy) view returns (address)",
   "function upgrade(address proxy, address implementation) external",
-  "function upgradeAndCall(address proxy, address implementation, bytes data) payable external",
+  "function upgradeAndCall(address proxy, address implementation, bytes data) external payable",
   "function changeProxyAdmin(address proxy, address newAdmin) external"
 ])
 

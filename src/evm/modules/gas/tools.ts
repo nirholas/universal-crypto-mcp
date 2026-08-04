@@ -196,7 +196,11 @@ export function registerGasTools(server: McpServer) {
     "Estimate gas for a specific transaction",
     {
       network: defaultNetworkParam,
-      from: z.string().describe("Sender address"),
+      // Optional so this also serves callers of the transactions-module
+      // estimate_gas it replaces, which took no sender. Estimates are more
+      // accurate with one (balance and access-list checks apply), so pass it
+      // when you have it.
+      from: z.string().optional().describe("Sender address"),
       to: z.string().describe("Recipient/contract address"),
       value: z.string().optional().describe("Value in wei"),
       data: z.string().optional().describe("Transaction data (hex)")
@@ -206,7 +210,7 @@ export function registerGasTools(server: McpServer) {
         const publicClient = getPublicClient(network)
         
         const gasEstimate = await publicClient.estimateGas({
-          account: from as Address,
+          ...(from ? { account: from as Address } : {}),
           to: to as Address,
           value: value ? BigInt(value) : 0n,
           data: data as Hex | undefined
