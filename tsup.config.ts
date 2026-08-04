@@ -9,7 +9,8 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: {
     lib: 'src/lib.ts',
-    index: 'src/index.ts'
+    index: 'src/index.ts',
+    'x402/cli/index': 'src/x402/cli/index.ts'
   },
   format: ['esm'],
   sourcemap: true,
