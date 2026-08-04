@@ -1,6 +1,6 @@
 {
   "name": "@nirholas/binance-mcp-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "MCP server for Binance exchange - spot trading, staking, wallet, NFT, pay, mining, and more",
   "type": "module",
   "main": "./build/index.js",
@@ -87,9 +87,6 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
-  },
-  "peerDependencies": {
-    "@nirholas/agenti": ">= 0.1.0"
   },
   "funding": {
     "type": "github",
