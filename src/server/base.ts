@@ -6,6 +6,9 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version: packageVersion } = require("../../package.json") as { version: string }
+
 import { registerEVM } from "@/evm.js"
 import { registerX402 } from "@/x402/index.js"
 import { initializeX402 } from "@/x402/integration/index.js"
@@ -21,7 +24,9 @@ export const startServer = async () => {
     // Create a new MCP server instance
     const mcpServer = new McpServer({
       name: "Universal Crypto MCP",
-      version: "1.1.0",
+      // Bundled in from package.json at build time, so serverInfo can never
+      // drift from the published version again (1.1.1 shipped reporting 1.1.0).
+      version: packageVersion,
       description: "Universal MCP server for all EVM-compatible networks with x402 payment protocol"
     })
 
