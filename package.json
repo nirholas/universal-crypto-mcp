@@ -1,13 +1,17 @@
 {
   "name": "@nirholas/universal-crypto-mcp",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "The most extensive crypto MCP repository - 60+ networks, 100+ tools, DEX/CEX, DeFi, wallets, market data, automation, and x402 payments",
   "type": "module",
   "main": "./dist/lib.js",
   "exports": {
     ".": {
-      "import": "./dist/lib.js"
-    }
+      "import": "./dist/lib.js",
+      "require": "./dist/lib.js",
+      "default": "./dist/lib.js"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "start": "node dist/index.js",
