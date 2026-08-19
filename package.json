@@ -204,5 +204,6 @@
     "packages/automation/*",
     "packages/generators/*",
     "x402-deploy"
-  ]
+  ],
+  "mcpName": "io.github.nirholas/universal-crypto-mcp"
 }
