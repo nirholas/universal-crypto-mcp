@@ -1921,3 +1921,7 @@ curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
 - **All 27 MCP servers** — See the full catalog at [modelcontextprotocol.name](https://modelcontextprotocol.name)
 
 > Powered by [modelcontextprotocol.name](https://modelcontextprotocol.name) — the open MCP HTTP gateway
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=nirholas/universal-crypto-mcp&type=Date)](https://www.star-history.com/#nirholas/universal-crypto-mcp&Date)
