@@ -34,6 +34,7 @@ export { OrcaWhirlpool } from './orca/whirlpool.js';
 // PumpFun
 export { PumpFunClient } from './pumpfun/client.js';
 export { PumpFunBondingCurve } from './pumpfun/bonding-curve.js';
+export { PumpSwapMarket } from './pumpfun/pumpswap.js';
 export { PumpFunMonitor } from './pumpfun/monitor.js';
 
 // Executor

@@ -1,23 +1,38 @@
+import BN from 'bn.js';
+import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js';
+import type { TransactionInstruction } from '@solana/web3.js';
+import { NATIVE_MINT } from '@solana/spl-token';
 import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
-  ComputeBudgetProgram,
-} from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
+  OnlinePumpSdk,
+  PUMP_SDK,
+  getBuyTokenAmountFromSolAmount,
+  getBuyV3TokenAmountFromQuoteAmount,
+  getSellSolAmountFromTokenAmount,
+} from '@pump-fun/pump-sdk';
+import type { BondingCurve } from '@pump-fun/pump-sdk';
 import type { SolanaClient } from './solana-client';
 import type { PumpFunToken } from './types';
 import axios from 'axios';
 
-const PUMP_FUN_PROGRAM = new PublicKey('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P');
-const PUMP_FUN_GLOBAL = new PublicKey('4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf');
-const PUMP_FUN_EVENT_AUTHORITY = new PublicKey('Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1');
-const PUMP_FUN_FEE = new PublicKey('CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM');
+// A v3 buy that also creates the buyer's token account stays well under this.
+const TRADE_COMPUTE_UNITS = 200_000;
 
+/**
+ * Pump.fun discovery (frontend API) and bonding curve trading.
+ *
+ * Trades go through the official @pump-fun/pump-sdk 4 builders:
+ *  - buys spend an exact SOL amount with buy_exact_quote_in_v3 and sells use
+ *    sell_v3, both with a minimum output from the SDK quote less slippage;
+ *  - cashback coins reject v3 (error 6094) and keep the legacy buy / sell;
+ *  - the token program comes from the mint, so create_v2 (Token-2022) and
+ *    legacy create (SPL Token) coins both resolve the right accounts.
+ * Coins that left the curve trade on their PumpSwap pool, and coins quoted in
+ * a mint other than SOL are not traded here: both throw so the bot falls back
+ * to Jupiter.
+ */
 export class PumpFunClient {
   private solana: SolanaClient;
+  private sdk: OnlinePumpSdk | null = null;
   private apiUrl = 'https://frontend-api.pump.fun';
 
   constructor(solanaClient: SolanaClient) {
@@ -70,36 +85,63 @@ export class PumpFunClient {
     solAmount: number,
     slippage: number = 5
   ): Promise<string> {
-    const bondingCurve = await this.getBondingCurvePDA(mint);
-    const associatedBondingCurve = await this.getAssociatedBondingCurvePDA(
-      mint,
-      bondingCurve
-    );
+    const user = this.solana.getPublicKey();
+    const quoteAmount = new BN(Math.floor(solAmount * 1e9));
+    const tokenProgram = await this.solana.getMintTokenProgram(mint);
+    const sdk = this.onlineSdk();
+    const [global, feeConfig, state] = await Promise.all([
+      sdk.fetchGlobal(),
+      sdk.fetchFeeConfig(),
+      sdk.fetchBuyState(mint, user, tokenProgram),
+    ]);
+    const curve = state.bondingCurve;
+    this.assertTradableSolCurve(mint, curve);
 
-    const userTokenAccount = await this.solana.getOrCreateTokenAccount(mint);
+    let instructions: TransactionInstruction[];
+    if (curve.isCashbackCoin) {
+      const amount = getBuyTokenAmountFromSolAmount({
+        global,
+        feeConfig,
+        mintSupply: curve.tokenTotalSupply,
+        bondingCurve: curve,
+        amount: quoteAmount,
+        quoteMint: NATIVE_MINT,
+      });
+      instructions = await PUMP_SDK.buyInstructions({
+        global,
+        bondingCurveAccountInfo: state.bondingCurveAccountInfo,
+        bondingCurve: curve,
+        associatedUserAccountInfo: state.associatedUserAccountInfo,
+        mint,
+        user,
+        amount,
+        solAmount: quoteAmount,
+        slippage,
+        tokenProgram,
+      });
+    } else {
+      const amount = getBuyV3TokenAmountFromQuoteAmount({
+        global,
+        feeConfig,
+        mintSupply: curve.tokenTotalSupply,
+        bondingCurve: curve,
+        amount: quoteAmount,
+        curveBaseTokenBalance: state.curveBaseTokenBalance,
+      });
+      instructions = await PUMP_SDK.buyExactQuoteInV3Instructions({
+        bondingCurve: curve,
+        associatedUserAccountInfo: state.associatedUserAccountInfo,
+        mint,
+        user,
+        amount,
+        quoteAmount,
+        slippage,
+        tokenProgram,
+        quoteTokenProgram: state.quoteTokenProgram,
+      });
+    }
 
-    const buyIx = await this.createBuyInstruction(
-      mint,
-      bondingCurve,
-      associatedBondingCurve,
-      userTokenAccount,
-      solAmount,
-      slippage
-    );
-
-    const priorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: await this.solana.getRecentPriorityFee(),
-    });
-
-    const computeLimit = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 100000,
-    });
-
-    const transaction = new Transaction().add(priorityFee, computeLimit, buyIx);
-
-    return await this.solana.sendTransaction(transaction, {
-      skipPreflight: false,
-    });
+    return this.send(instructions);
   }
 
   async sell(
@@ -107,137 +149,77 @@ export class PumpFunClient {
     tokenAmount: number,
     slippage: number = 5
   ): Promise<string> {
-    const bondingCurve = await this.getBondingCurvePDA(mint);
-    const associatedBondingCurve = await this.getAssociatedBondingCurvePDA(
-      mint,
-      bondingCurve
-    );
+    const user = this.solana.getPublicKey();
+    const { decimals, tokenProgram } = await this.solana.getTokenInfo(mint);
+    const amount = new BN(Math.floor(tokenAmount * Math.pow(10, decimals)));
+    const sdk = this.onlineSdk();
+    const [global, feeConfig, state] = await Promise.all([
+      sdk.fetchGlobal(),
+      sdk.fetchFeeConfig(),
+      sdk.fetchSellState(mint, user, tokenProgram),
+    ]);
+    const curve = state.bondingCurve;
+    this.assertTradableSolCurve(mint, curve);
 
-    const userTokenAccount = await this.solana.getOrCreateTokenAccount(mint);
-
-    const sellIx = await this.createSellInstruction(
-      mint,
-      bondingCurve,
-      associatedBondingCurve,
-      userTokenAccount,
-      tokenAmount,
-      slippage
-    );
-
-    const priorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: await this.solana.getRecentPriorityFee(),
+    const quoteAmount = getSellSolAmountFromTokenAmount({
+      global,
+      feeConfig,
+      mintSupply: curve.tokenTotalSupply,
+      bondingCurve: curve,
+      amount,
     });
 
-    const computeLimit = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 100000,
-    });
+    const instructions = curve.isCashbackCoin
+      ? await PUMP_SDK.sellInstructions({
+          global,
+          bondingCurveAccountInfo: state.bondingCurveAccountInfo,
+          bondingCurve: curve,
+          mint,
+          user,
+          amount,
+          solAmount: quoteAmount,
+          slippage,
+          tokenProgram,
+          mayhemMode: curve.isMayhemMode,
+          cashback: true,
+        })
+      : await PUMP_SDK.sellV3Instructions({
+          bondingCurve: curve,
+          mint,
+          user,
+          amount,
+          quoteAmount,
+          slippage,
+          tokenProgram,
+          quoteTokenProgram: state.quoteTokenProgram,
+        });
 
-    const transaction = new Transaction().add(priorityFee, computeLimit, sellIx);
-
-    return await this.solana.sendTransaction(transaction, {
-      skipPreflight: false,
-    });
+    return this.send(instructions);
   }
 
-  private async createBuyInstruction(
-    mint: PublicKey,
-    bondingCurve: PublicKey,
-    associatedBondingCurve: PublicKey,
-    userTokenAccount: PublicKey,
-    solAmount: number,
-    slippage: number
-  ): Promise<TransactionInstruction> {
-    const lamports = Math.floor(solAmount * 1e9);
-    const minTokensOut = 0; // Calculate based on bonding curve
-
-    const keys = [
-      { pubkey: PUMP_FUN_GLOBAL, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_FEE, isSigner: false, isWritable: true },
-      { pubkey: mint, isSigner: false, isWritable: false },
-      { pubkey: bondingCurve, isSigner: false, isWritable: true },
-      { pubkey: associatedBondingCurve, isSigner: false, isWritable: true },
-      { pubkey: userTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: this.solana.getPublicKey(), isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_EVENT_AUTHORITY, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_PROGRAM, isSigner: false, isWritable: false },
-    ];
-
-    // Buy instruction discriminator
-    const data = Buffer.alloc(24);
-    data.writeUInt8(0x66, 0); // Buy discriminator
-    data.writeBigUInt64LE(BigInt(lamports), 8);
-    data.writeBigUInt64LE(BigInt(minTokensOut), 16);
-
-    return new TransactionInstruction({
-      keys,
-      programId: PUMP_FUN_PROGRAM,
-      data,
-    });
+  private onlineSdk(): OnlinePumpSdk {
+    if (!this.sdk) this.sdk = new OnlinePumpSdk(this.solana.getConnection());
+    return this.sdk;
   }
 
-  private async createSellInstruction(
-    mint: PublicKey,
-    bondingCurve: PublicKey,
-    associatedBondingCurve: PublicKey,
-    userTokenAccount: PublicKey,
-    tokenAmount: number,
-    slippage: number
-  ): Promise<TransactionInstruction> {
-    const tokenInfo = await this.solana.getTokenInfo(mint);
-    const amount = Math.floor(tokenAmount * Math.pow(10, tokenInfo.decimals));
-    const minSolOut = 0; // Calculate based on bonding curve
-
-    const keys = [
-      { pubkey: PUMP_FUN_GLOBAL, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_FEE, isSigner: false, isWritable: true },
-      { pubkey: mint, isSigner: false, isWritable: false },
-      { pubkey: bondingCurve, isSigner: false, isWritable: true },
-      { pubkey: associatedBondingCurve, isSigner: false, isWritable: true },
-      { pubkey: userTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: this.solana.getPublicKey(), isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: ASSOCIATED_TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_EVENT_AUTHORITY, isSigner: false, isWritable: false },
-      { pubkey: PUMP_FUN_PROGRAM, isSigner: false, isWritable: false },
-    ];
-
-    // Sell instruction discriminator
-    const data = Buffer.alloc(24);
-    data.writeUInt8(0x33, 0); // Sell discriminator
-    data.writeBigUInt64LE(BigInt(amount), 8);
-    data.writeBigUInt64LE(BigInt(minSolOut), 16);
-
-    return new TransactionInstruction({
-      keys,
-      programId: PUMP_FUN_PROGRAM,
-      data,
-    });
+  private assertTradableSolCurve(mint: PublicKey, curve: BondingCurve): void {
+    if (curve.complete) {
+      throw new Error(`${mint.toBase58()} has left the bonding curve; it trades on its PumpSwap pool`);
+    }
+    // A SOL-paired curve stores the zero key (or wrapped SOL) as its quote mint.
+    if (!curve.quoteMint.equals(PublicKey.default) && !curve.quoteMint.equals(NATIVE_MINT)) {
+      throw new Error(`${mint.toBase58()} is quoted in ${curve.quoteMint.toBase58()}, not SOL`);
+    }
   }
 
-  private async getBondingCurvePDA(mint: PublicKey): Promise<PublicKey> {
-    const [pda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('bonding-curve'), mint.toBuffer()],
-      PUMP_FUN_PROGRAM
+  private async send(instructions: TransactionInstruction[]): Promise<string> {
+    const transaction = new Transaction().add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: TRADE_COMPUTE_UNITS }),
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: await this.solana.getRecentPriorityFee(),
+      }),
+      ...instructions
     );
-    return pda;
-  }
-
-  private async getAssociatedBondingCurvePDA(
-    mint: PublicKey,
-    bondingCurve: PublicKey
-  ): Promise<PublicKey> {
-    const [pda] = PublicKey.findProgramAddressSync(
-      [
-        bondingCurve.toBuffer(),
-        TOKEN_PROGRAM_ID.toBuffer(),
-        mint.toBuffer(),
-      ],
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-    return pda;
+    return this.solana.sendTransaction(transaction, { skipPreflight: false });
   }
 }

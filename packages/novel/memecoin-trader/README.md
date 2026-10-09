@@ -293,7 +293,14 @@ SNIPE_AMOUNT=0.2
 
 ### Pump.fun
 - Token launches
-- Bonding curve trades
+- Bonding curve trades through the official `@pump-fun/pump-sdk` 4 builders:
+  buys spend an exact SOL amount with `buy_exact_quote_in_v3`, sells use
+  `sell_v3`, both with a minimum output from the SDK quote less slippage
+- Cashback coins reject the v3 instructions, so they keep the legacy `buy` / `sell`
+- Works for both Token-2022 (`create_v2`) and SPL Token (legacy `create`) coins;
+  the token program is read from the mint
+- Coins that completed their curve trade on their PumpSwap pool, and coins
+  quoted in a mint other than SOL, are routed through Jupiter instead
 - Price data
 
 ### Jupiter

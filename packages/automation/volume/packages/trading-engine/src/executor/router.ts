@@ -238,7 +238,8 @@ export class SmartRouter {
   }
 
   /**
-   * Get route from PumpFun
+   * Get route from PumpFun: the bonding curve while it trades, the coin's
+   * PumpSwap pool after migration. Only coin to its own quote mint pairs.
    */
   private async getPumpFunRoute(
     inputMint: string,
@@ -247,55 +248,34 @@ export class SmartRouter {
     _slippageBps: number
   ): Promise<RouteOption | null> {
     try {
-      // PumpFun only supports SOL <-> Token trades
-      const isInputSol = inputMint === KNOWN_TOKENS.SOL;
-      const isOutputSol = outputMint === KNOWN_TOKENS.SOL;
+      const pair = await this.pumpfun.resolvePair(inputMint, outputMint);
+      if (!pair) return null;
 
-      if (!isInputSol && !isOutputSol) {
-        return null; // PumpFun doesn't support token-to-token
-      }
-
-      const tokenMint = isInputSol ? outputMint : inputMint;
-
-      // Check if it's a PumpFun token and not migrated
-      const isMigrated = await this.pumpfun.isMigrated(tokenMint);
-      if (isMigrated) return null;
-
-      let outputAmount: bigint;
-      let priceImpact: number;
-
-      if (isInputSol) {
-        const output = await this.pumpfun.calculateBuyOutput(tokenMint, amount);
-        outputAmount = output.tokenAmount;
-        priceImpact = output.priceImpact;
-      } else {
-        const output = await this.pumpfun.calculateSellOutput(tokenMint, amount);
-        outputAmount = output.solAmount;
-        priceImpact = output.priceImpact;
-      }
-
-      const state = await this.pumpfun.getBondingCurveState(tokenMint);
+      const quote =
+        pair.side === 'buy'
+          ? await this.pumpfun.calculateBuyOutput(pair.mint, amount)
+          : await this.pumpfun.calculateSellOutput(pair.mint, amount);
 
       const route: Route = {
         legs: [{
           inputMint,
           outputMint,
           amountIn: amount,
-          amountOut: outputAmount,
-          protocol: 'pumpfun',
-          poolAddress: state.address,
-          feeBps: 100, // 1% PumpFun fee
+          amountOut: quote.amountOut,
+          protocol: quote.venue === 'pumpswap' ? 'pumpswap' : 'pumpfun',
+          poolAddress: quote.marketAddress,
+          feeBps: quote.feeBps,
         }],
         inputAmount: amount,
-        outputAmount,
-        priceImpactPct: priceImpact,
-        totalFeeBps: 100,
+        outputAmount: quote.amountOut,
+        priceImpactPct: quote.priceImpact,
+        totalFeeBps: quote.feeBps,
       };
 
       return {
         dex: 'pumpfun',
-        outputAmount,
-        priceImpactPct: priceImpact,
+        outputAmount: quote.amountOut,
+        priceImpactPct: quote.priceImpact,
         route,
         estimatedFees: 5000n,
       };
@@ -331,17 +311,14 @@ export class SmartRouter {
   }
 
   /**
-   * Check if a token is a PumpFun token
+   * Check if a token is a PumpFun coin (it has a bonding curve account)
    */
   private async isPumpFunToken(mint: string): Promise<boolean> {
-    // Skip known tokens
-    if (Object.values(KNOWN_TOKENS).includes(mint as any)) {
+    if (Object.values(KNOWN_TOKENS).includes(mint as (typeof KNOWN_TOKENS)[keyof typeof KNOWN_TOKENS])) {
       return false;
     }
-
     try {
-      await this.pumpfun.getBondingCurveState(mint);
-      return true;
+      return (await this.pumpfun.getQuoteMint(mint)) !== null;
     } catch {
       return false;
     }

@@ -141,7 +141,12 @@ export interface CreatePoolResult {
 // ============================================================================
 
 /**
- * Parameters for creating a token on PumpFun
+ * Parameters for creating a token on PumpFun.
+ *
+ * The coin is a Token-2022 mint created with `create_v2`. It is paired with
+ * SOL unless `quoteMint` names another quote `create_v2` accepts: a mint on
+ * the pump `Global` whitelist (USDC), one in the quote control list, or an
+ * existing pump coin.
  */
 export interface CreatePumpFunTokenParams {
   /** Token name */
@@ -150,9 +155,9 @@ export interface CreatePumpFunTokenParams {
   symbol: string;
   /** Token description */
   description: string;
-  /** Image URL or file path */
+  /** Image URL, written into the metadata JSON */
   image: string;
-  /** Wallet ID */
+  /** Wallet ID of the creator (signs and pays) */
   walletId: string;
   /** Social links */
   socials?: {
@@ -160,9 +165,13 @@ export interface CreatePumpFunTokenParams {
     telegram?: string;
     website?: string;
   };
-  /** Initial buy amount in SOL */
+  /** Quote mint the coin trades against; SOL when omitted */
+  quoteMint?: string;
+  /** Create the coin in mayhem mode */
+  mayhemMode?: boolean;
+  /** Creator's first buy, in whole quote mint units (SOL unless `quoteMint` is set) */
   initialBuyAmount?: string;
-  /** Slippage for initial buy (bps) */
+  /** Slippage for the first buy (bps) */
   slippageBps?: number;
 }
 
@@ -173,25 +182,63 @@ export interface PumpFunTokenResult {
   success: boolean;
   mint: string;
   bondingCurve: string;
+  /** The curve's Token-2022 token account */
   associatedBondingCurve: string;
+  /** Normalized quote mint (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  metadataUri: string;
+  /** The create transaction; it also holds the first buy whenever both fit one transaction */
   signature: string;
-  initialBuyTx?: string;
+  /**
+   * Set when the first buy did not fit the create transaction (a coin quoted
+   * in another pump coin carries that coin's curve accounts) and was sent
+   * right after the create confirmed
+   */
+  devBuySignature?: string;
+  /** Tokens the first buy was quoted for, in base units */
   devBuyAmount?: string;
 }
 
+/** Where a pump coin trades now. */
+export type PumpFunVenue = 'curve' | 'completed' | 'pumpswap' | 'raydium';
+
 /**
- * PumpFun bonding curve state
+ * PumpFun bonding curve state, decoded by `@pump-fun/pump-sdk`.
+ * Reserve amounts are base-unit integers as strings.
  */
 export interface BondingCurveState {
   mint: string;
-  virtualSolReserves: string;
+  bondingCurve: string;
+  /** The curve's token account for the coin */
+  associatedBondingCurve: string;
+  /** Token program of the coin (Token-2022 for `create_v2` coins) */
+  tokenProgram: string;
+  tokenDecimals: number;
+  /** Normalized quote mint (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  quoteTokenProgram: string;
+  quoteDecimals: number;
+  creator: string;
+  virtualQuoteReserves: string;
   virtualTokenReserves: string;
-  realSolReserves: string;
+  realQuoteReserves: string;
   realTokenReserves: string;
   tokenTotalSupply: string;
+  /** Curve sold out; no curve trades after this */
   complete: boolean;
+  /** Curve migrated its liquidity to an AMM pool */
   migrated: boolean;
-  raydiumPool?: string;
+  isMayhemMode: boolean;
+  /** Cashback coins trade on the curve only through `buy_v2` / `sell_v2` */
+  isCashbackCoin: boolean;
+  /**
+   * `curve` while trading on the bonding curve, `completed` while awaiting
+   * migration, `pumpswap` once its canonical PumpSwap pool exists, `raydium`
+   * for coins that migrated before PumpSwap existed.
+   */
+  venue: PumpFunVenue;
+  /** Canonical PumpSwap pool once migrated there */
+  pumpSwapPool?: string;
 }
 
 // ============================================================================
@@ -260,7 +307,7 @@ export interface SnipeLaunchParams {
   dex: DEXType | 'pumpfun';
   /** Wallets to use for sniping */
   walletIds: string[];
-  /** Amount per wallet in SOL */
+  /** Amount per wallet in whole quote mint units (SOL for SOL-paired coins) */
   amountPerWallet: string;
   /** Max slippage in bps */
   slippageBps: number;
@@ -280,14 +327,18 @@ export interface SnipeResult {
   totalWallets: number;
   successfulSnipes: number;
   failedSnipes: number;
+  /** Quote spent by successful buys, in base units (lamports for SOL-paired coins) */
   totalSolSpent: string;
+  /** Tokens the successful buys were quoted for, in base units */
   totalTokensReceived: string;
   bundleId?: string;
   results: Array<{
     walletId: string;
     success: boolean;
     signature?: string;
+    /** Tokens the buy was quoted for at send time, in base units */
     tokensReceived?: string;
+    /** Quote spent, in whole quote mint units */
     solSpent?: string;
     error?: string;
   }>;
@@ -382,6 +433,7 @@ export const CONSTANTS = {
   RAYDIUM_AMM_PROGRAM: '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',
   RAYDIUM_CPMM_PROGRAM: 'CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C',
   PUMPFUN_PROGRAM: '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',
+  PUMPSWAP_PROGRAM: 'pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA',
   METEORA_DLMM_PROGRAM: 'LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo',
   
   // Common tokens
@@ -389,9 +441,9 @@ export const CONSTANTS = {
   USDC_MINT: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
   
   // PumpFun constants
-  PUMPFUN_FEE_RECIPIENT: 'CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM',
   PUMPFUN_GLOBAL: '4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf',
-  PUMPFUN_BONDING_CURVE_SEED: 'bonding-curve',
+  /** pump.fun's address lookup table (pump programs, fee accounts, listed quote mints); keeps `create_v2` with a first buy under the transaction size limit */
+  PUMPFUN_LOOKUP_TABLE: '2dW7nGf9DyN94a2RH9JUiAMyGqft3J61xmx1txmQyyPJ',
   
   // Defaults
   DEFAULT_DECIMALS: 9,

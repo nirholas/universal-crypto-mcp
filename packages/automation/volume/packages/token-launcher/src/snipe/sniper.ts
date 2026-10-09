@@ -11,7 +11,36 @@ import {
 import type { SnipeLaunchParams, SnipeResult } from '../types.js';
 import { TokenLaunchError, TokenLaunchErrorCode } from '../types.js';
 import { logger } from '../utils/logger.js';
-import { buyOnPumpFun } from '../pumpfun/client.js';
+import { toBaseUnits } from '../utils/amounts.js';
+import { buildPumpFunBuyTransaction, buyOnPumpFun, fetchPumpFunCurve } from '../pumpfun/client.js';
+
+/** Jito bundles carry at most five transactions. */
+const JITO_MAX_BUNDLE_TRANSACTIONS = 5;
+
+type WalletSigner = (walletId: string) => Promise<{
+  publicKey: PublicKey;
+  signTransaction: (tx: VersionedTransaction) => Promise<VersionedTransaction>;
+}>;
+
+/**
+ * Per-wallet spend in base units of the coin's quote mint. `amountPerWallet`
+ * is in whole quote units, so a pump coin paired with a token quote is
+ * converted with that quote mint's decimals.
+ */
+async function pumpFunQuoteAmount(
+  connection: Connection,
+  tokenMint: string,
+  amountPerWallet: string
+): Promise<bigint> {
+  const curve = await fetchPumpFunCurve(connection, tokenMint);
+  if (!curve) {
+    throw new TokenLaunchError(
+      TokenLaunchErrorCode.POOL_NOT_FOUND,
+      `${tokenMint} has no pump bonding curve`
+    );
+  }
+  return toBaseUnits(amountPerWallet, curve.state.quoteDecimals);
+}
 
 /**
  * Snipe a token launch with multiple wallets
@@ -19,10 +48,7 @@ import { buyOnPumpFun } from '../pumpfun/client.js';
 export async function snipeLaunch(
   connection: Connection,
   params: SnipeLaunchParams,
-  getWalletKeypair: (walletId: string) => Promise<{
-    publicKey: PublicKey;
-    signTransaction: (tx: VersionedTransaction) => Promise<VersionedTransaction>;
-  }>
+  getWalletKeypair: WalletSigner
 ): Promise<SnipeResult> {
   const {
     tokenMint,
@@ -41,15 +67,22 @@ export async function snipeLaunch(
     amountPerWallet,
   });
   
+  if (dex !== 'pumpfun') {
+    throw new TokenLaunchError(
+      TokenLaunchErrorCode.INVALID_PARAMS,
+      `Sniping on ${dex} is not supported; snipeLaunch buys pump coins (dex: 'pumpfun')`
+    );
+  }
+
   const results: SnipeResult['results'] = [];
   let successfulSnipes = 0;
   let failedSnipes = 0;
-  let totalSolSpent = BigInt(0);
-  let totalTokensReceived = BigInt(0);
+  let totalQuoteSpent = 0n;
+  let totalTokensReceived = 0n;
   
   // Process wallets in parallel (with concurrency limit)
   const CONCURRENCY = 10;
-  const solAmountBigInt = BigInt(Math.floor(parseFloat(amountPerWallet) * 1e9));
+  const quoteAmount = await pumpFunQuoteAmount(connection, tokenMint, amountPerWallet);
   
   for (let i = 0; i < walletIds.length; i += CONCURRENCY) {
     const batch = walletIds.slice(i, i + CONCURRENCY);
@@ -59,31 +92,22 @@ export async function snipeLaunch(
       
       for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-          if (dex === 'pumpfun') {
-            // Buy on PumpFun
-            const result = await buyOnPumpFun(
-              connection,
-              tokenMint,
-              wallet.publicKey,
-              solAmountBigInt,
-              slippageBps,
-              wallet.signTransaction
-            );
-            
-            return {
-              walletId,
-              success: true,
-              signature: result.signature,
-              tokensReceived: result.tokensReceived.toString(),
-              solSpent: amountPerWallet,
-            };
-          } else {
-            // For other DEXs, would use Jupiter or direct pool swap
-            throw new TokenLaunchError(
-              TokenLaunchErrorCode.TRANSACTION_FAILED,
-              `DEX ${dex} sniping not yet implemented. Use pumpfun or integrate Jupiter.`
-            );
-          }
+          const result = await buyOnPumpFun(
+            connection,
+            tokenMint,
+            wallet.publicKey,
+            quoteAmount,
+            slippageBps,
+            wallet.signTransaction
+          );
+          
+          return {
+            walletId,
+            success: true,
+            signature: result.signature,
+            tokensReceived: result.tokensReceived.toString(),
+            solSpent: amountPerWallet,
+          };
         } catch (error) {
           if (attempt === maxRetries - 1) {
             return {
@@ -110,7 +134,7 @@ export async function snipeLaunch(
       results.push(result);
       if (result.success) {
         successfulSnipes++;
-        totalSolSpent += BigInt(Math.floor(parseFloat(result.solSpent || '0') * 1e9));
+        totalQuoteSpent += quoteAmount;
         totalTokensReceived += BigInt(result.tokensReceived || '0');
       } else {
         failedSnipes++;
@@ -121,7 +145,7 @@ export async function snipeLaunch(
   logger.info('Snipe operation completed', {
     successfulSnipes,
     failedSnipes,
-    totalSolSpent: totalSolSpent.toString(),
+    totalQuoteSpent: totalQuoteSpent.toString(),
     totalTokensReceived: totalTokensReceived.toString(),
   });
   
@@ -130,33 +154,48 @@ export async function snipeLaunch(
     totalWallets: walletIds.length,
     successfulSnipes,
     failedSnipes,
-    totalSolSpent: totalSolSpent.toString(),
+    totalSolSpent: totalQuoteSpent.toString(),
     totalTokensReceived: totalTokensReceived.toString(),
     results,
   };
 }
 
 /**
- * Snipe with Jito bundle for atomic execution
+ * Snipe a pump coin with one Jito bundle: one signed buy per wallet, landed
+ * atomically. Each buy is quoted against the curve as read before the
+ * bundle, so later buys in the bundle see a higher price than their quote;
+ * `slippageBps` must cover the bundle's own price impact or the bundle
+ * reverts as a whole. The tip is added by `jitoClient`.
  */
 export async function snipeWithJitoBundle(
-  _connection: Connection,
+  connection: Connection,
   params: SnipeLaunchParams,
-  getWalletKeypair: (walletId: string) => Promise<{
-    publicKey: PublicKey;
-    signTransaction: (tx: VersionedTransaction) => Promise<VersionedTransaction>;
-  }>,
+  getWalletKeypair: WalletSigner,
   jitoClient: {
     sendBundle: (txs: VersionedTransaction[], tipLamports: string) => Promise<{ bundleId: string }>;
   }
 ): Promise<SnipeResult> {
   const {
     tokenMint,
+    dex,
     walletIds,
     amountPerWallet,
-    slippageBps: _slippageBps,
+    slippageBps,
     jitoTipLamports = '10000000', // 0.01 SOL default
   } = params;
+
+  if (dex !== 'pumpfun') {
+    throw new TokenLaunchError(
+      TokenLaunchErrorCode.INVALID_PARAMS,
+      `Jito bundle sniping supports pump coins (dex: 'pumpfun'), not ${dex}`
+    );
+  }
+  if (walletIds.length > JITO_MAX_BUNDLE_TRANSACTIONS) {
+    throw new TokenLaunchError(
+      TokenLaunchErrorCode.BUNDLE_FAILED,
+      `Jito bundles support max ${JITO_MAX_BUNDLE_TRANSACTIONS} transactions. Split into multiple bundles.`
+    );
+  }
   
   logger.info('Starting Jito bundle snipe', {
     tokenMint,
@@ -164,43 +203,42 @@ export async function snipeWithJitoBundle(
     tipLamports: jitoTipLamports,
   });
   
-  // Build all transactions
+  const quoteAmount = await pumpFunQuoteAmount(connection, tokenMint, amountPerWallet);
   const transactions: VersionedTransaction[] = [];
-  const solAmountBigInt = BigInt(Math.floor(parseFloat(amountPerWallet) * 1e9));
-  
+  const quotedTokens: bigint[] = [];
+
   for (const walletId of walletIds) {
-    const _wallet = await getWalletKeypair(walletId);
-    const _mintPubkey = new PublicKey(tokenMint);
-    
-    // Build buy transaction
-    // This would be similar to buildPumpFunBuyInstruction
-    // For brevity, leaving as placeholder
-    
-    logger.debug('Built transaction for wallet', { walletId });
-  }
-  
-  // Jito bundles support max 5 transactions
-  if (transactions.length > 5) {
-    throw new TokenLaunchError(
-      TokenLaunchErrorCode.BUNDLE_FAILED,
-      'Jito bundles support max 5 transactions. Split into multiple bundles.'
+    const wallet = await getWalletKeypair(walletId);
+    const built = await buildPumpFunBuyTransaction(
+      connection,
+      tokenMint,
+      wallet.publicKey,
+      quoteAmount,
+      slippageBps,
+      wallet.signTransaction
     );
+    transactions.push(built.transaction);
+    quotedTokens.push(built.expectedTokens);
+    logger.debug('Built transaction for wallet', { walletId, venue: built.venue });
   }
   
   try {
     const result = await jitoClient.sendBundle(transactions, jitoTipLamports);
+    const totalTokens = quotedTokens.reduce((sum, tokens) => sum + tokens, 0n);
     
     return {
       success: true,
       totalWallets: walletIds.length,
       successfulSnipes: walletIds.length,
       failedSnipes: 0,
-      totalSolSpent: (solAmountBigInt * BigInt(walletIds.length)).toString(),
-      totalTokensReceived: '0', // Would need to parse from bundle result
+      totalSolSpent: (quoteAmount * BigInt(walletIds.length)).toString(),
+      totalTokensReceived: totalTokens.toString(),
       bundleId: result.bundleId,
-      results: walletIds.map(walletId => ({
+      results: walletIds.map((walletId, index) => ({
         walletId,
         success: true,
+        tokensReceived: quotedTokens[index]?.toString(),
+        solSpent: amountPerWallet,
       })),
     };
   } catch (error) {

@@ -503,6 +503,17 @@ export interface OrcaPosition {
 // ============================================================================
 
 /**
+ * Where a pump coin trades right now.
+ * - `curve`: the Pump bonding curve is live.
+ * - `completed`: the curve completed (or a v3 buy ran a synthetic migration);
+ *   no trade is accepted until the migration creates the PumpSwap pool.
+ * - `pumpswap`: the coin migrated and trades on its canonical PumpSwap pool.
+ * - `raydium`: the coin migrated to a Raydium AMM pool before PumpSwap
+ *   existed; trade it through the Raydium or Jupiter clients.
+ */
+export type PumpFunVenue = 'curve' | 'completed' | 'pumpswap' | 'raydium';
+
+/**
  * PumpFun token info
  */
 export interface PumpFunTokenInfo {
@@ -520,14 +531,21 @@ export interface PumpFunTokenInfo {
   creator: string;
   /** Creation timestamp */
   createdAt: number;
-  /** Is migrated to Raydium */
+  /** True once the coin left its bonding curve for an AMM pool */
   isMigrated: boolean;
-  /** Raydium pool ID if migrated */
-  raydiumPoolId?: string;
-  /** Market cap in SOL */
-  marketCapSol: number;
-  /** Current price in SOL */
-  priceInSol: number;
+  /** Where the coin trades right now */
+  venue: PumpFunVenue;
+  /**
+   * Canonical PumpSwap pool address (the pool exists once the coin migrated);
+   * null for coins that migrated to Raydium
+   */
+  pumpSwapPoolId: string | null;
+  /** Mint the coin is priced in: WSOL for SOL-paired coins, else USDC or another pump coin */
+  quoteMint: string;
+  /** Market cap in quote mint units (SOL for SOL-paired coins) */
+  marketCapQuote: number;
+  /** Current price in quote mint units per whole token */
+  priceInQuote: number;
   /** 24h volume in SOL */
   volume24hSol?: number;
   /** Holder count */
@@ -537,27 +555,109 @@ export interface PumpFunTokenInfo {
 }
 
 /**
- * Bonding curve state
+ * Bonding curve state, decoded by the official pump SDK so the longer
+ * post-upgrade account layout (quote mint, mayhem, cashback, creator fee
+ * fields) is read correctly.
  */
 export interface BondingCurveState {
   /** Bonding curve address */
   address: string;
   /** Token mint */
   mint: string;
-  /** Virtual SOL reserves */
-  virtualSolReserves: bigint;
+  /** Token program that owns the mint (Token-2022 for create_v2 coins) */
+  tokenProgram: string;
+  /** Quote mint the curve trades in (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  /** Token program that owns the quote mint */
+  quoteTokenProgram: string;
+  /** Decimals of the coin */
+  tokenDecimals: number;
+  /** Decimals of the quote mint */
+  quoteDecimals: number;
+  /** Coin creator (receives the creator fee) */
+  creator: string;
+  /** Virtual quote reserves, in quote base units */
+  virtualQuoteReserves: bigint;
   /** Virtual token reserves */
   virtualTokenReserves: bigint;
-  /** Real SOL reserves */
-  realSolReserves: bigint;
+  /** Real quote reserves, in quote base units */
+  realQuoteReserves: bigint;
   /** Real token reserves */
   realTokenReserves: bigint;
   /** Total supply */
   tokenTotalSupply: bigint;
-  /** Is complete (migrated) */
+  /** Tokens held by the curve's token account (prices a synthetic migration) */
+  curveTokenBalance: bigint;
+  /** Curve completed: no curve trade is accepted any more */
   complete: boolean;
-  /** Migration progress (0-100) */
+  /** Migration ran: every reserve is zeroed and the coin trades on PumpSwap */
+  migrated: boolean;
+  /** Mayhem mode curve (no synthetic migration, no multi-hop routes) */
+  isMayhemMode: boolean;
+  /** Cashback coin (trades with the v2 instructions; v3 rejects it with 6094) */
+  isCashbackCoin: boolean;
+  /** Share of the curve's sellable supply already bought (0-100) */
   migrationProgress: number;
+  /** Total fee rate a curve trade pays now (protocol plus creator), in bps; 0 once migrated */
+  feeBps: number;
+}
+
+/**
+ * Canonical PumpSwap pool state of a migrated pump coin.
+ *
+ * `virtualQuoteReserves` is a signed value and is negative while v2 trade
+ * fees wait in the quote vault for a sweep; price against
+ * `effectiveQuoteReserves = quoteVaultBalance + virtualQuoteReserves`.
+ */
+export interface PumpSwapPoolState {
+  /** Pool address */
+  address: string;
+  /** Base mint (the pump coin) */
+  baseMint: string;
+  /** Quote mint (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  /** Base vault balance */
+  baseReserves: bigint;
+  /** Raw quote vault balance (includes fees waiting to be swept) */
+  quoteVaultBalance: bigint;
+  /** Signed virtual quote reserves (negative while fees wait in the vault) */
+  virtualQuoteReserves: bigint;
+  /** quoteVaultBalance + virtualQuoteReserves: the reserves the pool prices against */
+  effectiveQuoteReserves: bigint;
+  /** Protocol fees waiting in the quote vault */
+  protocolFees: bigint;
+  /** Creator fees waiting in the quote vault */
+  creatorFees: bigint;
+  /** Base mint decimals */
+  baseDecimals: number;
+  /** Quote mint decimals */
+  quoteDecimals: number;
+  /** Base mint supply */
+  baseMintSupply: bigint;
+  /** Mayhem mode pool */
+  isMayhemMode: boolean;
+  /** Cashback coin (trades with the v1 instructions; v2 is skipped) */
+  isCashbackCoin: boolean;
+}
+
+/**
+ * Quote for a pump trade, on the curve or on PumpSwap.
+ */
+export interface PumpFunTradeQuote {
+  /** Venue the trade executes on */
+  venue: 'curve' | 'pumpswap';
+  /** Bonding curve or PumpSwap pool the trade executes against */
+  marketAddress: string;
+  /** Amount the user receives (tokens on a buy, quote base units on a sell), net of fees */
+  amountOut: bigint;
+  /** Fees charged, in quote base units */
+  fee: bigint;
+  /** Total fee rate in basis points */
+  feeBps: number;
+  /** Price after the trade, in quote mint units per whole token */
+  newPrice: number;
+  /** Price impact in percent */
+  priceImpact: number;
 }
 
 /**
@@ -568,10 +668,8 @@ export interface PumpFunBuyParams {
   mint: string;
   /** User's public key */
   userPublicKey: string;
-  /** SOL amount to spend */
-  solAmount: bigint;
-  /** Minimum tokens to receive */
-  minTokenAmount?: bigint;
+  /** Quote amount to spend, fees included (lamports for SOL-paired coins) */
+  quoteAmount: bigint;
   /** Slippage tolerance in basis points */
   slippageBps?: number;
 }
@@ -586,8 +684,27 @@ export interface PumpFunSellParams {
   userPublicKey: string;
   /** Token amount to sell */
   tokenAmount: bigint;
-  /** Minimum SOL to receive */
-  minSolAmount?: bigint;
+  /** Slippage tolerance in basis points */
+  slippageBps?: number;
+}
+
+/**
+ * PumpFun multi-hop swap parameters: one `multi_hop_swap` instruction
+ * through several curves or PumpSwap pools (e.g. SOL to coin A to coin B).
+ */
+export interface PumpFunMultiHopParams {
+  /**
+   * Mints in trade order. A buy starts at the user's currency and climbs a
+   * quote chain (`[SOL, A, B]`: A quoted in SOL, B quoted in A); a sell is the
+   * reverse (`[B, A, SOL]`).
+   */
+  path: string[];
+  /** Direction of the route */
+  side: 'buy' | 'sell';
+  /** User's public key */
+  userPublicKey: string;
+  /** Amount of the first mint in `path` to spend */
+  amountIn: bigint;
   /** Slippage tolerance in basis points */
   slippageBps?: number;
 }
@@ -606,12 +723,14 @@ export interface NewPumpFunToken {
   creator: string;
   /** Bonding curve address */
   bondingCurve: string;
-  /** Creation signature */
-  signature: string;
-  /** Creation timestamp */
+  /** Creation signature (absent for coins listed from the pump.fun API) */
+  signature?: string;
+  /** Creation time, unix seconds */
   timestamp: number;
-  /** Initial market cap in SOL */
-  initialMarketCapSol: number;
+  /** Mint the coin is priced in (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  /** Market cap in quote mint units when the coin was seen */
+  initialMarketCapQuote: number;
 }
 
 // ============================================================================
@@ -859,13 +978,21 @@ export interface IOrcaClient {
 }
 
 /**
+ * Signs a pump transaction: a secret key, or a callback returning the signed
+ * transaction (wallet adapters).
+ */
+export type PumpFunSigner =
+  | Uint8Array
+  | ((tx: VersionedTransaction) => Promise<VersionedTransaction>);
+
+/**
  * PumpFun client interface
  */
 export interface IPumpFunClient {
   getTokenInfo(mint: string): Promise<PumpFunTokenInfo>;
   getBondingCurveState(mint: string): Promise<BondingCurveState>;
-  buy(params: PumpFunBuyParams): Promise<TransactionResult>;
-  sell(params: PumpFunSellParams): Promise<TransactionResult>;
+  buyWithSigner(params: PumpFunBuyParams, signer: PumpFunSigner): Promise<TransactionResult>;
+  sellWithSigner(params: PumpFunSellParams, signer: PumpFunSigner): Promise<TransactionResult>;
   subscribeToNewTokens(callback: (token: NewPumpFunToken) => void): () => void;
   isMigrated(mint: string): Promise<boolean>;
 }
@@ -954,10 +1081,10 @@ export const KNOWN_TOKENS = {
  * PumpFun program IDs
  */
 export const PUMPFUN_PROGRAM_IDS = {
+  /** Pump bonding curve program */
   PROGRAM: '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',
-  FEE_RECIPIENT: 'CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM',
-  EVENT_AUTHORITY: 'Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1',
-  GLOBAL: '4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf',
+  /** PumpSwap (pump_amm) program, where completed curves migrate */
+  PUMPSWAP: 'pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA',
 } as const;
 
 /**

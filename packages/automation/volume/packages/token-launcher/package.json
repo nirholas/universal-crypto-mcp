@@ -28,12 +28,15 @@
     "@metaplex-foundation/mpl-token-metadata": "^3.0.0",
     "@metaplex-foundation/umi": "^0.9.0",
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.0",
-    "bs58": "^5.0.0",
+    "@pump-fun/pump-sdk": "^4.0.0",
+    "@pump-fun/pump-swap-sdk": "^2.1.0",
+    "bn.js": "^5.2.2",
     "uuid": "^9.0.0",
     "pino": "^8.17.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@types/bn.js": "^5.1.6",
     "@types/node": "^20.0.0",
     "@types/uuid": "^9.0.0",
     "typescript": "^5.0.0",

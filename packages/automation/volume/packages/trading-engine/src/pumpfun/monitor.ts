@@ -1,36 +1,66 @@
 /**
  * PumpFun New Token Monitor
- * 
- * Monitors for new token launches on PumpFun via WebSocket.
+ *
+ * Watches the pump program's logs over WebSocket and decodes every
+ * `CreateEvent` it emits (from `create` and the Token-2022 `create_v2`) with
+ * the official SDK decoder. The event carries the mint, curve, creator,
+ * quote mint and opening reserves, so no transaction fetch is needed.
  */
 
 import { Connection, PublicKey } from '@solana/web3.js';
+import {
+  PUMP_PROGRAM_ID,
+  PUMP_SDK,
+  bondingCurveMarketCap,
+  normalizeQuoteMint,
+  pumpIdl,
+  type CreateEventBc,
+} from '@pump-fun/pump-sdk';
+import type { MintInfoCache } from './mints.js';
 import type {
   NewPumpFunToken,
   TradingEngineConfig,
 } from '../types.js';
-import { PUMPFUN_PROGRAM_IDS } from '../types.js';
+
+/** pump.fun coin listing endpoint */
+const PUMP_FUN_COINS_API = 'https://frontend-api-v3.pump.fun/coins';
+
+const PROGRAM_DATA_PREFIX = 'Program data: ';
+
+const CREATE_EVENT_DISCRIMINATOR = Buffer.from(
+  pumpIdl.events.find(event => event.name === 'CreateEvent')?.discriminator ?? []
+);
+
+interface PumpFunAPIListedCoin {
+  mint: string;
+  name: string;
+  symbol: string;
+  creator: string;
+  bonding_curve: string;
+  created_timestamp: number;
+  quote_mint?: string;
+  market_cap?: number;
+  market_cap_quote?: number;
+}
 
 /**
  * PumpFun Monitor for new token launches
  */
 export class PumpFunMonitor {
-  private readonly connection: Connection;
   private readonly wsConnection: Connection;
-  private readonly programId: PublicKey;
   private subscriptionId: number | null = null;
   private callbacks: Set<(token: NewPumpFunToken) => void> = new Set();
   private isRunning = false;
 
-  constructor(config: TradingEngineConfig) {
-    this.connection = new Connection(config.rpcEndpoint, 'confirmed');
-    // Use WebSocket endpoint for subscriptions
-    const wsEndpoint = config.wsEndpoint ?? config.rpcEndpoint.replace('https', 'wss');
-    this.wsConnection = new Connection(wsEndpoint, {
+  constructor(
+    config: TradingEngineConfig,
+    private readonly mints: MintInfoCache
+  ) {
+    const wsEndpoint = config.wsEndpoint ?? config.rpcEndpoint.replace(/^http/, 'ws');
+    this.wsConnection = new Connection(config.rpcEndpoint, {
       commitment: 'confirmed',
       wsEndpoint,
     });
-    this.programId = new PublicKey(PUMPFUN_PROGRAM_IDS.PROGRAM);
   }
 
   /**
@@ -40,12 +70,10 @@ export class PumpFunMonitor {
   subscribeToNewTokens(callback: (token: NewPumpFunToken) => void): () => void {
     this.callbacks.add(callback);
 
-    // Start monitoring if not already running
     if (!this.isRunning) {
       this.startMonitoring();
     }
 
-    // Return unsubscribe function
     return () => {
       this.callbacks.delete(callback);
       if (this.callbacks.size === 0) {
@@ -57,25 +85,21 @@ export class PumpFunMonitor {
   /**
    * Start monitoring for new tokens
    */
-  private async startMonitoring(): Promise<void> {
+  private startMonitoring(): void {
     if (this.isRunning) return;
     this.isRunning = true;
 
     try {
-      // Subscribe to program account changes
       this.subscriptionId = this.wsConnection.onLogs(
-        this.programId,
+        PUMP_PROGRAM_ID,
         async (logs) => {
-          // Look for token creation logs
-          if (this.isCreateTokenLog(logs.logs)) {
-            try {
-              const tokenInfo = await this.parseCreateTokenEvent(logs.signature);
-              if (tokenInfo) {
-                this.notifyCallbacks(tokenInfo);
-              }
-            } catch (error) {
-              console.error('Error parsing token create event:', error);
+          if (logs.err) return;
+          try {
+            for (const event of decodeCreateEvents(logs.logs)) {
+              this.notifyCallbacks(await this.toNewToken(event, logs.signature));
             }
+          } catch (error) {
+            console.error('Error reading new pump token:', error);
           }
         },
         'confirmed'
@@ -103,93 +127,33 @@ export class PumpFunMonitor {
   }
 
   /**
-   * Check if log contains token creation
+   * New-token record from a decoded `CreateEvent`, with the opening market
+   * cap in quote mint units.
    */
-  private isCreateTokenLog(logMessages: string[]): boolean {
-    return logMessages.some(log => 
-      log.includes('Instruction: Create') ||
-      log.includes('Program log: Instruction: Create')
-    );
-  }
+  private async toNewToken(event: CreateEventBc, signature: string): Promise<NewPumpFunToken> {
+    const quoteMint = normalizeQuoteMint(event.quoteMint);
+    const quote = await this.mints.get(quoteMint);
+    const marketCap = event.virtualTokenReserves.isZero()
+      ? 0
+      : Number(
+          bondingCurveMarketCap({
+            mintSupply: event.tokenTotalSupply,
+            virtualQuoteReserves: event.virtualQuoteReserves,
+            virtualTokenReserves: event.virtualTokenReserves,
+          }).toString()
+        ) / Math.pow(10, quote.decimals);
 
-  /**
-   * Parse token creation event from transaction logs
-   */
-  private async parseCreateTokenEvent(
-    signature: string
-  ): Promise<NewPumpFunToken | null> {
-    try {
-      // Fetch the full transaction to get account data
-      const tx = await this.connection.getParsedTransaction(signature, {
-        maxSupportedTransactionVersion: 0,
-      });
-
-      if (!tx || !tx.meta) return null;
-
-      // Find the token mint from the transaction
-      const accounts = tx.transaction.message.accountKeys;
-      
-      // Look for the mint account (usually the 2nd account in create instruction)
-      let mint: string | null = null;
-      let creator: string | null = null;
-      let bondingCurve: string | null = null;
-
-      // Parse inner instructions to find the mint
-      const innerInstructions = tx.meta.innerInstructions || [];
-      for (const inner of innerInstructions) {
-        for (const ix of inner.instructions) {
-          if ('parsed' in ix && ix.parsed?.type === 'initializeMint') {
-            mint = ix.parsed.info.mint;
-          }
-        }
-      }
-
-      // Get creator from first account (fee payer)
-      if (accounts.length > 0 && accounts[0]) {
-        creator = accounts[0].pubkey.toBase58();
-      }
-
-      // Calculate bonding curve PDA
-      if (mint) {
-        const [bondingCurvePDA] = PublicKey.findProgramAddressSync(
-          [Buffer.from('bonding-curve'), new PublicKey(mint).toBuffer()],
-          this.programId
-        );
-        bondingCurve = bondingCurvePDA.toBase58();
-      }
-
-      if (!mint || !creator || !bondingCurve) return null;
-
-      // Try to fetch token metadata
-      let name = 'Unknown';
-      let symbol = 'UNKNOWN';
-
-      try {
-        // Fetch from PumpFun API
-        const response = await fetch(`https://frontend-api.pump.fun/coins/${mint}`);
-        if (response.ok) {
-          const data = await response.json() as { name?: string; symbol?: string };
-          name = data.name ?? name;
-          symbol = data.symbol ?? symbol;
-        }
-      } catch {
-        // Metadata fetch failed, use defaults
-      }
-
-      return {
-        mint,
-        name,
-        symbol,
-        creator,
-        bondingCurve,
-        signature,
-        timestamp: tx.blockTime ?? Math.floor(Date.now() / 1000),
-        initialMarketCapSol: 0, // Would need to calculate from initial reserves
-      };
-    } catch (error) {
-      console.error('Error parsing create token event:', error);
-      return null;
-    }
+    return {
+      mint: event.mint.toBase58(),
+      name: event.name,
+      symbol: event.symbol,
+      creator: event.creator.toBase58(),
+      bondingCurve: event.bondingCurve.toBase58(),
+      signature,
+      timestamp: event.timestamp.toNumber(),
+      quoteMint: quoteMint.toBase58(),
+      initialMarketCapQuote: marketCap,
+    };
   }
 
   /**
@@ -206,42 +170,30 @@ export class PumpFunMonitor {
   }
 
   /**
-   * Get recent token launches (from API)
+   * Most recent launches from the pump.fun coin listing
    */
   async getRecentTokens(limit: number = 50): Promise<NewPumpFunToken[]> {
-    try {
-      const response = await fetch(
-        `https://frontend-api.pump.fun/coins?offset=0&limit=${limit}&sort=created_timestamp&order=DESC`
-      );
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
-      }
-
-      const data = await response.json() as Array<{
-        mint: string;
-        name: string;
-        symbol: string;
-        creator: string;
-        bonding_curve: string;
-        created_timestamp: number;
-        market_cap: number;
-      }>;
-
-      return data.map(token => ({
-        mint: token.mint,
-        name: token.name,
-        symbol: token.symbol,
-        creator: token.creator,
-        bondingCurve: token.bonding_curve,
-        signature: '', // Not available from API
-        timestamp: token.created_timestamp,
-        initialMarketCapSol: token.market_cap / 1e9, // Convert lamports to SOL
-      }));
-    } catch (error) {
-      console.error('Error fetching recent tokens:', error);
-      return [];
+    const url =
+      `${PUMP_FUN_COINS_API}?offset=0&limit=${limit}` +
+      '&sort=created_timestamp&order=DESC&includeNsfw=false';
+    const response = await fetch(url, { headers: { accept: 'application/json' } });
+    if (!response.ok) {
+      throw new Error(`pump.fun coin listing failed: HTTP ${response.status}`);
     }
+
+    const data = (await response.json()) as PumpFunAPIListedCoin[];
+    return data.map(token => ({
+      mint: token.mint,
+      name: token.name,
+      symbol: token.symbol,
+      creator: token.creator,
+      bondingCurve: token.bonding_curve,
+      timestamp: Math.floor(token.created_timestamp / 1000),
+      quoteMint: normalizeQuoteMint(
+        token.quote_mint ? new PublicKey(token.quote_mint) : null
+      ).toBase58(),
+      initialMarketCapQuote: token.market_cap_quote ?? token.market_cap ?? 0,
+    }));
   }
 
   /**
@@ -265,4 +217,19 @@ export class PumpFunMonitor {
     await this.stopMonitoring();
     this.callbacks.clear();
   }
+}
+
+/**
+ * Decode every pump `CreateEvent` in a transaction's logs. Anchor writes
+ * events as `Program data: base64(discriminator || borsh body)`.
+ */
+function decodeCreateEvents(logMessages: string[]): CreateEventBc[] {
+  const events: CreateEventBc[] = [];
+  for (const line of logMessages) {
+    if (!line.startsWith(PROGRAM_DATA_PREFIX)) continue;
+    const data = Buffer.from(line.slice(PROGRAM_DATA_PREFIX.length), 'base64');
+    if (data.length <= 8 || !data.subarray(0, 8).equals(CREATE_EVENT_DISCRIMINATOR)) continue;
+    events.push(PUMP_SDK.decodeCreateEventBc(data.subarray(8)));
+  }
+  return events;
 }

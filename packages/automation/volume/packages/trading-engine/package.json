@@ -46,8 +46,11 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
+    "@pump-fun/pump-sdk": "^4.0.0",
+    "@pump-fun/pump-swap-sdk": "^2.1.0",
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.95.0",
+    "bn.js": "^5.2.2",
     "bs58": "^5.0.0",
     "decimal.js": "^10.4.3",
     "node-cache": "^5.1.2",
@@ -55,6 +58,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@types/bn.js": "^5.1.6",
     "@types/bs58": "^4.0.4",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",

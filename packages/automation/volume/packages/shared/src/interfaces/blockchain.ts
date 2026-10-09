@@ -114,9 +114,11 @@ export interface PoolInfo {
 
 export interface BondingCurveState {
   mint: string;
-  virtualSolReserves: bigint;
+  /** Mint the curve trades in (WSOL for SOL-paired coins) */
+  quoteMint: string;
+  virtualQuoteReserves: bigint;
   virtualTokenReserves: bigint;
-  realSolReserves: bigint;
+  realQuoteReserves: bigint;
   realTokenReserves: bigint;
   tokenTotalSupply: bigint;
   complete: boolean;

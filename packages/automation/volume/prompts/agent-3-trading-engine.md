@@ -174,28 +174,31 @@ class PumpFunHandler {
   // Get bonding curve state
   async getBondingCurve(mint: string): Promise<BondingCurveState>;
   
-  // Buy on bonding curve
+  // Buy on bonding curve: buy_exact_quote_in_v3 via @pump-fun/pump-sdk 4
+  // (cashback coins reject v3 and use buy_v2), PumpSwap pool once graduated
   async buy(params: PumpFunBuyParams): Promise<SwapResult>;
   
-  // Sell on bonding curve
+  // Sell on bonding curve: sell_v3 (sell_v2 for cashback coins)
   async sell(params: PumpFunSellParams): Promise<SwapResult>;
   
   // Check if graduated
   async isGraduated(mint: string): Promise<boolean>;
   
-  // Get Raydium pool after graduation
+  // Get the canonical PumpSwap pool after graduation
   async getGraduatedPool(mint: string): Promise<string | null>;
 }
 
 interface BondingCurveState {
   mint: string;
-  virtualSolReserves: string;
+  quoteMint: string;            // WSOL for SOL-paired coins
+  tokenProgram: string;         // Token-2022 for create_v2 coins
+  virtualQuoteReserves: string;
   virtualTokenReserves: string;
-  realSolReserves: string;
+  realQuoteReserves: string;
   realTokenReserves: string;
   tokenTotalSupply: string;
   complete: boolean;
-  associatedPoolKeys?: string;  // Raydium pool if graduated
+  associatedPoolKeys?: string;  // canonical PumpSwap pool if graduated
 }
 ```
 

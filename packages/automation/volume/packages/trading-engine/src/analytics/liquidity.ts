@@ -111,18 +111,19 @@ export class LiquidityAnalyzer {
   }
 
   /**
-   * Analyze PumpFun bonding curve liquidity
+   * Analyze PumpFun bonding curve liquidity. `quotePriceUsd` is the USD
+   * price of the curve's quote mint (SOL for SOL-paired coins).
    */
-  analyzeBondingCurve(state: BondingCurveState, tokenPriceUsd: number): LiquidityDepth {
-    // PumpFun TVL is based on real SOL reserves
-    const tvlUsd = Number(state.realSolReserves) / 1e9 * tokenPriceUsd;
+  analyzeBondingCurve(state: BondingCurveState, quotePriceUsd: number): LiquidityDepth {
+    const realQuote = state.realQuoteReserves;
+    const tvlUsd = (Number(realQuote) / Math.pow(10, state.quoteDecimals)) * quotePriceUsd;
 
     return {
       tvlUsd,
-      depth1Percent: state.realSolReserves / 100n,
-      depth2Percent: state.realSolReserves / 50n,
-      depth5Percent: state.realSolReserves / 20n,
-      spreadBps: 100, // 1% PumpFun fee
+      depth1Percent: realQuote / 100n,
+      depth2Percent: realQuote / 50n,
+      depth5Percent: realQuote / 20n,
+      spreadBps: state.feeBps,
       healthScore: this.calculateBondingCurveHealth(state),
     };
   }
@@ -203,7 +204,7 @@ export class LiquidityAnalyzer {
           break;
         case 'pumpfun':
           depth = this.analyzeBondingCurve(pool.data as BondingCurveState, tokenPriceUsd);
-          fee = 100; // 1%
+          fee = (pool.data as BondingCurveState).feeBps;
           break;
       }
 

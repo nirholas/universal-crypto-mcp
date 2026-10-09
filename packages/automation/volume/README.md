@@ -217,7 +217,7 @@ Execute actual swaps on Solana DEXs with intelligent routing:
 | **Jupiter V6** | Aggregator, limit orders, DCA | Best price discovery |
 | **Raydium V2** | AMM, CLMM, concentrated liquidity | High liquidity pairs |
 | **Orca Whirlpools** | Concentrated liquidity positions | Capital efficiency |
-| **PumpFun** | Bonding curves, new launches | Meme tokens |
+| **PumpFun** | Bonding curves (v3 trades), PumpSwap after migration, multi-hop, `create_v2` launches | New launches |
 
 **Transaction Features:**
 - ✅ Priority fee optimization (auto-detect network congestion)
@@ -1022,43 +1022,79 @@ const addLiqTx = await raydium.addLiquidity({
 });
 ```
 
-### PumpFun Bonding Curves
+### PumpFun Bonding Curves and PumpSwap
 
-Trade on bonding curve tokens:
+pump coins are read, quoted and traded through the official `@pump-fun/pump-sdk` and `@pump-fun/pump-swap-sdk` for the current Pump program:
+
+- A coin can be quoted in SOL, in a listed quote mint, or in another pump coin, so every amount is in base units of the coin's quote mint (lamports for SOL-paired coins).
+- Curve buys use `buy_exact_quote_in_v3` and sells `sell_v3`. Cashback coins, which the v3 instructions reject, use `buy_v2` / `sell_v2`.
+- Once a curve migrates, the same calls trade on the coin's canonical PumpSwap pool. Pool pricing uses the pool's signed `virtualQuoteReserves`.
+- Every coin reports a venue: `curve`, `completed` (curve full, migration pending, no trades), `pumpswap`, or `raydium` (legacy coins that migrated before PumpSwap existed; trade those on Raydium).
 
 ```typescript
-import { PumpFunClient } from '@boosty/trading-engine';
+import { PumpFunClient } from '@boosty/mcp-trading-engine';
 
-const pumpfun = new PumpFunClient({
-  connection,
-  programId: '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',
-});
+// TradingEngineConfig: rpcEndpoint, plus wsEndpoint for the launch monitor
+const pumpfun = new PumpFunClient(config);
 
-// Buy on bonding curve
-const buyTx = await pumpfun.buy({
-  tokenMint: 'token-address',
-  solAmount: 0.1, // SOL to spend
-  slippageBps: 500, // 5% slippage for volatile curves
-});
+// Where does the coin trade, and what would 0.1 SOL buy?
+const market = await pumpfun.getMarket(mint);
+const quote = await pumpfun.calculateBuyOutput(mint, 100_000_000n);
+console.log(market.venue, quote.amountOut, quote.feeBps, quote.priceImpact);
 
-// Sell on bonding curve
-const sellTx = await pumpfun.sell({
-  tokenMint: 'token-address',
-  tokenAmount: 1_000_000,
-  minSolOutput: 0.08,
-});
+// Buy, spending 0.1 SOL fees included, on the curve or the PumpSwap pool
+const buy = await pumpfun.buyWithSigner(
+  { mint, userPublicKey, quoteAmount: 100_000_000n, slippageBps: 500 },
+  signTransaction // or a 64-byte secret key
+);
 
-// Get bonding curve state
-const curve = await pumpfun.getCurveState('token-address');
-console.log({
-  virtualSolReserves: curve.virtualSolReserves,
-  virtualTokenReserves: curve.virtualTokenReserves,
-  realSolReserves: curve.realSolReserves,
-  realTokenReserves: curve.realTokenReserves,
-  tokenTotalSupply: curve.tokenTotalSupply,
-  complete: curve.complete,
-});
+// Sell tokens (base units) for the quote mint
+const sell = await pumpfun.sellWithSigner(
+  { mint, userPublicKey, tokenAmount: 1_000_000_000n, slippageBps: 500 },
+  signTransaction
+);
+
+// Multi-hop: SOL to coin A to coin B (B quoted in A) in one multi_hop_swap
+const hop = await pumpfun.multiHopSwapWithSigner(
+  { path: [SOL_MINT, coinA, coinB], side: 'buy', userPublicKey, amountIn: 10_000_000n, slippageBps: 500 },
+  signTransaction
+);
+
+// New launches, decoded from the program's CreateEvent logs
+const unsubscribe = pumpfun.subscribeToNewTokens(token => console.log(token.mint, token.quoteMint));
 ```
+
+`SmartRouter` routes a pair to pump whenever one side is a pump coin quoted in the other (`resolvePair`).
+
+#### Launching a coin
+
+`@boosty/token-launcher` creates Token-2022 coins with `create_v2`, optionally with the creator's first buy in the same transaction, and snipes launches across wallets:
+
+```typescript
+import { TokenLauncher } from '@boosty/token-launcher';
+
+const launcher = new TokenLauncher({ rpcUrl }, walletProvider);
+
+const coin = await launcher.createPumpFunToken(
+  {
+    name: 'My Coin',
+    symbol: 'MINE',
+    description: 'What the coin is for',
+    image: 'https://ipfs.io/ipfs/<image-cid>',
+    walletId,
+    initialBuyAmount: '0.5', // whole quote units: 0.5 SOL
+    slippageBps: 500,
+    // quoteMint: a listed quote mint or a pump coin; SOL when omitted
+  },
+  uploadMetadata // (metadata JSON) => Promise<uri>
+);
+
+// Trade it later (quote base units in, token base units out)
+await launcher.buyOnPumpFun(coin.mint, walletId, 100_000_000n, 500);
+const state = await launcher.getBondingCurveState(coin.mint); // venue, reserves, quote mint
+```
+
+Transactions are compiled against pump.fun's address lookup table, which keeps the create and first buy in one transaction. A coin quoted in another pump coin carries that coin's curve accounts as well; when the pair does not fit, the first buy is sent right after the create confirms (`devBuySignature`). `snipeWithJitoBundle` builds one signed buy per wallet (up to five) and submits them as one Jito bundle.
 
 ### MEV Protection with Jito
 
@@ -1952,7 +1988,7 @@ pnpm test:e2e:smoke
 - [x] Jupiter V6 support
 - [x] HD wallet management
 - [x] Volume orchestration
-- [ ] PumpFun bonding curves
+- [x] PumpFun bonding curves and PumpSwap
 - [ ] Raydium CLMM
 - [ ] Orca Whirlpools
 

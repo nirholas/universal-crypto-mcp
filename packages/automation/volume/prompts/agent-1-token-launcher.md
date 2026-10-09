@@ -125,8 +125,8 @@ interface BundledLaunchResult {
 - Concentrated liquidity NOT supported
 
 #### PumpFun / PumpSwap
-- Bonding curve token creation
-- Automatic graduation to Raydium
+- Bonding curve token creation with `create_v2` (Token-2022 mints) through `@pump-fun/pump-sdk` 4 (`createV2Instruction`, `createV2AndBuyV2Instructions`), quoted in SOL or another supported quote mint
+- Automatic graduation to a canonical PumpSwap pool (trade it with `@pump-fun/pump-swap-sdk` 2.1.0)
 - Migration detection and handling
 
 #### Meteora

@@ -19,6 +19,7 @@ export type {
   CreatePoolResult,
   CreatePumpFunTokenParams,
   PumpFunTokenResult,
+  PumpFunVenue,
   BondingCurveState,
   BundledLaunchParams,
   BundledLaunchResult,
@@ -51,15 +52,27 @@ export {
 export {
   deriveBondingCurve,
   deriveAssociatedBondingCurve,
+  fetchPumpFunCurve,
   getBondingCurveState,
   isOnBondingCurve,
   calculateBuyAmount,
   calculateSellAmount,
-  buildPumpFunCreateInstruction,
-  buildPumpFunBuyInstruction,
-  buildPumpFunSellInstruction,
+  buildPumpFunCreateInstructions,
+  buildPumpFunBuyInstructions,
+  buildPumpFunSellInstructions,
+  buildPumpFunBuyTransaction,
   buyOnPumpFun,
   sellOnPumpFun,
+  createPumpFunToken,
+  findPumpSwapPool,
+  buildPumpSwapBuyInstructions,
+  buildPumpSwapSellInstructions,
+} from './pumpfun/index.js';
+
+export type {
+  PumpFunCurve,
+  PumpFunTradeInstructions,
+  PumpFunCreateInstructionsParams,
 } from './pumpfun/index.js';
 
 // =============================================================================
@@ -113,10 +126,17 @@ import type {
   SnipeLaunchParams,
   SnipeResult,
   BondingCurveState,
+  CreatePumpFunTokenParams,
+  PumpFunTokenResult,
   TokenLauncherConfig,
 } from './types.js';
 import { createToken, createTokenWithMetadata } from './token/index.js';
-import { getBondingCurveState, buyOnPumpFun, sellOnPumpFun } from './pumpfun/index.js';
+import {
+  getBondingCurveState,
+  buyOnPumpFun,
+  sellOnPumpFun,
+  createPumpFunToken,
+} from './pumpfun/index.js';
 import { snipeLaunch } from './snipe/index.js';
 import { logger } from './utils/logger.js';
 
@@ -167,38 +187,57 @@ export class TokenLauncher {
   }
   
   /**
-   * Get PumpFun bonding curve state
+   * Get PumpFun bonding curve state, including where the coin trades now
+   * (`venue`: curve, completed, pumpswap or raydium)
    */
   async getBondingCurveState(mint: string): Promise<BondingCurveState | null> {
     return getBondingCurveState(this.connection, mint);
   }
   
   /**
-   * Buy tokens on PumpFun
+   * Create a pump coin with `create_v2` (Token-2022), optionally with the
+   * creator's first buy in the same transaction
+   */
+  async createPumpFunToken(
+    params: CreatePumpFunTokenParams,
+    uploadMetadata: (metadata: Record<string, unknown>) => Promise<string>
+  ): Promise<PumpFunTokenResult> {
+    const publicKey = await this.walletProvider.getPublicKey(params.walletId);
+    const signTx = async (tx: VersionedTransaction) => {
+      return this.walletProvider.signTransaction(params.walletId, tx);
+    };
+    
+    return createPumpFunToken(this.connection, params, publicKey, signTx, uploadMetadata);
+  }
+  
+  /**
+   * Buy a pump coin spending `quoteAmount` base units of its quote mint
+   * (lamports for SOL-paired coins), on its curve or its PumpSwap pool
    */
   async buyOnPumpFun(
     mint: string,
     walletId: string,
-    solAmount: bigint,
+    quoteAmount: bigint,
     slippageBps: number = 100
-  ): Promise<{ signature: string; tokensReceived: bigint }> {
+  ): Promise<{ signature: string; tokensReceived: bigint; venue: 'curve' | 'pumpswap' }> {
     const publicKey = await this.walletProvider.getPublicKey(walletId);
     const signTx = async (tx: VersionedTransaction) => {
       return this.walletProvider.signTransaction(walletId, tx);
     };
     
-    return buyOnPumpFun(this.connection, mint, publicKey, solAmount, slippageBps, signTx);
+    return buyOnPumpFun(this.connection, mint, publicKey, quoteAmount, slippageBps, signTx);
   }
   
   /**
-   * Sell tokens on PumpFun
+   * Sell `tokenAmount` base units of a pump coin for its quote mint, on its
+   * curve or its PumpSwap pool
    */
   async sellOnPumpFun(
     mint: string,
     walletId: string,
     tokenAmount: bigint,
     slippageBps: number = 100
-  ): Promise<{ signature: string; solReceived: bigint }> {
+  ): Promise<{ signature: string; quoteReceived: bigint; venue: 'curve' | 'pumpswap' }> {
     const publicKey = await this.walletProvider.getPublicKey(walletId);
     const signTx = async (tx: VersionedTransaction) => {
       return this.walletProvider.signTransaction(walletId, tx);

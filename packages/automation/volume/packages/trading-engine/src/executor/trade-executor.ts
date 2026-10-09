@@ -24,7 +24,7 @@ import type {
   TradingEngineConfig,
   ITradeExecutor,
 } from '../types.js';
-import { KNOWN_TOKENS, DEFAULT_TRADING_CONFIG } from '../types.js';
+import { DEFAULT_TRADING_CONFIG } from '../types.js';
 
 /**
  * Trade Executor - executes trades with optimal routing
@@ -214,32 +214,39 @@ export class TradeExecutor implements ITradeExecutor {
   }
 
   /**
-   * Execute via PumpFun
+   * Execute via PumpFun: a buy spends `amount` of the coin's quote mint, a
+   * sell spends `amount` tokens. The coin trades on its bonding curve or,
+   * once migrated, on its PumpSwap pool.
    */
   private async executeViaPumpFun(
     params: TradeParams,
     signer: Uint8Array | ((tx: any) => Promise<any>),
     slippageBps: number
   ): Promise<TransactionResult> {
-    const isInputSol = params.inputMint === KNOWN_TOKENS.SOL;
+    if (!params.isExactIn) {
+      throw new Error('PumpFun trades are exact-in: pass the amount to spend');
+    }
+    const pair = await this.pumpfun.resolvePair(params.inputMint, params.outputMint);
+    if (!pair) {
+      throw new Error(
+        `${params.inputMint} -> ${params.outputMint} is not a pump coin and its quote mint`
+      );
+    }
 
-    if (isInputSol) {
-      // Buy tokens with SOL
+    if (pair.side === 'buy') {
       return this.pumpfun.buyWithSigner({
-        mint: params.outputMint,
+        mint: pair.mint,
         userPublicKey: params.userPublicKey,
-        solAmount: params.amount,
-        slippageBps,
-      }, signer);
-    } else {
-      // Sell tokens for SOL
-      return this.pumpfun.sellWithSigner({
-        mint: params.inputMint,
-        userPublicKey: params.userPublicKey,
-        tokenAmount: params.amount,
+        quoteAmount: params.amount,
         slippageBps,
       }, signer);
     }
+    return this.pumpfun.sellWithSigner({
+      mint: pair.mint,
+      userPublicKey: params.userPublicKey,
+      tokenAmount: params.amount,
+      slippageBps,
+    }, signer);
   }
 
   /**
@@ -400,7 +407,7 @@ export class TradeExecutor implements ITradeExecutor {
     // Check the protocols used in the route
     const protocols = new Set(route.legs.map(leg => leg.protocol.toLowerCase()));
 
-    if (protocols.has('pumpfun')) {
+    if (protocols.has('pumpfun') || protocols.has('pumpswap')) {
       return 'pumpfun';
     }
 

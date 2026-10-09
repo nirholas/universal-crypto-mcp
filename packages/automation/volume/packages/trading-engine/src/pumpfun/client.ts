@@ -1,119 +1,135 @@
 /**
  * PumpFun Client
- * 
- * Main client for interacting with PumpFun bonding curve tokens.
+ *
+ * Trades pump coins wherever they live: on the bonding curve while it is
+ * live, and on the coin's canonical PumpSwap pool once it migrated. Every
+ * instruction is built by the official SDKs (`@pump-fun/pump-sdk` for the
+ * curve and multi-hop routes, `@pump-fun/pump-swap-sdk` for pools):
+ *
+ * - curve buys use `buy_exact_quote_in_v3` and sells `sell_v3`; cashback
+ *   coins, which the v3 instructions reject (6094), use `buy_v2` / `sell_v2`;
+ * - migrated coins trade through PumpSwap `buy_v2` / `sell_v2`, priced
+ *   against the signed effective quote reserves;
+ * - `multiHopSwapWithSigner` routes one `multi_hop_swap` through several
+ *   curves or pools (SOL to coin A to coin B) without intermediate accounts.
+ *
+ * Coins may be quoted in SOL, USDC or another pump coin; the quote mint is
+ * read from the coin's bonding curve.
  */
 
 import {
+  ComputeBudgetProgram,
   Connection,
+  Keypair,
   PublicKey,
-  Transaction,
-  TransactionInstruction,
-  SystemProgram,
-  LAMPORTS_PER_SOL,
+  TransactionMessage,
+  VersionedTransaction,
+  type TransactionInstruction,
 } from '@solana/web3.js';
+import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import {
-  TOKEN_PROGRAM_ID,
-  getAssociatedTokenAddress,
-  createAssociatedTokenAccountInstruction,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-} from '@solana/spl-token';
-import { PumpFunBondingCurve } from './bonding-curve.js';
+  PUMP_SDK,
+  bondingCurvePda,
+  canonicalPumpPoolPdaWithQuote,
+  normalizeQuoteMint,
+} from '@pump-fun/pump-sdk';
+import BN from 'bn.js';
+import { PumpFunBondingCurve, type CurveSnapshot } from './bonding-curve.js';
 import { PumpFunMonitor } from './monitor.js';
+import { PumpSwapMarket, type PoolSnapshot } from './pumpswap.js';
 import type {
   PumpFunTokenInfo,
   BondingCurveState,
   PumpFunBuyParams,
   PumpFunSellParams,
+  PumpFunMultiHopParams,
+  PumpFunSigner,
+  PumpFunTradeQuote,
+  PumpFunVenue,
   NewPumpFunToken,
   TransactionResult,
   TradingEngineConfig,
   IPumpFunClient,
 } from '../types.js';
-import { PUMPFUN_PROGRAM_IDS, KNOWN_TOKENS } from '../types.js';
 
-/**
- * PumpFun API response types
- */
-interface PumpFunAPIToken {
+/** pump.fun coin metadata endpoint (per-coin `/coins/:mint` was retired). */
+const PUMP_FUN_COIN_API = 'https://frontend-api-v3.pump.fun/coins-v2';
+
+/** Fields read from the pump.fun coin endpoint. */
+interface PumpFunAPICoin {
   mint: string;
   name: string;
   symbol: string;
-  description: string;
-  image_uri: string;
+  description?: string;
+  image_uri?: string;
   creator: string;
   created_timestamp: number;
-  complete: boolean;
-  raydium_pool?: string;
-  market_cap: number;
-  usd_market_cap?: number;
-  virtual_sol_reserves?: number;
-  virtual_token_reserves?: number;
-  total_supply?: number;
   reply_count?: number;
   holder_count?: number;
+  /** Market cap in SOL (the quote of every pre-PumpSwap coin) */
+  market_cap?: number;
 }
 
+/** Where a coin trades, with the state read to decide it. */
+export type PumpFunMarket =
+  | { venue: 'curve'; curve: CurveSnapshot }
+  | { venue: 'completed'; curve: CurveSnapshot }
+  | { venue: 'pumpswap'; curve: CurveSnapshot; pool: PoolSnapshot }
+  | { venue: 'raydium'; curve: CurveSnapshot };
+
+export type TradableMarket = Extract<PumpFunMarket, { venue: 'curve' | 'pumpswap' }>;
+
+/** A pump trade direction resolved from an input and output mint. */
+export interface PumpFunPair {
+  side: 'buy' | 'sell';
+  /** The pump coin */
+  mint: string;
+  /** The coin's quote mint (WSOL for SOL-paired coins) */
+  quoteMint: string;
+}
+
+const DEFAULT_SLIPPAGE_BPS = 100;
+const SINGLE_TRADE_COMPUTE_UNITS = 300_000;
+const MULTI_HOP_COMPUTE_UNITS = 1_400_000;
+/** Hops that fit a transaction without an address lookup table. */
+const MAX_MULTI_HOP_HOPS = 3;
+const TOKEN_INFO_TTL_MS = 60_000;
+
 /**
- * PumpFun Client - Full integration with PumpFun DEX
+ * PumpFun Client - bonding curve, PumpSwap and multi-hop trading
  */
 export class PumpFunClient implements IPumpFunClient {
   private readonly connection: Connection;
-  private readonly config: TradingEngineConfig;
   private readonly bondingCurve: PumpFunBondingCurve;
+  private readonly pumpSwap: PumpSwapMarket;
   private readonly monitor: PumpFunMonitor;
-  private readonly programId: PublicKey;
 
-  // Token info cache
-  private tokenCache: Map<string, PumpFunTokenInfo> = new Map();
-  private tokenCacheTime: Map<string, number> = new Map();
-  private readonly tokenCacheTtlMs = 60_000; // 1 minute
+  private readonly tokenCache = new Map<string, { info: PumpFunTokenInfo; fetchedAt: number }>();
+  /** Quote mint per coin (null: not a pump coin). Both never change. */
+  private readonly quoteMintCache = new Map<string, string | null>();
 
   constructor(config: TradingEngineConfig) {
-    this.config = config;
     this.connection = new Connection(config.rpcEndpoint, 'confirmed');
     this.bondingCurve = new PumpFunBondingCurve(config);
-    this.monitor = new PumpFunMonitor(config);
-    this.programId = new PublicKey(PUMPFUN_PROGRAM_IDS.PROGRAM);
+    this.pumpSwap = new PumpSwapMarket(this.connection, this.bondingCurve.getMintCache());
+    this.monitor = new PumpFunMonitor(config, this.bondingCurve.getMintCache());
   }
 
   /**
-   * Get token info from PumpFun API and on-chain data
+   * Token metadata from pump.fun plus live on-chain price and venue
    */
   async getTokenInfo(mint: string): Promise<PumpFunTokenInfo> {
-    // Check cache
     const cached = this.tokenCache.get(mint);
-    const cacheTime = this.tokenCacheTime.get(mint);
-    if (cached && cacheTime && Date.now() - cacheTime < this.tokenCacheTtlMs) {
-      return cached;
+    if (cached && Date.now() - cached.fetchedAt < TOKEN_INFO_TTL_MS) {
+      return cached.info;
     }
 
-    // Fetch from API
-    const response = await fetch(`https://frontend-api.pump.fun/coins/${mint}`);
-    
-    if (!response.ok) {
-      throw new Error(`Token not found: ${mint}`);
-    }
+    const [data, market] = await Promise.all([fetchCoin(mint), this.getMarket(mint)]);
+    const { priceInQuote, marketCapQuote } =
+      market.venue === 'raydium' ? apiPricing(data, market.curve.state) : this.marketPricing(market);
+    const curveState = market.curve.state;
 
-    const data = await response.json() as PumpFunAPIToken;
-
-    // Get on-chain bonding curve state
-    let bondingCurveState: BondingCurveState | null = null;
-    try {
-      bondingCurveState = await this.bondingCurve.getBondingCurveState(mint);
-    } catch {
-      // Bonding curve might not exist if token is migrated
-    }
-
-    const priceInSol = bondingCurveState 
-      ? this.bondingCurve.getCurrentPrice(bondingCurveState)
-      : 0;
-
-    const marketCapSol = bondingCurveState
-      ? this.bondingCurve.getMarketCapSol(bondingCurveState)
-      : data.market_cap / LAMPORTS_PER_SOL;
-
-    const tokenInfo: PumpFunTokenInfo = {
+    const info: PumpFunTokenInfo = {
       mint: data.mint,
       name: data.name,
       symbol: data.symbol,
@@ -121,334 +137,210 @@ export class PumpFunClient implements IPumpFunClient {
       imageUri: data.image_uri,
       creator: data.creator,
       createdAt: data.created_timestamp,
-      isMigrated: data.complete,
-      raydiumPoolId: data.raydium_pool,
-      marketCapSol,
-      priceInSol,
+      isMigrated: market.venue === 'pumpswap' || market.venue === 'raydium',
+      venue: market.venue,
+      pumpSwapPoolId:
+        market.venue === 'raydium'
+          ? null
+          : canonicalPumpPoolPdaWithQuote(market.curve.mint, market.curve.quoteMint).toBase58(),
+      quoteMint: curveState.quoteMint,
+      marketCapQuote,
+      priceInQuote,
       holderCount: data.holder_count,
       replyCount: data.reply_count,
     };
 
-    // Update cache
-    this.tokenCache.set(mint, tokenInfo);
-    this.tokenCacheTime.set(mint, Date.now());
-
-    return tokenInfo;
+    this.tokenCache.set(mint, { info, fetchedAt: Date.now() });
+    return info;
   }
 
   /**
-   * Get bonding curve state
+   * Decoded bonding curve state
    */
   async getBondingCurveState(mint: string): Promise<BondingCurveState> {
     return this.bondingCurve.getBondingCurveState(mint);
   }
 
   /**
-   * Check if token is migrated to Raydium
+   * Read where a coin trades: its live curve, a completed curve waiting for
+   * migration, or its PumpSwap pool.
+   */
+  async getMarket(mint: string): Promise<PumpFunMarket> {
+    const curve = await this.bondingCurve.getSnapshot(mint);
+    const venue = venueOf(curve.state);
+    if (venue !== 'pumpswap') {
+      return { venue, curve };
+    }
+    const poolAddress = this.pumpSwap.poolAddress(curve.mint, curve.quoteMint);
+    if (!(await this.connection.getAccountInfo(poolAddress))) {
+      return { venue: 'raydium', curve };
+    }
+    const pool = await this.pumpSwap.getSnapshot(curve.mint, curve.quoteMint);
+    return { venue, curve, pool };
+  }
+
+  /**
+   * True once the coin migrated to its PumpSwap pool
    */
   async isMigrated(mint: string): Promise<boolean> {
-    try {
-      const state = await this.bondingCurve.getBondingCurveState(mint);
-      return state.complete;
-    } catch {
-      // If bonding curve doesn't exist, token might already be migrated
-      const info = await this.getTokenInfo(mint);
-      return info.isMigrated;
-    }
+    return (await this.bondingCurve.getBondingCurveState(mint)).migrated;
   }
 
   /**
-   * Buy tokens with SOL
+   * The coin's quote mint, or null when `mint` is not a pump coin.
    */
-  async buy(params: PumpFunBuyParams): Promise<TransactionResult> {
-    throw new Error('buy requires a signer. Use buyWithSigner instead.');
+  async getQuoteMint(mint: string): Promise<string | null> {
+    if (this.quoteMintCache.has(mint)) {
+      return this.quoteMintCache.get(mint) ?? null;
+    }
+    let mintKey: PublicKey;
+    try {
+      mintKey = new PublicKey(mint);
+    } catch {
+      return null;
+    }
+    const accountInfo = await this.connection.getAccountInfo(bondingCurvePda(mintKey));
+    const quoteMint = accountInfo
+      ? normalizeQuoteMint(PUMP_SDK.decodeBondingCurve(accountInfo).quoteMint).toBase58()
+      : null;
+    this.quoteMintCache.set(mint, quoteMint);
+    return quoteMint;
   }
 
   /**
-   * Buy tokens with signer
+   * Resolve a swap of `inputMint` for `outputMint` to a pump trade: a buy
+   * when the output is a pump coin quoted in the input, a sell when the
+   * input is a pump coin quoted in the output. Null for any other pair.
+   */
+  async resolvePair(inputMint: string, outputMint: string): Promise<PumpFunPair | null> {
+    const outputQuote = await this.getQuoteMint(outputMint);
+    if (outputQuote === inputMint) {
+      return { side: 'buy', mint: outputMint, quoteMint: outputQuote };
+    }
+    const inputQuote = await this.getQuoteMint(inputMint);
+    if (inputQuote === outputMint) {
+      return { side: 'sell', mint: inputMint, quoteMint: inputQuote };
+    }
+    return null;
+  }
+
+  /**
+   * Quote spending `quoteAmount` (fees included) on the coin's current venue
+   */
+  async calculateBuyOutput(mint: string, quoteAmount: bigint): Promise<PumpFunTradeQuote> {
+    const market = await this.getTradableMarket(mint);
+    return market.venue === 'pumpswap'
+      ? this.pumpSwap.quoteBuy(market.pool, quoteAmount)
+      : this.bondingCurve.quoteBuy(market.curve, quoteAmount);
+  }
+
+  /**
+   * Quote selling `tokenAmount` on the coin's current venue
+   */
+  async calculateSellOutput(mint: string, tokenAmount: bigint): Promise<PumpFunTradeQuote> {
+    const market = await this.getTradableMarket(mint);
+    return market.venue === 'pumpswap'
+      ? this.pumpSwap.quoteSell(market.pool, tokenAmount)
+      : this.bondingCurve.quoteSell(market.curve, tokenAmount);
+  }
+
+  /**
+   * Buy a coin spending `quoteAmount` of its quote mint
    */
   async buyWithSigner(
     params: PumpFunBuyParams,
-    signer: Uint8Array | ((tx: Transaction) => Promise<Transaction>)
+    signer: PumpFunSigner
   ): Promise<TransactionResult> {
-    // Check if migrated
-    const isMigrated = await this.isMigrated(params.mint);
-    if (isMigrated) {
-      throw new Error('Token is migrated to Raydium. Use Raydium or Jupiter for trading.');
-    }
+    const user = new PublicKey(params.userPublicKey);
+    const slippageBps = params.slippageBps ?? DEFAULT_SLIPPAGE_BPS;
+    const market = await this.getTradableMarket(params.mint);
 
-    const userPubkey = new PublicKey(params.userPublicKey);
-    const mint = new PublicKey(params.mint);
-    
-    // Get bonding curve PDAs
-    const bondingCurve = this.bondingCurve.getBondingCurvePDA(params.mint);
-    const associatedBondingCurve = this.bondingCurve.getAssociatedBondingCurvePDA(
-      params.mint,
-      bondingCurve
-    );
+    const instructions =
+      market.venue === 'pumpswap'
+        ? await this.pumpSwap.buyInstructions(
+            await this.pumpSwap.getSnapshot(market.curve.mint, market.curve.quoteMint, user),
+            params.quoteAmount,
+            slippageBps
+          )
+        : await this.curveBuyInstructions(market.curve, user, params.quoteAmount, slippageBps);
 
-    // Get user token account
-    const userTokenAccount = await getAssociatedTokenAddress(mint, userPubkey);
-
-    // Calculate expected output
-    const state = await this.bondingCurve.getBondingCurveState(params.mint);
-    const output = this.bondingCurve.calculateBuyOutput(state, params.solAmount);
-
-    // Apply slippage
-    const slippageBps = params.slippageBps ?? 100;
-    const minTokenAmount = params.minTokenAmount ??
-      (output.tokenAmount * (10000n - BigInt(slippageBps))) / 10000n;
-
-    const transaction = new Transaction();
-
-    // Create user token account if needed
-    const userAtaInfo = await this.connection.getAccountInfo(userTokenAccount);
-    if (!userAtaInfo) {
-      transaction.add(
-        createAssociatedTokenAccountInstruction(
-          userPubkey,
-          userTokenAccount,
-          userPubkey,
-          mint
-        )
-      );
-    }
-
-    // Build buy instruction
-    const buyIx = this.buildBuyInstruction(
-      userPubkey,
-      mint,
-      bondingCurve,
-      associatedBondingCurve,
-      userTokenAccount,
-      params.solAmount,
-      minTokenAmount
-    );
-    transaction.add(buyIx);
-
-    // Set recent blockhash
-    const { blockhash, lastValidBlockHeight } = await this.connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = userPubkey;
-
-    // Sign
-    if (signer instanceof Uint8Array) {
-      const { Keypair } = await import('@solana/web3.js');
-      const keypair = Keypair.fromSecretKey(signer);
-      transaction.sign(keypair);
-    } else {
-      await signer(transaction);
-    }
-
-    // Send and confirm
-    try {
-      const signature = await this.connection.sendRawTransaction(transaction.serialize(), {
-        skipPreflight: false,
-        maxRetries: 3,
-      });
-
-      const confirmation = await this.connection.confirmTransaction({
-        signature,
-        blockhash,
-        lastValidBlockHeight,
-      }, 'confirmed');
-
-      return {
-        signature,
-        confirmed: !confirmation.value.err,
-        error: confirmation.value.err ? JSON.stringify(confirmation.value.err) : undefined,
-      };
-    } catch (error) {
-      return {
-        signature: '',
-        confirmed: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
-    }
+    return this.sendInstructions(instructions, user, signer, SINGLE_TRADE_COMPUTE_UNITS);
   }
 
   /**
-   * Build buy instruction
-   */
-  private buildBuyInstruction(
-    user: PublicKey,
-    mint: PublicKey,
-    bondingCurve: PublicKey,
-    associatedBondingCurve: PublicKey,
-    userTokenAccount: PublicKey,
-    solAmount: bigint,
-    minTokenAmount: bigint
-  ): TransactionInstruction {
-    const keys = [
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.GLOBAL), isSigner: false, isWritable: false },
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.FEE_RECIPIENT), isSigner: false, isWritable: true },
-      { pubkey: mint, isSigner: false, isWritable: false },
-      { pubkey: bondingCurve, isSigner: false, isWritable: true },
-      { pubkey: associatedBondingCurve, isSigner: false, isWritable: true },
-      { pubkey: userTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: user, isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: ASSOCIATED_TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.EVENT_AUTHORITY), isSigner: false, isWritable: false },
-      { pubkey: this.programId, isSigner: false, isWritable: false },
-    ];
-
-    // Buy instruction data: [discriminator (8)] [amount (8)] [max_sol_cost (8)]
-    const data = Buffer.alloc(8 + 8 + 8);
-    
-    // Buy discriminator
-    const discriminator = Buffer.from([102, 6, 61, 18, 1, 218, 235, 234]);
-    discriminator.copy(data, 0);
-    
-    data.writeBigUInt64LE(minTokenAmount, 8);
-    data.writeBigUInt64LE(solAmount, 16);
-
-    return new TransactionInstruction({
-      programId: this.programId,
-      keys,
-      data,
-    });
-  }
-
-  /**
-   * Sell tokens for SOL
-   */
-  async sell(params: PumpFunSellParams): Promise<TransactionResult> {
-    throw new Error('sell requires a signer. Use sellWithSigner instead.');
-  }
-
-  /**
-   * Sell tokens with signer
+   * Sell `tokenAmount` of a coin for its quote mint
    */
   async sellWithSigner(
     params: PumpFunSellParams,
-    signer: Uint8Array | ((tx: Transaction) => Promise<Transaction>)
+    signer: PumpFunSigner
   ): Promise<TransactionResult> {
-    // Check if migrated
-    const isMigrated = await this.isMigrated(params.mint);
-    if (isMigrated) {
-      throw new Error('Token is migrated to Raydium. Use Raydium or Jupiter for trading.');
-    }
+    const user = new PublicKey(params.userPublicKey);
+    const slippageBps = params.slippageBps ?? DEFAULT_SLIPPAGE_BPS;
+    const market = await this.getTradableMarket(params.mint);
 
-    const userPubkey = new PublicKey(params.userPublicKey);
-    const mint = new PublicKey(params.mint);
-    
-    // Get bonding curve PDAs
-    const bondingCurve = this.bondingCurve.getBondingCurvePDA(params.mint);
-    const associatedBondingCurve = this.bondingCurve.getAssociatedBondingCurvePDA(
-      params.mint,
-      bondingCurve
-    );
+    const instructions =
+      market.venue === 'pumpswap'
+        ? await this.pumpSwap.sellInstructions(
+            await this.pumpSwap.getSnapshot(market.curve.mint, market.curve.quoteMint, user),
+            params.tokenAmount,
+            slippageBps
+          )
+        : await this.curveSellInstructions(market.curve, user, params.tokenAmount, slippageBps);
 
-    // Get user token account
-    const userTokenAccount = await getAssociatedTokenAddress(mint, userPubkey);
-
-    // Calculate expected output
-    const state = await this.bondingCurve.getBondingCurveState(params.mint);
-    const output = this.bondingCurve.calculateSellOutput(state, params.tokenAmount);
-
-    // Apply slippage
-    const slippageBps = params.slippageBps ?? 100;
-    const minSolAmount = params.minSolAmount ??
-      (output.solAmount * (10000n - BigInt(slippageBps))) / 10000n;
-
-    const transaction = new Transaction();
-
-    // Build sell instruction
-    const sellIx = this.buildSellInstruction(
-      userPubkey,
-      mint,
-      bondingCurve,
-      associatedBondingCurve,
-      userTokenAccount,
-      params.tokenAmount,
-      minSolAmount
-    );
-    transaction.add(sellIx);
-
-    // Set recent blockhash
-    const { blockhash, lastValidBlockHeight } = await this.connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = userPubkey;
-
-    // Sign
-    if (signer instanceof Uint8Array) {
-      const { Keypair } = await import('@solana/web3.js');
-      const keypair = Keypair.fromSecretKey(signer);
-      transaction.sign(keypair);
-    } else {
-      await signer(transaction);
-    }
-
-    // Send and confirm
-    try {
-      const signature = await this.connection.sendRawTransaction(transaction.serialize(), {
-        skipPreflight: false,
-        maxRetries: 3,
-      });
-
-      const confirmation = await this.connection.confirmTransaction({
-        signature,
-        blockhash,
-        lastValidBlockHeight,
-      }, 'confirmed');
-
-      return {
-        signature,
-        confirmed: !confirmation.value.err,
-        error: confirmation.value.err ? JSON.stringify(confirmation.value.err) : undefined,
-      };
-    } catch (error) {
-      return {
-        signature: '',
-        confirmed: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
-    }
+    return this.sendInstructions(instructions, user, signer, SINGLE_TRADE_COMPUTE_UNITS);
   }
 
   /**
-   * Build sell instruction
+   * Swap through several pump curves or PumpSwap pools in one
+   * `multi_hop_swap` instruction, e.g. SOL to coin A to coin B where B is
+   * quoted in A. The expected output is simulated on chain and the minimum
+   * output is set from `slippageBps`.
    */
-  private buildSellInstruction(
-    user: PublicKey,
-    mint: PublicKey,
-    bondingCurve: PublicKey,
-    associatedBondingCurve: PublicKey,
-    userTokenAccount: PublicKey,
-    tokenAmount: bigint,
-    minSolAmount: bigint
-  ): TransactionInstruction {
-    const keys = [
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.GLOBAL), isSigner: false, isWritable: false },
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.FEE_RECIPIENT), isSigner: false, isWritable: true },
-      { pubkey: mint, isSigner: false, isWritable: false },
-      { pubkey: bondingCurve, isSigner: false, isWritable: true },
-      { pubkey: associatedBondingCurve, isSigner: false, isWritable: true },
-      { pubkey: userTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: user, isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      { pubkey: new PublicKey(PUMPFUN_PROGRAM_IDS.EVENT_AUTHORITY), isSigner: false, isWritable: false },
-      { pubkey: this.programId, isSigner: false, isWritable: false },
-    ];
+  async multiHopSwapWithSigner(
+    params: PumpFunMultiHopParams,
+    signer: PumpFunSigner
+  ): Promise<TransactionResult & { expectedAmountOut: bigint; minAmountOut: bigint }> {
+    const hopCount = params.path.length - 1;
+    if (hopCount < 1) {
+      throw new Error('A multi-hop route needs at least two mints');
+    }
+    if (hopCount > MAX_MULTI_HOP_HOPS) {
+      throw new Error(
+        `Routes longer than ${MAX_MULTI_HOP_HOPS} hops need an address lookup table`
+      );
+    }
 
-    // Sell instruction data: [discriminator (8)] [amount (8)] [min_sol_output (8)]
-    const data = Buffer.alloc(8 + 8 + 8);
-    
-    // Sell discriminator
-    const discriminator = Buffer.from([51, 230, 133, 164, 1, 127, 131, 173]);
-    discriminator.copy(data, 0);
-    
-    data.writeBigUInt64LE(tokenAmount, 8);
-    data.writeBigUInt64LE(minSolAmount, 16);
+    const user = new PublicKey(params.userPublicKey);
+    const slippageBps = params.slippageBps ?? DEFAULT_SLIPPAGE_BPS;
+    const sdk = this.bondingCurve.getSdk();
+    const path = params.path.map(mint => new PublicKey(mint));
+    const amountIn = new BN(params.amountIn.toString());
 
-    return new TransactionInstruction({
-      programId: this.programId,
-      keys,
-      data,
+    const hops = await sdk.resolveMultiHopRoute(path, params.side);
+    const expected = await sdk.simulateMultiHopSwap({
+      user,
+      hops,
+      side: params.side,
+      amountIn,
     });
+    const expectedAmountOut = BigInt(expected.toString());
+    const minAmountOut = (expectedAmountOut * BigInt(10_000 - slippageBps)) / 10_000n;
+
+    const instructions = await PUMP_SDK.multiHopSwapInstructions({
+      user,
+      hops,
+      side: params.side,
+      amountIn,
+      minAmountOut: new BN(minAmountOut.toString()),
+    });
+
+    const result = await this.sendInstructions(
+      instructions,
+      user,
+      signer,
+      MULTI_HOP_COMPUTE_UNITS
+    );
+    return { ...result, expectedAmountOut, minAmountOut };
   }
 
   /**
@@ -459,62 +351,34 @@ export class PumpFunClient implements IPumpFunClient {
   }
 
   /**
-   * Get recent token launches
+   * Recent token launches
    */
   async getRecentTokens(limit: number = 50): Promise<NewPumpFunToken[]> {
     return this.monitor.getRecentTokens(limit);
   }
 
   /**
-   * Calculate buy output
-   */
-  async calculateBuyOutput(
-    mint: string,
-    solAmount: bigint
-  ): Promise<{
-    tokenAmount: bigint;
-    fee: bigint;
-    newPrice: number;
-    priceImpact: number;
-  }> {
-    const state = await this.bondingCurve.getBondingCurveState(mint);
-    return this.bondingCurve.calculateBuyOutput(state, solAmount);
-  }
-
-  /**
-   * Calculate sell output
-   */
-  async calculateSellOutput(
-    mint: string,
-    tokenAmount: bigint
-  ): Promise<{
-    solAmount: bigint;
-    fee: bigint;
-    newPrice: number;
-    priceImpact: number;
-  }> {
-    const state = await this.bondingCurve.getBondingCurveState(mint);
-    return this.bondingCurve.calculateSellOutput(state, tokenAmount);
-  }
-
-  /**
-   * Get current price
+   * Current price in quote mint units per whole token, on the live venue
    */
   async getCurrentPrice(mint: string): Promise<number> {
-    const state = await this.bondingCurve.getBondingCurveState(mint);
-    return this.bondingCurve.getCurrentPrice(state);
+    const market = await this.getMarket(mint);
+    return market.venue === 'raydium'
+      ? (await this.getTokenInfo(mint)).priceInQuote
+      : this.marketPricing(market).priceInQuote;
   }
 
   /**
-   * Get market cap in SOL
+   * Market cap in quote mint units, on the live venue
    */
-  async getMarketCapSol(mint: string): Promise<number> {
-    const state = await this.bondingCurve.getBondingCurveState(mint);
-    return this.bondingCurve.getMarketCapSol(state);
+  async getMarketCapQuote(mint: string): Promise<number> {
+    const market = await this.getMarket(mint);
+    return market.venue === 'raydium'
+      ? (await this.getTokenInfo(mint)).marketCapQuote
+      : this.marketPricing(market).marketCapQuote;
   }
 
   /**
-   * Get migration progress
+   * Share of the curve's sellable supply already bought (0-100)
    */
   async getMigrationProgress(mint: string): Promise<number> {
     const state = await this.bondingCurve.getBondingCurveState(mint);
@@ -533,7 +397,6 @@ export class PumpFunClient implements IPumpFunClient {
    */
   clearCache(): void {
     this.tokenCache.clear();
-    this.tokenCacheTime.clear();
   }
 
   /**
@@ -543,4 +406,211 @@ export class PumpFunClient implements IPumpFunClient {
     await this.monitor.dispose();
     this.clearCache();
   }
+
+  private async getTradableMarket(mint: string): Promise<TradableMarket> {
+    const market = await this.getMarket(mint);
+    if (market.venue === 'completed') {
+      throw new Error(
+        `${mint} completed its bonding curve and is waiting for migration; trading resumes on PumpSwap once the pool opens`
+      );
+    }
+    if (market.venue === 'raydium') {
+      throw new Error(
+        `${mint} migrated to Raydium before PumpSwap existed; trade it through the Raydium or Jupiter clients`
+      );
+    }
+    return market;
+  }
+
+  private marketPricing(market: Exclude<PumpFunMarket, { venue: 'raydium' }>): { priceInQuote: number; marketCapQuote: number } {
+    if (market.venue === 'pumpswap') {
+      return {
+        priceInQuote: this.pumpSwap.getCurrentPrice(market.pool.state),
+        marketCapQuote: this.pumpSwap.getMarketCapQuote(market.pool.state),
+      };
+    }
+    return {
+      priceInQuote: this.bondingCurve.getCurrentPrice(market.curve.state),
+      marketCapQuote: this.bondingCurve.getMarketCapQuote(market.curve.state),
+    };
+  }
+
+  /**
+   * Curve buy spending at most `quoteAmount`.
+   *
+   * v3 (`buy_exact_quote_in_v3`) spends the budget and requires the quoted
+   * tokens less slippage. Cashback coins go through `buy_v2`, whose cap is
+   * the quoted cost plus slippage, so the buy is sized on the budget less
+   * slippage to keep the cap at `quoteAmount`.
+   */
+  private async curveBuyInstructions(
+    snapshot: CurveSnapshot,
+    user: PublicKey,
+    quoteAmount: bigint,
+    slippageBps: number
+  ): Promise<TransactionInstruction[]> {
+    const { curve, mint, tokenProgram, quoteTokenProgram } = snapshot;
+    const userAta = getAssociatedTokenAddressSync(mint, user, true, tokenProgram);
+    const associatedUserAccountInfo = await this.connection.getAccountInfo(userAta);
+    const slippage = slippageBps / 100;
+
+    if (curve.isCashbackCoin) {
+      const sizedBudget = (quoteAmount * 10_000n) / BigInt(10_000 + slippageBps);
+      const quote = this.bondingCurve.quoteBuy(snapshot, sizedBudget);
+      return PUMP_SDK.buyV2Instructions({
+        global: snapshot.global,
+        bondingCurveAccountInfo: snapshot.accountInfo,
+        bondingCurve: curve,
+        associatedUserAccountInfo,
+        mint,
+        user,
+        amount: new BN(quote.amountOut.toString()),
+        quoteAmount: new BN(sizedBudget.toString()),
+        slippage,
+        tokenProgram,
+        quoteTokenProgram,
+      });
+    }
+
+    const quote = this.bondingCurve.quoteBuy(snapshot, quoteAmount);
+    return PUMP_SDK.buyExactQuoteInV3Instructions({
+      bondingCurve: curve,
+      associatedUserAccountInfo,
+      mint,
+      user,
+      amount: new BN(quote.amountOut.toString()),
+      quoteAmount: new BN(quoteAmount.toString()),
+      slippage,
+      tokenProgram,
+      quoteTokenProgram,
+    });
+  }
+
+  /**
+   * Curve sell of `tokenAmount`: `sell_v3`, or `sell_v2` for cashback coins.
+   */
+  private async curveSellInstructions(
+    snapshot: CurveSnapshot,
+    user: PublicKey,
+    tokenAmount: bigint,
+    slippageBps: number
+  ): Promise<TransactionInstruction[]> {
+    const { curve, mint, tokenProgram, quoteTokenProgram } = snapshot;
+    const quote = this.bondingCurve.quoteSell(snapshot, tokenAmount);
+    const amount = new BN(tokenAmount.toString());
+    const quoteAmount = new BN(quote.amountOut.toString());
+    const slippage = slippageBps / 100;
+
+    if (curve.isCashbackCoin) {
+      return PUMP_SDK.sellV2Instructions({
+        global: snapshot.global,
+        bondingCurveAccountInfo: snapshot.accountInfo,
+        bondingCurve: curve,
+        mint,
+        user,
+        amount,
+        quoteAmount,
+        slippage,
+        tokenProgram,
+        quoteTokenProgram,
+      });
+    }
+
+    return PUMP_SDK.sellV3Instructions({
+      bondingCurve: curve,
+      mint,
+      user,
+      amount,
+      quoteAmount,
+      slippage,
+      tokenProgram,
+      quoteTokenProgram,
+    });
+  }
+
+  /**
+   * Compile `instructions` into a v0 transaction with a compute limit, sign
+   * it with the keypair or the signing callback, send it and confirm it.
+   */
+  private async sendInstructions(
+    instructions: TransactionInstruction[],
+    payer: PublicKey,
+    signer: PumpFunSigner,
+    computeUnits: number
+  ): Promise<TransactionResult> {
+    const { blockhash, lastValidBlockHeight } = await this.connection.getLatestBlockhash();
+    const message = new TransactionMessage({
+      payerKey: payer,
+      recentBlockhash: blockhash,
+      instructions: [
+        ComputeBudgetProgram.setComputeUnitLimit({ units: computeUnits }),
+        ...instructions,
+      ],
+    }).compileToV0Message();
+
+    let transaction = new VersionedTransaction(message);
+    if (signer instanceof Uint8Array) {
+      const keypair = Keypair.fromSecretKey(signer);
+      if (!keypair.publicKey.equals(payer)) {
+        throw new Error('Signing key does not match userPublicKey');
+      }
+      transaction.sign([keypair]);
+    } else {
+      transaction = await signer(transaction);
+    }
+
+    try {
+      const signature = await this.connection.sendRawTransaction(transaction.serialize(), {
+        skipPreflight: false,
+        maxRetries: 3,
+      });
+
+      const confirmation = await this.connection.confirmTransaction(
+        { signature, blockhash, lastValidBlockHeight },
+        'confirmed'
+      );
+
+      return {
+        signature,
+        confirmed: !confirmation.value.err,
+        error: confirmation.value.err ? JSON.stringify(confirmation.value.err) : undefined,
+      };
+    } catch (error) {
+      return {
+        signature: '',
+        confirmed: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+}
+
+/** pump.fun coin record (metadata and market cap). */
+async function fetchCoin(mint: string): Promise<PumpFunAPICoin> {
+  const response = await fetch(`${PUMP_FUN_COIN_API}/${encodeURIComponent(mint)}`, {
+    headers: { accept: 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error(`pump.fun metadata unavailable for ${mint}: HTTP ${response.status}`);
+  }
+  return (await response.json()) as PumpFunAPICoin;
+}
+
+/**
+ * Price and market cap of a coin trading on a Raydium pool, from pump.fun's
+ * SOL market cap (this client does not read Raydium pools).
+ */
+function apiPricing(
+  data: PumpFunAPICoin,
+  state: BondingCurveState
+): { priceInQuote: number; marketCapQuote: number } {
+  const marketCapQuote = data.market_cap ?? 0;
+  const supply = Number(state.tokenTotalSupply) / Math.pow(10, state.tokenDecimals);
+  return { marketCapQuote, priceInQuote: supply > 0 ? marketCapQuote / supply : 0 };
+}
+
+function venueOf(state: BondingCurveState): Exclude<PumpFunVenue, 'raydium'> {
+  if (state.migrated) return 'pumpswap';
+  if (state.complete) return 'completed';
+  return 'curve';
 }
