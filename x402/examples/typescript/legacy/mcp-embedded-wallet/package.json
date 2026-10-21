@@ -31,7 +31,7 @@
     "@coinbase/cdp-core": "^0.0.18",
     "@coinbase/cdp-hooks": "^0.0.18",
     "@coinbase/cdp-react": "^0.0.18",
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@radix-ui/react-form": "^0.1.7",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/themes": "^3.2.1",
