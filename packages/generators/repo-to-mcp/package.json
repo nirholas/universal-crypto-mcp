@@ -50,7 +50,7 @@
     "@typescript-eslint/parser": "^8.53.0",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^9.39.2",
-    "happy-dom": "^20.1.0",
+    "happy-dom": "^21.0.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "msw": "^2.12.7",

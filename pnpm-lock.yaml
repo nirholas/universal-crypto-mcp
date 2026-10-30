@@ -206,7 +206,7 @@ importers:
         version: 8.65.0(eslint@9.39.5(jiti@2.6.1)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
+        version: 4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
 
   deploy/enterprise-gateway:
     dependencies:
@@ -274,7 +274,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/agenti:
     dependencies:
@@ -310,7 +310,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/agents/defi-agents:
     dependencies:
@@ -338,7 +338,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/agents/ucai:
     dependencies:
@@ -366,7 +366,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/api-gateway:
     dependencies:
@@ -445,7 +445,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^3.0.0
-        version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
+        version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
 
   packages/automation/sweep:
     dependencies:
@@ -524,7 +524,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.17
-        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/automation/volume:
     devDependencies:
@@ -551,7 +551,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/core:
     dependencies:
@@ -576,7 +576,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/credits:
     dependencies:
@@ -610,7 +610,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/crypto-service:
     dependencies:
@@ -659,7 +659,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/dashboard:
     dependencies:
@@ -714,7 +714,7 @@ importers:
         version: 5.4.21(@types/node@25.9.5)(lightningcss@1.30.2)(terser@5.46.0)
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi: {}
 
@@ -950,7 +950,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/layer2/base-chain-mcp:
     dependencies:
@@ -975,7 +975,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/layer2/optimism-mcp:
     dependencies:
@@ -1000,7 +1000,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/layer2/polygon-zkevm-mcp:
     dependencies:
@@ -1025,7 +1025,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols:
     dependencies:
@@ -1087,7 +1087,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols/compound-v3-mcp:
     dependencies:
@@ -1112,7 +1112,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols/curve-mcp:
     dependencies:
@@ -1137,7 +1137,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols/gmx-v2-mcp:
     dependencies:
@@ -1162,7 +1162,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols/lido-mcp:
     dependencies:
@@ -1187,7 +1187,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/protocols/site-legacy:
     dependencies:
@@ -1285,7 +1285,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@8.1.1)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@8.1.1)(terser@5.46.0)
 
   packages/defi/protocols/x402: {}
 
@@ -1312,7 +1312,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/rates:
     dependencies:
@@ -1341,7 +1341,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/smart-chain:
     dependencies:
@@ -1369,7 +1369,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/defi/stablecoin-protocol:
     dependencies:
@@ -1397,7 +1397,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/generators: {}
 
@@ -1439,7 +1439,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/generators/doc-extractor:
     dependencies:
@@ -1536,7 +1536,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.17
-        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.19.30)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.19.30)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.19.30)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.19.30)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
 
   packages/generators/registry:
     dependencies:
@@ -1608,8 +1608,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)(supports-color@10.2.2)
       happy-dom:
-        specifier: ^20.1.0
-        version: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        specifier: ^21.0.4
+        version: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -1624,7 +1624,7 @@ importers:
         version: 3.8.1
       vitest:
         specifier: ^1.6.1
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/generators/web3-playground:
     dependencies:
@@ -1748,7 +1748,7 @@ importers:
         version: 7.3.1(@types/node@20.11.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
       vitest:
         specifier: ^4.0.17
-        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.11.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.11.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.11.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.11.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
 
   packages/job-worker:
     dependencies:
@@ -1862,7 +1862,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/market-data/coinstats:
     dependencies:
@@ -2036,7 +2036,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.17
-        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
 
   packages/market-data/defi-metrics:
     dependencies:
@@ -2058,7 +2058,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/market-data/dex-aggregator:
     dependencies:
@@ -2265,7 +2265,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.17
-        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.0)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.0)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)
 
   packages/market-data/price-feeds:
     dependencies:
@@ -2300,7 +2300,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/market-data/prices:
     dependencies:
@@ -2385,7 +2385,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/nft: {}
 
@@ -2412,7 +2412,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/nft/marketplace:
     dependencies:
@@ -2437,7 +2437,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/nft/marketplace-aggregator:
     dependencies:
@@ -2462,7 +2462,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/payments: {}
 
@@ -2493,7 +2493,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/payments/x402:
     dependencies:
@@ -2504,8 +2504,8 @@ importers:
         specifier: ^4.0.2
         version: 4.2.2(typescript@5.9.3)(viem@2.55.10(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@3.25.76))(zod@3.25.76)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.1.0
-        version: 1.25.3(hono@4.12.33)(supports-color@10.2.2)(zod@3.25.76)
+        specifier: ^1.32.0
+        version: 1.32.2(supports-color@10.2.2)(zod@3.25.76)
       '@types/global-agent':
         specifier: ^2.1.3
         version: 2.1.3
@@ -2552,7 +2552,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/payments/x402-stablecoin:
     dependencies:
@@ -2577,7 +2577,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/payments/x402/facilitator:
     dependencies:
@@ -2629,7 +2629,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/price-service:
     dependencies:
@@ -2660,7 +2660,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/query-service:
     dependencies:
@@ -2789,7 +2789,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/shared/mcp-utils:
     dependencies:
@@ -2811,7 +2811,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/shared/utils:
     dependencies:
@@ -2833,7 +2833,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.0.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/trading: {}
 
@@ -2934,7 +2934,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/trading/bsc-meme-trading-bot:
     dependencies:
@@ -2977,7 +2977,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/trading/futures-exchange:
     dependencies:
@@ -3220,7 +3220,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.0
-        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+        version: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets: {}
 
@@ -3260,7 +3260,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets/evm:
     dependencies:
@@ -3291,7 +3291,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets/multisig:
     dependencies:
@@ -3316,7 +3316,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets/shared:
     dependencies:
@@ -3335,7 +3335,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets/solana:
     dependencies:
@@ -3372,7 +3372,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
   packages/wallets/wallet-protocol:
     dependencies:
@@ -3394,7 +3394,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.1.8
-        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+        version: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
 
 packages:
 
@@ -7300,6 +7300,16 @@ packages:
 
   '@modelcontextprotocol/sdk@1.30.0':
     resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@cfworker/json-schema': ^4.1.1
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@cfworker/json-schema':
+        optional: true
+
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -12722,6 +12732,10 @@ packages:
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
 
+  buffer-image-size@0.6.4:
+    resolution: {integrity: sha512-nEh+kZOPY1w+gcCMobZ6ETUp9WfibndnosbpwB1iJk/8Gt5ZF2bhS6+B6bPYz424KtwsR6Rflc3tCz1/ghX2dQ==}
+    engines: {node: '>=4.0'}
+
   buffer-layout@1.2.2:
     resolution: {integrity: sha512-kWSuLN694+KTk8SrYvCqwP2WcgQjoRCiF5b4QDvkkz8EmgD+aWAIceGFKMIAdmF/pH+vpgNV3d3kAKorcdAmWA==}
     engines: {node: '>=4.5'}
@@ -14406,6 +14420,10 @@ packages:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
     engines: {node: '>=0.12'}
 
+  entities@7.0.1:
+    resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
+    engines: {node: '>=0.12'}
+
   env-ci@9.1.1:
     resolution: {integrity: sha512-Im2yEWeF4b2RAMAaWvGioXk6m0UNaIjD8hj28j2ij5ldnIFrDQT0+pzDvpbRkcjurhXhf/AsBKv8P2rtmGi9Aw==}
     engines: {node: ^16.14 || >=18}
@@ -15791,8 +15809,8 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
 
-  happy-dom@20.4.0:
-    resolution: {integrity: sha512-RDeQm3dT9n0A5f/TszjUmNCLEuPnMGv3Tv4BmNINebz/h17PA6LMBcxJ5FrcqltNBMh9jA/8ufgDdBYUdBt+eg==}
+  happy-dom@21.0.4:
+    resolution: {integrity: sha512-tFm+GaLBgo6o0awHnvHaNoraVo27qJ+2tZEtZ+cIa08hXbeitrxAJajLI05hsUy/2/YTKcUjQYzHe5mCcraLBw==}
     engines: {node: '>=20.0.0'}
 
   hard-rejection@2.1.0:
@@ -23663,15 +23681,15 @@ snapshots:
 
   '@babel/core@7.28.6(supports-color@10.2.2)':
     dependencies:
-      '@babel/code-frame': 7.28.6
-      '@babel/generator': 7.28.6
-      '@babel/helper-compilation-targets': 7.28.6
-      '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.6(supports-color@10.2.2))(supports-color@10.2.2)
-      '@babel/helpers': 7.28.6
-      '@babel/parser': 7.28.6
-      '@babel/template': 7.28.6
-      '@babel/traverse': 7.28.6(supports-color@10.2.2)
-      '@babel/types': 7.28.6
+      '@babel/code-frame': 7.29.7
+      '@babel/generator': 7.29.7
+      '@babel/helper-compilation-targets': 7.29.7
+      '@babel/helper-module-transforms': 7.29.7(@babel/core@7.28.6(supports-color@10.2.2))(supports-color@10.2.2)
+      '@babel/helpers': 7.29.7
+      '@babel/parser': 7.29.8
+      '@babel/template': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.2.2)
+      '@babel/types': 7.29.8
       '@jridgewell/remapping': 2.3.5
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@10.2.2)
@@ -23843,6 +23861,15 @@ snapshots:
       '@babel/helper-module-imports': 7.28.6(supports-color@10.2.2)
       '@babel/helper-validator-identifier': 7.28.5
       '@babel/traverse': 7.28.6(supports-color@10.2.2)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/helper-module-transforms@7.29.7(@babel/core@7.28.6(supports-color@10.2.2))(supports-color@10.2.2)':
+    dependencies:
+      '@babel/core': 7.28.6(supports-color@10.2.2)
+      '@babel/helper-module-imports': 7.29.7(supports-color@10.2.2)
+      '@babel/helper-validator-identifier': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -28524,6 +28551,28 @@ snapshots:
       - supports-color
 
   '@modelcontextprotocol/sdk@1.30.0(supports-color@10.2.2)(zod@3.25.76)':
+    dependencies:
+      '@hono/node-server': 1.19.17(hono@4.12.33)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
+      content-type: 1.0.5
+      cors: 2.8.6
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.1.0
+      express: 5.2.1(supports-color@10.2.2)
+      express-rate-limit: 8.6.1(express@5.2.1(supports-color@10.2.2))(supports-color@10.2.2)
+      hono: 4.12.33
+      jose: 6.2.7
+      json-schema-typed: 8.0.2
+      pkce-challenge: 5.0.1
+      raw-body: 3.0.2
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.2(zod@3.25.76)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@modelcontextprotocol/sdk@1.32.2(supports-color@10.2.2)(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 1.19.17(hono@4.12.33)
       ajv: 8.20.0
@@ -35528,7 +35577,7 @@ snapshots:
       std-env: 3.10.0
       test-exclude: 7.0.1
       tinyrainbow: 1.2.0
-      vitest: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
+      vitest: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -35544,7 +35593,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
+      vitest: 1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0)
 
   '@vitest/coverage-v8@4.0.18(vitest@4.0.18)':
     dependencies:
@@ -35558,7 +35607,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/coverage-v8@4.1.10(vitest@4.1.10)':
     dependencies:
@@ -35572,7 +35621,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
+      vitest: 4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
 
   '@vitest/expect@1.6.1':
     dependencies:
@@ -35790,7 +35839,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/utils@1.6.1':
     dependencies:
@@ -39719,6 +39768,10 @@ snapshots:
 
   buffer-from@1.1.2: {}
 
+  buffer-image-size@0.6.4:
+    dependencies:
+      '@types/node': 20.19.43
+
   buffer-layout@1.2.2: {}
 
   buffer-xor@1.0.3: {}
@@ -41402,6 +41455,8 @@ snapshots:
   entities@4.5.0: {}
 
   entities@6.0.1: {}
+
+  entities@7.0.1: {}
 
   env-ci@9.1.1:
     dependencies:
@@ -43962,27 +44017,29 @@ snapshots:
     optionalDependencies:
       uglify-js: 3.19.3
 
-  happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
+  happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       '@types/node': 20.19.43
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
-      entities: 4.5.0
+      buffer-image-size: 0.6.4
+      entities: 7.0.1
       whatwg-mimetype: 3.0.0
-      ws: 8.21.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     optional: true
 
-  happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@types/node': 20.19.43
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
-      entities: 4.5.0
+      buffer-image-size: 0.6.4
+      entities: 7.0.1
       whatwg-mimetype: 3.0.0
-      ws: 8.21.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -53999,7 +54056,7 @@ snapshots:
       tsx: 4.23.5
       yaml: 2.9.0
 
-  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
+  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@20.19.30)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 1.6.1
       '@vitest/runner': 1.6.1
@@ -54024,7 +54081,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 20.19.30
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - less
@@ -54036,7 +54093,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
+  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.1.0)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 1.6.1
       '@vitest/runner': 1.6.1
@@ -54061,7 +54118,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 25.1.0
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - less
@@ -54073,7 +54130,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
+  vitest@1.6.1(@edge-runtime/vm@3.2.0)(@types/node@25.9.5)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(supports-color@10.2.2)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 1.6.1
       '@vitest/runner': 1.6.1
@@ -54098,7 +54155,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 25.9.5
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - less
@@ -54110,7 +54167,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0):
+  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 2.1.9
       '@vitest/mocker': 2.1.9(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(vite@5.4.21(@types/node@22.19.7)(lightningcss@1.30.2)(terser@5.46.0))
@@ -54135,7 +54192,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 22.19.7
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - less
@@ -54148,7 +54205,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@8.1.1)(terser@5.46.0):
+  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@8.1.1)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 2.1.9
       '@vitest/mocker': 2.1.9(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(vite@5.4.21(@types/node@22.19.7)(lightningcss@1.30.2)(terser@5.46.0))
@@ -54173,7 +54230,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 22.19.7
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - less
@@ -54186,7 +54243,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0):
+  vitest@2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0):
     dependencies:
       '@vitest/expect': 2.1.9
       '@vitest/mocker': 2.1.9(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(vite@5.4.21(@types/node@22.19.7)(lightningcss@1.30.2)(terser@5.46.0))
@@ -54211,7 +54268,7 @@ snapshots:
     optionalDependencies:
       '@edge-runtime/vm': 3.2.0
       '@types/node': 22.19.7
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - less
@@ -54224,7 +54281,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
+  vitest@3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(supports-color@10.2.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4
@@ -54253,7 +54310,7 @@ snapshots:
       '@edge-runtime/vm': 3.2.0
       '@types/debug': 4.1.12
       '@types/node': 22.19.7
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
@@ -54269,7 +54326,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.0)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
+  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.0)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
@@ -54296,7 +54353,7 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@types/node': 25.1.0
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - jiti
@@ -54311,7 +54368,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.11.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.11.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
+  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.11.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.11.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(msw@2.12.7(@types/node@20.11.0)(typescript@5.9.3))(vite@7.3.1(@types/node@20.11.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
@@ -54338,7 +54395,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@types/node': 20.11.0
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - jiti
@@ -54353,7 +54410,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.19.30)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.19.30)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
+  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@20.19.30)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@20.19.30)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(msw@2.12.7(@types/node@20.19.30)(typescript@5.9.3))(vite@7.3.1(@types/node@20.19.30)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
@@ -54380,7 +54437,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@types/node': 20.19.30
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
@@ -54395,7 +54452,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@22.19.7)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
@@ -54422,7 +54479,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@types/node': 22.19.7
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - jiti
@@ -54437,7 +54494,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
+  vitest@4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.1.0)(@vitest/ui@4.0.18)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(msw@2.12.7(@types/node@25.1.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
@@ -54464,7 +54521,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@types/node': 25.1.0
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
@@ -54479,7 +54536,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)):
+  vitest@4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(jsdom@27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6))(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(msw@2.12.7(@types/node@25.9.5)(typescript@5.9.3))(vite@7.3.1(@types/node@25.9.5)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.23.5)(yaml@2.9.0))
@@ -54506,7 +54563,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@types/node': 25.9.5
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
-      happy-dom: 20.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jsdom: 27.4.0(@noble/hashes@2.2.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - msw
