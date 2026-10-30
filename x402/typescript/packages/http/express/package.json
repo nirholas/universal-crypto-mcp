@@ -47,7 +47,7 @@
     "@x402/core": "workspace:^",
     "@x402/extensions": "workspace:^",
     "viem": "^2.39.3",
-    "zod": "^3.24.2"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "@x402/paywall": "workspace:*",
