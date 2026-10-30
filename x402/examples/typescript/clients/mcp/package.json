@@ -10,7 +10,7 @@
     "lint:check": "eslint . --ext .ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.9.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@scure/base": "^1.2.6",
     "@solana/kit": "^2.1.1",
     "@x402/axios": "workspace:*",
