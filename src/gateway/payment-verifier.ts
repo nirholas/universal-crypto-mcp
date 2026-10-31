@@ -47,17 +47,18 @@ export class PaymentVerifier {
     payment: PaymentPayload,
     options: VerificationOptions
   ): Promise<VerificationResult> {
-    // Check cache first
-    const cacheKey = this.getCacheKey(payment)
-    const cached = this.cache.get(cacheKey)
-    if (cached && cached.expires > Date.now()) {
-      return cached.result
-    }
-
-    // Basic validation
+    // Always check the payment against THIS charge first. A cached result must
+    // never stand in for these checks, or a payment verified for a cheap tool
+    // could be reused against a pricier one.
     const basicValidation = this.validateBasic(payment, options)
     if (!basicValidation.valid) {
       return basicValidation
+    }
+
+    const cacheKey = this.getCacheKey(payment, options)
+    const cached = this.cache.get(cacheKey)
+    if (cached && cached.expires > Date.now()) {
+      return cached.result
     }
 
     // Verify with facilitator
@@ -232,16 +233,24 @@ export class PaymentVerifier {
   }
 
   /**
-   * Request settlement from facilitator
+   * Request settlement from facilitator. The resource must not be released
+   * until this reports success: verify only proves the signature is well formed.
    */
-  async settle(payment: PaymentPayload): Promise<VerificationResult> {
+  async settle(payment: PaymentPayload, options: VerificationOptions): Promise<VerificationResult> {
     try {
       const response = await fetch(`${this.facilitatorUrl}/settle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ payment }),
+        body: JSON.stringify({
+          payment,
+          requirements: {
+            amount: options.expectedAmount,
+            payTo: options.expectedPayTo,
+            network: options.expectedNetwork,
+          },
+        }),
       })
 
       if (!response.ok) {
@@ -264,8 +273,15 @@ export class PaymentVerifier {
   /**
    * Generate cache key for a payment
    */
-  private getCacheKey(payment: PaymentPayload): string {
-    return `${payment.payload.from}:${payment.payload.nonce}:${payment.signature.slice(-16)}`
+  private getCacheKey(payment: PaymentPayload, options: VerificationOptions): string {
+    return [
+      payment.payload.from,
+      payment.payload.nonce,
+      payment.signature.slice(-16),
+      options.expectedAmount,
+      options.expectedPayTo.toLowerCase(),
+      options.expectedNetwork,
+    ].join(":")
   }
 
   /**
