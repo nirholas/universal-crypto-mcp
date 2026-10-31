@@ -5,7 +5,6 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { secureHeaders } from 'hono/secure-headers';
 import { timing } from 'hono/timing';
-import { rateLimiter } from 'hono/rate-limiter';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 
@@ -18,9 +17,30 @@ app.use('*', prettyJSON());
 app.use('*', secureHeaders());
 app.use('*', timing());
 
-// Rate limiting
+// Rate limiting: fixed window per client address
+const RATE_LIMIT = 60;
+const RATE_WINDOW_MS = 60_000;
+const hits = new Map<string, { count: number; resetAt: number }>();
+
 app.use('*', async (c, next) => {
-  // Simple in-memory rate limiting
+  const now = Date.now();
+  for (const [key, entry] of hits) {
+    if (entry.resetAt <= now) hits.delete(key);
+  }
+
+  const client =
+    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
+    c.req.header('x-real-ip') ||
+    'unknown';
+  const entry = hits.get(client) ?? { count: 0, resetAt: now + RATE_WINDOW_MS };
+  entry.count += 1;
+  hits.set(client, entry);
+
+  if (entry.count > RATE_LIMIT) {
+    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    c.header('Retry-After', String(retryAfter));
+    return c.json({ error: 'Rate limit exceeded', retryAfter }, 429);
+  }
   await next();
 });
 
