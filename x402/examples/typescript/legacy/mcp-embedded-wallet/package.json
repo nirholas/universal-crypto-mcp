@@ -66,7 +66,7 @@
     "prettier": "3.5.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite": "^7.3.7"
+    "vite": "^6.4.5"
   },
   "onlyBuiltDependencies": [
     "electron"
