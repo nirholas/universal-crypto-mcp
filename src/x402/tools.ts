@@ -87,7 +87,7 @@ export function registerX402Tools(server: McpServer): void {
           method,
           body,
           headers,
-          onPaymentRequired: async (paymentRequest) => {
+          onPaymentRequired: async (paymentRequest, { idempotencyKey }) => {
             // Check if payment is within allowed limit
             const amount = parseFloat(paymentRequest.amount)
             if (amount > maxPaymentFloat) {
@@ -95,7 +95,9 @@ export function registerX402Tools(server: McpServer): void {
             }
             
             // Execute payment and return tx hash as proof
-            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token, {
+              idempotencyKey: idempotencyKey || undefined,
+            })
             return result.transaction.hash
           },
         })
@@ -188,8 +190,9 @@ export function registerX402Tools(server: McpServer): void {
       amount: z.string().describe("Amount to send (e.g. '10.00')"),
       token: z.enum(["USDs", "USDC", "native"]).default("USDs").describe("Token to send"),
       memo: z.string().optional().describe("Optional memo/note for the payment"),
+      idempotencyKey: z.string().min(1).max(128).optional().describe("Retry-safe key: repeating the same key for the same payment returns the original result instead of paying again"),
     },
-    async ({ to, amount, token, memo }) => {
+    async ({ to, amount, token, memo, idempotencyKey }) => {
       try {
         const client = getClient()
         
@@ -200,7 +203,7 @@ export function registerX402Tools(server: McpServer): void {
           throw new Error(`Amount ${amount} exceeds maximum allowed payment of ${maxPayment}`)
         }
         
-        const result = await client.pay(to as `0x${string}`, amount, token as any)
+        const result = await client.pay(to as `0x${string}`, amount, token as any, { idempotencyKey })
         
         return {
           content: [{
@@ -927,7 +930,7 @@ export function registerX402Tools(server: McpServer): void {
           method,
           body,
           headers,
-          onPaymentRequired: async (paymentRequest) => {
+          onPaymentRequired: async (paymentRequest, { idempotencyKey }) => {
             // Check if payment is within allowed limit
             const amount = parseFloat(paymentRequest.amount)
             if (amount > maxPaymentFloat) {
@@ -935,7 +938,9 @@ export function registerX402Tools(server: McpServer): void {
             }
             
             // Execute payment and return tx hash as proof
-            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token, {
+              idempotencyKey: idempotencyKey || undefined,
+            })
             paymentMade = result.transaction.hash
             return result.transaction.hash
           },
@@ -1180,8 +1185,9 @@ export function registerX402Tools(server: McpServer): void {
       chain: z.enum(["arbitrum", "arbitrum-sepolia", "base", "ethereum", "polygon", "optimism", "bsc"])
         .optional()
         .describe("Chain to send on (defaults to configured chain)"),
+      idempotencyKey: z.string().min(1).max(128).optional().describe("Retry-safe key: repeating the same key for the same payment returns the original result instead of paying again"),
     },
-    async ({ to, amount, token, chain }) => {
+    async ({ to, amount, token, chain, idempotencyKey }) => {
       try {
         const client = getClient()
         const targetChain = chain || config.chain
@@ -1193,7 +1199,7 @@ export function registerX402Tools(server: McpServer): void {
           throw new Error(`Amount ${amount} exceeds maximum allowed payment of ${maxPayment}`)
         }
         
-        const result = await client.pay(to as `0x${string}`, amount, token as any)
+        const result = await client.pay(to as `0x${string}`, amount, token as any, { idempotencyKey })
         
         return {
           content: [{

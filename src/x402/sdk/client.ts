@@ -29,6 +29,7 @@ import type {
   HTTP402Response,
   HTTP402ParseResult,
   Handle402Options,
+  PayOptions,
   YieldInfo,
   YieldEstimate,
   BalanceInfo,
@@ -41,6 +42,7 @@ import { StandardPayment } from './payments/standard';
 import { GaslessPayment } from './payments/gasless';
 import { BatchPayment } from './payments/batch';
 import { HTTP402Handler } from './http/handler';
+import { IdempotencyLedger, deriveAuthorizationNonce } from './idempotency';
 import { YieldTracker } from './yield/tracker';
 import { USDs } from './contracts/usds';
 import { RevenueSplitter } from './contracts/revenue-splitter';
@@ -109,6 +111,9 @@ export class X402Client {
   // Event listeners
   private readonly listeners: Set<PaymentEventListener> = new Set();
 
+  // Payments already made under an idempotency key
+  private readonly ledger = new IdempotencyLedger<PaymentResult>();
+
   constructor(options: X402ClientConfig) {
     this.chain = options.chain;
     this.privateKey = options.privateKey;
@@ -176,6 +181,7 @@ export class X402Client {
    * @param recipient - Recipient address
    * @param amount - Amount to pay (human-readable, e.g., "10.00")
    * @param token - Token to use (default: chain default token)
+   * @param options - Pass `idempotencyKey` to make the call safe to retry
    * @returns Payment result with transaction details
    *
    * @example
@@ -187,23 +193,54 @@ export class X402Client {
   async pay(
     recipient: Address,
     amount: string,
-    token?: X402Token
+    token?: X402Token,
+    options?: PayOptions
   ): Promise<PaymentResult> {
     const paymentToken = token ?? DEFAULT_TOKEN[this.chain];
+    const key = options?.idempotencyKey;
 
+    if (!key) {
+      return this.executePayment(recipient, amount, paymentToken);
+    }
+
+    const scope = { chain: this.chain, recipient, amount, token: paymentToken, key };
+    const { promise, replayed } = this.ledger.run(scope, () =>
+      this.executePayment(recipient, amount, paymentToken, key)
+    );
+    const result = await promise;
+    return replayed ? { ...result, replayed: true } : result;
+  }
+
+  private async executePayment(
+    recipient: Address,
+    amount: string,
+    paymentToken: X402Token,
+    idempotencyKey?: string
+  ): Promise<PaymentResult> {
     const request: PaymentRequest = {
       amount,
       token: paymentToken,
       chain: this.chain,
       recipient,
+      reference: idempotencyKey,
     };
 
     await this.emitEvent({ type: 'payment:requested', data: request });
 
+    // With a key the authorization nonce is derived from it, so the token
+    // contract rejects a second settlement of the same purchase.
+    const nonce =
+      idempotencyKey && this.privateKey
+        ? deriveAuthorizationNonce(
+            { chain: this.chain, recipient, amount, token: paymentToken, key: idempotencyKey },
+            privateKeyToAccount(this.privateKey).address
+          )
+        : undefined;
+
     // Try gasless if enabled and supported
     if (this.config.enableGasless && this.gaslessPayment.supportsGasless(paymentToken)) {
       try {
-        const transaction = await this.gaslessPayment.executeGasless(request);
+        const transaction = await this.gaslessPayment.executeGasless(request, nonce ? { nonce } : {});
         await this.emitEvent({ type: 'payment:confirmed', data: transaction });
 
         return {
@@ -215,6 +252,20 @@ export class X402Client {
         };
       } catch (error) {
         this.log('Gasless payment failed, falling back to standard:', error);
+
+        // The failure may be ambiguous (submitted, response lost). If the keyed
+        // authorization was consumed on-chain, paying again would charge twice.
+        if (nonce && this.privateKey && typeof this.gaslessPayment.isNonceUsed === 'function') {
+          const consumed = await this.gaslessPayment
+            .isNonceUsed(privateKeyToAccount(this.privateKey).address, nonce, paymentToken)
+            .catch(() => false);
+          if (consumed) {
+            throw new X402Error(
+              'The gasless authorization for this idempotency key was already consumed on-chain; not paying again',
+              X402ErrorCode.TRANSACTION_FAILED
+            );
+          }
+        }
       }
     }
 
@@ -364,7 +415,9 @@ export class X402Client {
       const requestAmount = parseFloat(request.amount);
 
       if (requestAmount <= autoPayLimit) {
-        const result = await this.pay(request.recipient, request.amount, request.token);
+        const result = await this.pay(request.recipient, request.amount, request.token, {
+          idempotencyKey: options?.idempotencyKey ?? request.reference,
+        });
         return { ...parseResult, transaction: result.transaction };
       }
     }
@@ -374,7 +427,9 @@ export class X402Client {
       const approved = await options.onApprovalRequired(request);
 
       if (approved) {
-        const result = await this.pay(request.recipient, request.amount, request.token);
+        const result = await this.pay(request.recipient, request.amount, request.token, {
+          idempotencyKey: options?.idempotencyKey ?? request.reference,
+        });
         return { ...parseResult, transaction: result.transaction };
       }
     }

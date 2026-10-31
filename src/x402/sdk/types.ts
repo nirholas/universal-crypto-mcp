@@ -157,6 +157,21 @@ export interface PaymentResult {
 
   /** Estimated yield earned (for USDs) */
   estimatedYield?: YieldEstimate;
+
+  /** True when an earlier payment with the same idempotency key was returned and nothing new was signed */
+  replayed?: boolean;
+}
+
+/**
+ * Options for a single payment
+ */
+export interface PayOptions {
+  /**
+   * Caller-supplied key that makes the payment safe to retry. A repeat of the
+   * same key for the same chain, recipient, amount and token returns the original
+   * result without signing a new authorization.
+   */
+  idempotencyKey?: string;
 }
 
 // ============================================================================
@@ -295,6 +310,9 @@ export interface Handle402Options {
 
   /** Custom approval callback */
   onApprovalRequired?: (request: PaymentRequest) => Promise<boolean>;
+
+  /** Idempotency key for the payment. Defaults to the server's payment reference when it sent one. */
+  idempotencyKey?: string;
 }
 
 // ============================================================================

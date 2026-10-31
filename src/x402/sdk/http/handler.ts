@@ -208,10 +208,15 @@ export class HTTP402Handler {
 export async function fetchWith402Handling(
   url: string | URL,
   options: RequestInit & {
-    onPaymentRequired?: (request: PaymentRequest) => Promise<string | null>;
+    onPaymentRequired?: (
+      request: PaymentRequest,
+      context: { idempotencyKey: string }
+    ) => Promise<string | null>;
+    /** Key that identifies this purchase across retries. Defaults to the server's payment reference. */
+    idempotencyKey?: string;
   } = {}
 ): Promise<Response> {
-  const { onPaymentRequired, ...fetchOptions } = options;
+  const { onPaymentRequired, idempotencyKey, ...fetchOptions } = options;
 
   let response = await fetch(url, fetchOptions);
 
@@ -219,8 +224,11 @@ export async function fetchWith402Handling(
     const parseResult = await HTTP402Handler.fromFetchResponse(response);
 
     if (parseResult.isPaymentRequired && parseResult.paymentRequest) {
+      // The key lets the payer recognize a retry of an already-paid purchase
+      const key = idempotencyKey ?? parseResult.paymentRequest.reference ?? '';
+
       // Call payment handler, get payment proof (transaction hash)
-      const paymentProof = await onPaymentRequired(parseResult.paymentRequest);
+      const paymentProof = await onPaymentRequired(parseResult.paymentRequest, { idempotencyKey: key });
 
       if (paymentProof) {
         // Retry request with payment proof
@@ -229,6 +237,7 @@ export async function fetchWith402Handling(
           headers: {
             ...fetchOptions.headers,
             'X-Payment-Proof': paymentProof,
+            ...(key ? { 'Idempotency-Key': key } : {}),
           },
         });
       }

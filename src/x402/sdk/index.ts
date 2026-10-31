@@ -51,6 +51,7 @@ export type {
   PaymentRequest,
   PaymentTransaction,
   PaymentResult,
+  PayOptions,
   BatchPaymentItem,
   BatchPaymentResult,
 
