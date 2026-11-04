@@ -415,7 +415,7 @@ We welcome code contributions of all sizes:
 
 - 💬 [GitHub Discussions](https://github.com/nirholas/universal-crypto-mcp/discussions) - Questions and discussions
 - 🐛 [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues) - Bug reports and feature requests
-- 📖 [Documentation](https://universal-crypto-mcp.vercel.app) - Full documentation
+- 📖 [Documentation](https://mcp.giving) - Full documentation
 
 ---
 

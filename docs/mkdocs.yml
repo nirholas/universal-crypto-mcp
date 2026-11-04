@@ -1,5 +1,5 @@
 site_name: Universal Crypto MCP
-site_url: https://universal-crypto-mcp.vercel.app
+site_url: https://mcp.giving/
 site_description: Universal MCP server enabling AI agents (Claude, ChatGPT, Cursor) to interact with 15+ EVM blockchains including Ethereum, Arbitrum, Polygon, Base, Optimism, and BNB Chain via natural language
 site_author: nich
 
@@ -10,9 +10,6 @@ extra:
     - icon: fontawesome/brands/npm
       link: https://www.npmjs.com/package/@nirholas/universal-crypto-mcp
   generator: false
-  analytics:
-    provider: google
-    property: G-XXXXXXXXXX
 
 repo_name: nirholas/universal-crypto-mcp
 repo_url: https://github.com/nirholas/universal-crypto-mcp
@@ -138,6 +135,7 @@ nav:
   - Comparison: comparison.md
   - FAQ: faq.md
   - Contributing:
+    - Docs Deployment: contributing/docs-deployment.md
     - Subtree Sync: contributing/subtree-sync.md
     - Demo Scripts: contributing/demo-scripts.md
     - Directory Submissions: contributing/directory-submissions.md

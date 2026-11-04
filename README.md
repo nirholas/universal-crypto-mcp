@@ -849,7 +849,7 @@ BASE_RPC_URL=https://mainnet.base.org
 
 ## Documentation
 
-https://mcp.giving
+https://mcp.giving — hosted on Cloudflare Pages. Build and deploy steps: [docs/content/contributing/docs-deployment.md](docs/content/contributing/docs-deployment.md).
 
 ---
 
@@ -1917,7 +1917,7 @@ curl -X POST https://modelcontextprotocol.name/mcp/universal-crypto-mcp \
 
 ### Also Available On
 
-- **[SperaxOS](https://speraxos.vercel.app)** — Browse and install from the [MCP marketplace](https://speraxos.vercel.app/community/mcp)
+- **[SperaxOS](https://chat.sperax.io)** — Browse and install from the [MCP marketplace](https://chat.sperax.io/community/mcp)
 - **All 27 MCP servers** — See the full catalog at [modelcontextprotocol.name](https://modelcontextprotocol.name)
 
 > Powered by [modelcontextprotocol.name](https://modelcontextprotocol.name) — the open MCP HTTP gateway

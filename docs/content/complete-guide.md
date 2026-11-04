@@ -387,7 +387,7 @@ const weather = await service.call('get_forecast', {
 ### Official Links
 - **GitHub**: [nirholas/universal-crypto-mcp](https://github.com/nirholas/universal-crypto-mcp)
 - **npm**: [@nirholas/universal-crypto-mcp](https://www.npmjs.com/package/@nirholas/universal-crypto-mcp)
-- **Documentation**: [universal-crypto-mcp.vercel.app](https://universal-crypto-mcp.vercel.app)
+- **Documentation**: [mcp.giving](https://mcp.giving)
 
 ### Community
 - **Discussions**: [GitHub Discussions](https://github.com/nirholas/universal-crypto-mcp/discussions)
