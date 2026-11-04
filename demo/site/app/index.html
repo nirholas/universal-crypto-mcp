@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Console · UCM Cloud</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/ucm.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="logo-mark">U</span> UCM Cloud</a>
+    <nav class="nav-links"><a href="/">Home</a><a href="/#api">API &amp; MCP</a><a href="https://github.com/nirholas/universal-crypto-mcp" rel="noopener">GitHub</a></nav>
+    <div data-kit-auth></div>
+  </div>
+</header>
+
+<main class="app-main wrap">
+  <div id="app" hidden>
+    <div class="app-head"><h1>Console</h1><span class="muted" id="who"></span></div>
+    <div class="tabs" role="tablist">
+      <button type="button" data-tab="overview" role="tab">Overview</button>
+      <button type="button" data-tab="watchlist" role="tab">Watchlist</button>
+      <button type="button" data-tab="trade" role="tab">Swap &amp; bridge</button>
+      <button type="button" data-tab="security" role="tab">Security</button>
+      <button type="button" data-tab="tools" role="tab">Tools</button>
+      <button type="button" data-tab="mcp" role="tab">MCP</button>
+      <button type="button" data-tab="keys" role="tab">API keys</button>
+      <button type="button" data-tab="usage" role="tab">Usage</button>
+    </div>
+
+    <section data-panel="overview" class="stack">
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Your portfolio</h3><label class="row muted"><input type="checkbox" id="pf-testnets"> Include testnets</label><button type="button" class="btn btn-sm btn-ghost" id="pf-reload">Refresh</button></div>
+        <div id="portfolio"></div>
+      </div>
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Gas board</h3><button type="button" class="btn btn-sm btn-ghost" id="gas-reload">Refresh</button></div>
+        <div id="gas"></div>
+      </div>
+    </section>
+
+    <section data-panel="watchlist" class="stack" hidden>
+      <div class="card stack">
+        <h3>Watch an address</h3>
+        <form id="watch-form" class="form-grid">
+          <label class="field">Label<input class="input" name="label" required maxlength="60" placeholder="Treasury"></label>
+          <label class="field">Address or ENS name<input class="input" name="address" required maxlength="100" placeholder="0x… or name.eth" autocomplete="off" spellcheck="false"></label>
+          <div class="row end"><button class="btn btn-primary" type="submit">Add</button></div>
+        </form>
+      </div>
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Watched addresses</h3><button type="button" class="btn btn-sm btn-ghost" id="watch-reload">Refresh</button></div>
+        <div id="watchlist"></div>
+      </div>
+      <div id="watch-detail" class="stack"></div>
+    </section>
+
+    <section data-panel="trade" class="stack" hidden>
+      <div class="callout" id="trade-note" hidden></div>
+      <div class="grid-2">
+        <div class="card stack">
+          <h3>Swap</h3>
+          <p class="muted">Best route from the KyberSwap aggregator. Your wallet signs the approval (if one is needed) and the swap.</p>
+          <form id="swap-form" class="form-grid">
+            <label class="field span">Network<select class="input" name="chain" data-chains="swaps"></select></label>
+            <label class="field">From<input class="input" name="tokenIn" required value="native" list="tok-hints" spellcheck="false"></label>
+            <label class="field">To<input class="input" name="tokenOut" required value="USDC" list="tok-hints" spellcheck="false"></label>
+            <label class="field">Amount<input class="input" name="amount" required inputmode="decimal" pattern="\d*\.?\d+" value="0.001"></label>
+            <label class="field">Slippage (bps)<input class="input" name="slippageBps" type="number" min="1" max="2000" value="50"></label>
+            <div class="row end span"><button class="btn btn-primary" type="submit">Get quote</button></div>
+          </form>
+        </div>
+        <div class="card stack">
+          <h3>Bridge</h3>
+          <p class="muted">Cross-chain route from LI.FI. You sign the transaction on the source chain, and the bridge delivers to the same address on the destination.</p>
+          <form id="bridge-form" class="form-grid">
+            <label class="field">From network<select class="input" name="fromChain" data-chains="mainnet"></select></label>
+            <label class="field">To network<select class="input" name="toChain" data-chains="mainnet"></select></label>
+            <label class="field">Token<input class="input" name="fromToken" required value="USDC" list="tok-hints" spellcheck="false"></label>
+            <label class="field">Receive token (optional)<input class="input" name="toToken" list="tok-hints" spellcheck="false" placeholder="same as token"></label>
+            <label class="field">Amount<input class="input" name="amount" required inputmode="decimal" pattern="\d*\.?\d+" value="5"></label>
+            <label class="field">Slippage (bps)<input class="input" name="slippageBps" type="number" min="1" max="2000" value="50"></label>
+            <div class="row end span"><button class="btn btn-primary" type="submit">Get quote</button></div>
+          </form>
+        </div>
+      </div>
+      <datalist id="tok-hints"><option value="native"><option value="USDC"><option value="USDT"><option value="WETH"></datalist>
+      <div id="trade-out" class="stack"></div>
+    </section>
+
+    <section data-panel="security" class="stack" hidden>
+      <div class="grid-2">
+        <div class="card stack">
+          <h3>Token scan</h3>
+          <p class="muted">Uses GoPlus to check a token for honeypots, buy and sell taxes, mint functions, owner privileges and holder concentration.</p>
+          <form id="tok-form" class="form-grid">
+            <label class="field">Network<select class="input" name="chain" data-chains="mainnet"></select></label>
+            <label class="field span">Token contract<input class="input" name="token" required maxlength="42" placeholder="0x…" autocomplete="off" spellcheck="false"></label>
+            <div class="row end span"><button class="btn btn-primary" type="submit">Scan token</button></div>
+          </form>
+        </div>
+        <div class="card stack">
+          <h3>Address screening</h3>
+          <p class="muted">Checks an address for phishing, sanctions, mixers, stealing attacks and other malicious-activity flags before you send to it.</p>
+          <form id="addr-form" class="form-grid">
+            <label class="field">Network<select class="input" name="chain" data-chains="mainnet"></select></label>
+            <label class="field span">Address or ENS name<input class="input" name="address" required maxlength="100" placeholder="0x… or name.eth" autocomplete="off" spellcheck="false"></label>
+            <div class="row end span"><button class="btn btn-primary" type="submit">Screen address</button></div>
+          </form>
+        </div>
+      </div>
+      <div id="sec-out" class="stack"></div>
+    </section>
+
+    <section data-panel="tools" class="stack" hidden>
+      <div class="grid-2">
+        <div class="card stack">
+          <input class="input" id="tool-filter" type="search" placeholder="Filter tools…" aria-label="Filter tools">
+          <div id="tool-list" class="tool-list"></div>
+        </div>
+        <div class="card stack" id="tool-pane"><p class="empty-inline muted">Pick a tool to run it against live chains.</p></div>
+      </div>
+    </section>
+
+    <section data-panel="mcp" class="stack" hidden>
+      <div class="card stack">
+        <h3>Connect an MCP client</h3>
+        <p class="muted">This is a stateless Streamable HTTP endpoint. Authenticate with an API key from the API keys tab.</p>
+        <div class="row"><code class="grow trunc" id="mcp-url"></code><button type="button" class="btn btn-sm" id="mcp-copy">Copy URL</button></div>
+        <pre class="code" id="mcp-config"></pre>
+        <pre class="code" id="mcp-curl"></pre>
+      </div>
+      <div class="card stack">
+        <h3>Tools exposed</h3>
+        <div id="mcp-tools"></div>
+      </div>
+    </section>
+
+    <section data-panel="keys" class="stack" hidden><div id="keys"></div></section>
+    <section data-panel="usage" class="stack" hidden><div id="usage"></div></section>
+  </div>
+</main>
+
+<footer class="footer"><div class="wrap row"><span class="grow muted">UCM Cloud demo · swaps and bridges are real mainnet transactions signed by your wallet</span><a href="https://github.com/nirholas/universal-crypto-mcp" rel="noopener">Source</a></div></footer>
+<script type="module" src="/app/app.js"></script>
+</body>
+</html>

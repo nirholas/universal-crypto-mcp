@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UCM Cloud — Universal Crypto MCP, hosted</title>
+<meta name="description" content="UCM Cloud is a hosted Universal Crypto MCP server. It gives you 19 live on-chain tools across 7 EVM mainnets: portfolios, gas, ENS, token security, swap and bridge quotes. Sign in with a wallet and use them from the browser, a REST API or MCP.">
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/ucm.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="logo-mark">U</span> UCM Cloud</a>
+    <nav class="nav-links">
+      <a href="#live">Live gas</a>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#api">API &amp; MCP</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div data-kit-auth></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Hosted MCP · 7 EVM mainnets · swaps &amp; bridges</span>
+      <h1>Every chain, one<br><span class="grad">crypto MCP server.</span></h1>
+      <p class="lede">UCM Cloud is the hosted version of Universal Crypto MCP. AI agents and people get the same 19 on-chain tools: multi-chain portfolios, gas, blocks, ENS, contract reads, token and address security scans, DeFi TVL, and swap and bridge routes that are ready to sign. You can use them from the browser console, a REST API or a single MCP URL.</p>
+      <div class="row">
+        <a class="btn btn-primary btn-lg" href="/app/">Open the console</a>
+        <a class="btn btn-lg" href="#how">See how it works</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/nirholas/universal-crypto-mcp" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="live">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Live gas across every supported network</h2>
+        <p>The worker reads these directly from public RPC nodes every minute. Native prices come from DefiLlama. "Transfer" is the cost of a plain 21,000-gas transfer at the current price.</p>
+      </div>
+      <div class="ticker" id="ticker" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Real on-chain data, not a sandbox</h2>
+        <p>Sign in with MetaMask, Rabby, Coinbase Wallet, Phantom or any EIP-6963 or Solana wallet. Every number in the console comes from a live RPC node or a public API.</p>
+      </div>
+      <div class="grid">
+        <div class="card feature"><div class="ico">◎</div><h3>Portfolio &amp; watchlist</h3><p class="muted">Scan any address or ENS name on Ethereum, Base, Arbitrum, OP, Polygon, BNB Chain and Avalanche. You get native, USDC, USDT and WETH balances priced in USD. You can save up to 50 addresses to a watchlist.</p></div>
+        <div class="card feature"><div class="ico">⇄</div><h3>Swap &amp; bridge</h3><p class="muted">Get the best route from the KyberSwap aggregator or a cross-chain route from LI.FI. Your wallet signs the approval and the swap. UCM Cloud never holds your keys or your funds.</p></div>
+        <div class="card feature"><div class="ico">⚠</div><h3>Security scans</h3><p class="muted">GoPlus checks for honeypots, buy and sell taxes, hidden owners, mint functions and holder concentration before you buy. It also screens addresses for phishing, sanctions and mixer links before you send.</p></div>
+        <div class="card feature"><div class="ico">⛽</div><h3>Gas &amp; explorer</h3><p class="muted">See gas, base fees and block utilization across chains. Look up blocks and transactions with decoded status, read any view function by its signature, and verify signatures, including smart-account (ERC-1271) signatures.</p></div>
+        <div class="card feature"><div class="ico">⌁</div><h3>MCP endpoint</h3><p class="muted">Point Claude, Cursor or any MCP client at <code>/mcp</code> with an API key. All 19 tools are listed with JSON Schemas, so the agent knows exactly what each one needs.</p></div>
+        <div class="card feature"><div class="ico">⚿</div><h3>API keys &amp; usage</h3><p class="muted">Create <code>sk_ucm_…</code> keys for agents and servers, and revoke them in one click. Every tool call is logged with its latency and outcome.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>From wallet to signed swap in four steps</h2>
+        <p>Every step is a real call. Quotes are free; swaps and bridges cost gas on the chain you choose.</p>
+      </div>
+      <div class="steps">
+        <div class="card"><h3>Sign in</h3><p class="muted">Connect a wallet and sign one message (SIWE or SIWS). You don't pay gas or create an account, and your session lasts 30 days.</p></div>
+        <div class="card"><h3>See your holdings</h3><p class="muted">The overview scans your address on all seven mainnets and prices every balance it finds.</p></div>
+        <div class="card"><h3>Scan before you trade</h3><p class="muted">Paste a token contract to run a GoPlus check for honeypots, taxes and owner privileges.</p></div>
+        <div class="card"><h3>Quote and sign</h3><p class="muted">Pick a pair, check the route, price impact and minimum out, then approve and swap from your own wallet.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="api">
+    <div class="wrap grid-2">
+      <div>
+        <h2>Built for agents first</h2>
+        <p class="muted">The console calls the same routes your agents do. Create a key under <a href="/app/#keys">API keys</a> and call these routes:</p>
+        <ul>
+          <li><code>GET /api/tools</code> lists every tool with its JSON Schema</li>
+          <li><code>POST /api/run/:tool</code> runs one tool with a JSON body</li>
+          <li><code>GET /api/live</code> returns the public gas board shown above</li>
+          <li><code>POST /mcp</code> is a stateless MCP endpoint over Streamable HTTP (JSON-RPC, batches allowed)</li>
+        </ul>
+      </div>
+      <pre class="code"><span class="c"># Scan a portfolio across 7 chains</span>
+curl -s -X POST https://universal-crypto-mcp.ninabrekkerese.workers.dev/api/run/get_portfolio \
+  -H "authorization: Bearer $UCM_KEY" \
+  -H "content-type: application/json" \
+  -d '{"address":"vitalik.eth"}'
+
+<span class="c"># mcp.json</span>
+{
+  "mcpServers": {
+    "ucm": {
+      "type": "http",
+      "url": "https://universal-crypto-mcp.ninabrekkerese.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer sk_ucm_…" }
+    }
+  }
+}</pre>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pricing</h2>
+        <p>UCM Cloud is a public demo of Universal Crypto MCP. The tools are free to use. Swaps and bridges only cost the network gas your own wallet pays.</p>
+      </div>
+      <div class="grid">
+        <div class="card price featured">
+          <h3>Demo</h3>
+          <div class="v">$0</div>
+          <ul><li>All 19 tools in the console and over MCP</li><li>50-address watchlist</li><li>API keys and a full usage log</li></ul>
+          <a class="btn btn-primary" href="/app/">Start now</a>
+        </div>
+        <div class="card price">
+          <h3>Swap fee</h3>
+          <div class="v">0%</div>
+          <ul><li>No markup on KyberSwap or LI.FI routes</li><li>You sign every transaction yourself</li><li>Funds never touch UCM Cloud</li></ul>
+          <a class="btn" href="/app/#trade">Get a quote</a>
+        </div>
+        <div class="card price">
+          <h3>Self-host</h3>
+          <div class="v">Source</div>
+          <ul><li><code>npx @nirholas/universal-crypto-mcp</code></li><li>380+ tools in the full stdio server</li><li>This demo runs on Cloudflare Workers + D1</li><li>See the repository for license terms</li></ul>
+          <a class="btn" href="https://github.com/nirholas/universal-crypto-mcp" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap row">
+    <span class="grow muted">UCM Cloud · RPC by publicnode · prices from DefiLlama · security by GoPlus · routes by KyberSwap and LI.FI</span>
+    <a href="https://github.com/nirholas/universal-crypto-mcp" rel="noopener">GitHub</a>
+    <a href="/app/">Console</a>
+  </div>
+</footer>
+<script type="module" src="/landing.js"></script>
+</body>
+</html>

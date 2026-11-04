@@ -1,0 +1,15 @@
+name = "universal-crypto-mcp"
+main = "src/worker.ts"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*", "/mcp"]
+not_found_handling = "404-page"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "universal-crypto-mcp-demo"
+database_id = "529f4fd2-0890-44e2-8758-1bcc9741507f"
