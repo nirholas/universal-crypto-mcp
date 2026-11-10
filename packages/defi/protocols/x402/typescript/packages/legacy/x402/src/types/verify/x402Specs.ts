@@ -84,11 +84,11 @@ export const PaymentRequirementsSchema = z.object({
   resource: z.string().url(),
   description: z.string(),
   mimeType: z.string(),
-  outputSchema: z.record(z.any()).optional(),
+  outputSchema: z.record(z.string(), z.any()).optional(),
   payTo: EvmOrSvmAddress,
   maxTimeoutSeconds: z.number().int(),
   asset: mixedAddressOrSvmAddress,
-  extra: z.record(z.any()).optional(),
+  extra: z.record(z.string(), z.any()).optional(),
 });
 export type PaymentRequirements = z.infer<typeof PaymentRequirementsSchema>;
 
@@ -182,7 +182,7 @@ export const DiscoveredResourceSchema = z.object({
   x402Version: z.number().refine(val => x402Versions.includes(val as 1)),
   accepts: z.array(PaymentRequirementsSchema),
   lastUpdated: z.date(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 export type DiscoveredResource = z.infer<typeof DiscoveredResourceSchema>;
 
@@ -243,7 +243,7 @@ export const SupportedPaymentKindSchema = z.object({
   x402Version: z.number().refine(val => x402Versions.includes(val as 1)),
   scheme: z.enum(schemes),
   network: NetworkSchema,
-  extra: z.record(z.any()).optional(),
+  extra: z.record(z.string(), z.any()).optional(),
 });
 export type SupportedPaymentKind = z.infer<typeof SupportedPaymentKindSchema>;
 

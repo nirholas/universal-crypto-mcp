@@ -23,7 +23,7 @@ export type StablecoinInfo = z.infer<typeof StablecoinInfoSchema>;
  */
 export const MultiChainBalanceSchema = z.object({
   token: z.string(),
-  balances: z.record(z.string()), // chain -> balance
+  balances: z.record(z.string(), z.string()), // chain -> balance
   totalUSD: z.number(),
 });
 export type MultiChainBalance = z.infer<typeof MultiChainBalanceSchema>;

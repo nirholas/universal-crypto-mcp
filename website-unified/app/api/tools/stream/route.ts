@@ -21,7 +21,7 @@ export const maxDuration = 60;
 
 const StreamRequestSchema = z.object({
   toolId: z.string().min(1).max(100),
-  parameters: z.record(z.unknown()),
+  parameters: z.record(z.string(), z.unknown()),
   options: z.object({
     timeout: z.number().int().min(1000).max(120000).optional().default(60000),
   }).optional().default({}),

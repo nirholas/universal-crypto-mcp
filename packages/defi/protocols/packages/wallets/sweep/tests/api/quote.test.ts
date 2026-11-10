@@ -53,7 +53,7 @@ function createTestApp() {
     if (!validation.success) {
       return c.json({
         error: "Validation failed",
-        details: validation.error.errors,
+        details: validation.error.issues,
       }, 400);
     }
     

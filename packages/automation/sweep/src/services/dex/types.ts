@@ -36,7 +36,7 @@ export const DexQuoteSchema = z.object({
   slippage: z.number(), // slippage used for quote
   expiresAt: z.number(), // unix timestamp
   route: z.array(z.any()).optional(), // aggregator-specific route info
-  metadata: z.record(z.any()).optional(), // aggregator-specific metadata
+  metadata: z.record(z.string(), z.any()).optional(), // aggregator-specific metadata
 });
 export type DexQuote = z.infer<typeof DexQuoteSchema>;
 

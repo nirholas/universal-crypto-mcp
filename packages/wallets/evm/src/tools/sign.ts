@@ -66,10 +66,10 @@ export function registerSignTools(server: McpServer, wallet: EVMWallet): void {
     "Sign typed data (EIP-712) with the wallet's private key",
     {
       domain: z
-        .record(z.unknown())
+        .record(z.string(), z.unknown())
         .describe("Domain separator (name, version, chainId, verifyingContract)"),
       types: z
-        .record(
+        .record(z.string(), 
           z.array(
             z.object({
               name: z.string(),
@@ -79,7 +79,7 @@ export function registerSignTools(server: McpServer, wallet: EVMWallet): void {
         )
         .describe("Type definitions"),
       primaryType: z.string().describe("Primary type name"),
-      message: z.record(z.unknown()).describe("Message data"),
+      message: z.record(z.string(), z.unknown()).describe("Message data"),
     },
     async (args) => {
       try {

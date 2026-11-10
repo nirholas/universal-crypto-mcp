@@ -70,7 +70,7 @@ export const knowledgeBaseItemSchema = z.object({
   id: z.string(),
   isPublic: z.boolean().nullable(),
   name: z.string(),
-  settings: z.any(),
+  settings: z.any().optional(),
   type: z.string().nullable(),
   updatedAt: z.date(),
 });

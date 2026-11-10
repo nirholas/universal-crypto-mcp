@@ -227,7 +227,7 @@ export function registerAlerts(server: McpServer) {
         .enum(["ethereum", "bsc", "polygon", "arbitrum"])
         .default("ethereum")
         .describe("Blockchain"),
-      filter: z.record(z.any()).optional().describe("Optional filter for event parameters"),
+      filter: z.record(z.string(), z.any()).optional().describe("Optional filter for event parameters"),
     },
     async ({ contractAddress, eventSignature, chain, filter }) => {
       const alertId = `event_${contractAddress.slice(0, 10)}_${Date.now()}`

@@ -140,13 +140,13 @@ export class GetWebhookEventsHandler {
 
       if (error instanceof z.ZodError) {
         logger.warn('Invalid input for get_webhook_events', {
-          errors: error.errors,
+          errors: error.issues,
           duration,
           operation: 'get_webhook_events_invalid_input',
         });
 
         throw new Error(
-          `Invalid input: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`
+          `Invalid input: ${error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`
         );
       }
 

@@ -272,7 +272,7 @@ export type ${this.toPascalCase(tool.name)}Input = z.infer<typeof ${schemaName}>
           }).join(', ');
           zodType = `z.object({ ${nestedFields} })`;
         } else {
-          zodType = 'z.record(z.unknown())';
+          zodType = 'z.record(z.string(), z.unknown())';
         }
         break;
       default:

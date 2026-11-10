@@ -18,7 +18,7 @@ export function registerDuneAnalyticsTools(server: McpServer) {
     "Execute a Dune Analytics query by ID",
     {
       queryId: z.number().describe("The Dune query ID to execute"),
-      parameters: z.record(z.string()).optional().describe("Query parameters"),
+      parameters: z.record(z.string(), z.string()).optional().describe("Query parameters"),
       apiKey: z.string().optional().describe("Dune API key")
     },
     async (params) => {

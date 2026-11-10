@@ -83,16 +83,16 @@ export type SignMessageRequest = z.infer<typeof SignMessageRequestSchema>;
  */
 export const SignTypedDataRequestSchema = z.object({
   /** Domain separator */
-  domain: z.record(z.unknown()).describe("Domain separator"),
+  domain: z.record(z.string(), z.unknown()).describe("Domain separator"),
   /** Type definitions */
-  types: z.record(z.array(z.object({
+  types: z.record(z.string(), z.array(z.object({
     name: z.string(),
     type: z.string(),
   }))).describe("Type definitions"),
   /** Primary type */
   primaryType: z.string().describe("Primary type name"),
   /** Message data */
-  message: z.record(z.unknown()).describe("Message data"),
+  message: z.record(z.string(), z.unknown()).describe("Message data"),
 });
 
 export type SignTypedDataRequest = z.infer<typeof SignTypedDataRequestSchema>;

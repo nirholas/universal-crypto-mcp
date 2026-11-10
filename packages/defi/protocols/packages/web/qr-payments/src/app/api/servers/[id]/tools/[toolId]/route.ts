@@ -18,7 +18,7 @@ interface RouteParams {
 const updateToolSchema = z.object({
   name: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, 'Tool name must be lowercase alphanumeric with underscores').optional(),
   description: z.string().max(1000).optional().nullable(),
-  inputSchema: z.record(z.any()).optional(),
+  inputSchema: z.record(z.string(), z.any()).optional(),
   type: z.enum(['HTTP', 'CODE', 'PROXY']).optional(),
   endpoint: z.string().url().optional().nullable(),
   code: z.string().max(100000).optional().nullable(),

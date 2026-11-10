@@ -26,7 +26,7 @@ const subscriptionSchema = z.object({
   }),
   channels: z.array(z.object({
     type: z.enum(["discord", "slack", "email", "webhook"]),
-    config: z.record(z.any()),
+    config: z.record(z.string(), z.any()),
   })).min(1, "At least one channel is required"),
 })
 

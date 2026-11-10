@@ -4,7 +4,6 @@
  * @github github.com/nirholas
  * @license MIT
  */
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { z } from 'zod';
 import { ToolRegistry, getAllToolsInCategory } from './toolRegistry';
 import { Tool } from '@modelcontextprotocol/sdk/types';
@@ -90,7 +89,7 @@ export function asTextContentResult(result: Object): any {
 function zodToInputSchema(schema: z.ZodSchema) {
   return {
     type: 'object' as const,
-    ...(zodToJsonSchema(schema) as any),
+    ...(z.toJSONSchema(schema, { io: 'input', unrepresentable: 'any' }) as any),
   };
 }
 

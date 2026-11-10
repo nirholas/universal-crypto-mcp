@@ -61,7 +61,7 @@ export const PaymentEventSchema = z.object({
   from: z.string(),
   to: z.string(),
   txHash: z.string(),
-  metadata: z.record(z.string()).optional(),
+  metadata: z.record(z.string(), z.string()).optional(),
 });
 export type PaymentEvent = z.infer<typeof PaymentEventSchema>;
 
@@ -74,7 +74,7 @@ export const SpendingReportSchema = z.object({
   endTime: z.number(),
   totalSpent: z.string(),
   transactionCount: z.number(),
-  byToken: z.record(z.string()),
-  byRecipient: z.record(z.string()),
+  byToken: z.record(z.string(), z.string()),
+  byRecipient: z.record(z.string(), z.string()),
 });
 export type SpendingReport = z.infer<typeof SpendingReportSchema>;

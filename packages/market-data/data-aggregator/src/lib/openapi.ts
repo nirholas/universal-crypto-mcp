@@ -7,8 +7,6 @@
  * @module openapi
  */
 
-import { z } from 'zod';
-
 // =============================================================================
 // OPENAPI TYPES
 // =============================================================================
@@ -97,93 +95,6 @@ interface OpenAPISpec {
     schemas?: Record<string, Record<string, unknown>>;
   };
   tags?: Array<{ name: string; description?: string }>;
-}
-
-// =============================================================================
-// ZOD TO JSON SCHEMA CONVERTER
-// =============================================================================
-
-function zodToJsonSchema(schema: z.ZodTypeAny): Record<string, unknown> {
-  if (schema instanceof z.ZodString) {
-    const checks = (schema as any)._def.checks || [];
-    const result: Record<string, unknown> = { type: 'string' };
-    
-    for (const check of checks) {
-      if (check.kind === 'min') result.minLength = check.value;
-      if (check.kind === 'max') result.maxLength = check.value;
-      if (check.kind === 'regex') result.pattern = check.regex.source;
-    }
-    
-    return result;
-  }
-  
-  if (schema instanceof z.ZodNumber) {
-    const checks = (schema as any)._def.checks || [];
-    const result: Record<string, unknown> = { type: 'number' };
-    
-    for (const check of checks) {
-      if (check.kind === 'int') result.type = 'integer';
-      if (check.kind === 'min') result.minimum = check.value;
-      if (check.kind === 'max') result.maximum = check.value;
-    }
-    
-    return result;
-  }
-  
-  if (schema instanceof z.ZodBoolean) {
-    return { type: 'boolean' };
-  }
-  
-  if (schema instanceof z.ZodArray) {
-    return {
-      type: 'array',
-      items: zodToJsonSchema((schema as any)._def.type),
-    };
-  }
-  
-  if (schema instanceof z.ZodObject) {
-    const shape = (schema as any)._def.shape();
-    const properties: Record<string, unknown> = {};
-    const required: string[] = [];
-    
-    for (const [key, value] of Object.entries(shape)) {
-      properties[key] = zodToJsonSchema(value as z.ZodTypeAny);
-      if (!(value instanceof z.ZodOptional)) {
-        required.push(key);
-      }
-    }
-    
-    return {
-      type: 'object',
-      properties,
-      ...(required.length > 0 && { required }),
-    };
-  }
-  
-  if (schema instanceof z.ZodEnum) {
-    return {
-      type: 'string',
-      enum: (schema as any)._def.values,
-    };
-  }
-  
-  if (schema instanceof z.ZodOptional) {
-    return zodToJsonSchema((schema as any)._def.innerType);
-  }
-  
-  if (schema instanceof z.ZodDefault) {
-    const inner = zodToJsonSchema((schema as any)._def.innerType);
-    return {
-      ...inner,
-      default: (schema as any)._def.defaultValue(),
-    };
-  }
-  
-  if (schema instanceof z.ZodEffects) {
-    return zodToJsonSchema((schema as any)._def.schema);
-  }
-  
-  return { type: 'string' };
 }
 
 // =============================================================================

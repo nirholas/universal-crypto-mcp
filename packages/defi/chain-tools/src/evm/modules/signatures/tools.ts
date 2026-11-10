@@ -92,12 +92,12 @@ export function registerSignaturesTools(server: McpServer) {
     "Sign typed data using EIP-712",
     {
       domain: EIP712_DOMAIN_SCHEMA.describe("EIP-712 domain"),
-      types: z.record(z.array(z.object({
+      types: z.record(z.string(), z.array(z.object({
         name: z.string(),
         type: z.string()
       }))).describe("Type definitions"),
       primaryType: z.string().describe("Primary type name"),
-      message: z.record(z.unknown()).describe("Message to sign"),
+      message: z.record(z.string(), z.unknown()).describe("Message to sign"),
       privateKey: privateKeyParam
     },
     async ({ domain, types, primaryType, message, privateKey }) => {
@@ -139,12 +139,12 @@ export function registerSignaturesTools(server: McpServer) {
     "Verify an EIP-712 typed data signature",
     {
       domain: EIP712_DOMAIN_SCHEMA.describe("EIP-712 domain"),
-      types: z.record(z.array(z.object({
+      types: z.record(z.string(), z.array(z.object({
         name: z.string(),
         type: z.string()
       }))).describe("Type definitions"),
       primaryType: z.string().describe("Primary type name"),
-      message: z.record(z.unknown()).describe("Original message"),
+      message: z.record(z.string(), z.unknown()).describe("Original message"),
       signature: z.string().describe("Signature to verify"),
       address: z.string().describe("Expected signer address")
     },

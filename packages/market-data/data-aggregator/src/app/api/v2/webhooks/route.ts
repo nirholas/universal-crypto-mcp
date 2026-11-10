@@ -28,9 +28,9 @@ const createWebhookSchema = z.object({
   url: z.string().url('Invalid webhook URL'),
   events: z.array(z.enum(WEBHOOK_EVENTS as [string, ...string[]])).min(1, 'At least one event required'),
   secret: z.string().min(16).optional(),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
   active: z.boolean().default(true),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 // =============================================================================

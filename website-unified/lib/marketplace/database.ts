@@ -42,7 +42,7 @@ export const ServiceSchema = z.object({
       annually: z.string().optional(),
     }).optional(),
   }),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

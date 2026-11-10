@@ -34,7 +34,7 @@ const batchRequestSchema = z.object({
       'volatility',
       'historical',
     ]),
-    params: z.record(z.unknown()).optional(),
+    params: z.record(z.string(), z.unknown()).optional(),
   })).min(1).max(10), // Max 10 operations per batch
 });
 

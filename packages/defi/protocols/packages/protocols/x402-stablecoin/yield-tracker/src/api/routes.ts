@@ -86,7 +86,7 @@ export function createApiRouter(tracker: YieldTracker): Router {
       res.json(createResponse(yieldInfo));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json(createErrorResponse(error.errors[0].message));
+        res.status(400).json(createErrorResponse(error.issues[0].message));
       } else {
         console.error('Error getting yield info:', error);
         res.status(500).json(createErrorResponse('Failed to get yield info'));
@@ -107,7 +107,7 @@ export function createApiRouter(tracker: YieldTracker): Router {
       res.json(createResponse(history));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json(createErrorResponse(error.errors[0].message));
+        res.status(400).json(createErrorResponse(error.issues[0].message));
       } else {
         console.error('Error getting yield history:', error);
         res.status(500).json(createErrorResponse('Failed to get yield history'));
@@ -129,7 +129,7 @@ export function createApiRouter(tracker: YieldTracker): Router {
       }));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json(createErrorResponse(error.errors[0].message));
+        res.status(400).json(createErrorResponse(error.issues[0].message));
       } else {
         console.error('Error getting payments:', error);
         res.status(500).json(createErrorResponse('Failed to get payments'));
@@ -209,7 +209,7 @@ export function createApiRouter(tracker: YieldTracker): Router {
       res.status(201).json(createResponse(payment));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json(createErrorResponse(error.errors[0].message));
+        res.status(400).json(createErrorResponse(error.issues[0].message));
       } else {
         console.error('Error tracking payment:', error);
         res.status(500).json(createErrorResponse('Failed to track payment'));
@@ -227,7 +227,7 @@ export function createApiRouter(tracker: YieldTracker): Router {
       res.json(createResponse(estimate));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json(createErrorResponse(error.errors[0].message));
+        res.status(400).json(createErrorResponse(error.issues[0].message));
       } else {
         console.error('Error estimating yield:', error);
         res.status(500).json(createErrorResponse('Failed to estimate yield'));

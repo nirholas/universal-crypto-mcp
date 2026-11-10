@@ -74,7 +74,7 @@ export function registerX402Tools(server: McpServer): void {
       url: z.string().url().describe("The URL to request"),
       method: z.enum(["GET", "POST", "PUT", "DELETE"]).default("GET").describe("HTTP method"),
       body: z.string().optional().describe("Request body (for POST/PUT)"),
-      headers: z.record(z.string()).optional().describe("Additional headers"),
+      headers: z.record(z.string(), z.string()).optional().describe("Additional headers"),
       maxPayment: z.string().default("1.00").describe("Maximum payment in USD (e.g. '0.50')"),
     },
     async ({ url, method, body, headers, maxPayment }) => {
@@ -882,7 +882,7 @@ export function registerX402Tools(server: McpServer): void {
       url: z.string().url().describe("The URL to request"),
       method: z.enum(["GET", "POST", "PUT", "DELETE"]).default("GET").describe("HTTP method"),
       body: z.string().optional().describe("Request body (for POST/PUT)"),
-      headers: z.record(z.string()).optional().describe("Additional headers"),
+      headers: z.record(z.string(), z.string()).optional().describe("Additional headers"),
       maxPayment: z.string().default("1.00").describe("Maximum payment in USD (e.g. '0.50')"),
     },
     async ({ url, method, body, headers, maxPayment }) => {

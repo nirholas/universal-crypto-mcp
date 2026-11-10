@@ -952,7 +952,7 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       toolId: z.string().describe("The tool ID to verify"),
       callerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Your wallet address (must be owner)"),
       schemaType: z.enum(["openapi", "jsonschema", "custom"]).optional().describe("Type of API schema"),
-      schema: z.record(z.unknown()).optional().describe("API schema to register (JSON)"),
+      schema: z.record(z.string(), z.unknown()).optional().describe("API schema to register (JSON)"),
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (params: any) => {

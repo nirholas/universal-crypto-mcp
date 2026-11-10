@@ -29,7 +29,7 @@ export const MCPHttpConfigSchema = z.object({
     token: z.string().optional(),
     accessToken: z.string().optional(),
   }).optional(),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
 });
 
 /**
@@ -39,7 +39,7 @@ export const MCPStdioConfigSchema = z.object({
   type: z.literal('stdio'),
   command: z.string(),
   args: z.array(z.string()).optional(),
-  env: z.record(z.string()).optional(),
+  env: z.record(z.string(), z.string()).optional(),
 });
 
 /**

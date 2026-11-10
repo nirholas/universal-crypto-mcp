@@ -63,7 +63,7 @@ const CreateAgentSchema = z.object({
   memory: z.enum(['none', 'session', 'persistent']).optional().default('session'),
   maxIterations: z.number().int().min(1).max(100).optional().default(10),
   verbose: z.boolean().optional().default(false),
-  metadata: z.record(z.unknown()).optional().default({}),
+  metadata: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 const QuerySchema = z.object({

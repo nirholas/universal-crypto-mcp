@@ -106,7 +106,7 @@ export interface ToolExecutionResponse<T = unknown> {
 
 export const ToolExecutionRequestSchema = z.object({
   toolId: z.string().min(1).max(100),
-  parameters: z.record(z.unknown()),
+  parameters: z.record(z.string(), z.unknown()),
   options: z.object({
     timeout: z.number().int().min(1000).max(60000).optional(),
     streaming: z.boolean().optional(),

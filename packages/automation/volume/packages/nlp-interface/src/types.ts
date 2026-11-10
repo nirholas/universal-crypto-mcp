@@ -225,7 +225,7 @@ export const QueryRequestSchema = z.object({
   query: z.string().min(1).max(1000),
   sessionId: z.string().uuid().optional(),
   userId: z.string().optional(),
-  context: z.record(z.unknown()).optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type QueryRequest = z.infer<typeof QueryRequestSchema>;

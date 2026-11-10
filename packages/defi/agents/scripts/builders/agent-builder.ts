@@ -3,7 +3,7 @@ import { merge } from 'lodash-es';
 import { Dirent, copyFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import pMap from 'p-map';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { z } from 'zod';
 
 import { agents, config, localesDir, meta, publicDir, root, schemasDir } from '../core/constants';
 import { AgentParser } from '../parsers/agent-parser';
@@ -94,7 +94,18 @@ class AgentBuilder {
     checkDir(schemasDir);
     checkDir(resolve(publicDir, 'schema'));
 
-    const schema = zodToJsonSchema(speraxAgentSchema);
+    const schema = z.toJSONSchema(speraxAgentSchema, {
+      target: 'draft-7',
+      io: 'input',
+      unrepresentable: 'any',
+      // Dates travel as ISO strings in agent JSON.
+      override: (ctx) => {
+        if (ctx.zodSchema._zod.def.type === 'date') {
+          ctx.jsonSchema.type = 'string';
+          ctx.jsonSchema.format = 'date-time';
+        }
+      },
+    });
     const fileName = `speraxAgentSchema_v${meta.schemaVersion}.json`;
 
     const schemaPath = resolve(schemasDir, fileName);

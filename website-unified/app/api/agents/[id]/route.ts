@@ -84,7 +84,7 @@ const UpdateAgentSchema = z.object({
   maxIterations: z.number().int().min(1).max(100).optional(),
   verbose: z.boolean().optional(),
   status: z.enum(['active', 'paused', 'disabled']).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 // ============================================================================

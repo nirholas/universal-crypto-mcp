@@ -62,7 +62,7 @@ export async function sendFrameNotification({
   if (response.status === 200) {
     const responseBody = sendNotificationResponseSchema.safeParse(responseJson);
     if (responseBody.success === false) {
-      return { state: "error", error: responseBody.error.errors };
+      return { state: "error", error: responseBody.error.issues };
     }
 
     if (responseBody.data.result.rateLimitedTokens.length) {

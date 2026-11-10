@@ -340,7 +340,7 @@ export function registerX402Ecosystem(
       "x402_premium_create_tiers",
       "Create premium tier definitions for a service",
       {
-        tiers: z.record(z.object({
+        tiers: z.record(z.string(), z.object({
           price: z.string().optional(),
           period: z.enum(["per-request", "hourly", "daily", "weekly", "monthly", "yearly"]).optional(),
           features: z.array(z.string()),

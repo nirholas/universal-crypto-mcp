@@ -200,7 +200,7 @@ app.onError((err, c) => {
     return c.json(
       {
         error: "Validation error",
-        details: (err as any).errors,
+        details: (err as any).issues,
       },
       400
     );

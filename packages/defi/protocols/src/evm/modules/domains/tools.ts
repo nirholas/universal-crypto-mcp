@@ -637,7 +637,7 @@ export function registerDomainsTools(server: McpServer) {
       name: z.string().describe("ENS name"),
       records: z.object({
         address: z.string().optional().describe("ETH address to resolve to"),
-        textRecords: z.record(z.string()).optional().describe("Text records (e.g., {\"com.twitter\": \"@username\"})"),
+        textRecords: z.record(z.string(), z.string()).optional().describe("Text records (e.g., {\"com.twitter\": \"@username\"})"),
         contenthash: z.string().optional().describe("Content hash (IPFS, Swarm, etc.)")
       }).describe("Records to set"),
       privateKey: z.string().describe("Private key of name owner").default(process.env.PRIVATE_KEY as string)

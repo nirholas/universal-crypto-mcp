@@ -64,7 +64,7 @@ const executeRequestSchema = z.object({
   userId: z.string().min(1),
   userAddress: addressSchema,
   signature: z.string().optional(),
-  permitSignatures: z.record(z.string()).optional(), // Chain -> signature
+  permitSignatures: z.record(z.string(), z.string()).optional(), // Chain -> signature
 });
 
 const statusParamsSchema = z.object({

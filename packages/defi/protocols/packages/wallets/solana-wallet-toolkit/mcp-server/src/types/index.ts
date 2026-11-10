@@ -21,7 +21,7 @@ export interface ServerCapabilities {
 // Tool definition schema
 export const ToolInputSchema = z.object({
   type: z.literal('object'),
-  properties: z.record(z.any()),
+  properties: z.record(z.string(), z.any()),
   required: z.array(z.string()).optional(),
 });
 

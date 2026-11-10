@@ -485,7 +485,7 @@ export function registerAIPrompts(server: McpServer) {
     "Generate a prompt by filling in template variables",
     {
       templateId: z.string().describe("Template ID"),
-      variables: z.record(z.string()).describe("Variable values as key-value pairs"),
+      variables: z.record(z.string(), z.string()).describe("Variable values as key-value pairs"),
     },
     async ({ templateId, variables }) => {
       const template = promptTemplates[templateId]

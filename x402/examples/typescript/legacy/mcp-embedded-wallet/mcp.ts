@@ -19,7 +19,7 @@ const x402RequestSchema = z.object({
   baseURL: z.string().url(),
   path: z.string(),
   method: z.enum(["GET", "POST", "PUT", "DELETE", "PATCH"]),
-  queryParams: z.record(z.string()).optional(),
+  queryParams: z.record(z.string(), z.string()).optional(),
   body: z.unknown().optional(),
   correlationId: z
     .string()

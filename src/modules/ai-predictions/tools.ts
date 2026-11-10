@@ -305,7 +305,7 @@ export function registerPredictionTools(server: McpServer): void {
         .describe("Start date (ISO format, e.g., 2025-01-01)"),
       end_date: z.string()
         .describe("End date (ISO format, e.g., 2025-12-31)"),
-      parameters: z.record(z.number()).optional()
+      parameters: z.record(z.string(), z.number()).optional()
         .describe("Custom strategy parameters (for 'custom' strategy)"),
     },
     async ({ asset, strategy, start_date, end_date, parameters }) => {

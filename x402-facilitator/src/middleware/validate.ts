@@ -52,7 +52,7 @@ export const paymentRequiredSchema = z.object({
   description: z.string().optional(),
   resource: z.string().url().optional(),
   mimeType: z.string().optional(),
-  extra: z.record(z.unknown()).optional(),
+  extra: z.record(z.string(), z.unknown()).optional(),
   expiry: z.number().int().positive().optional(),
   nonce: z.string().optional(),
 });

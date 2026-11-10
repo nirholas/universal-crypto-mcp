@@ -140,7 +140,7 @@ const ActionSchema = z.object({
   id: z.string().optional(),
   type: z.enum(['swap', 'transfer', 'stake', 'unstake', 'claim', 'notify', 'custom', 'agent']),
   name: z.string(),
-  config: z.record(z.unknown()),
+  config: z.record(z.string(), z.unknown()),
   onSuccess: z.string().optional(),
   onFailure: z.string().optional(),
   retries: z.number().int().min(0).max(5).optional().default(0),
@@ -156,7 +156,7 @@ const CreateWorkflowSchema = z.object({
   chains: z.array(z.string()).optional().default(['ethereum']),
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().nullable(),
   tags: z.array(z.string()).optional().default([]),
-  metadata: z.record(z.unknown()).optional().default({}),
+  metadata: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 const QuerySchema = z.object({

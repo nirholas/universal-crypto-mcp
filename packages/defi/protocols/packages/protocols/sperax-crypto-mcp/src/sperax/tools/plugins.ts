@@ -178,7 +178,7 @@ const ExecuteFunctionInput = z.object({
     .min(1)
     .describe('Function name to execute'),
   arguments: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .optional()
     .default({})
     .describe('Arguments to pass to the function'),

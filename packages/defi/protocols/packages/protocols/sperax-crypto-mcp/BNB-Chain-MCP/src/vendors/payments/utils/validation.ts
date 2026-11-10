@@ -106,7 +106,7 @@ export function validateInput<T>(
     }
 
     // Extract first validation error
-    const firstError = result.error.errors[0];
+    const firstError = result.error.issues[0];
     if (!firstError) {
       return {
         success: false,
@@ -317,7 +317,7 @@ export function validateEnvironmentConfig(
   const result = envConfigSchema.safeParse(env);
 
   if (!result.success) {
-    const firstError = result.error.errors[0] || {
+    const firstError = result.error.issues[0] || {
       message: 'Validation failed',
       path: [],
       code: 'custom',

@@ -331,7 +331,7 @@ export function registerNear(server: McpServer) {
     {
       contractId: z.string().describe("The contract account ID"),
       methodName: z.string().describe("The method name to call"),
-      args: z.record(z.any()).default({}).describe("Arguments as JSON object"),
+      args: z.record(z.string(), z.any()).default({}).describe("Arguments as JSON object"),
     },
     async ({ contractId, methodName, args }) => {
       try {

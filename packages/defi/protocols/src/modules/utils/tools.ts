@@ -629,12 +629,12 @@ export function registerUtilityTools(server: McpServer) {
         verifyingContract: z.string().optional(),
         salt: z.string().optional()
       }).describe("EIP-712 domain separator"),
-      types: z.record(z.array(z.object({
+      types: z.record(z.string(), z.array(z.object({
         name: z.string(),
         type: z.string()
       }))).describe("Type definitions"),
       primaryType: z.string().describe("Primary type name"),
-      message: z.record(z.any()).describe("Message data to hash")
+      message: z.record(z.string(), z.any()).describe("Message data to hash")
     },
     async ({ domain, types, primaryType, message }) => {
       try {
