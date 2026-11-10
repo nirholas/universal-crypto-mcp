@@ -66,12 +66,12 @@
     "not ie <= 10"
   ],
   "dependencies": {
-    "@babel/runtime": "^7",
+    "@babel/runtime": "^7.26.10",
     "@cfworker/json-schema": "^1",
-    "@sperax/plugin-sdk": "workspace:*",
-    "ajv": "^8",
+    "@sperax/plugin-sdk": "workspace:@nirholas/crypto-plugin-sdk@*",
+    "ajv": "^8.18.0",
     "swagger-client": "^3",
-    "zod": "^3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^17",
@@ -90,7 +90,7 @@
     "semantic-release": "^21",
     "typescript": "^5",
     "vercel": "^32.7.1",
-    "vitest": "0.34.6"
+    "vitest": "4.1.11"
   },
   "publishConfig": {
     "access": "public",
