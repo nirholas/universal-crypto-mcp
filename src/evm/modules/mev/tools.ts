@@ -110,7 +110,7 @@ export function registerMEVTools(server: McpServer) {
       maxFeePerGas: z.string().optional().describe("Max fee per gas (in gwei)"),
       maxPriorityFeePerGas: z.string().optional().describe("Max priority fee per gas (in gwei)"),
       gasLimit: z.string().optional().describe("Gas limit"),
-      privateKey: z.string().describe("Private key for signing").default(process.env.PRIVATE_KEY as string),
+      privateKey: z.string().describe("Private key for signing").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string),
       protectionProvider: z.enum(["flashbots", "mevBlocker", "securerpc"]).optional().default("flashbots").describe("MEV protection provider")
     },
     async ({ network, to, value, data, maxFeePerGas, maxPriorityFeePerGas, gasLimit, privateKey, protectionProvider = "flashbots" }) => {
@@ -264,7 +264,7 @@ export function registerMEVTools(server: McpServer) {
         gasLimit: z.string().optional().describe("Gas limit")
       })).describe("Array of transactions to simulate"),
       blockNumber: z.string().optional().describe("Block number to simulate at (default: latest)"),
-      privateKey: z.string().describe("Private key for simulation").default(process.env.PRIVATE_KEY as string)
+      privateKey: z.string().describe("Private key for simulation").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string)
     },
     async ({ network, transactions, blockNumber, privateKey }) => {
       try {

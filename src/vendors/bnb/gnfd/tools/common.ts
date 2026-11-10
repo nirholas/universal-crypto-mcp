@@ -20,7 +20,7 @@ export const networkParam = z
 export const privateKeyParam = z
   .string()
   .optional()
-  .default(DEFAULT_PRIVATE_KEY)
+  .transform((v) => v || DEFAULT_PRIVATE_KEY)
   .describe(
     "Private key of the account in hex format. SECURITY: This is used only for transaction signing."
   )

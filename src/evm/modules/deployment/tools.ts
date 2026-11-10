@@ -86,7 +86,7 @@ export function registerDeploymentTools(server: McpServer) {
       abi: z.array(z.any()).optional().describe("Contract ABI (required if constructor has arguments)"),
       constructorArgs: z.array(z.any()).optional().describe("Constructor arguments"),
       value: z.string().optional().describe("ETH value to send with deployment (in wei)"),
-      privateKey: z.string().describe("Private key for deployment").default(process.env.PRIVATE_KEY as string),
+      privateKey: z.string().describe("Private key for deployment").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string),
       gasLimit: z.string().optional().describe("Gas limit for deployment")
     },
     async ({ network, bytecode, abi, constructorArgs = [], value, privateKey, gasLimit }) => {
@@ -185,7 +185,7 @@ export function registerDeploymentTools(server: McpServer) {
       abi: z.array(z.any()).optional().describe("Contract ABI (required if constructor has arguments)"),
       constructorArgs: z.array(z.any()).optional().describe("Constructor arguments"),
       factoryAddress: z.string().optional().describe("CREATE2 factory address (uses default if not provided)"),
-      privateKey: z.string().describe("Private key for deployment").default(process.env.PRIVATE_KEY as string)
+      privateKey: z.string().describe("Private key for deployment").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string)
     },
     async ({ network, bytecode, salt, abi, constructorArgs = [], factoryAddress, privateKey }) => {
       try {
@@ -312,7 +312,7 @@ export function registerDeploymentTools(server: McpServer) {
       abi: z.array(z.any()).optional().describe("Implementation ABI (required for init function encoding)"),
       initFunction: z.string().optional().describe("Name of initialization function"),
       initArgs: z.array(z.any()).optional().describe("Arguments for initialization function"),
-      privateKey: z.string().describe("Private key for deployment").default(process.env.PRIVATE_KEY as string)
+      privateKey: z.string().describe("Private key for deployment").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string)
     },
     async ({ 
       network, 
@@ -492,7 +492,7 @@ export function registerDeploymentTools(server: McpServer) {
       proxyAdminAddress: z.string().optional().describe("ProxyAdmin address (for transparent proxies)"),
       callAfterUpgrade: z.boolean().optional().describe("Whether to call a function after upgrade"),
       upgradeCalldata: z.string().optional().describe("Calldata for post-upgrade call"),
-      privateKey: z.string().describe("Private key for upgrade").default(process.env.PRIVATE_KEY as string)
+      privateKey: z.string().describe("Private key for upgrade").optional().transform((v) => (v || process.env.PRIVATE_KEY) as string)
     },
     async ({ 
       network, 
