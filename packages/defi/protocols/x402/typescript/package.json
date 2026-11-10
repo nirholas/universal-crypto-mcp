@@ -11,7 +11,16 @@
   "main": "index.js",
   "pnpm": {
     "overrides": {
-      "cssstyle": "5.3.6"
+      "cssstyle": "5.3.6",
+      "decode-uri-component@0.2": "^0.5.1",
+      "esbuild@0.27": "^0.28.1",
+      "jayson@4": "^5.0.0",
+      "minimatch@10": "^11.0.1",
+      "postcss@8": "^8.5.23",
+      "uuid@8": "^11.1.1",
+      "uuid@9": "^11.1.1",
+      "ws@8": "^8.21.0",
+      "zod@3": "^4.6.6"
     }
   },
   "scripts": {
@@ -34,9 +43,9 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "next": "^16.0.0",
+    "next": "^16.4.1",
     "tsup": "^8.4.0",
-    "turbo": "^2.5.0",
+    "turbo": "^2.9.14",
     "typescript": "^5.8.3"
   },
   "contributors": [

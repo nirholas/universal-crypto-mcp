@@ -23,7 +23,7 @@
   "packageManager": "pnpm@10.7.0",
   "devDependencies": {
     "tsup": "^8.4.0",
-    "turbo": "^2.5.0",
+    "turbo": "^2.9.14",
     "typescript": "^5.8.3"
   },
   "contributors": [
@@ -36,5 +36,22 @@
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/nirholas"
+  },
+  "pnpm": {
+    "overrides": {
+      "bigint-buffer": "npm:@exodus/bigint-buffer@1.1.5-exodus.1",
+      "decode-uri-component@0.2": "^0.5.1",
+      "esbuild@0.27": "^0.28.1",
+      "jayson@4": "^5.0.0",
+      "langsmith@0.3": "^0.6.0",
+      "minimatch@10": "^11.0.1",
+      "minimatch@9": "^11.0.1",
+      "postcss@8": "^8.5.23",
+      "uuid@10": "^11.1.1",
+      "uuid@8": "^11.1.1",
+      "uuid@9": "^11.1.1",
+      "ws@8": "^8.21.0",
+      "zod@3": "^4.6.6"
+    }
   }
 }

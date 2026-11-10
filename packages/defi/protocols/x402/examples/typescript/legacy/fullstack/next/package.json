@@ -14,11 +14,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "next": "16.0.10",
+    "next": "16.4.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "viem": "^2.21.26",
-    "x402-next": "workspace:*"
+    "x402-next": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-next@*"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
@@ -34,7 +34,7 @@
     "eslint-plugin-import": "^2.31.0",
     "prettier": "3.5.2",
     "eslint-config-next": "16.0.7",
-    "postcss": "^8",
+    "postcss": "^8.5.23",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },

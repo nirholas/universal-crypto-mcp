@@ -17,14 +17,14 @@
     "@tanstack/react-query": "^5",
     "@upstash/redis": "^1.34.4",
     "@wagmi/core": "^2.17.1",
-    "next": "15.5.9",
+    "next": "15.5.28",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hot-toast": "^2.5.2",
     "viem": "^2.27.2",
     "wagmi": "^2.14.11",
-    "x402-fetch": "workspace:*",
-    "x402-next": "workspace:*"
+    "x402-fetch": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-fetch@*",
+    "x402-next": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-next@*"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",
@@ -36,7 +36,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "postcss": "^8",
+    "postcss": "^8.5.23",
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "express": "^4.18.2",
-    "@x402/core": "workspace:*",
-    "@x402/express": "workspace:*",
-    "@x402/evm": "workspace:*",
-    "@x402/svm": "workspace:*",
-    "@x402/extensions": "workspace:*"
+    "express": "^4.20.0",
+    "@x402/core": "workspace:@nirholas/x402-core@*",
+    "@x402/express": "workspace:@nirholas/x402-express@*",
+    "@x402/evm": "workspace:@nirholas/x402-evm@*",
+    "@x402/svm": "workspace:@nirholas/x402-svm@*",
+    "@x402/extensions": "workspace:@nirholas/x402-extensions@*"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
@@ -28,7 +28,7 @@
     "eslint-plugin-jsdoc": "^50.6.9",
     "eslint-plugin-prettier": "^5.2.6",
     "prettier": "3.5.2",
-    "tsup": "^7.2.0",
+    "tsup": "^8.3.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },

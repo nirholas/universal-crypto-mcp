@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "express": "^4.18.2",
-    "x402": "workspace:*"
+    "express": "^4.20.0",
+    "x402": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402@*"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

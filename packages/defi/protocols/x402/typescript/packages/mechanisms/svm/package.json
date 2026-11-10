@@ -50,12 +50,12 @@
     "tsup": "^8.4.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vite": "^6.2.6",
+    "vite": "^6.4.5",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.5"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
-    "@x402/core": "workspace:^",
+    "@x402/core": "workspace:@nirholas/x402-core@^",
     "@solana-program/compute-budget": "^0.11.0",
     "@solana-program/token": "^0.9.0",
     "@solana-program/token-2022": "^0.6.1",

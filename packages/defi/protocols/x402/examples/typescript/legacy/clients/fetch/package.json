@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "x402-fetch": "workspace:*"
+    "x402-fetch": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-fetch@*"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

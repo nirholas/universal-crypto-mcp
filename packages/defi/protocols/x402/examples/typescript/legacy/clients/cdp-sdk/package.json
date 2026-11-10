@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.16.0",
-    "axios": "^1.7.9",
+    "axios": "^1.20.0",
     "dotenv": "^16.5.0",
     "viem": "^2.21.26",
-    "x402-axios": "workspace:*"
+    "x402-axios": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-axios@*"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

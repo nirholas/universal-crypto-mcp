@@ -13,13 +13,13 @@
     "lint:check": "eslint . --ext .ts"
   },
   "dependencies": {
-    "@x402/core": "workspace:*",
-    "@x402/evm": "workspace:*",
-    "@x402/extensions": "workspace:*",
-    "@x402/next": "workspace:*",
-    "@x402/svm": "workspace:*",
+    "@x402/core": "workspace:@nirholas/x402-core@*",
+    "@x402/evm": "workspace:@nirholas/x402-evm@*",
+    "@x402/extensions": "workspace:@nirholas/x402-extensions@*",
+    "@x402/next": "workspace:@nirholas/x402-next@*",
+    "@x402/svm": "workspace:@nirholas/x402-svm@*",
     "@heroicons/react": "^2.2.0",
-    "next": "^16.0.10",
+    "next": "^16.4.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "viem": "^2.21.26"
@@ -38,7 +38,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.6.9",
     "eslint-plugin-prettier": "^5.2.6",
-    "postcss": "^8",
+    "postcss": "^8.5.23",
     "prettier": "3.5.2",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.1",

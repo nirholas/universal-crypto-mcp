@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "hono": "^4.7.2",
-    "@hono/node-server": "^1.13.8",
+    "hono": "^4.13.11",
+    "@hono/node-server": "^2.1.3",
     "viem": "^2.23.5",
-    "x402": "workspace:*",
-    "axios": "^1.7.9",
-    "x402-axios": "workspace:*"
+    "x402": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402@*",
+    "axios": "^1.20.0",
+    "x402-axios": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-axios@*"
   },
   "devDependencies": {
     "tsx": "^4.19.3",

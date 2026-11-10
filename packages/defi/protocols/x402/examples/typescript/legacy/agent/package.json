@@ -40,13 +40,13 @@
     "@anthropic-ai/sdk": "^0.39.0",
     "@coinbase/agentkit": "^0.5.0",
     "@coinbase/agentkit-langchain": "^0.3.0",
-    "@langchain/core": "^0.3.43",
+    "@langchain/core": "^0.3.80",
     "@langchain/langgraph": "^0.2.62",
     "@langchain/openai": "^0.5.2",
     "dotenv": "^16.4.7",
     "viem": "^2.26.2",
-    "x402-fetch": "workspace:*",
-    "zod": "^3.24.2"
+    "x402-fetch": "workspace:@nirholas/crypto-defi-protocols-x402-typescript-packages-legacy-x402-fetch@*",
+    "zod": "^4.6.6"
   },
   "type": "module",
   "files": [
