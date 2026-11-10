@@ -1,4 +1,4 @@
-import type { ExpressContextFunctionArgument } from '@apollo/server/express4';
+import type { ExpressContextFunctionArgument } from '@as-integrations/express4';
 import DataLoader from 'dataloader';
 
 export interface User {
