@@ -30,6 +30,7 @@ import { wrapFetchWithPayment } from "@x402/fetch"
 import { ExactEvmScheme, toClientEvmSigner, type ClientEvmSigner } from "@x402/evm"
 import { ExactSvmScheme, toClientSvmSigner, type ClientSvmSigner } from "@x402/svm"
 import bs58 from "bs58"
+import { createKeyPairSignerFromBytes, createKeyPairSignerFromPrivateKeyBytes } from "@solana/kit"
 
 import {
   loadX402Config,
@@ -100,12 +101,14 @@ export function createEvmSigner(privateKey: `0x${string}`): ClientEvmSigner {
 }
 
 /**
- * Create an SVM (Solana) signer from a base58 private key
+ * Create an SVM (Solana) signer from a base58 private key: either the 64-byte
+ * secret key a Solana keypair file or wallet export holds, or a 32-byte seed.
  */
-export function createSvmSigner(privateKeyBase58: string): ClientSvmSigner {
-  // Decode base58 private key to bytes
-  const privateKeyBytes = bs58.decode(privateKeyBase58)
-  return toClientSvmSigner(privateKeyBytes)
+export async function createSvmSigner(privateKeyBase58: string): Promise<ClientSvmSigner> {
+  const bytes = bs58.decode(privateKeyBase58)
+  if (bytes.length === 64) return toClientSvmSigner(await createKeyPairSignerFromBytes(bytes))
+  if (bytes.length === 32) return toClientSvmSigner(await createKeyPairSignerFromPrivateKeyBytes(bytes))
+  throw new Error(`Solana private key must decode to 32 or 64 bytes, got ${bytes.length}`)
 }
 
 // ============================================================================
@@ -216,7 +219,7 @@ export async function createX402Client(
   // Setup SVM signer if configured
   if (config.svmPrivateKey && isSvmConfigured()) {
     try {
-      svmSigner = createSvmSigner(config.svmPrivateKey)
+      svmSigner = await createSvmSigner(config.svmPrivateKey)
       Logger.debug("x402: SVM signer created")
     } catch (error) {
       Logger.error("x402: Failed to create SVM signer:", error)
