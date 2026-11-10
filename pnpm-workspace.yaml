@@ -16,3 +16,5 @@ packages:
   - "packages/payments/x402/facilitator"
   - "deploy/*"
   - "x402-deploy"
+  # Standalone npm package with its own lockfile (npx entry point).
+  - "!packages/crypto-mcp-hub"
