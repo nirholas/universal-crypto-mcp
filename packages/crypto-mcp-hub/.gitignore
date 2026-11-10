@@ -1,0 +1,4 @@
+# The repo root ignores lockfiles and *.doc*; this package ships both.
+!package-lock.json
+!.dockerignore
+node_modules/
