@@ -12534,8 +12534,8 @@ packages:
   bip39@3.1.0:
     resolution: {integrity: sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==}
 
-  bitcoinjs-lib@6.1.7:
-    resolution: {integrity: sha512-tlf/r2DGMbF7ky1MgUqXHzypYHakkEnm0SZP23CJKIqNY/5uNAnMbFhMJdhjrL/7anfb/U8+AlpdjPWjPnAalg==}
+  bitcoinjs-lib@6.1.10:
+    resolution: {integrity: sha512-9KpnS5JKVP0j0yfTsBNFIsNA6+JdBDb7VtL35F20I/pJYobosi3TmZFGtu6qxhJCfb0vubJixr5Zv61/lUYETw==}
     engines: {node: '>=8.0.0'}
 
   bl@4.1.0:
@@ -28033,7 +28033,7 @@ snapshots:
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
       bip32-path: 0.4.2
-      bitcoinjs-lib: 6.1.7
+      bitcoinjs-lib: 6.1.10
       bs58: 4.0.1
       bs58check: 2.1.2
       invariant: 2.2.4
@@ -28057,7 +28057,7 @@ snapshots:
 
   '@ledgerhq/psbtv2@0.5.0':
     dependencies:
-      bitcoinjs-lib: 6.1.7
+      bitcoinjs-lib: 6.1.10
       varuint-bitcoin: 1.1.2
 
   '@leichtgewicht/ip-codec@2.0.5': {}
@@ -38353,7 +38353,7 @@ snapshots:
       '@xchainjs/xchain-util': 2.0.7
       '@xchainjs/xchain-utxo': 2.2.8(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       '@xchainjs/xchain-utxo-providers': 2.1.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
-      bitcoinjs-lib: 6.1.7
+      bitcoinjs-lib: 6.1.10
       coinselect: 3.1.12
       ecpair: 2.1.0
     transitivePeerDependencies:
@@ -38423,7 +38423,7 @@ snapshots:
       '@xchainjs/xchain-util': 2.0.7
       '@xchainjs/xchain-utxo': 2.2.8(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       '@xchainjs/xchain-utxo-providers': 2.1.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
-      bitcoinjs-lib: 6.1.7
+      bitcoinjs-lib: 6.1.10
       coinselect: 3.1.12
       ecpair: 2.1.0
     transitivePeerDependencies:
@@ -38441,7 +38441,7 @@ snapshots:
       '@xchainjs/xchain-utxo': 2.2.8(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       '@xchainjs/xchain-utxo-providers': 2.1.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       axios: 1.16.1(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
-      bitcoinjs-lib: 6.1.7
+      bitcoinjs-lib: 6.1.10
       coinselect: 3.1.12
       ecpair: 2.1.0
     transitivePeerDependencies:
@@ -39412,7 +39412,7 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
-  bitcoinjs-lib@6.1.7:
+  bitcoinjs-lib@6.1.10:
     dependencies:
       '@noble/hashes': 1.8.0
       bech32: 2.0.0
