@@ -7,7 +7,7 @@ import { z } from 'zod';
 // Tool input schema validation
 export const toolInputSchema = z.object({
   type: z.literal('object').optional(),
-  properties: z.record(z.any()).optional(),
+  properties: z.record(z.string(), z.any()).optional(),
   required: z.array(z.string()).optional(),
 }).passthrough();
 
@@ -26,7 +26,7 @@ export const createToolSchema = z.object({
   
   // Schema
   inputSchema: toolInputSchema,
-  outputSchema: z.record(z.any()).optional(),
+  outputSchema: z.record(z.string(), z.any()).optional(),
   
   // Metadata
   tags: z.array(z.string()).optional(),
@@ -106,7 +106,7 @@ export const submitDiscoverySchema = z.object({
   description: z.string().max(1000).optional(),
   sourceUrl: z.string().url(),
   sourceType: z.enum(['github', 'manual', 'discovered']).optional().default('discovered'),
-  rawData: z.record(z.any()).optional(),
+  rawData: z.record(z.string(), z.any()).optional(),
   securityScore: z.number().int().min(0).max(100).optional(),
   qualityScore: z.number().int().min(0).max(100).optional(),
 });
