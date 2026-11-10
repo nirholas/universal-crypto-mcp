@@ -1,0 +1,61 @@
+{
+  "name": "@nirholas/crypto-mcp-hub",
+  "version": "0.1.0",
+  "description": "One MCP server that fronts 100+ open-source crypto MCP servers (market data, DEX, CEX, wallets, DeFi, on-chain analytics) for Claude, ChatGPT, Cursor and every MCP client.",
+  "type": "module",
+  "bin": {
+    "crypto-mcp-hub": "bin/crypto-mcp-hub.js"
+  },
+  "exports": {
+    "./catalog": "./src/catalog.js",
+    "./gateway": "./src/gateway.js",
+    "./upstream": "./src/upstream.js",
+    "./http": "./src/http.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "catalog",
+    "README.md",
+    "SERVERS.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "start": "node bin/crypto-mcp-hub.js",
+    "test": "node --test test/catalog.test.js test/gateway.test.js test/http.test.js test/upstream.test.js",
+    "doctor": "node bin/crypto-mcp-hub.js doctor --ignore-env",
+    "docs": "node scripts/build-docs.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nirholas/universal-crypto-mcp.git",
+    "directory": "packages/crypto-mcp-hub"
+  },
+  "homepage": "https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/crypto-mcp-hub#readme",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "mcp-gateway",
+    "crypto",
+    "web3",
+    "defi",
+    "solana",
+    "ethereum",
+    "claude",
+    "chatgpt"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2"
+  },
+  "devDependencies": {
+    "zod": "^4.6.7"
+  }
+}

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Crypto MCP Hub (`@nirholas/crypto-mcp-hub`)
+- One MCP server that fronts 170 open-source crypto MCP servers (5,716 tools), each verified in a sandbox and launched from its own registry at a pinned version.
+- Router mode (4 meta-tools over a pre-built tool index) and proxy mode (`<server>__<tool>`), stdio, Streamable HTTP and SSE transports, token auth for remote clients such as ChatGPT.
+- `list`, `config`, `install` and `doctor` commands; per-upstream environment isolation; lazy, shared, self-restarting upstream processes.
+
 #### 🏪 AI Service Marketplace (Major Feature)
 - **Complete marketplace ecosystem** for AI service monetization and discovery
 - **Smart Contract** (`AIServiceMarketplace.sol`):

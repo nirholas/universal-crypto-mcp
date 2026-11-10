@@ -50,6 +50,20 @@ npx @nirholas/universal-crypto-mcp
   <img src=".github/demo.svg" alt="Universal Crypto MCP Demo" width="800">
 </p>
 
+## Crypto MCP Hub: 170 crypto MCP servers, one connector
+
+```bash
+npx -y @nirholas/crypto-mcp-hub
+```
+
+[`packages/crypto-mcp-hub`](packages/crypto-mcp-hub) fronts 170 of the most-starred openly licensed crypto MCP servers (5,716 tools: CCXT, CoinGecko, Helius, Alchemy, Etherscan, Hyperliquid, Polymarket, OpenZeppelin, Chainlink, deBridge, GoPlus and many more) behind one MCP endpoint. Every server in the catalog launched in a sandbox and listed its tools. Each runs from its own registry at a pinned version, so nothing is vendored.
+
+- **Claude Code:** `claude mcp add crypto -- npx -y @nirholas/crypto-mcp-hub`
+- **Claude Desktop, Cursor, Windsurf, Gemini CLI:** `npx -y @nirholas/crypto-mcp-hub install <client>`
+- **ChatGPT and other remote clients:** `npx -y @nirholas/crypto-mcp-hub --http`, then add `https://<host>/t/<token>/mcp` as a connector
+
+Full list: [SERVERS.md](packages/crypto-mcp-hub/SERVERS.md). Setup for every client: [the hub README](packages/crypto-mcp-hub/README.md).
+
 ## ✨ What's New: AI Service Marketplace
 
 > **Monetize your AI services & discover the best APIs!** 💸
