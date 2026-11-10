@@ -56,11 +56,9 @@ export default defineConfig({
     
     // Pool configuration
     pool: "forks",
-    poolOptions: {
-      forks: {
-        singleFork: true, // Run all tests in a single fork for shared DB state
-      },
-    },
+    // One fork, shared across files, for shared DB state
+    maxWorkers: 1,
+    isolate: false,
 
     // Test type groups for selective running
     typecheck: {
