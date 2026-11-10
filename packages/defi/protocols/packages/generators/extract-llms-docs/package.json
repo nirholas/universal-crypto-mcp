@@ -25,17 +25,16 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.400.0",
-    "nanoid": "^5.0.0",
-    "next": "^14.2.0",
+    "nanoid": "^5.1.16",
+    "next": "^15.5.28",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.0",
-    "tailwind-merge": "^2.3.0",
-    "@x402/client": "workspace:*"
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -48,10 +47,10 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.0",
     "jsdom": "^27.4.0",
-    "postcss": "^8.4.38",
+    "postcss": "^8.5.23",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "@nirholas/agenti": ">= 0.1.0"
@@ -71,5 +70,21 @@
       "url": "https://github.com/nirholas",
       "twitter": "https://x.com/nichxbt"
     }
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "@nirholas/universal-crypto-mcp>@solana/kit": "^8.6.0",
+      "@nirholas/universal-crypto-mcp>@solana/sysvars": "^8.6.0",
+      "bigint-buffer": "npm:@exodus/bigint-buffer@1.1.5-exodus.1",
+      "glob@10": "^14.0.2",
+      "jayson@4": "^5.0.0",
+      "minimatch@9": "^11.0.1",
+      "postcss@8": "^8.5.23",
+      "protobufjs@7": "^7.6.5",
+      "undici@7": "^7.30.1",
+      "uuid@8": "^11.1.1",
+      "uuid@9": "^11.1.1",
+      "zod@3": "^4.6.6"
+    }
+  }
 }

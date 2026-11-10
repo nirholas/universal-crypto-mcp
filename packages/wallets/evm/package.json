@@ -32,15 +32,15 @@
   "dependencies": {
     "@nirholas/crypto-mcp-core": "workspace:*",
     "@universal-crypto-mcp/wallets-shared": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.22.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "viem": "^2.39.3",
-    "zod": "^3.24.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsup": "^8.0.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.8.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.1.11"
   },
   "repository": {
     "type": "git",

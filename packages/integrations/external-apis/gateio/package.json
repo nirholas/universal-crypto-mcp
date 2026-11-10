@@ -22,12 +22,12 @@
   "license": "MIT",
   "dependencies": {
     "node-fetch": "^3.3.2",
-    "zod": "^3.22.4"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "tsup": "^8.0.1",
+    "tsup": "^8.3.5",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
+    "vitest": "^4.1.11"
   }
 }

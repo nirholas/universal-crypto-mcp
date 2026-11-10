@@ -11,10 +11,17 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp.git",
     "directory": "packages/integrations/external-mcp/arkham-intelligence-mcp"
   },
-  "keywords": ["nirholas", "arkham", "intelligence", "entity", "mcp", "tracking"],
+  "keywords": [
+    "nirholas",
+    "arkham",
+    "intelligence",
+    "entity",
+    "mcp",
+    "tracking"
+  ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "zod": "^3.22.0"
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^4.6.6"
   },
   "scripts": {
     "build": "tsc",

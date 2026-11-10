@@ -9,12 +9,17 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js"
   },
-  "keywords": ["mcp", "coingecko", "crypto", "market-data"],
+  "keywords": [
+    "mcp",
+    "coingecko",
+    "crypto",
+    "market-data"
+  ],
   "author": "nirholas <nich@github.com/nirholas>",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
-    "axios": "^1.6.0"
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "axios": "^1.20.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

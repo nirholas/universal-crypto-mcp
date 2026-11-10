@@ -30,13 +30,13 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "zod": "^3.24.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsup": "^8.0.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.8.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.1.11"
   },
   "repository": {
     "type": "git",

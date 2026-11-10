@@ -28,19 +28,19 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "@boosty/mcp-shared": "workspace:*",
-    "@boosty/mcp-prices": "workspace:*",
-    "@boosty/mcp-wallets": "workspace:*",
-    "@boosty/mcp-yields": "workspace:*",
-    "zod": "^3.22.0"
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "@boosty/mcp-shared": "workspace:@nirholas/crypto-automation-volume-packages-shared@*",
+    "@boosty/mcp-prices": "workspace:@nirholas/crypto-automation-volume-packages-prices@*",
+    "@boosty/mcp-wallets": "workspace:@nirholas/crypto-automation-volume-packages-wallets@*",
+    "@boosty/mcp-yields": "workspace:@nirholas/crypto-automation-volume-packages-yields@*",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
+    "vitest": "^4.1.11",
     "ts-node": "^10.9.0",
-    "tsup": "^8.0.0"
+    "tsup": "^8.3.5"
   },
   "engines": {
     "node": ">=18.0.0"

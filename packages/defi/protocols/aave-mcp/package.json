@@ -39,17 +39,17 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp/issues"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@aave/protocol-js": "^4.3.0",
     "@aave/contract-helpers": "^1.29.10",
     "ethers": "^6.13.4",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.7.2",
     "tsx": "^4.19.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=18.0.0"

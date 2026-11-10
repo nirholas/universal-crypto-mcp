@@ -11,9 +11,15 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp.git",
     "directory": "packages/integrations/external-mcp/aptos-mcp"
   },
-  "keywords": ["nirholas", "aptos", "apt", "move", "mcp"],
+  "keywords": [
+    "nirholas",
+    "aptos",
+    "apt",
+    "move",
+    "mcp"
+  ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "zod": "^3.22.0"
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^4.6.6"
   }
 }

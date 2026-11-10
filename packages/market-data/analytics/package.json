@@ -52,9 +52,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.11.4",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "dotenv": "^16.4.5",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "funding": {
     "type": "github",

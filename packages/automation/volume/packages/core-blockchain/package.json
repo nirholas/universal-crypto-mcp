@@ -31,16 +31,16 @@
     "hdkey": "^2.1.0",
     "dotenv": "^16.4.0",
     "pino": "^9.0.0",
-    "zod": "^3.23.0"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.3.0",
-    "tsup": "^8.0.0",
-    "vitest": "^1.0.0"
+    "tsup": "^8.3.5",
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
-    "@boosty/mcp-shared": "workspace:*"
+    "@boosty/mcp-shared": "workspace:@nirholas/crypto-automation-volume-packages-shared@*"
   },
   "author": {
     "name": "nich",

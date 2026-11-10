@@ -7,29 +7,40 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "bin": { "multisig": "./dist/index.js" },
+  "bin": {
+    "multisig": "./dist/index.js"
+  },
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest"
   },
-  "keywords": ["mcp", "multisig", "safe", "gnosis", "wallet", "nirholas"],
+  "keywords": [
+    "mcp",
+    "multisig",
+    "safe",
+    "gnosis",
+    "wallet",
+    "nirholas"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/wallets/multisig"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "ethers": "^6.13.4",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.7.2",
     "tsx": "^4.19.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.11"
   },
-  "engines": { "node": ">=18.0.0" }
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

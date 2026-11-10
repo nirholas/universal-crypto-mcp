@@ -11,12 +11,12 @@
     "node-cron": "^3.0.3",
     "croner": "^8.0.0",
     "pino": "^8.17.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node-cron": "^3.0.11",
     "tsx": "^4.7.0",
-    "tsup": "^8.0.1",
+    "tsup": "^8.3.5",
     "typescript": "^5.3.3"
   }
 }

@@ -50,25 +50,25 @@
     "@pump-fun/pump-swap-sdk": "^2.1.0",
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.95.0",
-    "bn.js": "^5.2.2",
+    "bn.js": "^5.2.3",
     "bs58": "^5.0.0",
     "decimal.js": "^10.4.3",
     "node-cache": "^5.1.2",
     "p-retry": "^6.2.0",
-    "ws": "^8.16.0"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.6",
     "@types/bs58": "^4.0.4",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
-    "tsup": "^8.0.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.3.0",
-    "vitest": "^1.2.0"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
-    "@boosty/mcp-shared": "workspace:*",
-    "@boosty/mcp-solana-core": "workspace:*"
+    "@boosty/mcp-shared": "workspace:@nirholas/crypto-automation-volume-packages-shared@*",
+    "@boosty/mcp-solana-core": "workspace:@nirholas/crypto-automation-volume-packages-solana-core@*"
   },
   "engines": {
     "node": ">=18.0.0"

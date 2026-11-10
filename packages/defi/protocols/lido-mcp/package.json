@@ -17,22 +17,31 @@
     "lint": "eslint src --ext .ts",
     "test": "vitest"
   },
-  "keywords": ["mcp", "lido", "staking", "steth", "wsteth", "defi", "ethereum", "nirholas"],
+  "keywords": [
+    "mcp",
+    "lido",
+    "staking",
+    "steth",
+    "wsteth",
+    "defi",
+    "ethereum",
+    "nirholas"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/universal-crypto-mcp",
     "directory": "packages/defi/protocols/lido-mcp"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "ethers": "^6.13.4",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.7.2",
     "tsx": "^4.19.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=18.0.0"

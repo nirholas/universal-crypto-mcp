@@ -50,7 +50,7 @@
     "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
     "@metaplex-foundation/umi": "^0.9.1",
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.1",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@pythnetwork/client": "^2.21.0",
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.95.0",
@@ -63,9 +63,9 @@
   "devDependencies": {
     "@types/bs58": "^4.0.4",
     "@types/node": "^20.11.0",
-    "tsup": "^8.0.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.3.0",
-    "vitest": "^1.2.0"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -85,5 +85,14 @@
       "url": "https://github.com/nirholas",
       "twitter": "https://x.com/nichxbt"
     }
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "bigint-buffer": "npm:@exodus/bigint-buffer@1.1.5-exodus.1",
+      "esbuild@0.27": "^0.28.1",
+      "jayson@4": "^5.0.0",
+      "toml@3": "^5.0.1",
+      "uuid@8": "^11.1.1"
+    }
+  }
 }

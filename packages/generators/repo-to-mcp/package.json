@@ -55,7 +55,7 @@
     "lint-staged": "^16.2.7",
     "msw": "^2.12.7",
     "prettier": "^3.8.0",
-    "vitest": "^1.6.1"
+    "vitest": "^4.1.11"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -75,5 +75,15 @@
       "url": "https://github.com/nirholas",
       "twitter": "https://x.com/nichxbt"
     }
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "esbuild@0.27": "^0.28.1",
+      "glob@10": "^14.0.2",
+      "minimatch@10": "^11.0.1",
+      "minimatch@9": "^11.0.1",
+      "postcss-selector-parser@6": "^6.1.5",
+      "postcss@8": "^8.5.23"
+    }
+  }
 }

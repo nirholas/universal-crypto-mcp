@@ -60,12 +60,12 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "eslint": "^9.0.0",
-    "tsup": "^8.3.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.7.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
-    "express": ">=4.0.0"
+    "express": "^4.20.0"
   },
   "peerDependenciesMeta": {
     "express": {

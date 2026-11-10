@@ -11,9 +11,16 @@
     "url": "https://github.com/nirholas/universal-crypto-mcp.git",
     "directory": "packages/integrations/external-mcp/base-scan-mcp"
   },
-  "keywords": ["nirholas", "base", "coinbase", "l2", "explorer", "mcp"],
+  "keywords": [
+    "nirholas",
+    "base",
+    "coinbase",
+    "l2",
+    "explorer",
+    "mcp"
+  ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "zod": "^3.22.0"
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^4.6.6"
   }
 }

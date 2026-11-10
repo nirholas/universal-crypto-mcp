@@ -21,27 +21,27 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@boosty/mcp-wallet-manager": "workspace:*",
-    "@boosty/mcp-shared": "workspace:*",
-    "@solana/web3.js": "^1.91.0",
+    "@boosty/mcp-wallet-manager": "workspace:@nirholas/crypto-automation-volume-packages-wallet-manager@*",
+    "@boosty/mcp-shared": "workspace:@nirholas/crypto-automation-volume-packages-shared@*",
+    "@solana/web3.js": "^1.91.3",
     "@solana/spl-token": "^0.4.0",
     "@metaplex-foundation/mpl-token-metadata": "^3.0.0",
     "@metaplex-foundation/umi": "^0.9.0",
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.0",
     "@pump-fun/pump-sdk": "^4.0.0",
     "@pump-fun/pump-swap-sdk": "^2.1.0",
-    "bn.js": "^5.2.2",
-    "uuid": "^9.0.0",
+    "bn.js": "^5.2.3",
+    "uuid": "^11.1.1",
     "pino": "^8.17.0",
-    "zod": "^3.22.0"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.6",
     "@types/node": "^20.0.0",
     "@types/uuid": "^9.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
-    "tsup": "^8.0.0"
+    "vitest": "^4.1.11",
+    "tsup": "^8.3.5"
   },
   "engines": {
     "node": ">=18.0.0"

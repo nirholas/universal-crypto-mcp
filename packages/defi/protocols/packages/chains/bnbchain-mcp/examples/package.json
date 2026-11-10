@@ -21,22 +21,22 @@
     "discord": "tsx integrations/discord-bot.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.11.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "chalk": "^5.3.0",
     "cli-table3": "^0.6.3",
     "discord.js": "^14.14.1",
     "dotenv": "^16.5.0",
-    "express": "^4.18.2",
+    "express": "^4.20.0",
     "ora": "^8.0.1",
     "viem": "^2.27.2",
-    "zod": "^3.22.4"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.2.0"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=18.0.0"

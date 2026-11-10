@@ -32,9 +32,9 @@
     "eslint": "^8.0.0",
     "eslint-plugin-jsx-a11y": "^6.7.0",
     "jest-axe": "^8.0.0",
-    "tsup": "^8.0.0",
+    "tsup": "^8.3.5",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^4.1.11"
   },
   "keywords": [
     "accessibility",
@@ -59,4 +59,3 @@
   },
   "homepage": "https://github.com/nirholas/w3ag#readme"
 }
-

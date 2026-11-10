@@ -14,7 +14,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@nirholas/github-to-mcp": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -28,7 +28,7 @@
     "framer-motion": "^11.0.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.400.0",
-    "nanoid": "^5.1.6",
+    "nanoid": "^5.1.16",
     "next": "16.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -45,12 +45,12 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.4",
-    "postcss": "^8.4.38",
-    "sharp": "^0.34.5",
+    "postcss": "^8.5.23",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.4",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.5.2",
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.11"
   },
   "author": {
     "name": "nich",

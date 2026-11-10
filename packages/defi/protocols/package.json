@@ -40,10 +40,10 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.22.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "express": "^4.21.2",
     "viem": "^2.39.3",
-    "zod": "^3.24.3"
+    "zod": "^4.6.6"
   },
   "keywords": [
     "mcp",
