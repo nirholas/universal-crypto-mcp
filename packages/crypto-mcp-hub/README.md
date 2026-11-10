@@ -56,10 +56,12 @@ Any JSON-config client takes the same entry:
 HUB_AUTH_TOKEN=$(openssl rand -hex 24) npx -y @nirholas/crypto-mcp-hub --http --host 0.0.0.0
 ```
 
-Or with Docker:
+Or with Docker (the sparse clone fetches only this package, about 30 MB):
 
 ```bash
-docker build -t crypto-mcp-hub https://github.com/nirholas/universal-crypto-mcp.git#main:packages/crypto-mcp-hub
+git clone --depth 1 --filter=blob:none --sparse https://github.com/nirholas/universal-crypto-mcp
+git -C universal-crypto-mcp sparse-checkout set packages/crypto-mcp-hub
+docker build -t crypto-mcp-hub universal-crypto-mcp/packages/crypto-mcp-hub
 docker run -p 8787:8787 -e HUB_AUTH_TOKEN=<token> --env-file .env crypto-mcp-hub
 ```
 

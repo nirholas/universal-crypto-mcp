@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "start": "node bin/crypto-mcp-hub.js",
-    "test": "node --test test/catalog.test.js test/gateway.test.js test/http.test.js test/upstream.test.js",
+    "test": "node --test test/catalog.test.js test/gateway.test.js test/http.test.js test/upstream.test.js test/packaging.test.js",
     "doctor": "node bin/crypto-mcp-hub.js doctor --ignore-env",
     "docs": "node scripts/build-docs.js"
   },
