@@ -1,0 +1,1 @@
+{"mcpServers":{"universal-crypto-mcp":{"command":"npx","args":["-y","-p","@nirholas/universal-crypto-mcp","universal-crypto-mcp"]}}}
