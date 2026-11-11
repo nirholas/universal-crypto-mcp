@@ -6,6 +6,8 @@ One MCP server that puts **170 open-source crypto MCP servers (5,716 tools)** be
 npx -y @nirholas/crypto-mcp-hub
 ```
 
+Every [GitHub release](https://github.com/nirholas/universal-crypto-mcp/releases/tag/crypto-mcp-hub-v0.1.0) also carries the package as a tarball, which `npx` runs directly: `npx -y https://github.com/nirholas/universal-crypto-mcp/releases/download/crypto-mcp-hub-v0.1.0/nirholas-crypto-mcp-hub-0.1.0.tgz`. Use that URL in place of `@nirholas/crypto-mcp-hub` in any command below to pin an exact release.
+
 Plug that one command into Claude, ChatGPT, Cursor, VS Code, Windsurf, Gemini CLI, Codex or any other MCP client. You get every server whose keys you have set, with no per-server setup.
 
 - **Every server is verified.** Each catalog entry launched in a network-only sandbox (no credentials, no host files), completed the MCP handshake and listed its tools. Entries that failed were left out. See [SERVERS.md](SERVERS.md).

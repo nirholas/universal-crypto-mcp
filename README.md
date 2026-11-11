@@ -62,6 +62,8 @@ npx -y @nirholas/crypto-mcp-hub
 - **Claude Desktop, Cursor, Windsurf, Gemini CLI:** `npx -y @nirholas/crypto-mcp-hub install <client>`
 - **ChatGPT and other remote clients:** `npx -y @nirholas/crypto-mcp-hub --http`, then add `https://<host>/t/<token>/mcp` as a connector
 
+Each [release](https://github.com/nirholas/universal-crypto-mcp/releases/tag/crypto-mcp-hub-v0.1.0) also ships the package as a tarball `npx` runs directly: `npx -y https://github.com/nirholas/universal-crypto-mcp/releases/download/crypto-mcp-hub-v0.1.0/nirholas-crypto-mcp-hub-0.1.0.tgz`.
+
 Full list: [SERVERS.md](packages/crypto-mcp-hub/SERVERS.md). Setup for every client: [the hub README](packages/crypto-mcp-hub/README.md).
 
 ## ✨ What's New: AI Service Marketplace
