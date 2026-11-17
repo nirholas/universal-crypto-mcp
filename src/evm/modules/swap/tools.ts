@@ -6,13 +6,24 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
-import { parseEther, formatEther, formatUnits } from "viem"
+import { erc20Abi, parseEther, formatEther, formatUnits } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { z } from "zod"
 
 import { getPublicClient, getWalletClient } from "@/evm/services/clients.js"
 import { mcpToolRes } from "@/utils/helper.js"
 import { defaultNetworkParam, privateKeyParam } from "../common/types.js"
+
+import {
+  LCX_DEX_ID,
+  buildLcxSwap,
+  getLcxApiKey,
+  getLcxQuote,
+  getLcxRouterForNetwork,
+  isLcxDex,
+  isLcxNative,
+  requireLcxApiKey
+} from "./lcx-liberty.js"
 
 // DEX Aggregator APIs
 const AGGREGATOR_APIS = {
@@ -234,12 +245,34 @@ export function registerSwapTools(server: McpServer) {
       tokenOut: z.string().describe("Address of the token to buy"),
       amountIn: z.string().describe("Amount of input token (in wei/smallest unit)"),
       network: defaultNetworkParam,
-      dex: z.string().optional().describe("Specific DEX to use (e.g., 'uniswap', 'pancakeswap'). If not specified, finds best route.")
+      dex: z.string().optional().describe("Specific DEX to use (e.g., 'uniswap', 'pancakeswap', or 'lcx-liberty' for LCX Liberty DEX when LCX_API_KEY is set). If not specified, finds best route.")
     },
     async ({ tokenIn, tokenOut, amountIn, network, dex }) => {
       try {
         const client = getPublicClient(network)
         const chainId = await client.getChainId()
+
+        if (isLcxDex(dex)) {
+          const quote = await getLcxQuote(
+            { chainId, tokenIn, tokenOut, amountIn },
+            requireLcxApiKey()
+          )
+          return mcpToolRes.success({
+            tokenIn,
+            tokenOut,
+            amountIn,
+            amountOut: quote.output.amount,
+            minAmountOut: quote.output.minimumAmount,
+            router: quote.spender,
+            dex: LCX_DEX_ID,
+            network,
+            chainId,
+            priceImpact:
+              typeof quote.priceImpactPct === "number" ? `${quote.priceImpactPct}%` : null,
+            quoteId: quote.quoteId,
+            expiresAt: quote.expiresAt
+          })
+        }
         
         // Get available routers for this network
         const networkRouters = DEX_ROUTERS[network] || DEX_ROUTERS.ethereum
@@ -293,7 +326,7 @@ export function registerSwapTools(server: McpServer) {
       minAmountOut: z.string().describe("Minimum amount of output token to receive (slippage protection)"),
       network: defaultNetworkParam,
       privateKey: privateKeyParam,
-      dex: z.string().optional().describe("Specific DEX to use"),
+      dex: z.string().optional().describe("Specific DEX to use ('lcx-liberty' needs LCX_API_KEY)"),
       deadline: z.number().optional().describe("Transaction deadline in seconds from now (default: 1200 = 20 minutes)")
     },
     async ({ tokenIn, tokenOut, amountIn, minAmountOut, network, privateKey, dex, deadline }) => {
@@ -301,6 +334,65 @@ export function registerSwapTools(server: McpServer) {
         const walletClient = getWalletClient(privateKey as Hex, network)
         const publicClient = getPublicClient(network)
         const account = privateKeyToAccount(privateKey as Hex)
+
+        if (isLcxDex(dex)) {
+          const apiKey = requireLcxApiKey()
+          const request = { chainId: await publicClient.getChainId(), tokenIn, tokenOut, amountIn }
+          const quote = await getLcxQuote(request, apiKey)
+          if (BigInt(quote.output.minimumAmount) < BigInt(minAmountOut)) {
+            throw new Error(
+              `LCX Liberty DEX minimum output ${quote.output.minimumAmount} is below minAmountOut ${minAmountOut}`
+            )
+          }
+
+          const router = quote.spender as Address
+          if (!isLcxNative(tokenIn)) {
+            const allowance = await publicClient.readContract({
+              address: tokenIn as Address,
+              abi: erc20Abi,
+              functionName: "allowance",
+              args: [account.address, router]
+            })
+            if (allowance < BigInt(amountIn)) {
+              // Approve exactly the amount being sold, never an unlimited allowance
+              const approveHash = await walletClient.writeContract({
+                address: tokenIn as Address,
+                abi: erc20Abi,
+                functionName: "approve",
+                args: [router, BigInt(amountIn)],
+                account,
+                chain: walletClient.chain
+              })
+              await publicClient.waitForTransactionReceipt({ hash: approveHash })
+            }
+          }
+
+          const build = await buildLcxSwap(quote, account.address, request, apiKey)
+          const hash = await walletClient.sendTransaction({
+            account,
+            chain: walletClient.chain,
+            to: build.swap.to,
+            data: build.swap.data,
+            value: BigInt(build.swap.value)
+          })
+          const receipt = await publicClient.waitForTransactionReceipt({ hash })
+          if (receipt.status !== "success") {
+            throw new Error(`LCX Liberty DEX swap ${hash} reverted`)
+          }
+
+          return mcpToolRes.success({
+            success: true,
+            transactionHash: hash,
+            blockNumber: receipt.blockNumber.toString(),
+            gasUsed: receipt.gasUsed.toString(),
+            tokenIn,
+            tokenOut,
+            amountIn,
+            minAmountOut: build.minAmountOut,
+            router,
+            dex: LCX_DEX_ID
+          })
+        }
         
         const networkRouters = DEX_ROUTERS[network] || DEX_ROUTERS.ethereum
         const routerAddress = dex ? networkRouters[dex.toLowerCase()] : Object.values(networkRouters)[0]
@@ -401,6 +493,22 @@ export function registerSwapTools(server: McpServer) {
             })
           } catch {
             // DEX doesn't have this pair, skip
+          }
+        }
+
+        // LCX Liberty DEX joins the comparison only when LCX_API_KEY is set
+        const lcxApiKey = getLcxApiKey()
+        if (lcxApiKey) {
+          try {
+            const chainId = await client.getChainId()
+            const quote = await getLcxQuote({ chainId, tokenIn, tokenOut, amountIn }, lcxApiKey)
+            quotes.push({
+              dex: LCX_DEX_ID,
+              amountOut: quote.output.amount,
+              router: quote.spender as Address
+            })
+          } catch {
+            // No LCX Liberty DEX route for this pair or chain, skip
           }
         }
 
@@ -520,6 +628,10 @@ export function registerSwapTools(server: McpServer) {
           name,
           router: address
         }))
+        const lcxRouter = getLcxApiKey() ? getLcxRouterForNetwork(network) : undefined
+        if (lcxRouter) {
+          dexList.push({ name: LCX_DEX_ID, router: lcxRouter })
+        }
 
         return mcpToolRes.success({
           network,
