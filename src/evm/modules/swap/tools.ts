@@ -22,7 +22,8 @@ import {
   getLcxRouterForNetwork,
   isLcxDex,
   isLcxNative,
-  requireLcxApiKey
+  requireLcxApiKey,
+  verifyLcxCalldata
 } from "./lcx-liberty.js"
 
 // DEX Aggregator APIs
@@ -345,6 +346,12 @@ export function registerSwapTools(server: McpServer) {
             )
           }
 
+          // Decode and check what the router will execute before approving or signing anything
+          const build = await buildLcxSwap(quote, account.address, request, apiKey)
+          // The floor checked is max(quote minimum, caller's minAmountOut)
+          const expected = { recipient: account.address, amountIn, tokenIn, tokenOut, minAmountOut }
+          verifyLcxCalldata(build, quote, expected)
+
           const router = quote.spender as Address
           if (!isLcxNative(tokenIn)) {
             const allowance = await publicClient.readContract({
@@ -367,13 +374,21 @@ export function registerSwapTools(server: McpServer) {
             }
           }
 
-          const build = await buildLcxSwap(quote, account.address, request, apiKey)
+          // Check again after the approval wait (the deadline may have passed), then simulate
+          // from the signer and refuse a revert
+          verifyLcxCalldata(build, quote, expected)
+          const tx = { to: build.swap.to, data: build.swap.data, value: BigInt(build.swap.value) }
+          try {
+            await publicClient.call({ account: account.address, ...tx })
+          } catch (error) {
+            const reason = error instanceof Error ? error.message : String(error)
+            throw new Error(`LCX Liberty DEX swap simulation reverted: ${reason}`)
+          }
+
           const hash = await walletClient.sendTransaction({
             account,
             chain: walletClient.chain,
-            to: build.swap.to,
-            data: build.swap.data,
-            value: BigInt(build.swap.value)
+            ...tx
           })
           const receipt = await publicClient.waitForTransactionReceipt({ hash })
           if (receipt.status !== "success") {

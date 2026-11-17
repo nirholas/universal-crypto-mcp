@@ -422,6 +422,10 @@ Arbitrum, Base, Polygon and BNB Chain:
   target the published router for the chain. The native coin is the zero address (`0xEeee...`
   is accepted too). The transaction deadline comes from the LCX Liberty DEX build, so `deadline`
   is not used on this path.
+- Before approving or signing, `execute_swap` decodes the router calldata and refuses it unless
+  it pays the signer, sells exactly `amountIn` of `tokenIn` for `tokenOut`, keeps a floor of at
+  least the quoted minimum and `minAmountOut`, carries the right value and has not expired. It
+  then simulates the swap from the signer (after any approval) and refuses a revert.
 
 Without the key, the swap tools behave exactly as before.
 
