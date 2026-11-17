@@ -12,7 +12,8 @@ import { getChain } from "@/evm/chains.js"
 export const LCX_DEX_ID = "lcx-liberty"
 
 const LCX_API_BASE = "https://swap-api.lcx.com/v1"
-const LCX_NATIVE = "0x0000000000000000000000000000000000000000"
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
+const LCX_NATIVE = ZERO_ADDRESS
 const EEEE_NATIVE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 // Fixed so the build can repeat it: /build requires the slippage the quote used
 const LCX_SLIPPAGE_BPS = 50
@@ -372,15 +373,36 @@ export function verifyLcxCalldata(
   } else if (decoded.functionName === "makerSwap") {
     const [a, , m] = decoded.args
     fields = { ...a, totalIn: a.amountIn }
-    if (m.amountIn > 0n) {
-      const bebopOnly =
-        BEBOP_CONTRACTS.has(m.target.toLowerCase()) && BEBOP_CONTRACTS.has(m.spender.toLowerCase())
-      if (!bebopOnly || m.amountIn > a.amountIn) {
-        throw new Error("LCX Liberty DEX maker leg is not a Bebop fill within the amount sold")
-      }
+    // The maker leg is either a Bebop fill or entirely empty; a zero amount alone exempts nothing
+    const bebop =
+      BEBOP_CONTRACTS.has(m.target.toLowerCase()) && BEBOP_CONTRACTS.has(m.spender.toLowerCase())
+    const empty =
+      m.amountIn === 0n &&
+      sameAddress(m.target, ZERO_ADDRESS) &&
+      sameAddress(m.spender, ZERO_ADDRESS) &&
+      m.data === "0x"
+    if (!(bebop || empty) || m.amountIn > a.amountIn) {
+      throw new Error(
+        "LCX Liberty DEX maker leg is neither an empty leg nor a Bebop fill within the amount sold"
+      )
     }
   } else {
-    fields = decoded.args[0]
+    const [a] = decoded.args
+    // This server never requests an integrator, so none may take a fee from the output
+    if (!sameAddress(a.integrator, ZERO_ADDRESS)) {
+      throw new Error(
+        `LCX Liberty DEX transaction names integrator ${a.integrator}; none was requested`
+      )
+    }
+    // The prop-AMM venue needs no allowlist: the router's final minAmountOut assertion reverts
+    // the whole swap unless the recipient gets the floor checked below
+    if (
+      decoded.functionName === "swapSplitWithPropAMMSplit" &&
+      decoded.args[3].venueIn > a.totalIn
+    ) {
+      throw new Error("LCX Liberty DEX prop-AMM share exceeds the amount sold")
+    }
+    fields = a
   }
 
   if (!sameAddress(fields.recipient, expected.recipient)) {

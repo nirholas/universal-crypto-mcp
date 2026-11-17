@@ -81,32 +81,48 @@ function swapSplitData(overrides: Partial<SwapFields> = {}): Hex {
   })
 }
 
-function propAmmSplitData(overrides: Partial<SwapFields> = {}): Hex {
+function feeSwapArgs(f: SwapFields, integrator: Hex) {
+  return {
+    tokenIn: lc(f.tokenIn),
+    tokenOut: lc(f.tokenOut),
+    totalIn: f.totalIn,
+    minAmountOut: f.minAmountOut,
+    recipient: lc(f.recipient),
+    deadline: f.deadline,
+    integrator
+  }
+}
+
+function swapSplitWithFeeData(overrides: Partial<SwapFields> = {}, integrator: Hex = NATIVE): Hex {
+  const f = { ...FIELDS, ...overrides }
+  return encodeFunctionData({
+    abi: LCX_ROUTER_ABI,
+    functionName: "swapSplitWithFee",
+    args: [feeSwapArgs(f, integrator), [leg(f.totalIn, f)]]
+  })
+}
+
+function propAmmSplitData(
+  overrides: Partial<SwapFields> = {},
+  extra: { integrator?: Hex; venueIn?: bigint } = {}
+): Hex {
   const f = { ...FIELDS, ...overrides }
   const half = f.totalIn / 2n
   return encodeFunctionData({
     abi: LCX_ROUTER_ABI,
     functionName: "swapSplitWithPropAMMSplit",
     args: [
-      {
-        tokenIn: lc(f.tokenIn),
-        tokenOut: lc(f.tokenOut),
-        totalIn: f.totalIn,
-        minAmountOut: f.minAmountOut,
-        recipient: lc(f.recipient),
-        deadline: f.deadline,
-        integrator: NATIVE
-      },
+      feeSwapArgs(f, extra.integrator ?? NATIVE),
       [leg(half, f)],
       [leg(f.totalIn - half, f)],
-      { venue: lc(POOL), venueIn: half, venueMinOut: 1n }
+      { venue: lc(POOL), venueIn: extra.venueIn ?? half, venueMinOut: 1n }
     ]
   })
 }
 
 function makerSwapData(
   overrides: Partial<SwapFields> = {},
-  maker: Partial<{ target: Hex; spender: Hex; amountIn: bigint }> = {}
+  maker: Partial<{ target: Hex; spender: Hex; amountIn: bigint; data: Hex }> = {}
 ): Hex {
   const f = { ...FIELDS, ...overrides }
   const half = f.totalIn / 2n
@@ -588,6 +604,17 @@ describe("LCX Liberty DEX swap provider", () => {
       expect(() => verifyLcxCalldata(withData(makerSwapData()), quote, expected)).not.toThrow()
     })
 
+    it("accepts a makerSwap whose maker leg is empty", () => {
+      const empty = { target: NATIVE, spender: NATIVE, amountIn: 0n, data: "0x" } as const
+      const data = makerSwapData({}, empty)
+      expect(() => verifyLcxCalldata(withData(data), quote, expected)).not.toThrow()
+    })
+
+    it("accepts swapSplitWithFee calldata with no integrator", () => {
+      const data = swapSplitWithFeeData()
+      expect(() => verifyLcxCalldata(withData(data), quote, expected)).not.toThrow()
+    })
+
     it("accepts a floor above the quote", () => {
       const data = swapSplitData({ minAmountOut: 399000000000000000n })
       expect(() => verifyLcxCalldata(withData(data), quote, expected)).not.toThrow()
@@ -659,6 +686,34 @@ describe("LCX Liberty DEX swap provider", () => {
         "a maker leg larger than the amount sold",
         () => withData(makerSwapData({}, { amountIn: 1000000001n })),
         "Bebop"
+      ],
+      [
+        "a zero-amount maker leg with a non-Bebop target",
+        () =>
+          withData(
+            makerSwapData({}, { target: lc(USDC), spender: NATIVE, amountIn: 0n, data: "0x" })
+          ),
+        "Bebop"
+      ],
+      [
+        "a zero-amount maker leg that still carries data",
+        () => withData(makerSwapData({}, { target: NATIVE, spender: NATIVE, amountIn: 0n })),
+        "Bebop"
+      ],
+      [
+        "a swapSplitWithFee that names an integrator",
+        () => withData(swapSplitWithFeeData({}, lc(USDC))),
+        "integrator"
+      ],
+      [
+        "a swapSplitWithPropAMMSplit that names an integrator",
+        () => withData(propAmmSplitData({}, { integrator: lc(USDC) })),
+        "integrator"
+      ],
+      [
+        "a prop-AMM share larger than the amount sold",
+        () => withData(propAmmSplitData({}, { venueIn: 1000000001n })),
+        "prop-AMM share"
       ],
       ["value on a token sell", () => withData(swapSplitData(), { value: "5" }), "sends value"],
       ["a different target", () => withData(swapSplitData(), { to: TAKER }), "targets"]
