@@ -31,7 +31,7 @@ Official SDKs for Free Crypto News API, available in multiple languages.
 === "Go"
 
     ```bash
-    go get github.com/nirholas/free-crypto-news/sdk/go
+    go get github.com/nirholas/universal-crypto-mcp/packages/defi/protocols/packages/data/free-crypto-news/sdk/go
     ```
 
 === "PHP"

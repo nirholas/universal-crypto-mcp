@@ -19,7 +19,7 @@ Deploy the Crypto Data Aggregator to production environments.
 
 ### One-Click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/manicinc/crypto-data-aggregator)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/nirholas/crypto-data-aggregator)
 
 ### Manual Deployment
 
@@ -78,7 +78,7 @@ Configure in Vercel Dashboard → Settings → Environment Variables:
 
 ### One-Click Deploy
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/manicinc/crypto-data-aggregator)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/nirholas/crypto-data-aggregator)
 
 ### Manual Setup
 
@@ -245,7 +245,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/manicinc/crypto-aggregator:latest
+          image: crypto-aggregator:latest
           ports:
             - containerPort: 3000
           env:

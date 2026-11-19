@@ -161,7 +161,7 @@ Hooks & components
 
 <div class="card" markdown>
 ### :fontawesome-brands-golang: Go
-`go get github.com/nirholas/free-crypto-news/sdk/go`
+`go get github.com/nirholas/universal-crypto-mcp/packages/market-data/news/sdk/go`
 
 [:material-arrow-right: Go SDK](sdks/go.md)
 </div>

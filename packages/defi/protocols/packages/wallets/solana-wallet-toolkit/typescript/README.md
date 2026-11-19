@@ -25,8 +25,8 @@ This tool generates **private keys** for cryptocurrency wallets. Please understa
 
 ```bash
 # Clone the repository
-git clone https://github.com/hippopotomonstrosesquippedaliophobi/solana-vanity-address.git
-cd solana-vanity-address/typescript
+git clone https://github.com/nirholas/universal-crypto-mcp.git
+cd universal-crypto-mcp/packages/defi/protocols/packages/wallets/solana-wallet-toolkit/typescript
 
 # Install dependencies
 npm install
@@ -305,7 +305,7 @@ Longer patterns take exponentially longer. Consider:
 
 ## License
 
-MIT License - see [LICENSE](../LICENSE) for details.
+Proprietary. See the repository [LICENSE](../../../../../../../LICENSE).
 
 ## Contributing
 

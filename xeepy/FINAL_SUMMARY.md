@@ -166,8 +166,8 @@ docker-compose up -d
 ### **Development**
 ```bash
 # Clone and setup
-git clone https://github.com/yourusername/xeepy.git
-cd xeepy
+git clone https://github.com/nirholas/universal-crypto-mcp.git
+cd universal-crypto-mcp/xeepy
 python setup.py
 
 # Run tests

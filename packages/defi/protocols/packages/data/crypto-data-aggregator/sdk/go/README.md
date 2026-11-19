@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-go get github.com/nirholas/free-crypto-news/sdk/go
+go get github.com/nirholas/universal-crypto-mcp/packages/defi/protocols/packages/data/crypto-data-aggregator/sdk/go
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ import (
     "fmt"
     "log"
     
-    cryptonews "github.com/nirholas/free-crypto-news/sdk/go"
+    cryptonews "github.com/nirholas/universal-crypto-mcp/packages/defi/protocols/packages/data/crypto-data-aggregator/sdk/go"
 )
 
 func main() {
