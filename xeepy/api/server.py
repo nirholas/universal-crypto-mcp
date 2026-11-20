@@ -99,8 +99,8 @@ Rate limit headers are included in all responses.
 ## Support
 
 - Documentation: https://xeepy.dev/docs
-- GitHub: https://github.com/yourusername/xeepy
-- Issues: https://github.com/yourusername/xeepy/issues
+- GitHub: https://github.com/nirholas/universal-crypto-mcp/tree/main/xeepy
+- Issues: https://github.com/nirholas/universal-crypto-mcp/issues
 
 ---
 

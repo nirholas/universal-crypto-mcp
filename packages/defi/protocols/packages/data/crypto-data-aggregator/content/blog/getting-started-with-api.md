@@ -166,12 +166,12 @@ Check out these example integrations:
 3. **Slack Integration** - News updates in Slack channels
 4. **Trading Bot** - Sentiment-based trading signals
 
-See the [examples directory](https://github.com/example/crypto-news/tree/main/examples) for full code.
+See the [examples directory](https://github.com/nirholas/universal-crypto-mcp/tree/main/packages/defi/protocols/packages/data/crypto-data-aggregator/examples) for full code.
 
 ## Next Steps
 
 - Browse the [full API documentation](/api)
 - Join our [Discord community](https://discord.gg/example)
-- Star us on [GitHub](https://github.com/example/crypto-news)
+- Star us on [GitHub](https://github.com/nirholas/universal-crypto-mcp)
 
 Happy building! 🚀

@@ -1524,7 +1524,7 @@ Returns articles per source, hourly distribution, and category breakdown.
 |----------|---------|
 | TypeScript | `npm install @nirholas/crypto-news` |
 | Python | `curl -O .../sdk/python/crypto_news.py` |
-| Go | `go get github.com/nirholas/free-crypto-news/sdk/go` |
+| Go | `go get github.com/nirholas/universal-crypto-mcp/packages/defi/protocols/packages/data/free-crypto-news/sdk/go` |
 | PHP | `curl -O .../sdk/php/CryptoNews.php` |
 | JavaScript | `curl -O .../sdk/javascript/crypto-news.js` |
 | Rust | `cargo add fcn-sdk` |

@@ -631,7 +631,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: https://xeepy.dev/docs
-- **GitHub Issues**: https://github.com/yourusername/xeepy/issues
+- **GitHub Issues**: https://github.com/nirholas/universal-crypto-mcp/issues
 - **Discord**: https://discord.gg/xeepy
 - **Email**: support@xeepy.dev
 
@@ -641,6 +641,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the Xeepy Team**
 
-[Website](https://xeepy.dev) • [Documentation](https://xeepy.dev/docs) • [GitHub](https://github.com/yourusername/xeepy)
+[Website](https://xeepy.dev) • [Documentation](https://xeepy.dev/docs) • [GitHub](https://github.com/nirholas/universal-crypto-mcp/tree/main/xeepy)
 
 </div>

@@ -159,11 +159,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://xeepy.dev"
-Documentation = "https://xeepy.dev/docs"
-Repository = "https://github.com/yourusername/xeepy"
-Issues = "https://github.com/yourusername/xeepy/issues"
-Changelog = "https://github.com/yourusername/xeepy/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/nirholas/universal-crypto-mcp/tree/main/xeepy"
+Documentation = "https://github.com/nirholas/universal-crypto-mcp/blob/main/xeepy/README.md"
+Repository = "https://github.com/nirholas/universal-crypto-mcp"
+Issues = "https://github.com/nirholas/universal-crypto-mcp/issues"
+Changelog = "https://github.com/nirholas/universal-crypto-mcp/blob/main/xeepy/CHANGELOG.md"
 
 [project.scripts]
 xeepy = "xeepy.cli.main:main"

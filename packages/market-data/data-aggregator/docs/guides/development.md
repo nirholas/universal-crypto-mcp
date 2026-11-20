@@ -19,8 +19,8 @@ Set up your local development environment and learn the development workflow.
 
 ```bash
 # Clone the repository
-git clone https://github.com/manicinc/crypto-data-aggregator.git
-cd crypto-data-aggregator
+git clone https://github.com/nirholas/universal-crypto-mcp.git
+cd universal-crypto-mcp/packages/market-data/data-aggregator
 
 # Install dependencies
 pnpm install
