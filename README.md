@@ -843,6 +843,9 @@ CRYPTOPANIC_API_KEY=your_key      # https://cryptopanic.com/developers
 # Cross-chain Swaps (optional)
 RUBIC_API_KEY=your_key            # https://rubic.exchange
 
+# DEX Swaps (optional) - adds dex "lcx-liberty" (LCX Liberty DEX) to the swap tools
+LCX_API_KEY=your_key              # https://dex.lcx.com/dashboard
+
 # Custom RPC endpoints (optional - uses public RPCs by default)
 ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_KEY
 ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc

@@ -409,6 +409,26 @@ DEX swap operations via 1inch, 0x, ParaSwap.
 | `execute_swap` | Execute a token swap |
 | `get_best_route` | Find best swap route across DEXs |
 
+### LCX Liberty DEX (optional)
+
+Set `LCX_API_KEY` (free key at [dex.lcx.com/dashboard](https://dex.lcx.com/dashboard)) to add
+[LCX Liberty DEX](https://dex.lcx.com/docs) as `dex: "lcx-liberty"` on Ethereum, OP Mainnet,
+Arbitrum, Base, Polygon and BNB Chain:
+
+- `get_swap_quote` and `execute_swap` use it when `dex` is `"lcx-liberty"`.
+- `get_best_route` and `get_supported_dexs` include it alongside the on-chain routers.
+- `execute_swap` refuses a quote whose minimum output is below `minAmountOut`, approves exactly
+  `amountIn` to the LCX Liberty DEX router, and rejects any quote or transaction that does not
+  target the published router for the chain. The native coin is the zero address (`0xEeee...`
+  is accepted too). The transaction deadline comes from the LCX Liberty DEX build, so `deadline`
+  is not used on this path.
+- Before approving or signing, `execute_swap` decodes the router calldata and refuses it unless
+  it pays the signer, sells exactly `amountIn` of `tokenIn` for `tokenOut`, keeps a floor of at
+  least the quoted minimum and `minAmountOut`, carries the right value and has not expired. It
+  then simulates the swap from the signer (after any approval) and refuses a revert.
+
+Without the key, the swap tools behave exactly as before.
+
 ### Examples
 
 ```
